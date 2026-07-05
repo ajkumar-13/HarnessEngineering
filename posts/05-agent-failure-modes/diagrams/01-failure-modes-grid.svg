@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 596" role="img" aria-labelledby="t d">
+  <title id="t">Six agent failure modes, each with its symptom and its harness fix</title>
+  <desc id="d">A grid of six cards. Victory declaration: marks the task done but it isn't — fixed by a verification loop (Post 11). Context anxiety: rushes as the context window fills — fixed by compaction and resets (Post 09). One-shotting: attempts the whole task in one leap — fixed by a planner/evaluator split (Post 12). Doom loop: repeats the same failing action — fixed by a no-progress stop condition (Post 03). Silent drift: quietly ignores project conventions — fixed by a memory file plus a hook, the ratchet (Posts 10 and 13). Destructive action: runs dangerous commands like rm -rf or force-push — fixed by a deny-list hook plus a sandbox (Posts 13 and 14).</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .badge{fill:var(--ce-alert);fill-opacity:0.14;stroke:var(--ce-alert);stroke-width:1.5;}
+    .bnum{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-alert);}
+    .mode{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .divider{stroke:var(--ce-border);stroke-width:1;}
+    .lbl{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:9px;fill:var(--ce-ink-muted);letter-spacing:0.1em;}
+    .sym{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11.5px;fill:var(--ce-ink);}
+    .fix{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .ref{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:10.5px;fill:var(--ce-success);}
+    .dot{fill:var(--ce-success);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="596"/>
+  <text class="title" x="48" y="40">Six agent failure modes — and the harness fix for each</text>
+  <text class="sub"   x="48" y="62">Autonomous agents fail in a small set of nameable ways. Each maps to one component to change.</text>
+
+  <!-- ===== card template repeated 6x ===== -->
+  <!-- Row 1 -->
+  <!-- 1 Victory declaration -->
+  <g>
+    <rect class="card" x="48" y="90" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="74" cy="120" r="13"/>
+    <text class="bnum" x="74" y="124" text-anchor="middle">1</text>
+    <text class="mode" x="98" y="118">Victory declaration</text>
+    <line class="divider" x1="68" y1="150" x2="304" y2="150"/>
+    <text class="lbl" x="68" y="176">SYMPTOM</text>
+    <text class="sym" x="68" y="196">Marks the task “done” —</text>
+    <text class="sym" x="68" y="212">but it isn’t.</text>
+    <text class="lbl" x="68" y="248">HARNESS FIX</text>
+    <circle class="dot" cx="72" cy="268" r="4"/>
+    <text class="fix" x="84" y="272">Verification loop</text>
+    <text class="ref" x="68" y="292">→ Post 11</text>
+  </g>
+  <!-- 2 Context anxiety -->
+  <g>
+    <rect class="card" x="342" y="90" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="368" cy="120" r="13"/>
+    <text class="bnum" x="368" y="124" text-anchor="middle">2</text>
+    <text class="mode" x="392" y="118">Context anxiety</text>
+    <line class="divider" x1="362" y1="150" x2="598" y2="150"/>
+    <text class="lbl" x="362" y="176">SYMPTOM</text>
+    <text class="sym" x="362" y="196">Rushes and cuts corners</text>
+    <text class="sym" x="362" y="212">as the window fills.</text>
+    <text class="lbl" x="362" y="248">HARNESS FIX</text>
+    <circle class="dot" cx="366" cy="268" r="4"/>
+    <text class="fix" x="378" y="272">Compaction &amp; resets</text>
+    <text class="ref" x="362" y="292">→ Post 09</text>
+  </g>
+  <!-- 3 One-shotting -->
+  <g>
+    <rect class="card" x="636" y="90" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="662" cy="120" r="13"/>
+    <text class="bnum" x="662" y="124" text-anchor="middle">3</text>
+    <text class="mode" x="686" y="118">One-shotting</text>
+    <line class="divider" x1="656" y1="150" x2="892" y2="150"/>
+    <text class="lbl" x="656" y="176">SYMPTOM</text>
+    <text class="sym" x="656" y="196">Attempts the whole task</text>
+    <text class="sym" x="656" y="212">in a single leap.</text>
+    <text class="lbl" x="656" y="248">HARNESS FIX</text>
+    <circle class="dot" cx="660" cy="268" r="4"/>
+    <text class="fix" x="672" y="272">Planner / evaluator split</text>
+    <text class="ref" x="656" y="292">→ Post 12</text>
+  </g>
+
+  <!-- Row 2 -->
+  <!-- 4 Doom loop -->
+  <g>
+    <rect class="card" x="48" y="330" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="74" cy="360" r="13"/>
+    <text class="bnum" x="74" y="364" text-anchor="middle">4</text>
+    <text class="mode" x="98" y="358">Doom loop</text>
+    <line class="divider" x1="68" y1="390" x2="304" y2="390"/>
+    <text class="lbl" x="68" y="416">SYMPTOM</text>
+    <text class="sym" x="68" y="436">Repeats the same failing</text>
+    <text class="sym" x="68" y="452">action, making no change.</text>
+    <text class="lbl" x="68" y="488">HARNESS FIX</text>
+    <circle class="dot" cx="72" cy="508" r="4"/>
+    <text class="fix" x="84" y="512">No-progress stop</text>
+    <text class="ref" x="68" y="532">→ Post 03</text>
+  </g>
+  <!-- 5 Silent drift -->
+  <g>
+    <rect class="card" x="342" y="330" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="368" cy="360" r="13"/>
+    <text class="bnum" x="368" y="364" text-anchor="middle">5</text>
+    <text class="mode" x="392" y="358">Silent drift</text>
+    <line class="divider" x1="362" y1="390" x2="598" y2="390"/>
+    <text class="lbl" x="362" y="416">SYMPTOM</text>
+    <text class="sym" x="362" y="436">Quietly ignores your</text>
+    <text class="sym" x="362" y="452">project conventions.</text>
+    <text class="lbl" x="362" y="488">HARNESS FIX</text>
+    <circle class="dot" cx="366" cy="508" r="4"/>
+    <text class="fix" x="378" y="512">Memory file + hook</text>
+    <text class="ref" x="362" y="532">→ Posts 10 · 13</text>
+  </g>
+  <!-- 6 Destructive action -->
+  <g>
+    <rect class="card" x="636" y="330" width="276" height="216" rx="12"/>
+    <circle class="badge" cx="662" cy="360" r="13"/>
+    <text class="bnum" x="662" y="364" text-anchor="middle">6</text>
+    <text class="mode" x="686" y="358">Destructive action</text>
+    <line class="divider" x1="656" y1="390" x2="892" y2="390"/>
+    <text class="lbl" x="656" y="416">SYMPTOM</text>
+    <text class="sym" x="656" y="436">Runs rm -rf, force-push,</text>
+    <text class="sym" x="656" y="452">DROP TABLE.</text>
+    <text class="lbl" x="656" y="488">HARNESS FIX</text>
+    <circle class="dot" cx="660" cy="508" r="4"/>
+    <text class="fix" x="672" y="512">Deny-list hook + sandbox</text>
+    <text class="ref" x="656" y="532">→ Posts 13 · 14</text>
+  </g>
+
+  <text class="sub" x="48" y="580">“My agent is flaky” is not a diagnosis. Name the mode, and the component to change names itself.</text>
+</svg>

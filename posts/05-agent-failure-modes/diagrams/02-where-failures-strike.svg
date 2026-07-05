@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 452" role="img" aria-labelledby="t d">
+  <title id="t">Where each failure mode strikes in the agent loop</title>
+  <desc id="d">On the left, the agent loop: reason, act, observe. On the right, the six failure modes grouped by the loop stage where they strike. At the reason stage, where the model decides, one-shotting and victory declaration occur. At the act stage, where a tool runs, destructive action occurs. At the observe and loop-back stage, doom loops and context anxiety occur. Across turns, spanning the whole loop, silent drift occurs. Failures cluster at loop stages, which is why the fix is a specific component rather than a bigger model.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .n-reason{fill:var(--ce-surface);stroke:var(--ce-primary);stroke-width:1.75;}
+    .n-act{fill:var(--ce-surface);stroke:var(--ce-accent);stroke-width:1.75;}
+    .n-obs{fill:var(--ce-surface);stroke:var(--ce-success);stroke-width:1.75;}
+    .nT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12.5px;fill:var(--ce-ink);letter-spacing:0.03em;}
+    .arr{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrback{stroke:var(--ce-success);stroke-width:1.5;fill:none;}
+    .divider{stroke:var(--ce-border);stroke-width:1;}
+    .pill-p{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.25;}
+    .pill-a{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.25;}
+    .pill-s{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.25;}
+    .pill-n{fill:var(--ce-ink);fill-opacity:0.06;stroke:var(--ce-ink-muted);stroke-width:1.25;}
+    .pT-p{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-primary);letter-spacing:0.04em;}
+    .pT-a{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-accent);letter-spacing:0.04em;}
+    .pT-s{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-success);letter-spacing:0.04em;}
+    .pT-n{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-ink-muted);letter-spacing:0.04em;}
+    .badge{fill:var(--ce-alert);fill-opacity:0.14;stroke:var(--ce-alert);stroke-width:1.25;}
+    .bnum{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:10px;fill:var(--ce-alert);}
+    .mode{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:12.5px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="452"/>
+  <text class="title" x="48" y="40">Where each failure strikes in the loop</text>
+  <text class="sub"   x="48" y="62">Failures cluster at loop stages — which is why the fix is a specific component, not a bigger model.</text>
+
+  <!-- ===== LEFT: simplified loop ===== -->
+  <rect class="n-reason" x="150" y="150" width="150" height="46" rx="10"/>
+  <text class="nT" x="225" y="178" text-anchor="middle">REASON</text>
+  <rect class="n-act" x="86" y="300" width="130" height="46" rx="10"/>
+  <text class="nT" x="151" y="328" text-anchor="middle">ACT</text>
+  <rect class="n-obs" x="256" y="300" width="130" height="46" rx="10"/>
+  <text class="nT" x="321" y="328" text-anchor="middle">OBSERVE</text>
+
+  <path class="arr" d="M188 196 L156 294"/>
+  <polygon points="154,300 153,291 161,295" fill="var(--ce-ink-muted)"/>
+  <line class="arr" x1="216" y1="323" x2="250" y2="323"/>
+  <polygon points="256,323 248,319 248,327" fill="var(--ce-ink-muted)"/>
+  <path class="arrback" d="M340 300 C 384 256 360 214 296 194"/>
+  <polygon points="290,193 299,190 297,199" fill="var(--ce-success)"/>
+  <text class="sub" x="394" y="250" fill="var(--ce-success)" font-weight="600" font-size="11">loop ↺</text>
+
+  <line class="divider" x1="452" y1="96" x2="452" y2="392"/>
+
+  <!-- ===== RIGHT: stage groups ===== -->
+  <!-- AT REASON -->
+  <rect class="pill-p" x="492" y="98" width="200" height="24" rx="12"/>
+  <text class="pT-p" x="506" y="114">AT REASON · the model decides</text>
+  <circle class="badge" cx="504" cy="146" r="11"/><text class="bnum" x="504" y="150" text-anchor="middle">3</text>
+  <text class="mode" x="522" y="150">One-shotting</text>
+  <circle class="badge" cx="674" cy="146" r="11"/><text class="bnum" x="674" y="150" text-anchor="middle">1</text>
+  <text class="mode" x="692" y="150">Victory declaration</text>
+
+  <!-- AT ACT -->
+  <rect class="pill-a" x="492" y="182" width="188" height="24" rx="12"/>
+  <text class="pT-a" x="506" y="198">AT ACT · a tool runs</text>
+  <circle class="badge" cx="504" cy="230" r="11"/><text class="bnum" x="504" y="234" text-anchor="middle">6</text>
+  <text class="mode" x="522" y="234">Destructive action</text>
+
+  <!-- AT OBSERVE / LOOP-BACK -->
+  <rect class="pill-s" x="492" y="266" width="228" height="24" rx="12"/>
+  <text class="pT-s" x="506" y="282">AT OBSERVE · the loop turns again</text>
+  <circle class="badge" cx="504" cy="314" r="11"/><text class="bnum" x="504" y="318" text-anchor="middle">4</text>
+  <text class="mode" x="522" y="318">Doom loop</text>
+  <circle class="badge" cx="644" cy="314" r="11"/><text class="bnum" x="644" y="318" text-anchor="middle">2</text>
+  <text class="mode" x="662" y="318">Context anxiety</text>
+
+  <!-- ACROSS TURNS -->
+  <rect class="pill-n" x="492" y="350" width="240" height="24" rx="12"/>
+  <text class="pT-n" x="506" y="366">ACROSS TURNS · spans the whole loop</text>
+  <circle class="badge" cx="504" cy="398" r="11"/><text class="bnum" x="504" y="402" text-anchor="middle">5</text>
+  <text class="mode" x="522" y="402">Silent drift</text>
+
+  <text class="sub" x="48" y="430">Numbers match the gallery above. Detection is per-stage: watch the reason step's stop decision, the tool calls at act, and repetition across turns.</text>
+</svg>
