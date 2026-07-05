@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">The model–harness co-training flywheel</title>
+  <desc id="d">A four-step cycle. One: harnesses discover a useful pattern, such as bash-as-a-tool, plan files, or hooks. Two: the pattern is standardised into a product or SDK, like Claude Code or Codex. Three: the next model is trained against that pattern. Four: the model gets better at using it, and harnesses then exploit the improvement — returning to step one. The result, noted on the right, is that a model feels sharper in its native harness because the model and the harness were shaped together.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .node{fill:var(--ce-surface);stroke:var(--ce-primary);stroke-width:1.5;}
+    .badge{fill:var(--ce-primary);fill-opacity:0.15;stroke:var(--ce-primary);stroke-width:1.25;}
+    .bnum{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-primary);}
+    .nT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12.5px;fill:var(--ce-ink);}
+    .nS{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .arc{stroke:var(--ce-accent);stroke-width:2;fill:none;}
+    .ctr{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-ink-muted);}
+    .divider{stroke:var(--ce-border);stroke-width:1;}
+    .leg-h{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);letter-spacing:0.06em;}
+    .leg-b{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink);}
+    .cite{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="470"/>
+  <text class="title" x="48" y="40">The model–harness co-training flywheel</text>
+  <text class="sub"   x="48" y="62">Useful harness patterns get trained into the next model — which is why a model feels sharper in its native harness.</text>
+
+  <!-- arcs (clockwise) -->
+  <path class="arc" d="M462 150 Q 528 170 522 226"/>
+  <polygon points="516,232 526,229 524,220" fill="var(--ce-accent)"/>
+  <path class="arc" d="M522 300 Q 528 356 462 374"/>
+  <polygon points="456,376 466,378 462,369" fill="var(--ce-accent)"/>
+  <path class="arc" d="M198 374 Q 132 356 138 300"/>
+  <polygon points="144,294 134,297 136,306" fill="var(--ce-accent)"/>
+  <path class="arc" d="M138 226 Q 132 170 198 150"/>
+  <polygon points="204,148 194,146 198,155" fill="var(--ce-accent)"/>
+
+  <!-- center -->
+  <text class="ctr" x="330" y="258" text-anchor="middle">↻ repeats every</text>
+  <text class="ctr" x="330" y="274" text-anchor="middle">model generation</text>
+
+  <!-- node 1 (top) -->
+  <rect class="node" x="190" y="100" width="280" height="56" rx="12"/>
+  <circle class="badge" cx="212" cy="128" r="12"/><text class="bnum" x="212" y="132" text-anchor="middle">1</text>
+  <text class="nT" x="234" y="124">Harnesses discover a useful pattern</text>
+  <text class="nS" x="234" y="140">bash-as-a-tool · plan files · hooks</text>
+
+  <!-- node 2 (right) -->
+  <rect class="node" x="404" y="228" width="212" height="66" rx="12"/>
+  <circle class="badge" cx="426" cy="252" r="12"/><text class="bnum" x="426" y="256" text-anchor="middle">2</text>
+  <text class="nT" x="448" y="248">Standardised into</text>
+  <text class="nT" x="448" y="264">a product / SDK</text>
+  <text class="nS" x="448" y="280">Claude Code · Codex</text>
+
+  <!-- node 3 (bottom) -->
+  <rect class="node" x="190" y="368" width="280" height="56" rx="12"/>
+  <circle class="badge" cx="212" cy="396" r="12"/><text class="bnum" x="212" y="400" text-anchor="middle">3</text>
+  <text class="nT" x="234" y="392">The next model trains against it</text>
+  <text class="nS" x="234" y="408">the pattern becomes a learned skill</text>
+
+  <!-- node 4 (left) -->
+  <rect class="node" x="44" y="228" width="212" height="66" rx="12"/>
+  <circle class="badge" cx="66" cy="252" r="12"/><text class="bnum" x="66" y="256" text-anchor="middle">4</text>
+  <text class="nT" x="88" y="248">The model gets</text>
+  <text class="nT" x="88" y="264">better at using it</text>
+  <text class="nS" x="88" y="280">→ harnesses exploit it</text>
+
+  <!-- right takeaway -->
+  <line class="divider" x1="668" y1="110" x2="668" y2="360"/>
+  <text class="leg-h" x="694" y="150">WHY A MODEL FEELS DIFFERENT</text>
+  <text class="leg-h" x="694" y="166">IN ITS NATIVE HARNESS</text>
+  <text class="leg-b" x="694" y="204">The same weights, dropped into</text>
+  <text class="leg-b" x="694" y="222">a generic harness, don't feel the</text>
+  <text class="leg-b" x="694" y="240">same — model and harness were</text>
+  <text class="leg-b" x="694" y="258">shaped together.</text>
+  <text class="cite" x="694" y="300">— after Osmani, 2026</text>
+
+  <text class="sub" x="48" y="452">The flywheel is why "just use the best model" underrates the harness: the best model was co-trained with a harness you may not be using.</text>
+</svg>

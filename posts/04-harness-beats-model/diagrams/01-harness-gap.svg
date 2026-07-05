@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
+  <title id="t">The harness gap: one model moving from about rank 30 to about rank 5 on a fixed benchmark</title>
+  <desc id="d">A horizontal leaderboard-rank axis, worse on the left, better on the right. The same coding-agent model appears at two points: in a default harness at about rank 30 on the far left, and in a tuned harness at about rank 5 near the right. A green arrow marks the move — same model, only the harness changed, about 25 leaderboard places. This is one reported result on Terminal-Bench 2.0 from Faros AI. A box below states the takeaway: a fixed model cannot move that far on a fixed benchmark unless the harness is the lever, because Agent equals Model plus Harness.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .tick{stroke:var(--ce-ink-muted);stroke-width:1;}
+    .dir{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11px;fill:var(--ce-ink-muted);}
+    .mk-def{fill:var(--ce-alert);}
+    .mk-tun{fill:var(--ce-success);}
+    .mkT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .mkR{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:12px;fill:var(--ce-ink-muted);}
+    .move{stroke:var(--ce-success);stroke-width:2;fill:none;}
+    .moveT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12.5px;fill:var(--ce-ink);}
+    .moveS{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11px;fill:var(--ce-success);}
+    .box{fill:var(--ce-primary);fill-opacity:0.07;stroke:var(--ce-primary);stroke-width:1.25;}
+    .eq{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:16px;fill:var(--ce-ink);}
+    .why{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:12.5px;fill:var(--ce-ink);}
+    .cite{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="420"/>
+  <text class="title" x="48" y="40">The harness gap — one model, two harnesses</text>
+  <text class="sub"   x="48" y="62">One reported result on Terminal-Bench 2.0: changing only the harness moved a coding agent from ≈ #30 to ≈ #5.</text>
+
+  <!-- movement arrow (above axis) -->
+  <path class="move" d="M150 150 L742 150"/>
+  <polygon points="750,150 740,145 740,155" fill="var(--ce-success)"/>
+  <text class="moveT" x="446" y="132" text-anchor="middle">same model — only the harness changed</text>
+  <text class="moveS" x="446" y="118" text-anchor="middle">≈ 25 leaderboard places</text>
+
+  <!-- axis -->
+  <line class="axis" x1="120" y1="192" x2="860" y2="192"/>
+  <line class="tick" x1="150" y1="186" x2="150" y2="198"/>
+  <line class="tick" x1="750" y1="186" x2="750" y2="198"/>
+  <text class="dir" x="120" y="224">worse</text>
+  <text class="dir" x="860" y="224" text-anchor="end">better</text>
+  <text class="dir" x="490" y="224" text-anchor="middle">← leaderboard rank →</text>
+
+  <!-- default marker (rank ~30) -->
+  <circle class="mk-def" cx="150" cy="192" r="9"/>
+  <text class="mkT" x="150" y="172" text-anchor="middle">Default harness</text>
+  <text class="mkR" x="150" y="250" text-anchor="middle">≈ #30</text>
+
+  <!-- tuned marker (rank ~5) -->
+  <circle class="mk-tun" cx="750" cy="192" r="9"/>
+  <text class="mkT" x="750" y="172" text-anchor="middle">Tuned harness</text>
+  <text class="mkR" x="750" y="250" text-anchor="middle">≈ #5</text>
+
+  <!-- takeaway box -->
+  <rect class="box" x="48" y="284" width="864" height="72" rx="12"/>
+  <text class="eq"  x="72" y="326">Agent = Model + Harness</text>
+  <line x1="330" y1="298" x2="330" y2="342" stroke="var(--ce-border)" stroke-width="1"/>
+  <text class="why" x="352" y="316">A fixed model can't move ≈ 25 places on a fixed benchmark —</text>
+  <text class="why" x="352" y="334">unless the harness is the lever. The gap you see is usually a harness gap.</text>
+
+  <text class="cite" x="48" y="384">Reported by Faros AI (2026). Several-fold same-model spreads are reported elsewhere (MindStudio, 2026) — treat reported figures as reported, and measure your own harness (Post 22).</text>
+</svg>
