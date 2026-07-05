@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430" role="img" aria-labelledby="t d">
+  <title id="t">The model is stateless; the loop carries the state</title>
+  <desc id="d">On the left, the model is drawn as a stateless function: messages in, one response out, with no memory between calls. On the right, the loop — the harness — holds a growing conversation history. Two arrows form a cycle: the loop sends the full history so far to the model, and appends the one new message the model returns. The history stack grows each turn: it starts with a system prompt and the user task, then adds an assistant tool call and a tool result on turn one, again on turn two, and finally an assistant final answer on turn three. The provider API keeps no state between calls; continuity comes from the harness re-sending state.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .model{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .mT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:15px;fill:var(--ce-ink);letter-spacing:0.03em;}
+    .mS{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11.5px;fill:var(--ce-ink-muted);}
+    .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:11.5px;fill:var(--ce-ink);}
+    .tag{fill:var(--ce-accent);fill-opacity:0.12;stroke:var(--ce-accent);stroke-width:1;}
+    .tagT{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:10.5px;fill:var(--ce-ink);}
+    .loopbox{fill:var(--ce-primary);fill-opacity:0.05;stroke:var(--ce-primary);stroke-width:1.25;stroke-dasharray:6 4;}
+    .loopH{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-primary);letter-spacing:0.06em;}
+    .arr{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .flab{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11px;fill:var(--ce-ink);}
+    .fnum{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-ink-muted);}
+    .chip-n{fill:var(--ce-ink);fill-opacity:0.05;stroke:var(--ce-border);stroke-width:1;}
+    .chip-a{fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1;}
+    .chip-t{fill:var(--ce-success);fill-opacity:0.13;stroke:var(--ce-success);stroke-width:1;}
+    .chip-f{fill:var(--ce-accent);fill-opacity:0.14;stroke:var(--ce-accent);stroke-width:1;}
+    .cT{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:10.5px;fill:var(--ce-ink);}
+    .turn{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:10px;fill:var(--ce-ink-muted);}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="430"/>
+  <text class="title" x="48" y="40">Where the loop lives — the model forgets, the loop remembers</text>
+  <text class="sub"   x="48" y="62">Every iteration is a fresh API call with the whole history re-sent. The model holds no state between calls.</text>
+
+  <!-- MODEL (stateless) -->
+  <rect class="model" x="48" y="150" width="228" height="132" rx="12"/>
+  <text class="mT" x="162" y="188" text-anchor="middle">MODEL</text>
+  <text class="mS" x="162" y="208" text-anchor="middle">a stateless function</text>
+  <rect x="70" y="222" width="184" height="26" rx="6" fill="var(--ce-bg)" stroke="var(--ce-border)" stroke-width="1"/>
+  <text class="mono" x="162" y="239" text-anchor="middle">messages → 1 response</text>
+  <rect class="tag" x="76" y="256" width="172" height="20" rx="10"/>
+  <text class="tagT" x="162" y="270" text-anchor="middle">no memory between calls</text>
+
+  <!-- cycle arrows -->
+  <path class="arr" d="M276 190 L446 190"/>
+  <polygon points="452,190 443,186 444,194" fill="var(--ce-ink-muted)"/>
+  <text class="fnum" x="292" y="182">1</text>
+  <text class="flab" x="306" y="182">send the full history</text>
+
+  <path class="arr" d="M446 244 L282 244"/>
+  <polygon points="276,244 285,240 284,248" fill="var(--ce-ink-muted)"/>
+  <text class="fnum" x="292" y="264">2</text>
+  <text class="flab" x="306" y="264">append the new message</text>
+  <text class="turn" x="361" y="222" text-anchor="middle">repeat each turn ↺</text>
+
+  <!-- THE LOOP: growing history -->
+  <rect class="loopbox" x="470" y="96" width="442" height="290" rx="14"/>
+  <text class="loopH" x="490" y="122">THE LOOP · THE HARNESS — HOLDS THE CONVERSATION HISTORY</text>
+
+  <!-- history chips (growing) -->
+  <rect class="chip-n" x="490" y="138" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="153">system prompt</text>
+  <rect class="chip-n" x="490" y="164" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="179">user · "the task"</text>
+
+  <rect class="chip-a" x="490" y="194" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="209">assistant → tool_call</text>
+  <rect class="chip-t" x="490" y="220" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="235">tool → result</text>
+  <text class="turn" x="828" y="222">turn 1</text>
+
+  <rect class="chip-a" x="490" y="250" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="265">assistant → tool_call</text>
+  <rect class="chip-t" x="490" y="276" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="291">tool → result</text>
+  <text class="turn" x="828" y="278">turn 2</text>
+
+  <rect class="chip-f" x="490" y="306" width="330" height="22" rx="5"/>
+  <text class="cT" x="502" y="321">assistant → final answer</text>
+  <text class="turn" x="828" y="308">turn 3</text>
+
+  <text class="turn" x="490" y="360">grows every turn — this is the state the model itself lacks</text>
+
+  <text class="foot" x="48" y="416">The provider API keeps nothing between calls. Continuity is the harness re-sending state — Post 08 makes that state durable on disk.</text>
+</svg>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">The agent loop: reason, act, observe — and the four ways it stops</title>
+  <desc id="d">On the left, a cycle: a user task flows into REASON, where the model thinks and decides. If the model calls a tool, the loop goes to ACT, then OBSERVE reads the result and returns to REASON — this repeats. If the model returns no tool call, the loop exits with a final answer. On the right, a panel lists the four layered stop conditions the loop checks each turn: one, a final answer (the model stops calling tools); two, a hard maximum-iteration cap; three, a token or time budget; four, no-progress detection. Most agent bugs are stop-condition bugs, not reasoning bugs.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .task{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .n-reason{fill:var(--ce-surface);stroke:var(--ce-primary);stroke-width:1.75;}
+    .n-act{fill:var(--ce-surface);stroke:var(--ce-accent);stroke-width:1.75;}
+    .n-obs{fill:var(--ce-surface);stroke:var(--ce-success);stroke-width:1.75;}
+    .nT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:13px;fill:var(--ce-ink);letter-spacing:0.03em;}
+    .nS{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .arr{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrback{stroke:var(--ce-success);stroke-width:1.5;fill:none;}
+    .exit{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;stroke-dasharray:5 4;}
+    .flab{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .divider{stroke:var(--ce-border);stroke-width:1;}
+    .panel-h{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-ink-muted);letter-spacing:0.08em;}
+    .badge1{fill:var(--ce-success);fill-opacity:0.15;stroke:var(--ce-success);stroke-width:1.5;}
+    .badge{fill:var(--ce-surface);stroke:var(--ce-ink-muted);stroke-width:1.5;}
+    .bnum1{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-success);}
+    .bnum{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12px;fill:var(--ce-ink-muted);}
+    .rowT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .rowS{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11.5px;fill:var(--ce-ink);}
+    .footbox{fill:var(--ce-accent);fill-opacity:0.10;stroke:var(--ce-accent);stroke-width:1;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="470"/>
+  <text class="title" x="48" y="40">The agent loop — reason · act · observe</text>
+  <text class="sub"   x="48" y="62">A harness is a loop. The interesting engineering is in how it stops.</text>
+
+  <!-- ===== LOOP (left) ===== -->
+  <!-- user task -->
+  <rect class="task" x="175" y="96" width="150" height="32" rx="8"/>
+  <text class="nT" x="250" y="116" text-anchor="middle">USER TASK</text>
+  <line class="arr" x1="250" y1="128" x2="250" y2="150"/>
+  <polygon points="250,152 246,144 254,144" fill="var(--ce-ink-muted)"/>
+
+  <!-- REASON -->
+  <rect class="n-reason" x="165" y="152" width="170" height="48" rx="10"/>
+  <text class="nT" x="250" y="174" text-anchor="middle">REASON</text>
+  <text class="nS" x="250" y="190" text-anchor="middle">the model thinks &amp; decides</text>
+
+  <!-- ACT -->
+  <rect class="n-act" x="95" y="312" width="150" height="48" rx="10"/>
+  <text class="nT" x="170" y="334" text-anchor="middle">ACT</text>
+  <text class="nS" x="170" y="350" text-anchor="middle">call a tool</text>
+
+  <!-- OBSERVE -->
+  <rect class="n-obs" x="300" y="312" width="150" height="48" rx="10"/>
+  <text class="nT" x="375" y="334" text-anchor="middle">OBSERVE</text>
+  <text class="nS" x="375" y="350" text-anchor="middle">read the result</text>
+
+  <!-- REASON -> ACT -->
+  <path class="arr" d="M212 200 L176 306"/>
+  <polygon points="174,312 172,303 181,306" fill="var(--ce-ink-muted)"/>
+  <text class="flab" x="150" y="256" text-anchor="end">tool call</text>
+
+  <!-- ACT -> OBSERVE -->
+  <line class="arr" x1="245" y1="336" x2="294" y2="336"/>
+  <polygon points="300,336 292,332 292,340" fill="var(--ce-ink-muted)"/>
+
+  <!-- OBSERVE -> REASON (loop back) -->
+  <path class="arrback" d="M400 312 C 452 264 424 214 322 198"/>
+  <polygon points="316,197 325,194 323,203" fill="var(--ce-success)"/>
+  <text class="flab" x="430" y="258" fill="var(--ce-success)">loop ↺</text>
+
+  <!-- exit: no tool call -> final answer -->
+  <path class="exit" d="M335 170 L556 162"/>
+  <polygon points="562,162 553,159 554,167" fill="var(--ce-ink-muted)"/>
+  <text class="flab" x="400" y="150">no tool call → final answer</text>
+
+  <!-- divider -->
+  <line class="divider" x1="520" y1="150" x2="520" y2="392"/>
+
+  <!-- ===== STOP PANEL (right) ===== -->
+  <text class="panel-h" x="560" y="112">HOW THE LOOP STOPS — CHECK EACH TURN</text>
+
+  <!-- row 1 -->
+  <circle class="badge1" cx="574" cy="160" r="12"/>
+  <text class="bnum1" x="574" y="164" text-anchor="middle">1</text>
+  <text class="rowT" x="598" y="156">Final answer</text>
+  <text class="rowS" x="598" y="172">the model stops calling tools — goal reached</text>
+
+  <!-- row 2 -->
+  <circle class="badge" cx="574" cy="214" r="12"/>
+  <text class="bnum" x="574" y="218" text-anchor="middle">2</text>
+  <text class="rowT" x="598" y="210">Max iterations</text>
+  <text class="rowS" x="598" y="226">a hard cap — the infinite-loop backstop</text>
+
+  <!-- row 3 -->
+  <circle class="badge" cx="574" cy="268" r="12"/>
+  <text class="bnum" x="574" y="272" text-anchor="middle">3</text>
+  <text class="rowT" x="598" y="264">Budget spent</text>
+  <text class="rowS" x="598" y="280">a token or wall-clock ceiling</text>
+
+  <!-- row 4 -->
+  <circle class="badge" cx="574" cy="322" r="12"/>
+  <text class="bnum" x="574" y="326" text-anchor="middle">4</text>
+  <text class="rowT" x="598" y="318">No progress</text>
+  <text class="rowS" x="598" y="334">nothing changed for N turns — thrashing guard</text>
+
+  <!-- footer emphasis -->
+  <rect class="footbox" x="560" y="360" width="352" height="34" rx="8"/>
+  <text class="foot" x="576" y="381">Most agent bugs are stop-condition bugs — not reasoning bugs.</text>
+
+  <text class="sub" x="48" y="440">One turn = one model call. The loop feeds each tool result back and calls the model again — until a stop condition fires.</text>
+</svg>
