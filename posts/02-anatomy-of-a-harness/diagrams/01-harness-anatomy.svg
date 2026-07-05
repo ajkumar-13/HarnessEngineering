@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" role="img" aria-labelledby="t d">
+  <title id="t">The anatomy of a harness: eleven components around the agent loop</title>
+  <desc id="d">At the centre is the agent loop, which drives the model through reason, act, and observe and holds the stop conditions. On the left are the components that feed the model: tools and code execution, state and filesystem, context management, and memory and continual learning. On the right are the components that govern the model: verification, hooks and enforcement, permissions and sandbox, and observability. Spanning the bottom are two components that operate at larger scale: orchestration across many agents, and long-horizon patterns for work that outgrows one context window.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .core{fill:var(--ce-ink);fill-opacity:0.06;stroke:var(--ce-ink);stroke-width:1.5;}
+    .modbox{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.25;}
+    .feed{fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.25;}
+    .gov {fill:var(--ce-success);fill-opacity:0.13;stroke:var(--ce-success);stroke-width:1.25;}
+    .scale{fill:var(--ce-accent);fill-opacity:0.13;stroke:var(--ce-accent);stroke-width:1.25;}
+    .flow{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .loopline{stroke:var(--ce-ink);stroke-width:1.25;fill:none;}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:20px;fill:var(--ce-ink);}
+    .core-t{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:13px;fill:var(--ce-ink);text-transform:uppercase;letter-spacing:0.05em;}
+    .tile-t{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:12.5px;fill:var(--ce-ink);}
+    .tile-s{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .grp{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .step{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:11px;fill:var(--ce-ink);}
+    .num{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="560"/>
+  <text class="title" x="48" y="40">The anatomy of a harness</text>
+
+  <!-- Group labels -->
+  <text class="grp" x="48"  y="72">Feeds the model</text>
+  <text class="grp" x="410" y="72" text-anchor="middle">The loop (core)</text>
+  <text class="grp" x="912" y="72" text-anchor="end">Governs the model</text>
+
+  <!-- CORE: the agent loop -->
+  <rect class="core" x="320" y="86" width="320" height="300" rx="16"/>
+  <text class="core-t" x="480" y="112" text-anchor="middle">The agent loop</text>
+
+  <!-- model box -->
+  <rect class="modbox" x="410" y="128" width="140" height="40" rx="8"/>
+  <text class="tile-t" x="480" y="153" text-anchor="middle">MODEL</text>
+
+  <!-- reason act observe cycle -->
+  <text class="step" x="480" y="206" text-anchor="middle">REASON</text>
+  <text class="step" x="392" y="262" text-anchor="middle">ACT</text>
+  <text class="step" x="568" y="262" text-anchor="middle">OBSERVE</text>
+  <path class="loopline" d="M 462 214 L 404 250" />
+  <polygon points="404,250 412,248 408,242" fill="var(--ce-ink)"/>
+  <path class="loopline" d="M 408 272 L 552 272" />
+  <polygon points="552,272 544,268 544,276" fill="var(--ce-ink)"/>
+  <path class="loopline" d="M 556 250 L 498 214" />
+  <polygon points="498,214 506,216 502,222" fill="var(--ce-ink)"/>
+
+  <!-- stop conditions -->
+  <line class="flow" x1="340" y1="300" x2="620" y2="300"/>
+  <text class="tile-s" x="480" y="320" text-anchor="middle">stop when: goal verified · max iters ·</text>
+  <text class="tile-s" x="480" y="336" text-anchor="middle">budget spent · no progress</text>
+  <text class="tile-s" x="480" y="368" text-anchor="middle">(most agent bugs live here)</text>
+
+  <!-- LEFT tiles: feeds the model -->
+  <g>
+    <rect class="feed" x="40" y="86"  width="252" height="66" rx="10"/>
+    <text class="num"    x="54" y="106">02</text>
+    <text class="tile-t" x="76" y="106">Tools &amp; code execution</text>
+    <text class="tile-s" x="54" y="126">bash + code beat fifty bespoke tools;</text>
+    <text class="tile-s" x="54" y="142">schemas, skills, MCP dispatch</text>
+
+    <rect class="feed" x="40" y="162" width="252" height="66" rx="10"/>
+    <text class="num"    x="54" y="182">03</text>
+    <text class="tile-t" x="76" y="182">State &amp; filesystem</text>
+    <text class="tile-s" x="54" y="202">durable memory outside the window;</text>
+    <text class="tile-s" x="54" y="218">git for versioning and rollback</text>
+
+    <rect class="feed" x="40" y="238" width="252" height="66" rx="10"/>
+    <text class="num"    x="54" y="258">04</text>
+    <text class="tile-t" x="76" y="258">Context management</text>
+    <text class="tile-s" x="54" y="278">compaction, tool-output offloading,</text>
+    <text class="tile-s" x="54" y="294">resets — fights context rot</text>
+
+    <rect class="feed" x="40" y="314" width="252" height="66" rx="10"/>
+    <text class="num"    x="54" y="334">05</text>
+    <text class="tile-t" x="76" y="334">Memory &amp; continual learning</text>
+    <text class="tile-s" x="54" y="354">carry knowledge across sessions;</text>
+    <text class="tile-s" x="54" y="370">the ratchet principle</text>
+  </g>
+
+  <!-- RIGHT tiles: governs the model -->
+  <g>
+    <rect class="gov" x="668" y="86"  width="252" height="66" rx="10"/>
+    <text class="num"    x="682" y="106">06</text>
+    <text class="tile-t" x="704" y="106">Verification</text>
+    <text class="tile-s" x="682" y="126">check each step; fail fast before</text>
+    <text class="tile-s" x="682" y="142">errors compound</text>
+
+    <rect class="gov" x="668" y="162" width="252" height="66" rx="10"/>
+    <text class="num"    x="682" y="182">07</text>
+    <text class="tile-t" x="704" y="182">Hooks &amp; enforcement</text>
+    <text class="tile-s" x="682" y="202">deterministic rules the model</text>
+    <text class="tile-s" x="682" y="218">can't be trusted to keep</text>
+
+    <rect class="gov" x="668" y="238" width="252" height="66" rx="10"/>
+    <text class="num"    x="682" y="258">08</text>
+    <text class="tile-t" x="704" y="258">Permissions &amp; sandbox</text>
+    <text class="tile-s" x="682" y="278">bound the blast radius;</text>
+    <text class="tile-s" x="682" y="294">isolate execution</text>
+
+    <rect class="gov" x="668" y="314" width="252" height="66" rx="10"/>
+    <text class="num"    x="682" y="334">11</text>
+    <text class="tile-t" x="704" y="334">Observability</text>
+    <text class="tile-s" x="682" y="354">a trace per run; see it, then fix</text>
+    <text class="tile-s" x="682" y="370">the failing component</text>
+  </g>
+
+  <!-- connector hints -->
+  <line class="flow" x1="292" y1="119" x2="320" y2="150"/>
+  <line class="flow" x1="292" y1="271" x2="320" y2="240"/>
+  <line class="flow" x1="640" y1="150" x2="668" y2="119"/>
+  <line class="flow" x1="640" y1="240" x2="668" y2="271"/>
+
+  <!-- BOTTOM tiles: scale -->
+  <text class="grp" x="48" y="424">Operates at larger scale</text>
+  <rect class="scale" x="40" y="436" width="440" height="62" rx="10"/>
+  <text class="num"    x="54" y="456">09</text>
+  <text class="tile-t" x="76" y="456">Orchestration</text>
+  <text class="tile-s" x="54" y="476">coordinate many agents as units — one level above a single harness;</text>
+  <text class="tile-s" x="54" y="491">topologies, and when not to (Part IV)</text>
+
+  <rect class="scale" x="490" y="436" width="430" height="62" rx="10"/>
+  <text class="num"    x="504" y="456">10</text>
+  <text class="tile-t" x="526" y="456">Long-horizon patterns</text>
+  <text class="tile-s" x="504" y="476">Ralph loops, context bridging, multi-context builds for work</text>
+  <text class="tile-s" x="504" y="491">that outgrows a single window</text>
+
+  <text class="tile-s" x="48" y="536">Blue = feeds the model · green = governs the model · orange = larger scale. Numbers map to the series posts.</text>
+</svg>
