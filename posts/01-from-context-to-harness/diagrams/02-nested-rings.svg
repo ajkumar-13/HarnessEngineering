@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">Model inside scaffold inside harness inside orchestration</title>
+  <desc id="d">Four concentric rounded rectangles, each with a light colored label tab. The innermost is the model, a white node that only responds. Around it is the scaffold: system prompt, tools, and memory. Around that is the harness: the loop, execution, verification, and hooks that make the model act. The outermost, dashed, is orchestration, which coordinates many agents as units. A legend on the right maps three disciplines to the rings: context engineering governs the model and scaffold; harness engineering governs the harness ring; orchestration governs the outermost ring.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .r-orch{fill:var(--ce-accent);fill-opacity:0.07;stroke:var(--ce-accent);stroke-width:1.5;stroke-dasharray:7 5;}
+    .r-harn{fill:var(--ce-success);fill-opacity:0.09;stroke:var(--ce-success);stroke-width:1.5;}
+    .r-scaf{fill:var(--ce-primary);fill-opacity:0.11;stroke:var(--ce-primary);stroke-width:1.5;}
+    .r-mod {fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .tab-a{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.25;}
+    .tab-s{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.25;}
+    .tab-p{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.25;}
+    .tabT-a{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-accent);letter-spacing:0.05em;}
+    .tabT-s{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-success);letter-spacing:0.05em;}
+    .tabT-p{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-primary);letter-spacing:0.05em;}
+    .sw-a{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.25;}
+    .sw-s{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.25;}
+    .sw-p{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.25;}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .desc{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+    .modT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:14px;fill:var(--ce-ink);letter-spacing:0.03em;}
+    .modS{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .leg-h{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);letter-spacing:0.08em;}
+    .leg-t{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .leg-s{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11.5px;fill:var(--ce-ink-muted);}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11.5px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="470"/>
+  <text class="title" x="48" y="40">Model ⊂ scaffold ⊂ harness ⊂ orchestration</text>
+  <text class="sub"   x="48" y="62">Each layer wraps the one inside it. The harness is everything around the model that makes it act.</text>
+
+  <!-- concentric rings, centre (312, 262) -->
+  <rect class="r-orch" x="72"  y="99"  width="480" height="326" rx="22"/>
+  <rect class="r-harn" x="120" y="137" width="384" height="250" rx="18"/>
+  <rect class="r-scaf" x="180" y="179" width="264" height="166" rx="14"/>
+  <rect class="r-mod"  x="260" y="238" width="104" height="48"  rx="10"/>
+
+  <!-- label tabs (light) -->
+  <rect class="tab-a" x="86"  y="108" width="132" height="22" rx="11"/>
+  <text class="tabT-a" x="152" y="123" text-anchor="middle">ORCHESTRATION</text>
+  <text class="desc"   x="228" y="123">coordinates many agents as units</text>
+
+  <rect class="tab-s" x="134" y="146" width="92" height="22" rx="11"/>
+  <text class="tabT-s" x="180" y="161" text-anchor="middle">HARNESS</text>
+  <text class="desc"   x="236" y="161">loop · exec · verify · hooks · observe</text>
+
+  <rect class="tab-p" x="194" y="188" width="96" height="22" rx="11"/>
+  <text class="tabT-p" x="242" y="203" text-anchor="middle">SCAFFOLD</text>
+  <text class="desc"   x="300" y="203">system prompt · tools · memory</text>
+
+  <text class="modT" x="312" y="259" text-anchor="middle">MODEL</text>
+  <text class="modS" x="312" y="274" text-anchor="middle">only responds</text>
+
+  <!-- legend -->
+  <text class="leg-h" x="606" y="120">WHICH DISCIPLINE GOVERNS WHICH RING</text>
+
+  <rect class="sw-p" x="606" y="150" width="18" height="18" rx="4"/>
+  <text class="leg-t" x="636" y="159">Context engineering</text>
+  <text class="leg-s" x="636" y="178">what the model sees — model + scaffold</text>
+
+  <rect class="sw-s" x="606" y="226" width="18" height="18" rx="4"/>
+  <text class="leg-t" x="636" y="235">Harness engineering</text>
+  <text class="leg-s" x="636" y="254">how the model runs — loop, tools, guardrails</text>
+
+  <rect class="sw-a" x="606" y="302" width="18" height="18" rx="4"/>
+  <text class="leg-t" x="636" y="311">Orchestration</text>
+  <text class="leg-s" x="636" y="330">how many agents combine — one level up</text>
+
+  <line x1="606" y1="366" x2="912" y2="366" stroke="var(--ce-border)" stroke-width="1"/>
+  <text class="foot" x="606" y="390">Context engineering is a component</text>
+  <text class="foot" x="606" y="406">inside the harness.</text>
+</svg>

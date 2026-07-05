@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 452" role="img" aria-labelledby="t d">
+  <title id="t">Three eras of applied LLM engineering: prompt, context, harness</title>
+  <desc id="d">Three panels along a left-to-right timeline. Prompt engineering (2022–2023): you engineer a single message, shown as one text box; the bottleneck is phrasing. Context engineering (2024–2025): you engineer the whole context window, shown as a stack of layered bars; the bottleneck is information. Harness engineering (2026 onward): you engineer the whole machine around the model, shown as a model box wrapped in a loop; the bottleneck is autonomy and control. Each era engineers a larger surface than the last.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .card3{fill:var(--ce-surface);stroke:var(--ce-success);stroke-width:1.75;}
+    .band-a{fill:var(--ce-accent);fill-opacity:0.16;} .band-p{fill:var(--ce-primary);fill-opacity:0.16;} .band-s{fill:var(--ce-success);fill-opacity:0.18;}
+    .rule-a{stroke:var(--ce-accent);} .rule-p{stroke:var(--ce-primary);} .rule-s{stroke:var(--ce-success);}
+    .rule{stroke-width:2;}
+    .capT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:13.5px;fill:var(--ce-ink);letter-spacing:0.02em;}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .yr{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11.5px;fill:var(--ce-ink-muted);}
+    .lbl{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:9.5px;fill:var(--ce-ink-muted);letter-spacing:0.1em;}
+    .cap-note{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .modT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-ink);letter-spacing:0.03em;}
+    .pillT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11.5px;fill:var(--ce-ink);}
+    .chip{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .pill-a{fill:var(--ce-accent);fill-opacity:0.15;stroke:var(--ce-accent);stroke-width:1.25;}
+    .pill-p{fill:var(--ce-primary);fill-opacity:0.15;stroke:var(--ce-primary);stroke-width:1.25;}
+    .pill-s{fill:var(--ce-success);fill-opacity:0.15;stroke:var(--ce-success);stroke-width:1.25;}
+    .lyr1{fill:var(--ce-primary);fill-opacity:0.8;} .lyr2{fill:var(--ce-success);fill-opacity:0.8;} .lyr3{fill:var(--ce-accent);fill-opacity:0.8;} .lyr4{fill:var(--ce-alert);fill-opacity:0.8;}
+    .modbox{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .loop{stroke:var(--ce-success);stroke-width:1.75;fill:none;}
+    .tl{stroke:var(--ce-ink-muted);stroke-width:1.25;fill:none;}
+    .chev{stroke:var(--ce-ink-muted);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="452"/>
+  <text class="title" x="48" y="40">Three eras: prompt → context → harness</text>
+  <text class="sub"   x="48" y="62">Each era engineers a larger surface than the last — a message, then the window, then the machine.</text>
+
+  <!-- timeline -->
+  <line class="tl" x1="60" y1="90" x2="900" y2="90"/>
+  <polygon points="900,90 892,86 892,94" fill="var(--ce-ink-muted)"/>
+  <text class="yr" x="60" y="82">2022</text>
+  <text class="yr" x="894" y="82" text-anchor="end">2026 →</text>
+
+  <!-- ===== PANEL A: PROMPT ===== -->
+  <rect class="card" x="48" y="108" width="276" height="272" rx="12"/>
+  <path class="band-a" d="M48 148 V120 Q48 108 60 108 H312 Q324 108 324 120 V148 Z"/>
+  <line class="rule rule-a" x1="48" y1="148" x2="324" y2="148"/>
+  <text class="capT" x="186" y="133" text-anchor="middle">PROMPT ENGINEERING</text>
+  <text class="yr"   x="186" y="170" text-anchor="middle">2022 – 2023</text>
+  <text class="lbl"  x="70"  y="200">YOU ENGINEER</text>
+  <rect class="chip" x="80" y="216" width="212" height="40" rx="8"/>
+  <text class="mono" x="186" y="241" text-anchor="middle">"Summarize this."</text>
+  <text class="cap-note" x="186" y="290" text-anchor="middle">A single message</text>
+  <text class="lbl" x="186" y="322" text-anchor="middle">THE BOTTLENECK</text>
+  <rect class="pill-a" x="82" y="332" width="208" height="28" rx="14"/>
+  <text class="pillT" x="186" y="350" text-anchor="middle">Phrasing</text>
+
+  <!-- ===== PANEL B: CONTEXT ===== -->
+  <rect class="card" x="342" y="108" width="276" height="272" rx="12"/>
+  <path class="band-p" d="M342 148 V120 Q342 108 354 108 H606 Q618 108 618 120 V148 Z"/>
+  <line class="rule rule-p" x1="342" y1="148" x2="618" y2="148"/>
+  <text class="capT" x="480" y="133" text-anchor="middle">CONTEXT ENGINEERING</text>
+  <text class="yr"   x="480" y="170" text-anchor="middle">2024 – 2025</text>
+  <text class="lbl"  x="364" y="200">YOU ENGINEER</text>
+  <rect class="lyr1" x="405" y="210" width="150" height="13" rx="3"/>
+  <rect class="lyr2" x="405" y="227" width="150" height="13" rx="3"/>
+  <rect class="lyr3" x="405" y="244" width="150" height="13" rx="3"/>
+  <rect class="lyr4" x="405" y="261" width="150" height="13" rx="3"/>
+  <text class="cap-note" x="480" y="292" text-anchor="middle">The whole window</text>
+  <text class="lbl" x="480" y="322" text-anchor="middle">THE BOTTLENECK</text>
+  <rect class="pill-p" x="376" y="332" width="208" height="28" rx="14"/>
+  <text class="pillT" x="480" y="350" text-anchor="middle">Information</text>
+
+  <!-- ===== PANEL C: HARNESS ===== -->
+  <rect class="card3" x="636" y="108" width="276" height="272" rx="12"/>
+  <path class="band-s" d="M636 148 V120 Q636 108 648 108 H900 Q912 108 912 120 V148 Z"/>
+  <line class="rule rule-s" x1="636" y1="148" x2="912" y2="148"/>
+  <text class="capT" x="774" y="133" text-anchor="middle">HARNESS ENGINEERING</text>
+  <text class="yr"   x="774" y="170" text-anchor="middle">2026 →   (you are here)</text>
+  <text class="lbl"  x="658" y="200">YOU ENGINEER</text>
+  <path class="loop" d="M774 214 A 44 30 0 1 1 773.9 214"/>
+  <polygon points="774,214 767,209 768,219" fill="var(--ce-success)"/>
+  <rect class="modbox" x="742" y="234" width="64" height="26" rx="6"/>
+  <text class="modT" x="774" y="251" text-anchor="middle">MODEL</text>
+  <text class="cap-note" x="774" y="290" text-anchor="middle">The whole machine</text>
+  <text class="lbl" x="774" y="322" text-anchor="middle">THE BOTTLENECK</text>
+  <rect class="pill-s" x="670" y="332" width="208" height="28" rx="14"/>
+  <text class="pillT" x="774" y="350" text-anchor="middle">Autonomy &amp; control</text>
+
+  <!-- chevrons between panels -->
+  <path class="chev" d="M328 236 l9 8 l-9 8"/>
+  <path class="chev" d="M622 236 l9 8 l-9 8"/>
+
+  <text class="foot" x="48" y="416">Each era did not replace the last — it wrapped it. Prompting sits inside context engineering, which sits inside the harness.</text>
+</svg>
