@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 450" role="img" aria-labelledby="t d">
+  <title id="t">Progressive disclosure: load a skill only when the task needs it</title>
+  <desc id="d">A skill catalog on disk holds eight dormant skills — pdf, sql, browser, email, git, image, calendar, translate — costing zero tokens until loaded. Below, three turns of an agent session. On turn one the task is to read a PDF, so the pdf skill is loaded on demand; the context holds only bash, read, write, and pdf. On turn two the task is to query a database, so the sql skill is loaded. On turn three the task is to open a web page, so the browser skill is loaded. Eager loading would keep all eight schemas in the window every turn; progressive disclosure keeps about one, so the window stays small.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .cat{fill:var(--ce-ink);fill-opacity:0.03;stroke:var(--ce-border);stroke-width:1.25;}
+    .lbl{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:9.5px;fill:var(--ce-ink-muted);letter-spacing:0.08em;}
+    .chip{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .chipT{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:10px;fill:var(--ce-ink-muted);}
+    .chip-on{fill:var(--ce-accent);fill-opacity:0.14;stroke:var(--ce-accent);stroke-width:1.25;}
+    .chipT-on{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:10px;fill:var(--ce-ink);}
+    .card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .turn{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:10px;fill:var(--ce-ink-muted);letter-spacing:0.09em;}
+    .task{fill:var(--ce-bg);stroke:var(--ce-border);stroke-width:1;}
+    .taskT{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:11px;fill:var(--ce-ink);}
+    .ctx{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .load{stroke:var(--ce-accent);stroke-width:1.5;fill:none;}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11.5px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="450"/>
+  <text class="title" x="48" y="40">Progressive disclosure — load a skill only when the task needs it</text>
+  <text class="sub"   x="48" y="62">The catalog can be huge; the window stays small. Skills load on demand, not upfront.</text>
+
+  <!-- catalog -->
+  <rect class="cat" x="48" y="84" width="864" height="66" rx="12"/>
+  <text class="lbl" x="64" y="104">SKILL CATALOG · ON DISK — DORMANT, 0 TOKENS UNTIL LOADED</text>
+  <rect class="chip-on" x="64"  y="116" width="88" height="24" rx="5"/><text class="chipT-on" x="108" y="132" text-anchor="middle">pdf</text>
+  <rect class="chip-on" x="162" y="116" width="88" height="24" rx="5"/><text class="chipT-on" x="206" y="132" text-anchor="middle">sql</text>
+  <rect class="chip-on" x="260" y="116" width="88" height="24" rx="5"/><text class="chipT-on" x="304" y="132" text-anchor="middle">browser</text>
+  <rect class="chip" x="358" y="116" width="88" height="24" rx="5"/><text class="chipT" x="402" y="132" text-anchor="middle">email</text>
+  <rect class="chip" x="456" y="116" width="88" height="24" rx="5"/><text class="chipT" x="500" y="132" text-anchor="middle">git</text>
+  <rect class="chip" x="554" y="116" width="88" height="24" rx="5"/><text class="chipT" x="598" y="132" text-anchor="middle">image</text>
+  <rect class="chip" x="652" y="116" width="88" height="24" rx="5"/><text class="chipT" x="696" y="132" text-anchor="middle">calendar</text>
+  <rect class="chip" x="750" y="116" width="88" height="24" rx="5"/><text class="chipT" x="794" y="132" text-anchor="middle">translate</text>
+
+  <!-- load-on-demand arrows -->
+  <path class="load" d="M108 140 L111 300"/>
+  <polygon points="111,306 107,297 116,298" fill="var(--ce-accent)"/>
+  <path class="load" d="M206 140 L406 300"/>
+  <polygon points="408,306 400,299 407,296" fill="var(--ce-accent)"/>
+  <path class="load" d="M304 140 L703 300"/>
+  <polygon points="705,306 697,298 703,295" fill="var(--ce-accent)"/>
+
+  <!-- turn cards -->
+  <!-- turn 1 -->
+  <rect class="card" x="48" y="214" width="270" height="182" rx="12"/>
+  <text class="turn" x="66" y="238">TURN 1</text>
+  <rect class="task" x="66" y="248" width="234" height="26" rx="6"/><text class="taskT" x="78" y="265">"read this PDF"</text>
+  <text class="lbl" x="66" y="300">LOADS ON DEMAND</text>
+  <rect class="chip-on" x="66" y="308" width="90" height="24" rx="5"/><text class="chipT-on" x="111" y="324" text-anchor="middle">pdf</text>
+  <text class="lbl" x="66" y="356">IN CONTEXT THIS TURN</text>
+  <text class="ctx" x="66" y="374">bash · read · write · pdf</text>
+
+  <!-- turn 2 -->
+  <rect class="card" x="345" y="214" width="270" height="182" rx="12"/>
+  <text class="turn" x="363" y="238">TURN 2</text>
+  <rect class="task" x="363" y="248" width="234" height="26" rx="6"/><text class="taskT" x="375" y="265">"query the DB"</text>
+  <text class="lbl" x="363" y="300">LOADS ON DEMAND</text>
+  <rect class="chip-on" x="363" y="308" width="90" height="24" rx="5"/><text class="chipT-on" x="408" y="324" text-anchor="middle">sql</text>
+  <text class="lbl" x="363" y="356">IN CONTEXT THIS TURN</text>
+  <text class="ctx" x="363" y="374">bash · read · write · sql</text>
+
+  <!-- turn 3 -->
+  <rect class="card" x="642" y="214" width="270" height="182" rx="12"/>
+  <text class="turn" x="660" y="238">TURN 3</text>
+  <rect class="task" x="660" y="248" width="234" height="26" rx="6"/><text class="taskT" x="672" y="265">"open the page"</text>
+  <text class="lbl" x="660" y="300">LOADS ON DEMAND</text>
+  <rect class="chip-on" x="660" y="308" width="90" height="24" rx="5"/><text class="chipT-on" x="705" y="324" text-anchor="middle">browser</text>
+  <text class="lbl" x="660" y="356">IN CONTEXT THIS TURN</text>
+  <text class="ctx" x="660" y="374">bash · read · write · browser</text>
+
+  <text class="foot" x="48" y="428">Eager loading keeps all 8 schemas in the window every turn. Progressive disclosure keeps ≈ 1 — the window stays small.</text>
+</svg>
