@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 472" role="img" aria-labelledby="t d">
+  <title id="t">A few general-purpose tools beat a zoo of narrow bespoke tools</title>
+  <desc id="d">Two panels. On the left, the tool zoo: about fifty narrow tools such as read_file, write_file, list_dir, grep, sed, find, and many more — with a large combined schema, overlapping and redundant tools, fifty choices for the model, and more surface to misuse. On the right, a few general tools: bash, python, read_file, and write_file — with a tiny schema, the ability to compose anything, patterns the model was trained on, and one surface to sandbox. The takeaway is that ten focused tools beat fifty overlapping ones, and every tool schema is tokens the model reads on every call.</desc>
+
+  <style><![CDATA[
+    :root{--ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;--ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;}
+    @media (prefers-color-scheme:dark){:root{--ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;--ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;}}
+    .bg{fill:var(--ce-bg);}
+    .title{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:21px;fill:var(--ce-ink);}
+    .sub{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:12.5px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.25;}
+    .hz{fill:var(--ce-alert);fill-opacity:0.14;stroke:var(--ce-alert);stroke-width:1.25;}
+    .hg{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.25;}
+    .hzT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-alert);letter-spacing:0.05em;}
+    .hgT{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:11px;fill:var(--ce-success);letter-spacing:0.05em;}
+    .chip{fill:var(--ce-bg);stroke:var(--ce-border);stroke-width:1;}
+    .chipT{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;font-size:10px;fill:var(--ce-ink-muted);}
+    .big{fill:var(--ce-surface);stroke:var(--ce-success);stroke-width:1.5;}
+    .bigT{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .more{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:11px;fill:var(--ce-ink-muted);}
+    .con{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+    .pro{font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:11px;fill:var(--ce-ink-muted);}
+    .foot{font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="472"/>
+  <text class="title" x="48" y="40">A few general tools beat a zoo of narrow ones</text>
+  <text class="sub"   x="48" y="62">Give the model general-purpose tools and let it compose. Every schema is tokens it reads on every call.</text>
+
+  <!-- LEFT: the zoo -->
+  <rect class="panel" x="48" y="86" width="416" height="316" rx="12"/>
+  <rect class="hz" x="66" y="102" width="204" height="24" rx="12"/>
+  <text class="hzT" x="80" y="118">THE TOOL ZOO · ~50 NARROW</text>
+
+  <!-- grid of 16 chips + more -->
+  <g>
+    <rect class="chip" x="66"  y="140" width="86" height="22" rx="4"/><text class="chipT" x="109" y="155" text-anchor="middle">read_file</text>
+    <rect class="chip" x="160" y="140" width="86" height="22" rx="4"/><text class="chipT" x="203" y="155" text-anchor="middle">write_file</text>
+    <rect class="chip" x="254" y="140" width="86" height="22" rx="4"/><text class="chipT" x="297" y="155" text-anchor="middle">list_dir</text>
+    <rect class="chip" x="348" y="140" width="86" height="22" rx="4"/><text class="chipT" x="391" y="155" text-anchor="middle">grep</text>
+    <rect class="chip" x="66"  y="170" width="86" height="22" rx="4"/><text class="chipT" x="109" y="185" text-anchor="middle">sed</text>
+    <rect class="chip" x="160" y="170" width="86" height="22" rx="4"/><text class="chipT" x="203" y="185" text-anchor="middle">find</text>
+    <rect class="chip" x="254" y="170" width="86" height="22" rx="4"/><text class="chipT" x="297" y="185" text-anchor="middle">cat</text>
+    <rect class="chip" x="348" y="170" width="86" height="22" rx="4"/><text class="chipT" x="391" y="185" text-anchor="middle">head</text>
+    <rect class="chip" x="66"  y="200" width="86" height="22" rx="4"/><text class="chipT" x="109" y="215" text-anchor="middle">tail</text>
+    <rect class="chip" x="160" y="200" width="86" height="22" rx="4"/><text class="chipT" x="203" y="215" text-anchor="middle">mkdir</text>
+    <rect class="chip" x="254" y="200" width="86" height="22" rx="4"/><text class="chipT" x="297" y="215" text-anchor="middle">mv</text>
+    <rect class="chip" x="348" y="200" width="86" height="22" rx="4"/><text class="chipT" x="391" y="215" text-anchor="middle">cp</text>
+    <rect class="chip" x="66"  y="230" width="86" height="22" rx="4"/><text class="chipT" x="109" y="245" text-anchor="middle">rm</text>
+    <rect class="chip" x="160" y="230" width="86" height="22" rx="4"/><text class="chipT" x="203" y="245" text-anchor="middle">chmod</text>
+    <rect class="chip" x="254" y="230" width="86" height="22" rx="4"/><text class="chipT" x="297" y="245" text-anchor="middle">curl</text>
+    <rect class="chip" x="348" y="230" width="86" height="22" rx="4"/><text class="chipT" x="391" y="245" text-anchor="middle">jq</text>
+  </g>
+  <text class="more" x="66" y="268">+ 34 more…</text>
+
+  <line x1="66" y1="286" x2="446" y2="286" stroke="var(--ce-border)" stroke-width="1"/>
+  <text class="con" x="66" y="308">— huge combined schema (tokens every call)</text>
+  <text class="con" x="66" y="326">— overlapping &amp; redundant; hard to choose</text>
+  <text class="con" x="66" y="344">— 50 ways to be misused; 50 to sandbox</text>
+  <text class="con" x="66" y="362">— the model half-knows each one</text>
+
+  <!-- RIGHT: general tools -->
+  <rect class="panel" x="496" y="86" width="416" height="316" rx="12"/>
+  <rect class="hg" x="514" y="102" width="176" height="24" rx="12"/>
+  <text class="hgT" x="528" y="118">A FEW GENERAL TOOLS</text>
+
+  <rect class="big" x="514" y="146" width="180" height="46" rx="8"/><text class="bigT" x="604" y="174" text-anchor="middle">bash</text>
+  <rect class="big" x="714" y="146" width="180" height="46" rx="8"/><text class="bigT" x="804" y="174" text-anchor="middle">python</text>
+  <rect class="big" x="514" y="204" width="180" height="46" rx="8"/><text class="bigT" x="604" y="232" text-anchor="middle">read_file</text>
+  <rect class="big" x="714" y="204" width="180" height="46" rx="8"/><text class="bigT" x="804" y="232" text-anchor="middle">write_file</text>
+  <text class="more" x="514" y="272">bash + python compose everything on the left.</text>
+
+  <line x1="514" y1="286" x2="894" y2="286" stroke="var(--ce-border)" stroke-width="1"/>
+  <text class="pro" x="514" y="308">+ tiny schema (cheap every call)</text>
+  <text class="pro" x="514" y="326">+ compose anything; nothing to choose between</text>
+  <text class="pro" x="514" y="344">+ patterns the model was trained on</text>
+  <text class="pro" x="514" y="362">+ one surface to sandbox (Post 14)</text>
+
+  <rect x="48" y="420" width="864" height="34" rx="8" fill="var(--ce-primary)" fill-opacity="0.08" stroke="var(--ce-primary)" stroke-width="1"/>
+  <text class="foot" x="64" y="441">Ten focused tools beat fifty overlapping ones — and one general surface is far easier to make safe than fifty narrow ones.</text>
+</svg>
