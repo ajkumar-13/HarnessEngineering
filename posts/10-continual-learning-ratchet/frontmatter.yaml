@@ -1,0 +1,35 @@
+slug: 10-continual-learning-ratchet
+title: "10 · Continual learning & the ratchet — every mistake becomes a rule"
+
+description: >
+  The model does not learn between sessions: its weights are frozen and it remembers
+  nothing. But the harness can learn, by writing what it discovers to a file the next
+  session reads.
+
+author: "Ajay"
+date: 2026-07-24
+last_modified: 2026-09-05
+
+tags: [harness-engineering, primitives, memory, ratchet, continual-learning]
+
+keywords:
+  - harness engineering
+  - primitives
+  - memory
+  - ratchet
+  - continual learning
+  - memory file
+
+category: Core primitives
+series: Harness Engineering
+part: "Part II — Core Primitives"
+
+hero: diagrams/01-ratchet-mechanism.svg
+hero_alt: "The ratchet mechanism: a failure (the agent shipped a skipped test) fanning into three durable constraints: a memory-file line, a hook, and a reviewer check."
+
+reading_time: 25
+toc: true
+draft: false
+canonical_url: ""
+prev: ../09-context-management-loop/
+next: ../11-verification-loops/

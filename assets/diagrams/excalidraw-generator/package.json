@@ -1,0 +1,45 @@
+{
+  "name": "he-excalidraw-generator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Generates the hand-drawn Excalidraw companions to the Harness Engineering series diagrams",
+  "scripts": {
+    "build:01": "node post01.js ../../../posts/01-from-context-to-harness/diagrams/excalidraw",
+    "build:02": "node post02.js ../../../posts/02-anatomy-of-a-harness/diagrams/excalidraw",
+    "build:03": "node post03.js ../../../posts/03-the-agent-loop/diagrams/excalidraw",
+    "build:04": "node post04.js ../../../posts/04-harness-beats-model/diagrams/excalidraw",
+    "build:05": "node post05.js ../../../posts/05-agent-failure-modes/diagrams/excalidraw",
+    "build:06": "node post06.js ../../../posts/06-tools-bash-code/diagrams/excalidraw",
+    "build:07": "node post07.js ../../../posts/07-skills-mcp-runtime/diagrams/excalidraw",
+    "build:08": "node post08.js ../../../posts/08-state-filesystem-git/diagrams/excalidraw",
+    "build:09": "node post09.js ../../../posts/09-context-management-loop/diagrams/excalidraw",
+    "build:10": "node post10.js ../../../posts/10-continual-learning-ratchet/diagrams/excalidraw",
+    "build:11": "node post11.js ../../../posts/11-verification-loops/diagrams/excalidraw",
+    "build:12": "node post12.js ../../../posts/12-planner-generator-evaluator/diagrams/excalidraw",
+    "build:13": "node post13.js ../../../posts/13-hooks-enforcement/diagrams/excalidraw",
+    "build:14": "node post14.js ../../../posts/14-permissions-sandboxes/diagrams/excalidraw",
+    "build:15": "node post15.js ../../../posts/15-human-in-the-loop/diagrams/excalidraw",
+    "build:16": "node post16.js ../../../posts/16-multi-agent-orchestration/diagrams/excalidraw",
+    "build:17": "node post17.js ../../../posts/17-parallel-agents-shared-repo/diagrams/excalidraw",
+    "build:18": "node post18.js ../../../posts/18-long-horizon-ralph/diagrams/excalidraw",
+    "build:19": "node post19.js ../../../posts/19-loop-engineering/diagrams/excalidraw",
+    "build:20": "node post20.js ../../../posts/20-sdk-landscape/diagrams/excalidraw",
+    "build:21": "node post21.js ../../../posts/21-observability-traces/diagrams/excalidraw",
+    "build:22": "node post22.js ../../../posts/22-evaluating-harnesses/diagrams/excalidraw",
+    "build:23": "node post23.js ../../../posts/23-economics-haas/diagrams/excalidraw",
+    "build:24": "node post24.js ../../../posts/24-build-minimal-harness/diagrams/excalidraw",
+    "build:25": "node post25.js ../../../posts/25-build-harness-plus/diagrams/excalidraw",
+    "build:26": "node post26.js ../../../posts/26-capstone-coding-agent/diagrams/excalidraw",
+    "build:poster": "node poster.js ../../../poster",
+    "build:animations": "node animations.js ../../animations",
+    "render": "node render-scene.js",
+    "preview": "node preview.js",
+    "publish": "node publish.js"
+  },
+  "dependencies": {
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

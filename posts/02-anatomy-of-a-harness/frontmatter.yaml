@@ -1,7 +1,41 @@
 slug: 02-anatomy-of-a-harness
 title: "02 · The anatomy of a harness"
+
+description: >
+  A harness looks amorphous, just "everything around the model," until you name its parts.
+  Almost every production harness is built from the same eleven components, organised
+  around one core: the agent loop.
+
+author: "Ajay"
 date: 2026-07-08
+last_modified: 2026-09-05
+
 tags: [harness-engineering, foundations, architecture]
-hero: diagrams/01-harness-anatomy.svg
-reading_time: 13
+
+keywords:
+  - harness engineering
+  - foundations
+  - architecture
+  - agent loop
+  - necessary and sufficient
+  - tool-output offloading
+  - context resets
+  - ratchet principle
+  - four times
+  - fifteen times
+  - loop engineering
+  - input layer
+
+category: Foundations
+series: Harness Engineering
 part: "Part I — Foundations"
+
+hero: diagrams/01-harness-anatomy.svg
+hero_alt: "The anatomy of a harness: a central agent loop driving the model through reason, act, and observe, flanked by four components that feed the model, four that govern it, and two that operate at larger scale."
+
+reading_time: 28
+toc: true
+draft: false
+canonical_url: ""
+prev: ../01-from-context-to-harness/
+next: ../03-the-agent-loop/

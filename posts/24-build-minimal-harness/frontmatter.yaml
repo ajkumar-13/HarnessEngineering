@@ -1,0 +1,34 @@
+slug: 24-build-minimal-harness
+title: "24 · Build #1 — a minimal agent harness from scratch"
+
+description: >
+  A real, useful harness is about five hundred lines once you have internalised Parts I to
+  IV. This post assembles one from four primitives already covered: the agent loop, a
+  schema-validated tool registry, a verification gate, and layered stop conditions.
+
+author: "Ajay"
+date: 2026-09-30
+last_modified: 2026-09-05
+
+tags: [harness-engineering, builds, from-scratch, loop, verification]
+
+keywords:
+  - harness engineering
+  - builds
+  - from scratch
+  - loop
+  - verification
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-minimal-architecture.svg
+hero_alt: "A block diagram of Build #1: the loop at the centre calls the model and dispatches tool calls through a schema-validated registry to a bash and a write-file tool; a candidate final answer goes to a verification gate that either finishes the run as verified or injects a failure report back into the loop, with four layered stop conditions around it."
+
+reading_time: 39
+toc: true
+draft: false
+canonical_url: ""
+prev: ../23-economics-haas/
+next: ../25-build-harness-plus/

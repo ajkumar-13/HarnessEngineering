@@ -1,0 +1,40 @@
+slug: 08-state-filesystem-git
+title: "08 · State & the filesystem — durable memory and git as state"
+
+description: >
+  The model is stateless, and the window it reads each turn is volatile, expensive, and
+  small relative to the work: smaller in practice than the number on the box, because
+  accuracy falls well before the nominal limit. The filesystem is the opposite (effectively
+  unbounded, durable, and cheap), which makes it the harness's natural extension of memory:
+  a place to write plans, offload big tool outputs, and pass work between steps.
+
+author: "Ajay"
+date: 2026-07-20
+last_modified: 2026-09-05
+
+tags: [harness-engineering, primitives, state, filesystem, git]
+
+keywords:
+  - harness engineering
+  - primitives
+  - state
+  - filesystem
+  - git
+  - handoff file
+  - inter-step bus
+  - handoff artefact
+  - context reset
+
+category: Core primitives
+series: Harness Engineering
+part: "Part II — Core Primitives"
+
+hero: diagrams/01-filesystem-durable-state.svg
+hero_alt: "The context window on the left (small, volatile, expensive) and a durable store on the right holding a filesystem and a git commit ladder, connected by write/read and commit/revert arrows."
+
+reading_time: 27
+toc: true
+draft: false
+canonical_url: ""
+prev: ../07-skills-mcp-runtime/
+next: ../09-context-management-loop/

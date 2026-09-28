@@ -1,0 +1,41 @@
+slug: 17-parallel-agents-shared-repo
+title: "17 · Parallel agents on a shared repo — worktrees and task-claiming"
+
+description: >
+  Many agents can work one codebase in parallel without a central orchestrator. They claim
+  tasks via files (an exclusive create, so two agents never get the same task) and isolate
+  their edits in git worktrees (one working copy per agent, so parallel changes never
+  collide).
+
+author: "Ajay"
+date: 2026-08-21
+last_modified: 2026-09-05
+
+tags: [harness-engineering, scale, parallel-agents, worktrees, git]
+
+keywords:
+  - harness engineering
+  - scale
+  - parallel agents
+  - worktrees
+  - git
+  - claim tasks via files
+  - shared repository
+  - exclusive create
+  - git worktree
+  - semantic conflict
+  - at-least-once execution
+
+category: Scale and orchestration
+series: Harness Engineering
+part: "Part IV — Scale & Orchestration"
+
+hero: diagrams/01-shared-repo-swarm.svg
+hero_alt: "A task board of files in open, claimed, and done states, with three agents each claiming a task by an exclusive create, and no central orchestrator."
+
+reading_time: 34
+toc: true
+draft: false
+canonical_url: ""
+prev: ../16-multi-agent-orchestration/
+next: ../18-long-horizon-ralph/

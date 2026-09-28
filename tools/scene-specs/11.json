@@ -1,0 +1,36 @@
+{
+  "num": "11",
+  "slug": "11-verification-loops",
+  "example": "03-verifier-ladder",
+  "lede": "Three **published figures**, all hand-drawn. Section 2 ranks the kinds of ground truth\nand section 6 says how often to run each; those are the same table seen from two sides, and\nneither section had a figure.",
+  "scenes": [
+    [
+      "01-verification-gate",
+      "960 x 560",
+      "published",
+      "A gate on the loop exit: pass and the run ends verified, fail and the report re-enters the loop."
+    ],
+    [
+      "02-compounding-vs-failfast",
+      "960 x 612",
+      "published",
+      "Section 5: the same five-step task with and without a per-step check."
+    ],
+    [
+      "03-verifier-ladder",
+      "960 x 490",
+      "published",
+      "Sections 2, 3 and 6: five verifiers with their cost, whether they can be wrong, and how often to run each."
+    ]
+  ],
+  "notes": [
+    "- **The dashed line is the figure.** The rows are ordered by strength, but the line is drawn on",
+    "  a different question: can this verifier be wrong? Above it a failure is a fact; below it a",
+    "  verdict is an opinion that can fail in the direction the agent would prefer.",
+    "- **Self-critique is on the drawing at all**, which a ladder of \"ground truth\" would exclude.",
+    "  Section 3 argues it is worth a first pass and never the last word, and that is a position on",
+    "  the table rather than an absence from it.",
+    "- **`02-compounding-vs-failfast` colours only the failing rows.** The right-hand panel has one",
+    "  coloured row out of five, which is the whole economic argument: the blast radius is one step."
+  ]
+}

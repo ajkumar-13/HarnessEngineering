@@ -1,0 +1,42 @@
+slug: 20-sdk-landscape
+title: "20 · The SDK & framework landscape — Agent SDK, LangGraph, and peers"
+
+description: >
+  You rarely build a harness fully from scratch in production. An agent software
+  development kit (SDK) is a prebuilt harness: it ships the loop, tools, context
+  management, hooks and permissions of Parts I to III, plus the sub-agents of Post 16 and
+  some of the observability of Post 21, and you supply the custom layer.
+
+author: "Ajay"
+date: 2026-09-02
+last_modified: 2026-09-05
+
+tags: [harness-engineering, scale, sdk, frameworks, build-vs-buy]
+
+keywords:
+  - harness engineering
+  - scale
+  - sdk
+  - frameworks
+  - build vs buy
+  - prebuilt harness
+  - custom layer
+  - durable state and resumability
+  - resolution order
+  - cost per resolved task
+  - service you call
+  - agent cards
+
+category: Scale and orchestration
+series: Harness Engineering
+part: "Part IV — Scale & Orchestration"
+
+hero: diagrams/01-sdk-feature-matrix.svg
+hero_alt: "An illustrative feature matrix: six harness components against the Claude Agent SDK, the OpenAI Agents SDK, LangGraph, and rolling your own, with built-in, partial, and build-it-yourself marks."
+
+reading_time: 28
+toc: true
+draft: false
+canonical_url: ""
+prev: ../19-loop-engineering/
+next: ../21-observability-traces/

@@ -1,0 +1,43 @@
+slug: 21-observability-traces
+title: "21 · Observability & trace-driven repair — seeing what the harness did"
+
+description: >
+  You cannot improve a harness you cannot see. A production run takes dozens of model
+  calls and tool calls, and when one goes wrong the useful question is never "is the model
+  bad": it is which component failed, on which step, and why. The answer lives in a trace,
+  a tree of timed, nested spans covering every iteration, model call, tool call and
+  sub-agent.
+
+author: "Ajay"
+date: 2026-09-09
+last_modified: 2026-09-05
+
+tags: [harness-engineering, production, observability, tracing, opentelemetry]
+
+keywords:
+  - harness engineering
+  - production
+  - observability
+  - tracing
+  - opentelemetry
+  - long and nested
+  - at the boundary
+  - no no-progress detection
+  - separate root trace
+  - wrong iteration
+  - span link
+  - analysis agent
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-trace-tree.svg
+hero_alt: "A waterfall of nested spans for one agent run: a root agent.run span over three iterations, each with a model call and a tool call, a slow bash span flagged in iteration two, a sub-agent span in iteration three, and a passing verify gate that ends the run with the stop reason verified."
+
+reading_time: 33
+toc: true
+draft: false
+canonical_url: ""
+prev: ../20-sdk-landscape/
+next: ../22-evaluating-harnesses/

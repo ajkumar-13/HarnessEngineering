@@ -1,0 +1,38 @@
+{
+  "num": "08",
+  "slug": "08-state-filesystem-git",
+  "example": "03-where-state-belongs",
+  "lede": "Three **published figures**, all hand-drawn. Sections 5 and 6 are the ones a reader has\nto apply, and they are the same decision stated twice: state has a right place, decided by\n*when* it is needed rather than by how big it is.",
+  "scenes": [
+    [
+      "01-filesystem-durable-state",
+      "960 x 560",
+      "published",
+      "The small volatile window beside a durable filesystem under git, with commit as checkpoint and revert as rollback."
+    ],
+    [
+      "02-handoff-lifecycle",
+      "960 x 588",
+      "published",
+      "Section 4: one file carrying spec, progress and next steps across a context reset."
+    ],
+    [
+      "03-where-state-belongs",
+      "960 x 470",
+      "published",
+      "Sections 5 and 6: which state goes where, and the two mirror-image mistakes."
+    ]
+  ],
+  "notes": [
+    "- **The window in `01-filesystem-durable-state` is drawn small, and says so.** The figure is",
+    "  about a size asymmetry, and a window box the same size as the disk box would quietly deny the",
+    "  argument it is illustrating.",
+    "- **`03-where-state-belongs` sorts by timing, not by size.** A one-line rule the model must",
+    "  honour every turn belongs in the window although it is tiny; a small intermediate result",
+    "  nobody reads again belongs on disk. Sorting by size is the proxy that produces both mistakes,",
+    "  which is why the axis is labelled with *when*.",
+    "- **The two mistakes are drawn as a pair, at equal weight.** The over-correction is as common",
+    "  as the original error and gets the same amount of ink, which a bulleted list under a single",
+    "  \"anti-patterns\" heading does not manage."
+  ]
+}

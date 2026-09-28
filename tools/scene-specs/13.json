@@ -1,0 +1,38 @@
+{
+  "num": "13",
+  "slug": "13-hooks-enforcement",
+  "example": "01-hook-lifecycle",
+  "lede": "Three **published figures**. One of them *replaces* a clean vector rather than restating it, and it is the only figure in the series that does: the old one was wrong.",
+  "scenes": [
+    [
+      "01-hook-lifecycle",
+      "960 x 500",
+      "published",
+      "The four points, each marked by whether it can block, supply, or only report."
+    ],
+    [
+      "02-blocked-command",
+      "960 x 616",
+      "published",
+      "A pre-tool deny-list stopping a destructive command before it reaches the shell."
+    ],
+    [
+      "03-gates-and-reports",
+      "960 x 460",
+      "published",
+      "Section 3: the gate and the report as two signatures with two composition rules."
+    ]
+  ],
+  "notes": [
+    "- **`01-hook-lifecycle` was redrawn because the old one made a claim the post now corrects.**",
+    "  The clean vector labelled the post-edit hook \"(can reject)\"; a post-tool hook surfaces a",
+    "  message to the model and cannot undo the write. It also drew three lifecycle points where the",
+    "  post names four. The sketch is drawn to the corrected prose and promoted over it.",
+    "- **The power of each point is written in words on a pill, not carried by colour.** The four",
+    "  hues are there to link the bar on the loop to its card; \"CAN BLOCK THE CALL\" against",
+    "  \"REPORTS ONLY\" is what a reader actually needs, and it survives a greyscale print.",
+    "- **`03-gates-and-reports` puts the composition rule next to the return type**, because one",
+    "  causes the other: a verdict has a first-match short circuit, a finding does not, and a hook",
+    "  system that shares one type between them will get exactly that wrong."
+  ]
+}

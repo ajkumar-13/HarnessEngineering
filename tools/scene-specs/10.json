@@ -1,0 +1,36 @@
+{
+  "num": "10",
+  "slug": "10-continual-learning-ratchet",
+  "example": "03-life-of-a-rule",
+  "lede": "Three **published figures**, all hand-drawn. Both existing figures draw the ratchet\n*working*. Neither draws what the post spends its added length on: that a rule has to be earned\nbefore it becomes permanent, and watched afterwards.",
+  "scenes": [
+    [
+      "01-ratchet-mechanism",
+      "960 x 640",
+      "published",
+      "One failure fanning into three independent constraints: a memory line, a hook, and a reviewer check."
+    ],
+    [
+      "02-ratchet-over-time",
+      "960 x 588",
+      "published",
+      "Section 6: a staircase of reliability, one step per failure, that only climbs."
+    ],
+    [
+      "03-life-of-a-rule",
+      "960 x 470",
+      "published",
+      "Sections 3, 5 and 7: the five stages a rule passes through, from failure to a signal that it still works."
+    ]
+  ],
+  "notes": [
+    "- **`03-life-of-a-rule` puts the three teeth in the middle, not at the end.** Step 4 is the",
+    "  part everyone already implements; the argument of the post is that steps 2, 3 and 5 are what",
+    "  decide whether the mechanism accumulates knowledge or folklore.",
+    "- **The flow wraps rather than compressing into five narrow columns.** Five columns across 960",
+    "  would leave about 150px each, which is not enough for a rule you can actually read, and the",
+    "  rules in step 3 are the ones a reader is most likely to copy.",
+    "- **`02-ratchet-over-time` marks each riser with a dot and a rule.** The staircase alone would",
+    "  say \"it goes up\"; the dots say what each rise was bought with, which is the whole claim."
+  ]
+}

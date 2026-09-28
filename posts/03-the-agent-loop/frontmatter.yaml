@@ -1,7 +1,37 @@
 slug: 03-the-agent-loop
 title: "03 · The agent loop — ReAct, control loops, and stopping"
+
+description: >
+  At its core, a harness is a loop: the model reasons, the harness runs the tool it asked
+  for, feeds the result back, and calls the model again: reason → act → observe, repeated.
+  The model itself is stateless; the loop is what carries the conversation forward.
+
+author: "Ajay"
 date: 2026-07-10
+last_modified: 2026-09-05
+
 tags: [harness-engineering, foundations, agent-loop, react]
-hero: diagrams/01-agent-loop.svg
-reading_time: 13
+
+keywords:
+  - harness engineering
+  - foundations
+  - agent loop
+  - react
+  - stop conditions
+  - no memory between calls
+  - when to stop
+  - interrupted mid-turn
+
+category: Foundations
+series: Harness Engineering
 part: "Part I — Foundations"
+
+hero: diagrams/01-agent-loop.svg
+hero_alt: "The agent loop: a user task enters REASON, which either calls a tool (ACT then OBSERVE, looping back) or returns a final answer; a side panel lists the four stop conditions the loop checks each turn."
+
+reading_time: 27
+toc: true
+draft: false
+canonical_url: ""
+prev: ../02-anatomy-of-a-harness/
+next: ../04-harness-beats-model/

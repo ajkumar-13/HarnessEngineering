@@ -1,0 +1,38 @@
+{
+  "num": "02",
+  "slug": "02-anatomy-of-a-harness",
+  "example": "03-prebuilt-vs-custom",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 carries the post's most practical\nclaim -- that most of the map is inherited, and the leverage sits in the layer you add -- and it\nwas running on two bullet points and no picture.",
+  "scenes": [
+    [
+      "01-harness-anatomy",
+      "960 x 560",
+      "published",
+      "The map: one loop at the core, four components that feed the model, four that govern it, two at larger scale."
+    ],
+    [
+      "02-layered-harness",
+      "960 x 636",
+      "published",
+      "Section 7: the same eleven components regrouped as the six layers of a shipping system."
+    ],
+    [
+      "03-prebuilt-vs-custom",
+      "960 x 634",
+      "published",
+      "Section 6: what the SDK ships against what your team adds, and the three components that sit on both sides."
+    ]
+  ],
+  "notes": [
+    "- **`01-harness-anatomy`.** The loop sits in a taller box than any component card, and the stop",
+    "  conditions get their own ruled-off block inside it. Both are deliberate: the post's claim is",
+    "  that the loop is the core rather than one item in a list of eleven, and that most bugs live in",
+    "  the stopping rather than the reasoning.",
+    "- **`03-prebuilt-vs-custom`.** Rows two, four, and five line up across the seam because tools",
+    "  (02), hooks (07), and permissions (08) genuinely appear on both sides. The prose lists them in",
+    "  two separate bullets and leaves the overlap implicit; the figure is where it becomes visible,",
+    "  which is the reason this one was worth drawing.",
+    "- **The numbers are the component index**, shared with `01-harness-anatomy` and with the post",
+    "  numbers in section 8, so a badge in one figure means the same thing in the other."
+  ]
+}

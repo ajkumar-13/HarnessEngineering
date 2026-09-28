@@ -1,0 +1,38 @@
+slug: 26-capstone-coding-agent
+title: "26 · Capstone — a long-running, trusted coding-agent harness"
+
+description: >
+  This is the whole series in one machine: a coding agent that takes a spec, runs it to
+  completion across many fresh contexts, separates planning from generation from
+  evaluation, learns from each failure, meters its own cost, and records everything it
+  does.
+
+author: "Ajay"
+date: 2026-10-14
+last_modified: 2026-09-05
+
+tags: [harness-engineering, builds, capstone, long-horizon, coding-agent]
+
+keywords:
+  - harness engineering
+  - builds
+  - capstone
+  - long horizon
+  - coding agent
+  - independent evaluator
+  - approval gate
+  - cost meter
+  - initialiser agent
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-capstone-architecture.svg
+hero_alt: "The full capstone architecture: a spec feeds a Ralph driver that runs each task through planner, generator, and independent evaluator; tool calls pass through hooks, sandbox, and approval; the workspace and ratchet persist across tasks; a tracer and cost meter run throughout; and traces feed an evaluation-and-fix improvement loop."
+
+reading_time: 43
+toc: true
+draft: false
+canonical_url: ""
+prev: ../25-build-harness-plus/

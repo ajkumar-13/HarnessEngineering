@@ -1,0 +1,20 @@
+[project]
+name = "hooks"
+version = "0.1.0"
+description = "A pre-tool deny-list and post-edit checks that gate an agent run — companion to Harness Engineering Post 13."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hook_system"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

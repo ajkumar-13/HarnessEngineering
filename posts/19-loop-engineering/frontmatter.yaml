@@ -1,0 +1,40 @@
+slug: 19-loop-engineering
+title: "19 · Loop engineering — designing the loop that prompts the agent"
+
+description: >
+  The 2026 shift is from prompting the agent to designing the loop that prompts it for
+  you. A well-engineered loop carries layered exits so it stops for the right reason: the
+  verifier confirms the goal, or a hard iteration cap, a token/time budget, or no-progress
+  detection catches it first.
+
+author: "Ajay"
+date: 2026-08-29
+last_modified: 2026-09-05
+
+tags: [harness-engineering, scale, loop-engineering, stop-conditions, control]
+
+keywords:
+  - harness engineering
+  - scale
+  - loop engineering
+  - stop conditions
+  - control
+  - layered exits
+  - loop itself
+  - fixed per-task share
+  - iteration boundary
+  - fresh context
+
+category: Scale and orchestration
+series: Harness Engineering
+part: "Part IV — Scale & Orchestration"
+
+hero: diagrams/01-layered-exits.svg
+hero_alt: "The agent loop with four layered exits checked in order: verifier confirms the goal, hard max-iterations, token/time budget, and no-progress detection, any of which stops the loop with a reason."
+
+reading_time: 26
+toc: true
+draft: false
+canonical_url: ""
+prev: ../18-long-horizon-ralph/
+next: ../20-sdk-landscape/

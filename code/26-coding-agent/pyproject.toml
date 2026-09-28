@@ -1,0 +1,21 @@
+[project]
+name = "coding-agent"
+version = "0.1.0"
+description = "Capstone — a long-running, trusted coding-agent harness: Ralph driver + planner/generator/evaluator + ratchet + tracing + cost ceiling. Companion to Harness Engineering Post 26."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.40"]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/coding_agent"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

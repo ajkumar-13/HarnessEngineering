@@ -1,0 +1,37 @@
+slug: 15-human-in-the-loop
+title: "15 · Human-in-the-loop — approvals, interventions, async feedback"
+
+description: >
+  Full autonomy is rarely the goal; the useful question is where on the autonomy spectrum
+  each action belongs. The harness decides which actions a human must approve (the
+  irreversible and the publicly visible ones), how a human can interrupt a run in flight,
+  and how feedback re-enters the loop without making the human a bottleneck.
+
+author: "Ajay"
+date: 2026-08-13
+last_modified: 2026-09-05
+
+tags: [harness-engineering, control, human-in-the-loop, approvals, oversight]
+
+keywords:
+  - harness engineering
+  - control
+  - human in the loop
+  - approvals
+  - oversight
+  - queue depth over time
+  - rubber-stamp rate
+
+category: Control and reliability
+series: Harness Engineering
+part: "Part III — Control & Reliability"
+
+hero: diagrams/01-autonomy-spectrum.svg
+hero_alt: "Four stops labelled suggest, approve, act and notify, and autonomous, arranged left to right along a single axis running from less autonomy to more autonomy, each with a one-line note on what the human does at that stop."
+
+reading_time: 30
+toc: true
+draft: false
+canonical_url: ""
+prev: ../14-permissions-sandboxes/
+next: ../16-multi-agent-orchestration/

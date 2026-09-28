@@ -1,0 +1,42 @@
+{
+  "num": "26",
+  "slug": "26-capstone-coding-agent",
+  "example": "02-multi-context-run",
+  "lede": "Three **published figures**. The capstone needs a picture of each of three things -- what the harness is made of, how state survives a context reset, and the loop that improves the harness rather than the model -- and these are those three, drawn to carry the run the companion actually produces rather than a sketch of one.",
+  "scenes": [
+    [
+      "01-capstone-architecture",
+      "960 x 470",
+      "published",
+      "Every component of the series in one harness, each card carrying the post it comes from: spec, Ralph driver, the three roles, the Build #2 gates, the two durable stores, the tracer and the cost meter."
+    ],
+    [
+      "02-multi-context-run",
+      "960 x 556",
+      "published",
+      "Section 3: three fresh windows above the line, two durable stores below it, and a dotted divider at each context reset."
+    ],
+    [
+      "03-eval-observability-loop",
+      "960 x 580",
+      "published",
+      "Section 7: run, evaluate, localise, ratchet, and a dashed return leg back to the run, with the model fixed the whole way round."
+    ]
+  ],
+  "notes": [
+    "- **`01-capstone-architecture` labels every card with the post it comes from.** The capstone's",
+    "  job is to be a map back into the series, so a card that says only what it does is doing half",
+    "  the work; the post number is the other half.",
+    "- **`02-multi-context-run` puts the discard line across the whole canvas.** The three task",
+    "  cards are dashed because they are temporary and the two stores are solid because they are not,",
+    "  but the line is what makes the claim, and it has to span everything for that to read.",
+    "- **The per-gap `reset` labels were removed after the first render.** There are 20px between",
+    "  task cards, which is not enough for a word, and the label was clipping into the next card.",
+    "  The dotted divider carries the boundary and the caption names it instead.",
+    "- **`03-eval-observability-loop` draws the return leg dashed and the forward legs solid.** The",
+    "  forward path happens inside one turn of the cycle; the return leg is the part that only",
+    "  happens because someone acts on what the traces said, and the weight difference says so.",
+    "- **The stage arrows sit in the gap, not across it.** The first render ran each arrow 34px into",
+    "  the following card, which reads as a connector drawn over a box rather than between two."
+  ]
+}

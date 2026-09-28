@@ -1,0 +1,36 @@
+{
+  "num": "14",
+  "slug": "14-permissions-sandboxes",
+  "example": "03-which-gate-fired",
+  "lede": "Three **published figures**, all hand-drawn. Section 5 is the section this post gained\nfrom finding a real bug in the Build #2 companion, and it is the one a reader is most likely to\nhave in their own harness.",
+  "scenes": [
+    [
+      "01-sandbox-boundary",
+      "960 x 578",
+      "published",
+      "The box, its five constraints, and the host system drawn deliberately out of reach."
+    ],
+    [
+      "02-injection-defence",
+      "960 x 614",
+      "published",
+      "Section 4: one injected instruction meeting four layers, each holding on its own."
+    ],
+    [
+      "03-which-gate-fired",
+      "960 x 500",
+      "published",
+      "Section 5: the outcome each gate must emit, and the bug that made one of them invisible."
+    ]
+  ],
+  "notes": [
+    "- **`03-which-gate-fired` has four rows because a naive trace has two.** A harness that tags",
+    "  spans blocked or ok collapses the middle two rows into the outer ones, and the sandbox row is",
+    "  the one that disappears -- which is exactly what happened in the Build #2 companion.",
+    "- **The fix is shown as code, at three lines.** The point of the section is that the fix is",
+    "  cheap and the omission is easy, and a paraphrase would lose both halves of that.",
+    "- **`01-sandbox-boundary` draws the host system dashed and empty of any arrow into it.** The",
+    "  crossed line is the only connection, and everything the box protects is listed on the far",
+    "  side of it, so the figure reads as a boundary rather than as a diagram of two systems."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "num": "03",
+  "slug": "03-the-agent-loop",
+  "example": "03-batch-vs-streaming",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 is the only part of the post\nthat makes a claim about *time*, and it had nothing to show it with.",
+  "scenes": [
+    [
+      "01-agent-loop",
+      "960 x 600",
+      "published",
+      "The cycle and its four exits, with the one exit that means success marked apart from the three backstops."
+    ],
+    [
+      "02-stateless-model",
+      "960 x 580",
+      "published",
+      "Section 3: the model as a stateless function beside the history the loop re-sends on every call."
+    ],
+    [
+      "03-batch-vs-streaming",
+      "960 x 550",
+      "published",
+      "Section 6: one turn on two schedules, and the bracket showing what streaming actually buys."
+    ]
+  ],
+  "notes": [
+    "- **`01-agent-loop`.** The final-answer exit is drawn in a different colour *and* leaves the",
+    "  cycle in a different direction, because colour alone should not carry the distinction. The",
+    "  three backstops live in a panel rather than on the cycle: they are not steps, they are checks.",
+    "- **`03-batch-vs-streaming`.** Both rows share one time axis and the model bar is the same",
+    "  length in each, which is the honest part: streaming does not make generation faster. The only",
+    "  thing that moves is where the harness lane starts, and the bracket measures exactly that.",
+    "- **The dashed marker is the whole figure.** It sits where the tool call becomes fully formed,",
+    "  mid-stream. Everything the post says about streaming follows from that one position, and it",
+    "  is also where the extra parsing complexity comes from."
+  ]
+}

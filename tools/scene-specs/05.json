@@ -1,0 +1,36 @@
+{
+  "num": "05",
+  "slug": "05-agent-failure-modes",
+  "example": "03-trace-signatures",
+  "lede": "Three **published figures**, all hand-drawn. Section 4 is what turns the taxonomy from a\nvocabulary into a diagnostic, because it says what each mode looks like *in a trace* -- and a\nbulleted list cannot show a shape.",
+  "scenes": [
+    [
+      "01-failure-modes-grid",
+      "960 x 596",
+      "published",
+      "The six modes as symptom and fix, one card each, with the component that closes it."
+    ],
+    [
+      "02-where-failures-strike",
+      "960 x 636",
+      "published",
+      "Section 3: the same six placed at the loop stage where each strikes."
+    ],
+    [
+      "03-trace-signatures",
+      "960 x 582",
+      "published",
+      "Section 4: the shape each mode leaves behind in a run's trace."
+    ]
+  ],
+  "notes": [
+    "- **`03-trace-signatures` draws shapes, not screenshots.** A trace excerpt would be a picture",
+    "  of one vendor's log format; the shape -- a slope, a repetition, a spike, a recurrence -- is",
+    "  what actually transfers, and it is what a reader is pattern-matching against.",
+    "- **Four of the six signatures are sequences.** Victory declaration, context anxiety, doom",
+    "  loop, and silent drift are only visible across turns or across runs, which is the figure's",
+    "  quiet argument for a per-run trace over a per-call log.",
+    "- **`02-where-failures-strike` uses a dashed ring** for the across-turns mode rather than a",
+    "  fifth box, because silent drift does not have a stage: it is the one failure that spans them."
+  ]
+}

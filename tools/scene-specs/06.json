@@ -1,0 +1,37 @@
+{
+  "num": "06",
+  "slug": "06-tools-bash-code",
+  "example": "03-schema-that-teaches",
+  "lede": "Three **published figures**, all hand-drawn. Section 3 is the section a reader will\nactually copy from, and it was four bullets of advice with nothing to copy.",
+  "scenes": [
+    [
+      "01-tool-dispatch",
+      "960 x 634",
+      "published",
+      "Validate then execute, with the invalid path returning an error observation instead of a crash."
+    ],
+    [
+      "02-universal-vs-zoo",
+      "960 x 472",
+      "published",
+      "Section 2: fifty narrow tools beside four general ones, priced by what each costs on every call."
+    ],
+    [
+      "03-schema-that-teaches",
+      "960 x 470",
+      "published",
+      "Section 3: the same tool defined twice, with the four rules numbered onto the lines they change."
+    ]
+  ],
+  "notes": [
+    "- **`03-schema-that-teaches` shows one tool, not two tools.** The comparison only works if the",
+    "  capability is identical on both sides; a different tool on the right would let the reader",
+    "  attribute the improvement to the choice of tool rather than to the schema.",
+    "- **The badges sit on the lines, not beside the panel.** Each of the four rules changed a",
+    "  specific line, and putting the number on that line is the difference between a figure and an",
+    "  illustration of a list.",
+    "- **`02-universal-vs-zoo` draws sixteen chips and says \"about thirty-four more\"** rather than",
+    "  drawing fifty. Fifty legible chips would need a canvas nobody reads; sixteen plus a count",
+    "  makes the same point and stays honest about what is drawn."
+  ]
+}

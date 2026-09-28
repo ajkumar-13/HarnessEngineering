@@ -86,9 +86,9 @@ harness-engineering/
 │   │   ├── exports/                   # Rendered SVG/PNG used by posts
 │   │   └── style/                     # Shared palette/typography tokens (imported from the CE token set)
 │   ├── images/
-│   ├── animations/                    # e.g. the agent loop turning; a Ralph loop resetting context
-│   └── poster/                        # Harness-anatomy single-page SVG
+│   └── animations/                    # two animated SVGs: the loop turning, and a context reset
 │
+├── poster/                            # The single-page A2 sheet, at the repo root
 ├── posts/
 │   ├── 01-from-context-to-harness/
 │   │   ├── index.md
@@ -163,7 +163,7 @@ harness-engineering/
 Reference assets shipped alongside:
 - `GLOSSARY.md` — harness-specific terms, alphabetised, one-line definitions; **extends** (does not duplicate) the CE glossary.
 - `CHEATSHEET.md` — single page: the agent loop, the 11 harness components, the agent failure modes, the ratchet principle, a "context vs harness vs orchestration" decision tree.
-- `assets/poster/harness-anatomy.svg` — single A2-printable SVG placing every component on one canvas: loop, tools, state, sandbox, verification, hooks, permissions, orchestration, observability. Becomes the recurring "you are here" mini-map at the top of every post.
+- `poster/one-page-of-harness-engineering.svg` — single A2-printable SVG placing every component on one canvas: loop, tools, state, sandbox, verification, hooks, permissions, orchestration, observability, plus the four exits, the six failure modes, three measured costs, and the order to build them in. Lives at `poster/` in the repository root, matching the sibling series and the `build:poster` script, rather than under `assets/` as earlier drafts of this plan said.
 
 ---
 
@@ -176,7 +176,7 @@ Goal: the series should look like a small, beautifully designed book — and vis
 - **Excalidraw** for hand-feel conceptual diagrams.
 - **Mermaid** for sequence and state diagrams (the agent loop, tool-call sequences, planner/evaluator handoffs) that benefit from being source-controllable text.
 - **draw.io** only when neither fits.
-- **Animated SVG / Lottie** for one or two key moments (the loop turning; a Ralph loop resetting context to a handoff file).
+- **Animated SVG** for the two moments that are about *time* rather than shape: the loop turning, and a context reset with a handoff file. Both are built (`assets/animations/`), both are drawn with the same roughjs generator and tokens as the post figures, and both animate opacity only, inside `prefers-reduced-motion: no-preference`, over a still frame that is already the complete diagram. No Lottie: a self-contained SVG needs no runtime and degrades to the still everywhere CSS animation is unavailable.
 
 **Style tokens** (shared with CE): 1 primary, 1 accent, 3 neutrals, 1 alert; colour-blind safe. Stroke 1.5 px primary / 1 px secondary. Inter for labels, JetBrains Mono for code. Max 960 px display width, 2× retina export. Every diagram ships dark- and light-mode variants, a caption, an `alt` description, and its editable source.
 
@@ -203,6 +203,8 @@ Each spec is the brief a writer (human or agent) needs to draft the post. Format
 > **Diagrams** — what to draw.
 > **Code** — what to ship in `code/NN-…/` if any.
 > **References** — must-cite sources.
+
+> **Note (Parts I–II, as shipped):** where a post's shipped diagram or code differs from the brief below, the shipped version is canonical and the brief records the original intent. Posts 03/05/09/10 ship diagrams that differ from the drafted type but cover the same content.
 
 ### Part I — Foundations
 
@@ -411,20 +413,20 @@ Single page, printable:
 - The ratchet principle.
 - A "context engineering vs harness engineering vs orchestration" decision tree.
 
-### `assets/poster/harness-anatomy.svg`
-A single A2-printable SVG placing every component on one canvas — model, loop, tools/code, filesystem/git, sandbox, verification, hooks, permissions, memory, orchestration, observability, human-in-the-loop. Becomes the recurring "you are here" mini-map at the top of each post. Visually consistent with the CE reference-architecture poster.
+### `poster/one-page-of-harness-engineering.svg`
+A single A2-printable SVG placing every component on one canvas — model, loop, tools/code, filesystem/git, sandbox, verification, hooks, permissions, memory, orchestration, observability — together with the four exits, the six failure modes, three measured costs and the order to build them in, because a poster is read standing up and out of order. Visually consistent with the CE one-pager, and at the same 1200 by 1700. **Built**; see `poster/README.md`.
 
 ---
 
 ## 7. Style Guide (short version)
 
 Identical to the CE series, for continuity:
-- Voice: **third person, neutral, textbook**. Never "I", never "we" except in code-along sections.
+- Voice: **neutral, textbook**. Second-person "you" is fine when it addresses the reader directly; avoid "I" and "we" (outside an explicit code-along) and any marketing tone.
 - Sentences: short. Paragraphs: 2–4 sentences.
 - Define every acronym on first use, in every post (don't assume linear reading).
-- Inline citations as numbered footnotes; full bibliography in `REFERENCES.md`.
+- Inline citations as parenthetical `(Author, Year)`; full bibliography in `REFERENCES.md`.
 - Code: runnable, with `pyproject.toml`. Official provider SDKs and the reference agent SDKs; **framework-agnostic** — plain Python first, a framework only when it changes the shape of the code.
-- Every post starts with: a 2-sentence TL;DR, an estimated reading time, and the 3–5 things the reader will be able to do after.
+- Every post starts with: a 2–4-sentence TL;DR, an estimated reading time (in the `frontmatter.yaml` sidecar), and the 3–5 things the reader will be able to do after. Keep prose under ~10 em-dashes per post.
 - Every post ends with: a "Common pitfalls" block, a "Further reading" block, and a "What to read next" pointer. Cross-link to the Context Engineering series wherever a token-level detail is assumed.
 
 ---
@@ -453,11 +455,47 @@ Identical to the CE series, for continuity:
 
 ---
 
-## 10. Immediate Next Actions
+## 10. State of the Build
 
-1. Scaffold the repository per §2 (empty folders, templates, lint scripts; import CE design tokens).
-2. Produce the ten canonical hero diagrams listed in §4 — the Agent Loop and Harness Anatomy first.
-3. Draft `GLOSSARY.md` (extending CE) and `CHEATSHEET.md` skeletons.
-4. Write Post 01 and Post 02 in full as the style-locking pair; verify they read seamlessly after CE Post 30.
-5. Lock the visual system on those two posts before writing Posts 03+.
-6. Build `code/03-agent-loop/` early — it's the reusable spine every later code companion extends.
+Section 10 was originally a pre-writing to-do list. All of it is done; this is what the
+repository actually looks like, and what is still outstanding.
+
+**Shipped.** All 26 posts (Parts I–V), each with `index.md`, `frontmatter.yaml` and three
+figures. Eight runnable code companions under `code/`, all offline, 80 passing tests
+between them. `GLOSSARY.md` (71 terms), `CHEATSHEET.md`, `REFERENCES.md` with a section
+per post, `templates/` (post, diagram-style, code-readme, citation-style), and
+`tools/audit.py`, which gates structure, frontmatter, links and the SVG contract.
+
+**Deviations from §2 worth knowing.** There is no `posts/NN-slug/snippets/` directory;
+code lives inline in the post or in `code/`. `assets/` holds the diagram generator rather
+than the `src`/`exports`/`style` split §2 sketches. The design tokens are imported from the
+Context Engineering series unchanged, `--ce-*` prefix included — that is deliberate, not
+drift.
+
+**Done since this section was written.** The poster exists, at `poster/` rather than under
+`assets/`. The hand-drawn pass covers all 26 posts, and the hand-drawn render is now the
+*published* figure for all 78 rather than an opt-in alternate. Frontmatter carries the
+sibling's full field set.
+
+**Outstanding.**
+
+Both items previously listed here are closed.
+
+1. **The canonical heroes were checked, and only one pair actually disagreed.** The rule in §4
+   is "drawn once, reused", and no post reuses another post's SVG file. That turned out to be
+   the right call rather than a lapse: the loop appears in 03, 05, 11 and 19, but 03 draws it
+   in full while the others compress it to a card reading *reason, act, observe* and cite Post
+   03 by number, which is reuse of the vocabulary where reuse of the file would waste the
+   canvas. The same holds for the anatomy (02, and the three posts that name components by
+   number), the topologies (16 marks its swarm panel "Post 17"), and the three build-versus
+   decisions, which are about components (02), frameworks (20) and runtimes (23) and do not
+   overlap. **The one real conflict was Post 20's `03-harness-ab` against Post 22's
+   `02-harness-ab-pipeline`.** Post 20's figure promised that twenty tasks settle the choice
+   "in an afternoon"; Post 22's works a *larger* task set through to p = 0.39 and declines to
+   call it. Post 20's own §6 agrees with Post 22 and the figure had dropped the caveat. It now
+   carries §6's worked numbers and the arithmetic that undercuts them.
+2. **`assets/animations/` is built**: two animated SVGs, a README, and a `build:animations`
+   script. See §4.
+
+`AUDIT-2026-09-04.md` is the current work list and supersedes this section wherever the two
+disagree. `tools/PROGRESS.md` is the resume point.

@@ -1,0 +1,38 @@
+{
+  "num": "15",
+  "slug": "15-human-in-the-loop",
+  "example": "03-anatomy-of-a-gate",
+  "lede": "Three **published figures**, all hand-drawn. The existing figures answer where the human\nshould be and how the pause works. Neither answers what an approval gate is actually made of,\nwhich is what the post gained in its expansion.",
+  "scenes": [
+    [
+      "01-autonomy-spectrum",
+      "960 x 564",
+      "published",
+      "Four stops from suggest to autonomous, chosen per action rather than per agent."
+    ],
+    [
+      "02-approval-gate",
+      "960 x 614",
+      "published",
+      "Section 4: a flagged action pausing for a decision that arrives on the reviewer's schedule."
+    ],
+    [
+      "03-anatomy-of-a-gate",
+      "960 x 500",
+      "published",
+      "Sections 2, 5 and 7: the two halves, the four outcomes, and the record every decision leaves."
+    ]
+  ],
+  "notes": [
+    "- **Four outcome cards, not two.** \"Approved\" and \"denied\" are the pair everyone builds; \"not",
+    "  gated\" is the common case and \"no answer\" is the one asynchronous approval introduces and",
+    "  synchronous approval never had. Drawing all four is what makes the timeout a design decision",
+    "  rather than an omission.",
+    "- **The two halves carry their signatures.** The section's argument is that the policy is",
+    "  ordinary testable code and the decider is a seam, and the two type signatures are the",
+    "  shortest way to show why substituting an auto-deny function tests the whole flow.",
+    "- **The record is drawn as five fields, not as prose.** Each is a thing a real gate has to",
+    "  store, and the last one -- how long it sat -- is the field that makes the rubber-stamp rate",
+    "  measurable, which is the only reason section 7 can propose watching it."
+  ]
+}

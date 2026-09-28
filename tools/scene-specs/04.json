@@ -1,0 +1,36 @@
+{
+  "num": "04",
+  "slug": "04-harness-beats-model",
+  "example": "03-choose-model-order",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 is where the post stops arguing\nand tells you what to do, and it is an *ordered* procedure whose whole content is the order.",
+  "scenes": [
+    [
+      "01-harness-gap",
+      "960 x 580",
+      "published",
+      "Section 2: one model at two leaderboard ranks, with the reported figures labelled as reported."
+    ],
+    [
+      "02-cotraining-flywheel",
+      "960 x 582",
+      "published",
+      "Section 5: the four-step loop between harness patterns and model training, and why a model feels sharper in its native harness."
+    ],
+    [
+      "03-choose-model-order",
+      "960 x 470",
+      "published",
+      "Section 6: the five moves in order, the cost of each rung, and the jump most teams actually make."
+    ]
+  ],
+  "notes": [
+    "- **`01-harness-gap` charts one number and no more.** The post's own rule is that reported",
+    "  figures stay labelled as reported, so the figure draws the single attributable data point --",
+    "  a rank move -- rather than inventing per-harness scores to make a prettier chart.",
+    "- **`03-choose-model-order` puts a cost on every rung**, because that is what makes the order",
+    "  an argument rather than a preference. Steps 1 to 3 are one-off costs in engineer-hours; step",
+    "  4 is a recurring cost per token, forever. The dashed arrow is the move teams actually make.",
+    "- **Step 4 is the only rung drawn in the alert colour**, and it is also the only one with a",
+    "  heavier border, so the emphasis survives a reader who cannot separate the hues."
+  ]
+}

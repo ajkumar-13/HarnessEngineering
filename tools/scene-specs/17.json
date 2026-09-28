@@ -1,0 +1,38 @@
+{
+  "num": "17",
+  "slug": "17-parallel-agents-shared-repo",
+  "example": "03-at-least-once",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 is what stops the atomic claim\nfrom being read as a stronger guarantee than it is, and its argument is a *sequence* -- the one\nthing prose is worst at and a timeline is best at.",
+  "scenes": [
+    [
+      "01-shared-repo-swarm",
+      "960 x 560",
+      "published",
+      "A file-based task board claimed by three agents, with no coordinator anywhere."
+    ],
+    [
+      "02-worktree-isolation",
+      "960 x 536",
+      "published",
+      "Section 3: one worktree and one branch per agent, and the three properties that matter for a swarm."
+    ],
+    [
+      "03-at-least-once",
+      "960 x 490",
+      "published",
+      "Section 6: the seven-step sequence in which one task runs twice, and the three ways to make that harmless."
+    ]
+  ],
+  "notes": [
+    "- **Nothing in the timeline is a bug**, and the figure is drawn so that reads that way: every",
+    "  chip is an ordinary step, only two are marked, and the note under the axis says the board",
+    "  behaved exactly as designed. A figure that drew the double execution as an error would be",
+    "  making the opposite point.",
+    "- **The board gets its own lane.** The lease expiry is a *board* event, not something either",
+    "  agent did, and putting it in agent A's lane would suggest A released the task, which is",
+    "  precisely what did not happen.",
+    "- **The three mitigations are ordered, not listed.** Idempotence is first because it is",
+    "  cheapest and mostly a matter of how tasks are phrased; compare-and-set is last because it",
+    "  still wastes the loser's tokens."
+  ]
+}

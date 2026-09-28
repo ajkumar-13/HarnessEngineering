@@ -1,0 +1,37 @@
+{
+  "num": "07",
+  "slug": "07-skills-mcp-runtime",
+  "example": "03-three-distances",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 settles which of the three\nmechanisms to reach for, and it is also the only place the post's sharpest correction becomes\nvisible: MCP moves a tool's *code* out of your process, not its *schema* out of your window.",
+  "scenes": [
+    [
+      "01-progressive-disclosure",
+      "960 x 632",
+      "published",
+      "A dormant catalogue on disk, with one skill loaded per turn and the window staying small."
+    ],
+    [
+      "02-mcp-dispatch",
+      "960 x 600",
+      "published",
+      "Section 5: one turn, six steps, from model to client to server and back."
+    ],
+    [
+      "03-three-distances",
+      "960 x 470",
+      "published",
+      "Section 6: general tool, skill, and MCP server, compared by what each keeps out of your window and out of your process."
+    ]
+  ],
+  "notes": [
+    "- **`03-three-distances` has two \"keeps out of\" rows on purpose.** They are the whole figure.",
+    "  Read down the window row and only the skill removes anything; read down the process row and",
+    "  only the MCP server does. Collapsing them into one row is exactly the mistake section 4",
+    "  spends a paragraph correcting.",
+    "- **The cards are ordered by distance, not by preference.** Nothing in the figure says the",
+    "  furthest one is best; the ordering is physical, and the choice is made by the middle rows.",
+    "- **`02-mcp-dispatch` numbers the steps on the drawing and explains them in a legend below.**",
+    "  Six labelled arrows inside the figure would have crowded the transport channel, which is the",
+    "  one place the reader needs to see a boundary being crossed."
+  ]
+}

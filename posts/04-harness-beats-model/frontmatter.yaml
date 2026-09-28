@@ -1,7 +1,38 @@
 slug: 04-harness-beats-model
-title: "04 · Why the harness beats the model"
+title: "04 · Why the harness beats the model — the evidence"
+
+description: >
+  The founding claim of harness engineering is that the machine around the model is a
+  bigger performance lever than the model itself: the same model can succeed or fail on
+  the same task depending only on its harness. This post states that claim carefully,
+  grades the evidence for it in order of strength, says plainly what that evidence does
+  not show, and turns it into a rule: before reaching for a bigger model, check whether
+  the gap you are seeing is a harness gap.
+
+author: "Ajay"
 date: 2026-07-12
+last_modified: 2026-09-05
+
 tags: [harness-engineering, foundations, evidence, evaluation]
-hero: diagrams/01-harness-gap.svg
-reading_time: 12
+
+keywords:
+  - harness engineering
+  - foundations
+  - evidence
+  - evaluation
+  - scaffolding ceiling
+  - measure your own harness
+
+category: Foundations
+series: Harness Engineering
 part: "Part I — Foundations"
+
+hero: diagrams/01-harness-gap.svg
+hero_alt: "A leaderboard-rank axis showing one coding agent at about rank 30 in a default harness and about rank 5 in a tuned harness on Terminal-Bench 2.0, moving about 25 places with the model held fixed; a box below states Agent = Model + Harness."
+
+reading_time: 27
+toc: true
+draft: false
+canonical_url: ""
+prev: ../03-the-agent-loop/
+next: ../05-agent-failure-modes/

@@ -1,0 +1,36 @@
+{
+  "num": "01",
+  "slug": "01-from-context-to-harness",
+  "example": "01-three-eras",
+  "lede": "Three **published figures**. Post 01 already had a picture for each of its two load-bearing claims, so the hand-drawn versions replaced clean vectors rather than filling a gap -- and `03-equation` is new, because the equation the post is named after had never been drawn at all.",
+  "scenes": [
+    [
+      "01-three-eras",
+      "960 x 568",
+      "published",
+      "Section 1: prompt, context, harness -- each era engineers a larger surface because the last one stopped being the bottleneck."
+    ],
+    [
+      "02-nested-rings",
+      "960 x 592",
+      "published",
+      "Section 3: model inside scaffold inside harness inside orchestration, with what each layer owns."
+    ],
+    [
+      "03-equation",
+      "960 x 524",
+      "published",
+      "Section 2: Agent = Model + Harness, and the six things the second term stands for."
+    ]
+  ],
+  "notes": [
+    "- **`01-three-eras`.** The three bars under the panels are drawn to scale against each other,",
+    "  so the growth of the engineered surface is a measurement rather than a claim: one message,",
+    "  then the window, then window plus loop plus tools plus state plus checks plus guards.",
+    "- **`02-nested-rings`.** The rings nest rather than stack, because the argument is containment:",
+    "  a harness contains a scaffold contains a model. A row of boxes would say \"these are four",
+    "  things\", which is the reading section 3 spends its length arguing against.",
+    "- **`03-equation`.** The harness box is wider than the model box on purpose. The point of the",
+    "  equation is that the second term is the larger one, and the one you can actually change."
+  ]
+}

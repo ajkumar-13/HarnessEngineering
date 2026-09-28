@@ -1,7 +1,38 @@
 slug: 07-skills-mcp-runtime
 title: "07 · Skills & MCP in the runtime"
+
+description: >
+  Post 06 argued for a few general tools, yet real agents still need dozens of specific
+  capabilities: parse PDFs, query a database, file a ticket. The runtime answer is not to
+  load all their schemas at once; it is progressive disclosure, keeping a large catalogue
+  of skills dormant on disk and loading a skill's tools.
+
+author: "Ajay"
 date: 2026-07-18
+last_modified: 2026-09-05
+
 tags: [harness-engineering, primitives, skills, mcp, progressive-disclosure]
-hero: diagrams/01-progressive-disclosure.svg
-reading_time: 13
+
+keywords:
+  - harness engineering
+  - primitives
+  - skills
+  - mcp
+  - progressive disclosure
+  - eager loading
+  - code on a filesystem
+  - indirect prompt-injection
+
+category: Core primitives
+series: Harness Engineering
 part: "Part II — Core Primitives"
+
+hero: diagrams/01-progressive-disclosure.svg
+hero_alt: "Progressive-disclosure timeline: a skill catalogue of eight dormant skills on disk, and three turns where the task loads just the one skill it needs (pdf, then sql, then browser), keeping the window small."
+
+reading_time: 29
+toc: true
+draft: false
+canonical_url: ""
+prev: ../06-tools-bash-code/
+next: ../08-state-filesystem-git/

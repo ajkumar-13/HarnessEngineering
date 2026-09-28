@@ -1,0 +1,41 @@
+{
+  "num": "23",
+  "slug": "23-economics-haas",
+  "example": "03-build-vs-rent",
+  "lede": "Three **published figures**, all hand-drawn. The post prices a run from three angles and\nthen ends on a decision, and the decision was the part running on prose alone: sections 1 to 8\ncarry the arithmetic between two figures, and section 9 turns all of it into a build-or-rent\ncall that had no picture at all.",
+  "scenes": [
+    [
+      "01-loop-cost",
+      "960 x 596",
+      "published",
+      "Section 1: per-iteration cost climbing as each turn re-reads a context that grew the step before, with caching flattening the re-read of the stable prefix."
+    ],
+    [
+      "02-llm-api-vs-haas",
+      "960 x 612",
+      "published",
+      "Section 8: where the service boundary sits, with the loop, tools, context management and hooks outside it for an LLM API and inside it for a harness API."
+    ],
+    [
+      "03-build-vs-rent",
+      "960 x 486",
+      "published",
+      "Section 9: the three questions that decide build against rent, with the rent case and the build case for each, and differentiation marked as the one that overrides the other two."
+    ]
+  ],
+  "notes": [
+    "- **`03-build-vs-rent` marks one card as the deciding question and draws the other two the",
+    "  same.** Volume and control are cost questions a team can compute; differentiation is a",
+    "  question about what the product is. Giving the third card a heavier spine and a label, rather",
+    "  than more space, keeps the three readable as one comparison while saying which one wins.",
+    "- **The cards grew after the first render.** At 240 tall the coloured footer line in each card",
+    "  sat a few pixels past the card's own bottom edge, which `fit()` cannot see because it measures",
+    "  text against a width, not against the box it is drawn in. Rendering a PNG and looking at it is",
+    "  the only check that catches this; the cards are 264 tall for that reason.",
+    "- **`01-loop-cost` splits every bar into the re-read and the new tokens.** The post's argument is",
+    "  that the growth is in the part you already paid to produce, so drawing one flat bar per",
+    "  iteration would have hidden exactly the quantity the section is about.",
+    "- **`02-llm-api-vs-haas` keeps both panels the same size.** What changes between them is which",
+    "  side of the boundary the four components sit on, not how much there is of them."
+  ]
+}

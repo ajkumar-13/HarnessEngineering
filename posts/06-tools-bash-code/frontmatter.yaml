@@ -1,7 +1,37 @@
 slug: 06-tools-bash-code
 title: "06 · Tools as the agent's hands — bash, code, and schemas"
+
+description: >
+  Tools are the ACT step of the loop: the surface through which a model changes the world.
+  The durable lesson of 2025–26 is counter-intuitive: instead of building a bespoke tool
+  for every action, give the model a few general-purpose tools (above all bash and code
+  execution) and let it compose them.
+
+author: "Ajay"
 date: 2026-07-16
+last_modified: 2026-09-05
+
 tags: [harness-engineering, primitives, tools, mcp, bash]
-hero: diagrams/01-tool-dispatch.svg
-reading_time: 13
+
+keywords:
+  - harness engineering
+  - primitives
+  - tools
+  - mcp
+  - bash
+  - next single user message
+  - progressive disclosure
+
+category: Core primitives
+series: Harness Engineering
 part: "Part II — Core Primitives"
+
+hero: diagrams/01-tool-dispatch.svg
+hero_alt: "Tool dispatch flow: the model emits a tool call, the harness validates the input against the tool's schema, and either executes it or returns an error observation without running anything."
+
+reading_time: 25
+toc: true
+draft: false
+canonical_url: ""
+prev: ../05-agent-failure-modes/
+next: ../07-skills-mcp-runtime/

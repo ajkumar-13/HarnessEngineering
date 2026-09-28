@@ -1,0 +1,41 @@
+{
+  "num": "25",
+  "slug": "25-build-harness-plus",
+  "example": "03-what-tests-miss",
+  "lede": "Three **published figures**, all hand-drawn. The build had a picture of what it adds and\na picture of what that buys, and none of section 10, which is the most useful section in the post:\nthree bugs that shipped in this very companion behind a passing suite. The section's argument is\nthat the three share a shape, and a shape is the one thing prose states and a figure shows.",
+  "scenes": [
+    [
+      "01-layered-harness",
+      "960 x 434",
+      "published",
+      "The unchanged Build #1 core, the three gates a call passes through in order, the sub-agent, and the tracer wrapped around all of it."
+    ],
+    [
+      "02-blast-radius",
+      "960 x 604",
+      "published",
+      "Section 8: the same wrong call in both builds, reaching everything on the left and stopping at one of three gates on the right."
+    ],
+    [
+      "03-what-tests-miss",
+      "960 x 464",
+      "published",
+      "Section 10: three real defects, each beside the property its test actually asserted and the neighbouring property the defect lived in."
+    ]
+  ],
+  "notes": [
+    "- **`03-what-tests-miss` puts PASSES and SHIPPED ANYWAY on the same row, at the same size.**",
+    "  The point of the section is that both were true at once. Drawing the failure larger, or in",
+    "  alarm colour alone, would turn a claim about test design into a claim about severity.",
+    "- **The fourth column is the figure's reason to exist.** The first three columns restate the",
+    "  post; the gap column is the generalisation, and reading down it gives the section's thesis",
+    "  in three phrases: tested with the traffic you expect, asserted the shape and never the",
+    "  contents, tested with its own source material.",
+    "- **Each row takes its layer's colour, not a severity colour.** The sandbox row is accent, the",
+    "  tracer row primary, the deny-list row alert, matching how those three layers are drawn",
+    "  everywhere else in the post, so the reader is not asked to learn a second colour language.",
+    "- **All three canvases shrank after the first render.** Footers that overran their declared",
+    "  width, and cards with dead space under the last line, are both invisible until a PNG is",
+    "  rasterised and looked at; `fit()` reports the first and cannot see the second."
+  ]
+}

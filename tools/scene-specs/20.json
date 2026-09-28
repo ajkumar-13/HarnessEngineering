@@ -1,0 +1,37 @@
+{
+  "num": "20",
+  "slug": "20-sdk-landscape",
+  "example": "03-harness-ab",
+  "lede": "Three **published figures**, all hand-drawn. The post opens with a feature matrix and\nthen spends a section explaining why a feature matrix is the wrong instrument, which left the\nrecommended alternative as the one thing in the post with no picture.",
+  "scenes": [
+    [
+      "01-sdk-feature-matrix",
+      "960 x 620",
+      "published",
+      "Six harness components against four ways of getting them, marked illustrative rather than current."
+    ],
+    [
+      "02-build-vs-buy",
+      "960 x 612",
+      "published",
+      "Section 4: two gates between needing a harness and choosing how to get one."
+    ],
+    [
+      "03-harness-ab",
+      "960 x 636",
+      "published",
+      "Section 6: the A/B that settles the choice, the two things it quietly measures as well, and the arithmetic that says whether the gap it found is real."
+    ]
+  ],
+  "notes": [
+    "- **`03-harness-ab` carries section 6's worked numbers, and the panel that undercuts them.**\n  The first cut named the four numbers and gave none of them, on the reasoning that inventing\n  completion rates is the sin the section argues against. But the section works a comparison\n  through -- 61 against 68 of 100 runs, at $0.42 and $0.61 -- and then spends a bullet showing\n  the 7-point gap is about 1.5 standard errors on a denominator that is really 20 tasks, not 100\n  runs. Without that bullet the figure promised a verdict the post declines to give, and read\n  against Post 22 fig 2, which finds p = 0.39 on a *larger* task set, the two sheets disagreed.",
+    "  completion rates would be exactly the sin the section is arguing against, and the figure is",
+    "  about the method rather than about a result.",
+    "- **The two cautions are on the figure, not under it.** An A/B diagram without them reads as a",
+    "  clean experiment, and the section's real content is that it is not one: you are partly",
+    "  measuring the model-and-harness pairing, and the migration cost sits somewhere else entirely.",
+    "- **`01-sdk-feature-matrix` labels its own columns generically** -- a batteries-included SDK,",
+    "  a provider agent SDK, a graph framework -- rather than naming products in cells that would be",
+    "  wrong within months. The post names the products in prose, where they can be dated."
+  ]
+}

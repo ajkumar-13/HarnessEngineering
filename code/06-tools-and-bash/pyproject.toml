@@ -1,0 +1,20 @@
+[project]
+name = "tools-and-bash"
+version = "0.1.0"
+description = "Tool schemas, validation, and a deny-listed bash tool — companion to Harness Engineering Post 06."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tools"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

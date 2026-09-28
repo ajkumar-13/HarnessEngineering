@@ -1,0 +1,42 @@
+slug: 22-evaluating-harnesses
+title: "22 · Evaluating harnesses — Terminal-Bench, SWE-bench, harness A/B"
+
+description: >
+  Harness quality is not measured on single outputs; it is measured on whole trajectories
+  and their outcomes. The question is not "was that a good answer" but "did the run
+  resolve the task", scored across a fixed set of real jobs and repeated often enough to
+  see the spread.
+
+author: "Ajay"
+date: 2026-09-16
+last_modified: 2026-09-05
+
+tags: [harness-engineering, production, evaluation, benchmarks, swe-bench, terminal-bench, statistics]
+
+keywords:
+  - harness engineering
+  - production
+  - evaluation
+  - benchmarks
+  - swe bench
+  - terminal bench
+  - statistics
+  - output eval
+  - trajectory eval
+  - outcome eval
+  - empty agent
+  - wall-clock and resource budget
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-output-vs-trajectory.svg
+hero_alt: "Two panels side by side. On the left, an output eval scores one completion from one prompt on a numeric scale. On the right, a trajectory and outcome eval runs a whole multi-step agent run and asks whether the task resolved, such as tests passing or a pull request merging."
+
+reading_time: 34
+toc: true
+draft: false
+canonical_url: ""
+prev: ../21-observability-traces/
+next: ../23-economics-haas/

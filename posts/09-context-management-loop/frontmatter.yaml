@@ -1,0 +1,42 @@
+slug: 09-context-management-loop
+title: "09 · Context management inside the loop — compaction, offloading, resets"
+
+description: >
+  A running agent fills its own window: every turn appends the model's output and the tool
+  results, so left alone the window swells until quality degrades (context rot, now
+  happening dynamically as the loop runs). A harness that means to run for more than a few
+  turns must actively manage its own context.
+
+author: "Ajay"
+date: 2026-07-22
+last_modified: 2026-09-05
+
+tags: [harness-engineering, primitives, context-management, compaction, prompt-caching]
+
+keywords:
+  - harness engineering
+  - primitives
+  - context management
+  - compaction
+  - prompt caching
+  - tool-output offloading
+  - context rot
+  - information-loss budget
+  - full reset
+  - prompt cache
+  - compact rarely and deeply
+  - progressive disclosure
+
+category: Core primitives
+series: Harness Engineering
+part: "Part II — Core Primitives"
+
+hero: diagrams/01-window-timeline.svg
+hero_alt: "A bar chart of window fill across seven turns: a dashed unmanaged line rising into a context-rot zone, and managed bars held down by a compaction event at turn four and an offload at turn six."
+
+reading_time: 30
+toc: true
+draft: false
+canonical_url: ""
+prev: ../08-state-filesystem-git/
+next: ../10-continual-learning-ratchet/

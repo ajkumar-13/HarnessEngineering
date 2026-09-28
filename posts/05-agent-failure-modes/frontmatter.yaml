@@ -1,7 +1,42 @@
 slug: 05-agent-failure-modes
 title: "05 · Agent failure modes — victory declaration, context anxiety, doom loops"
+
+description: >
+  Autonomous agents do not fail randomly; they fail in a small set of recurring, nameable
+  ways, each mapping to a harness component you can change. This post catalogues six:
+  victory declaration, context anxiety, one-shotting, doom loops, silent drift, and
+  destructive action.
+
+author: "Ajay"
 date: 2026-07-14
+last_modified: 2026-09-05
+
 tags: [harness-engineering, foundations, failure-modes, debugging]
-hero: diagrams/01-failure-modes-grid.svg
-reading_time: 13
+
+keywords:
+  - harness engineering
+  - foundations
+  - failure modes
+  - debugging
+  - verification loop
+  - context management
+  - no-progress stop condition
+  - deny-list hook
+  - initialiser agent
+  - coding agent
+  - planner split
+  - durable state
+
+category: Foundations
+series: Harness Engineering
 part: "Part I — Foundations"
+
+hero: diagrams/01-failure-modes-grid.svg
+hero_alt: "A grid of six cards, one per failure mode: victory declaration, context anxiety, one-shotting, doom loop, silent drift, and destructive action, each with its symptom and the harness component that fixes it."
+
+reading_time: 26
+toc: true
+draft: false
+canonical_url: ""
+prev: ../04-harness-beats-model/
+next: ../06-tools-bash-code/

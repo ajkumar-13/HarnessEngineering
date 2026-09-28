@@ -9,9 +9,9 @@ The loop · tools · state · verification · hooks · sandboxes · orchestratio
 [![License: CC BY 4.0](https://img.shields.io/badge/Prose-CC--BY--4.0-blue.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![License: MIT](https://img.shields.io/badge/Code-MIT-green.svg)](LICENSE)
 [![Posts](https://img.shields.io/badge/posts-26-orange.svg)](#-the-series)
-[![Status](https://img.shields.io/badge/status-in%20progress-yellow.svg)](HARNESS-PLAN.md)
+[![Status](https://img.shields.io/badge/status-complete-brightgreen.svg)](HARNESS-PLAN.md)
 
-[Read the cheatsheet](CHEATSHEET.md) · [Glossary](GLOSSARY.md) · [References](REFERENCES.md) · [Plan](HARNESS-PLAN.md) · [Contribute](CONTRIBUTING.md)
+[Read the cheatsheet](CHEATSHEET.md) · [The one-page poster](poster/) · [Animations](assets/animations/) · [Glossary](GLOSSARY.md) · [References](REFERENCES.md) · [Plan](HARNESS-PLAN.md) · [Contribute](CONTRIBUTING.md)
 
 </div>
 
@@ -113,10 +113,31 @@ This series is the sibling of **Context Engineering** — the two are designed t
 
 ---
 
+## 💻 Code companions
+
+Runnable companions live under [`code/`](code/) and are MIT-licensed. They use plain Python and the official provider / agent SDKs first; a framework appears only when it materially changes the shape of the code. Companions land as each post ships.
+
+| Companion | Code | Post |
+|-----------|------|------|
+| Agent loop (ReAct · four stop conditions) | [`code/03-agent-loop/`](code/03-agent-loop/) | [Post 03](posts/03-the-agent-loop/index.md) |
+| Tools & bash execution (schema · deny-listed exec) | [`code/06-tools-and-bash/`](code/06-tools-and-bash/) | [Post 06](posts/06-tools-bash-code/index.md) |
+| Verification loop (test-driven self-correction) | [`code/11-verification-loop/`](code/11-verification-loop/) | [Post 11](posts/11-verification-loops/index.md) |
+| Hooks (pre / post-tool gates) | [`code/13-hooks/`](code/13-hooks/) | [Post 13](posts/13-hooks-enforcement/index.md) |
+| Parallel agents (file-based task claiming) | [`code/17-parallel-agents/`](code/17-parallel-agents/) | [Post 17](posts/17-parallel-agents-shared-repo/index.md) |
+| Build #1 — minimal harness (loop · tools · verify gate · stops) | [`code/24-minimal-harness/`](code/24-minimal-harness/) | [Post 24](posts/24-build-minimal-harness/index.md) |
+| Build #2 — hooks · sandbox · approval · sub-agent · tracing | [`code/25-harness-plus/`](code/25-harness-plus/) | [Post 25](posts/25-build-harness-plus/index.md) |
+| Capstone — long-running coding-agent harness | [`code/26-coding-agent/`](code/26-coding-agent/) | [Post 26](posts/26-capstone-coding-agent/index.md) |
+
+Each code folder ships its own `README.md`, `pyproject.toml`, and `tests/`. The smaller companions have an offline-runnable core: the whole test suite passes with no API key and no network. Live now: [agent-loop](code/03-agent-loop/) (`pytest -q` → 7 passed), [tools-and-bash](code/06-tools-and-bash/) (→ 15 passed), [verification-loop](code/11-verification-loop/) (→ 9 passed), [hooks](code/13-hooks/) (→ 9 passed), [parallel-agents](code/17-parallel-agents/) (→ 9 passed), [minimal-harness](code/24-minimal-harness/) (→ 10 passed), [harness-plus](code/25-harness-plus/) (→ 13 passed), and [coding-agent](code/26-coding-agent/) (→ 8 passed). Eighty tests in total, all offline.
+
+---
+
 ## 🧰 Reference assets
 
 | Asset | What it is |
 |-------|-----------|
+| [`poster/`](poster/) | The whole series on one A2-printable sheet: the eleven components around the loop, the four exits, the six failure modes, the verifier ladder, what survives a reset, three measured costs, and the order to build them in. |
+| [`assets/animations/`](assets/animations/) | The two moments a static figure can only imply: the loop turning, and a context window filling, clearing, and handing off to the next one. Self-contained animated SVGs that fall back to a complete still. |
 | [`CHEATSHEET.md`](CHEATSHEET.md) | Single printable page: the loop, the eleven components, agent failure modes, the ratchet, a decision tree. |
 | [`GLOSSARY.md`](GLOSSARY.md) | Every harness term, alphabetised, one-line definitions; extends the CE glossary. |
 | [`REFERENCES.md`](REFERENCES.md) | Master bibliography for every citation in the series. |

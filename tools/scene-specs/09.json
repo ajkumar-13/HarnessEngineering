@@ -1,0 +1,37 @@
+{
+  "num": "09",
+  "slug": "09-context-management-loop",
+  "example": "03-escalation-ladder",
+  "lede": "Three **published figures**, all hand-drawn. The post's ladder grew a rung -- clearing a\nspent tool result to a stub -- and no figure showed it, nor the column the prose argues\nhardest for: what each move does to the prompt cache.",
+  "scenes": [
+    [
+      "01-window-timeline",
+      "960 x 636",
+      "published",
+      "Window fill across seven turns, managed against unmanaged, with the rot zone marked."
+    ],
+    [
+      "02-three-moves",
+      "960 x 580",
+      "published",
+      "Section 7: offload, compact and reset compared by what each does, when, and what it costs."
+    ],
+    [
+      "03-escalation-ladder",
+      "960 x 626",
+      "published",
+      "All four rungs, with what is lost and what happens to the prompt cache."
+    ]
+  ],
+  "notes": [
+    "- **`03-escalation-ladder` exists because the prose outgrew `02-three-moves`.** The post now",
+    "  describes four corrective moves; the older figure describes three. Rather than redraw a",
+    "  published figure and lose its depth, the new one carries the full ladder and the older one",
+    "  keeps the per-move detail. `02-three-moves` gained a closing line pointing at the fourth rung.",
+    "- **The cache column is the reason this figure was worth drawing.** It turns \"take the cheapest",
+    "  rung\" from a preference into an argument: the two cheap rungs are cheap in three separate",
+    "  senses at once, and there is no case where the aggressive move is quietly the bargain.",
+    "- **`01-window-timeline` draws the unmanaged run in the same colour as the rot zone**, so the",
+    "  line visibly enters the band it is named after rather than merely rising near it."
+  ]
+}

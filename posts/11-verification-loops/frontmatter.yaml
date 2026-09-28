@@ -1,0 +1,41 @@
+slug: 11-verification-loops
+title: "11 · Verification loops — tests, self-critique, fail-fast"
+
+description: >
+  Autonomy is only as safe as the checking around it. A verification loop checks each step
+  against ground truth (tests, a schema, an independent judge) so a small error surfaces
+  immediately instead of compounding into a wasted run.
+
+author: "Ajay"
+date: 2026-07-28
+last_modified: 2026-09-05
+
+tags: [harness-engineering, control, verification, testing, reliability]
+
+keywords:
+  - harness engineering
+  - control
+  - verification
+  - testing
+  - reliability
+  - verification loop
+  - victory declaration
+  - per step
+  - executable and objective
+  - objective ground truth
+  - a separate evaluator
+  - objective truth
+
+category: Control and reliability
+series: Harness Engineering
+part: "Part III — Control & Reliability"
+
+hero: diagrams/01-verification-gate.svg
+hero_alt: "The agent loop feeding a candidate final answer into a verification gate; on pass the run is done, on fail the failure report is injected back into the loop."
+
+reading_time: 26
+toc: true
+draft: false
+canonical_url: ""
+prev: ../10-continual-learning-ratchet/
+next: ../12-planner-generator-evaluator/

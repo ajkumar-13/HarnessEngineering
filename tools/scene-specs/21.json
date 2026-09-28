@@ -1,0 +1,36 @@
+{
+  "num": "21",
+  "slug": "21-observability-traces",
+  "example": "03-trace-shapes",
+  "lede": "Three **published figures**, all hand-drawn. Section 3 claims failures \"deform the shape\nin characteristic ways\" and then names four deformations in prose, which is the one claim in\nthis post that a picture can settle outright.",
+  "scenes": [
+    [
+      "01-trace-tree",
+      "960 x 684",
+      "published",
+      "One run as a waterfall of nested spans, with the slow tool call flagged."
+    ],
+    [
+      "02-trace-to-ratchet",
+      "960 x 560",
+      "published",
+      "Section 4: a trace localised to a component, then converted into a rule, a hook, and a replay."
+    ],
+    [
+      "03-trace-shapes",
+      "960 x 470",
+      "published",
+      "Section 3: a healthy shape, and the four ways a named failure mode deforms it."
+    ]
+  ],
+  "notes": [
+    "- **The healthy shape is drawn once and at full width**, above the four failures, because",
+    "  every deformation is relative to it. Four failure panels with no reference would be four",
+    "  patterns rather than four deviations.",
+    "- **The victory declaration panel draws an absence.** A dashed empty slot where the gate span",
+    "  should be is the only honest way to render a failure whose signature is that nothing is",
+    "  there, and it is the panel that most repays being a picture rather than a sentence.",
+    "- **No panel carries numbers.** These are shapes, not measurements, and putting token counts",
+    "  on them would invite a reader to check the arithmetic instead of learning the geometry."
+  ]
+}

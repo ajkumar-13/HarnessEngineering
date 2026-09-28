@@ -1,0 +1,41 @@
+slug: 18-long-horizon-ralph
+title: "18 · Long-horizon & multi-context execution — Ralph loops and context bridging"
+
+description: >
+  Some tasks are bigger than any single context window, no matter how well you manage it.
+  The answer is not a bigger window but the Ralph loop: reset to a fresh context against a
+  written spec, do one task, commit, and repeat, with all the state living on disk.
+
+author: "Ajay"
+date: 2026-08-25
+last_modified: 2026-09-05
+
+tags: [harness-engineering, scale, long-horizon, ralph-loop, context]
+
+keywords:
+  - harness engineering
+  - scale
+  - long horizon
+  - ralph loop
+  - context
+  - fixed cost
+  - frozen half
+  - volatile half
+  - one verifiable increment
+  - context bridge
+  - narrow write channel
+  - initialiser agent
+
+category: Scale and orchestration
+series: Harness Engineering
+part: "Part IV — Scale & Orchestration"
+
+hero: diagrams/01-ralph-loop.svg
+hero_alt: "The Ralph loop: a fresh context reads the spec on disk, does one task, commits, resets, and repeats, with the spec and repo persisting across iterations."
+
+reading_time: 27
+toc: true
+draft: false
+canonical_url: ""
+prev: ../17-parallel-agents-shared-repo/
+next: ../19-loop-engineering/

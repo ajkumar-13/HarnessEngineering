@@ -1,0 +1,40 @@
+slug: 23-economics-haas
+title: "23 · The economics of a harness & Harness-as-a-Service"
+
+description: >
+  A single completion has one price; an agentic run has that price multiplied by the
+  number of loop iterations, and each iteration re-reads a context that grows every step.
+  Harness economics are dominated by two levers: how many times the loop turns, and how
+  cheaply the accumulated history is re-read.
+
+author: "Ajay"
+date: 2026-09-23
+last_modified: 2026-09-05
+
+tags: [harness-engineering, production, economics, cost, haas]
+
+keywords:
+  - harness engineering
+  - production
+  - economics
+  - cost
+  - haas
+  - enforcement in arrears
+  - prefix match
+  - compact rarely and deeply
+  - rent a runtime
+  - per call
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-loop-cost.svg
+hero_alt: "A step chart of per-iteration cost across an agent run: each bar has a tall lower segment for the context re-read at every step and a small upper segment for the tokens that iteration adds, so the bars grow from left to right, while a lower dashed line shows the same run with prompt caching flattening the re-read of the stable prefix."
+
+reading_time: 32
+toc: true
+draft: false
+canonical_url: ""
+prev: ../22-evaluating-harnesses/
+next: ../24-build-minimal-harness/

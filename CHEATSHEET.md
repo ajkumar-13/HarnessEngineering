@@ -16,7 +16,7 @@
    └─────────┘    └──────────┘     └──────────┘
         │
         ▼   stop when ANY fires:
-   ① verifier says the goal is met   ← the correct reason to stop
+   ① model returns a final answer    ← the intended exit (verify it, Post 11)
    ② hard max-iteration cap          ← infinite-loop backstop
    ③ token / time budget exhausted   ← cost ceiling
    ④ no-progress detection           ← thrashing guard
@@ -50,10 +50,12 @@
 |--------------|---------|-------------|
 | **Victory declaration** | "Done!" — but it isn't | Verification loop (#6) |
 | **Context anxiety** | Rushes as window fills | Compaction / reset (#4) |
-| **One-shotting** | Attempts everything at once | Planner/generator split (#12) |
+| **One-shotting** | Attempts everything at once | Planner/generator split (Post 12) |
 | **Doom loop** | Repeats, no progress | No-progress stop condition (④) |
 | **Silent drift** | Ignores conventions | Memory file + hook (the ratchet) |
 | **Destructive action** | `rm -rf`, force-push | Deny-list hook + sandbox (#7, #8) |
+
+*Legend: `#N` = the harness component numbered above · `④` = the loop exit · `Post N` = a later post.*
 
 ---
 
@@ -77,4 +79,6 @@ Is the problem about COORDINATING MANY AGENTS as units?
 
 ---
 
-*Full detail in [HARNESS-PLAN.md](HARNESS-PLAN.md). Terms in [GLOSSARY.md](GLOSSARY.md). Sources in [REFERENCES.md](REFERENCES.md).*
+*Start reading at [Post 01 — From context to harness](posts/01-from-context-to-harness/index.md), or jump to the part you need: [I Foundations](posts/01-from-context-to-harness/index.md) · [II Core primitives](posts/06-tools-bash-code/index.md) · [III Control & reliability](posts/11-verification-loops/index.md) · [IV Scale & orchestration](posts/16-multi-agent-orchestration/index.md) · [V Production & builds](posts/21-observability-traces/index.md).*
+
+*Terms in [GLOSSARY.md](GLOSSARY.md). Sources in [REFERENCES.md](REFERENCES.md). The series plan, for contributors, is [HARNESS-PLAN.md](HARNESS-PLAN.md).*

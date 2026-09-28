@@ -1,0 +1,38 @@
+{
+  "num": "18",
+  "slug": "18-long-horizon-ralph",
+  "example": "03-inside-one-iteration",
+  "lede": "Three **published figures**, all hand-drawn. The existing figures draw the loop from\noutside. Neither draws what one iteration's context is actually made of, which is where the\nre-entry tax, the cacheable prefix, and the read-only spec all live.",
+  "scenes": [
+    [
+      "01-ralph-loop",
+      "960 x 584",
+      "published",
+      "Fresh context, one task, commit, reset, repeat, with the spec and repo persisting across every pass."
+    ],
+    [
+      "02-multi-context-timeline",
+      "960 x 620",
+      "published",
+      "Section 4: a bounded sawtooth of context usage against a staircase of progress on disk."
+    ],
+    [
+      "03-inside-one-iteration",
+      "960 x 490",
+      "published",
+      "Sections 2 and 3: the context stack, how to size a task, and which files the loop may edit."
+    ]
+  ],
+  "notes": [
+    "- **The stack is drawn in the order the context is built**, stable first, because the order is",
+    "  the argument. Cached blocks at the top and rebuilt blocks below is not a taxonomy, it is the",
+    "  layout that makes the prefix cacheable, and a figure that grouped them any other way would",
+    "  lose the point.",
+    "- **The sizing panel puts all three bars against one window limit.** \"Too large\" and \"too",
+    "  small\" are failures on different axes -- overflow and overhead -- and drawing them on a",
+    "  shared scale is what shows that the right slice is a range rather than a number.",
+    "- **`02-multi-context-timeline` draws the unmanaged context as a straight climb across the",
+    "  limit**, deliberately without a reset, so the two curves differ in shape rather than only in",
+    "  height. The sawtooth stays under the line; the straight line does not."
+  ]
+}

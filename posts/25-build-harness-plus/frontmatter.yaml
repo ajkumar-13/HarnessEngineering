@@ -1,0 +1,36 @@
+slug: 25-build-harness-plus
+title: "25 · Build #2 — add hooks, sandbox, and sub-agents"
+
+description: >
+  Build #1 was the honest minimum: a loop that verifies its work and stops for the right
+  reason. Build #2 keeps that engine and hardens it, by adding four bounded layers
+  (deterministic hooks, an allow-list sandbox, a human approval gate, and one sub-agent),
+  all wrapped in tracing.
+
+author: "Ajay"
+date: 2026-10-07
+last_modified: 2026-09-05
+
+tags: [harness-engineering, builds, hooks, sandbox, sub-agents]
+
+keywords:
+  - harness engineering
+  - builds
+  - hooks
+  - sandbox
+  - sub agents
+  - approval gate
+
+category: Production and builds
+series: Harness Engineering
+part: "Part V — Production & Builds"
+
+hero: diagrams/01-layered-harness.svg
+hero_alt: "Build #1's core wrapped by a tracer, with a numbered three-stage pipeline applied to each tool call (a pre-tool hook that can block, a human approval gate for sensitive calls, then execution inside a sandbox), plus a delegate tool that spawns a sub-agent in its own context."
+
+reading_time: 41
+toc: true
+draft: false
+canonical_url: ""
+prev: ../24-build-minimal-harness/
+next: ../26-capstone-coding-agent/

@@ -1,0 +1,21 @@
+[project]
+name = "minimal-harness"
+version = "0.1.0"
+description = "A minimal agent harness from scratch — loop + tools + verification gate + layered stop conditions. Companion to Harness Engineering Post 24."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.40"]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/minimal_harness"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

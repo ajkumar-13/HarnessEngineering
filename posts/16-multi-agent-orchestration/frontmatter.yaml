@@ -1,0 +1,37 @@
+slug: 16-multi-agent-orchestration
+title: "16 · Multi-agent orchestration — topologies, and when not to"
+
+description: >
+  Orchestration coordinates agents as units, one level above the harness that drives a
+  single agent. It comes in a few shapes (single, orchestrator-worker, pipeline, swarm),
+  and it is powerful and badly over-used.
+
+author: "Ajay"
+date: 2026-08-17
+last_modified: 2026-09-05
+
+tags: [harness-engineering, scale, orchestration, multi-agent, topologies]
+
+keywords:
+  - harness engineering
+  - scale
+  - orchestration
+  - multi agent
+  - topologies
+  - implicit decisions
+  - one writer always
+  - what they checked
+
+category: Scale and orchestration
+series: Harness Engineering
+part: "Part IV — Scale & Orchestration"
+
+hero: diagrams/01-topologies-gallery.svg
+hero_alt: "Four topology panels: a single agent with sub-tasks, an orchestrator-worker with a lead and workers, a pipeline of agents in sequence, and a swarm of peers around a shared repo."
+
+reading_time: 27
+toc: true
+draft: false
+canonical_url: ""
+prev: ../15-human-in-the-loop/
+next: ../17-parallel-agents-shared-repo/

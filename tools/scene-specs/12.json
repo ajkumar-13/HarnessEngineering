@@ -1,0 +1,37 @@
+{
+  "num": "12",
+  "slug": "12-planner-generator-evaluator",
+  "example": "03-the-unchecked-edge",
+  "lede": "Three **published figures**, all hand-drawn. Section 6 complains that the three-role\ndiagram *hides* the hole in the pattern, which is a fair complaint about `01-pge-triangle`. The\nremedy was not to redraw that figure but to draw the hole.",
+  "scenes": [
+    [
+      "01-pge-triangle",
+      "960 x 604",
+      "published",
+      "The three roles in one loop, with the evaluator separated from the maker."
+    ],
+    [
+      "02-sprint-contract",
+      "960 x 576",
+      "published",
+      "Section 3: the definition of done frozen before the work, and the three phases around it."
+    ],
+    [
+      "03-the-unchecked-edge",
+      "960 x 470",
+      "published",
+      "Section 6: the same chain, with the one edge nothing grades marked as such."
+    ]
+  ],
+  "notes": [
+    "- **The two brackets are drawn differently on purpose**, and not only in colour: the checked",
+    "  edge is a solid bracket below the chain and the unchecked one is dashed and above it, so the",
+    "  distinction survives a reader who cannot separate red from green.",
+    "- **The chain is linear, where `01-pge-triangle` is a triangle.** A triangle is the right shape",
+    "  for showing three roles in tension; a line is the right shape for asking which links have a",
+    "  check on them, because it makes the missing one a gap rather than a corner.",
+    "- **`01-pge-triangle` sends the failure back along its own lane**, one row below the work",
+    "  arrow rather than retracing it, so the revision path is visibly a second trip and not a",
+    "  reversal of the first."
+  ]
+}

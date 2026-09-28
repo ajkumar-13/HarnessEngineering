@@ -1,0 +1,40 @@
+slug: 14-permissions-sandboxes
+title: "14 · Permissions, sandboxes & security — the AI control plane"
+
+description: >
+  An autonomous agent with real tools is both an attack surface and a blast radius. A
+  deny-list hook (Post 13) stops the known-bad command; a sandbox bounds everything else,
+  so a run can only touch what you let the box touch.
+
+author: "Ajay"
+date: 2026-08-09
+last_modified: 2026-09-05
+
+tags: [harness-engineering, control, security, sandbox, permissions]
+
+keywords:
+  - harness engineering
+  - control
+  - security
+  - sandbox
+  - permissions
+  - deny-list hook
+  - no shell is involved
+  - indirect prompt injection
+  - lethal trifecta
+  - which layer decided
+  - control plane
+
+category: Control and reliability
+series: Harness Engineering
+part: "Part III — Control & Reliability"
+
+hero: diagrams/01-sandbox-boundary.svg
+hero_alt: "A sandbox bounding the bash tool with an allow-list, a working-directory jail, no network egress, a time limit, and an ephemeral runtime, with the host system out of reach beyond the boundary."
+
+reading_time: 25
+toc: true
+draft: false
+canonical_url: ""
+prev: ../13-hooks-enforcement/
+next: ../15-human-in-the-loop/

@@ -1,7 +1,35 @@
 slug: 01-from-context-to-harness
 title: "01 · From context to harness — the third era"
+
+description: >
+  Applied large language model (LLM) work has moved through three eras. First the
+  bottleneck was phrasing (prompt engineering); then it was information (context
+  engineering); by 2026 it is autonomy and control: the machine you build around the model
+  so it can run on its own.
+
+author: "Ajay"
 date: 2026-07-06
+last_modified: 2026-09-05
+
 tags: [harness-engineering, foundations]
-hero: diagrams/01-three-eras.svg
-reading_time: 12
+
+keywords:
+  - harness engineering
+  - foundations
+  - prompt engineering
+  - context engineering
+  - ratchet principle
+  - agent loop
+
+category: Foundations
+series: Harness Engineering
 part: "Part I — Foundations"
+
+hero: diagrams/01-three-eras.svg
+hero_alt: "A timeline from 2022 to 2026 across three eras (prompt, context, and harness engineering), each working on a larger surface than the last: a single message, then the whole window, then the whole machine."
+
+reading_time: 28
+toc: true
+draft: false
+canonical_url: ""
+next: ../02-anatomy-of-a-harness/

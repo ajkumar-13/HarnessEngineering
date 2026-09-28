@@ -1,0 +1,37 @@
+{
+  "num": "22",
+  "slug": "22-evaluating-harnesses",
+  "example": "03-production-funnel",
+  "lede": "Three **published figures**, all hand-drawn. Sections 1 to 4 are about proxies you run\nbefore shipping and have two figures between them. Section 5 is the one that connects all of it\nto the ledger, and it had none.",
+  "scenes": [
+    [
+      "01-output-vs-trajectory",
+      "960 x 636",
+      "published",
+      "One completion scored against one whole run scored, and why the unit had to move."
+    ],
+    [
+      "02-harness-ab-pipeline",
+      "960 x 560",
+      "published",
+      "Section 4: one fixed task set, two harness configs, and a verdict on resolved-rate against cost."
+    ],
+    [
+      "03-production-funnel",
+      "960 x 622",
+      "published",
+      "Section 5: three narrowing stages, each with the metric that measures it."
+    ]
+  ],
+  "notes": [
+    "- **The stages narrow and the metric cards do not.** The funnel shape carries the filtering;",
+    "  keeping the metric column at constant width stops the figure from implying that the",
+    "  measurements get smaller too, when in fact the last one is the largest claim in the post.",
+    "- **`02-harness-ab-pipeline` labels its own numbers illustrative, on the drawing.** They match",
+    "  the prose exactly -- thirteen points for thirteen cents -- and both are examples rather than",
+    "  measurements, which is a distinction a figure is unusually good at losing.",
+    "- **`01-output-vs-trajectory` gives both panels the same height.** The trajectory eval is the",
+    "  one the post argues for, but drawing it larger would make the case by layout rather than by",
+    "  content; the difference that matters is what is inside each panel, not how much room it got."
+  ]
+}

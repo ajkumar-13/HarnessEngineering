@@ -1,0 +1,39 @@
+slug: 12-planner-generator-evaluator
+title: "12 · Planner / generator / evaluator — separating the roles"
+
+description: >
+  Post 11 showed that a model grading its own work skews positive. The structural fix is
+  to make the grader a different agent from the maker: a planner decomposes the task and
+  sets a contract, a generator builds to it, and an independent evaluator grades the
+  result against that contract.
+
+author: "Ajay"
+date: 2026-08-01
+last_modified: 2026-09-05
+
+tags: [harness-engineering, control, evaluation, roles, reliability]
+
+keywords:
+  - harness engineering
+  - control
+  - evaluation
+  - roles
+  - reliability
+  - sprint contract
+  - a separate agent
+  - acceptance criteria
+  - generator and the evaluator
+
+category: Control and reliability
+series: Harness Engineering
+part: "Part III — Control & Reliability"
+
+hero: diagrams/01-pge-triangle.svg
+hero_alt: "A planner at the top hands a plan to the generator and a contract to the evaluator; the generator's work goes to the evaluator, which passes to done or sends a failure report back to the generator."
+
+reading_time: 28
+toc: true
+draft: false
+canonical_url: ""
+prev: ../11-verification-loops/
+next: ../13-hooks-enforcement/

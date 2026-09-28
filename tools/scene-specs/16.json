@@ -1,0 +1,37 @@
+{
+  "num": "16",
+  "slug": "16-multi-agent-orchestration",
+  "example": "03-the-coordination-tax",
+  "lede": "Three **published figures**, all hand-drawn. Section 5 exists because \"coordination\ncost\" gets asserted a lot and quantified rarely, and it is the section that decides whether a\ntopology pays.",
+  "scenes": [
+    [
+      "01-topologies-gallery",
+      "960 x 632",
+      "published",
+      "Four shapes for arranging agents, with the default drawn first."
+    ],
+    [
+      "02-orchestration-decision",
+      "960 x 620",
+      "published",
+      "Section 7: three gates, any one of which sends you back to a single agent."
+    ],
+    [
+      "03-the-coordination-tax",
+      "960 x 470",
+      "published",
+      "Section 5: tokens, latency and partial failure, each priced."
+    ]
+  ],
+  "notes": [
+    "- **The token bars use the same work segment on both rows.** That is the entire point: the",
+    "  work did not change, only the number of contexts carrying a system prompt and tool schemas",
+    "  before doing any of it. Scaling the work segment too would have hidden the argument.",
+    "- **The latency panel uses the post's own numbers**, four workers at ten seconds and one at",
+    "  ninety, rather than a tidier illustration. Uneven work is the case where fan-out",
+    "  disappoints, so the figure is drawn uneven.",
+    "- **The partial-failure panel leaves the three options unanswered**, because the post does",
+    "  not answer them either. The finding is that most systems never decided, and a figure that",
+    "  picked one would be asserting a default the prose declines to assert."
+  ]
+}
