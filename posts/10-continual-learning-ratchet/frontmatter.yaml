@@ -1,3 +1,4 @@
+id: hrn-010
 slug: 10-continual-learning-ratchet
 title: "10 · Continual learning & the ratchet — every mistake becomes a rule"
 
@@ -22,7 +23,7 @@ keywords:
 
 category: Core primitives
 series: Harness Engineering
-part: "Part II — Core Primitives"
+part: "Part II - Core primitives"
 
 hero: diagrams/01-ratchet-mechanism.svg
 hero_alt: "The ratchet mechanism: a failure (the agent shipped a skipped test) fanning into three durable constraints: a memory-file line, a hook, and a reviewer check."

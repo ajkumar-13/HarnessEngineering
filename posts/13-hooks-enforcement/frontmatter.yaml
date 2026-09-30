@@ -1,3 +1,4 @@
+id: hrn-013
 slug: 13-hooks-enforcement
 title: "13 · Hooks & deterministic enforcement — guardrails as code"
 
@@ -24,7 +25,7 @@ keywords:
 
 category: Control and reliability
 series: Harness Engineering
-part: "Part III — Control & Reliability"
+part: "Part III - Control and reliability"
 
 hero: diagrams/01-hook-lifecycle.svg
 hero_alt: "The loop on the left with four coloured bars marking where hooks attach, and on the right the four points with what each can do: session-start supplies but cannot block, pre-tool can block the call, post-edit reports only, and pre-commit can block the commit."

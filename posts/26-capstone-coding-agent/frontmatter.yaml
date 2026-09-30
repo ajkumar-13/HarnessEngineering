@@ -1,3 +1,4 @@
+id: hrn-026
 slug: 26-capstone-coding-agent
 title: "26 · Capstone — a long-running, trusted coding-agent harness"
 
@@ -26,7 +27,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-capstone-architecture.svg
 hero_alt: "The full capstone architecture: a spec feeds a Ralph driver that runs each task through planner, generator, and independent evaluator; tool calls pass through hooks, sandbox, and approval; the workspace and ratchet persist across tasks; a tracer and cost meter run throughout; and traces feed an evaluation-and-fix improvement loop."

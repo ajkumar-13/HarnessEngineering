@@ -1,3 +1,4 @@
+id: hrn-023
 slug: 23-economics-haas
 title: "23 · The economics of a harness & Harness-as-a-Service"
 
@@ -27,7 +28,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-loop-cost.svg
 hero_alt: "A step chart of per-iteration cost across an agent run: each bar has a tall lower segment for the context re-read at every step and a small upper segment for the tokens that iteration adds, so the bars grow from left to right, while a lower dashed line shows the same run with prompt caching flattening the re-read of the stable prefix."

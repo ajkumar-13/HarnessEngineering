@@ -1,3 +1,4 @@
+id: hrn-012
 slug: 12-planner-generator-evaluator
 title: "12 · Planner / generator / evaluator — separating the roles"
 
@@ -26,7 +27,7 @@ keywords:
 
 category: Control and reliability
 series: Harness Engineering
-part: "Part III — Control & Reliability"
+part: "Part III - Control and reliability"
 
 hero: diagrams/01-pge-triangle.svg
 hero_alt: "A planner at the top hands a plan to the generator and a contract to the evaluator; the generator's work goes to the evaluator, which passes to done or sends a failure report back to the generator."

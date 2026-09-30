@@ -1,3 +1,4 @@
+id: hrn-001
 slug: 01-from-context-to-harness
 title: "01 · From context to harness — the third era"
 
@@ -23,7 +24,7 @@ keywords:
 
 category: Foundations
 series: Harness Engineering
-part: "Part I — Foundations"
+part: "Part I - Foundations"
 
 hero: diagrams/01-three-eras.svg
 hero_alt: "A timeline from 2022 to 2026 across three eras (prompt, context, and harness engineering), each working on a larger surface than the last: a single message, then the whole window, then the whole machine."

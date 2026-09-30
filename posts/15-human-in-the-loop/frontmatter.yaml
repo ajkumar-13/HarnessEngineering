@@ -1,3 +1,4 @@
+id: hrn-015
 slug: 15-human-in-the-loop
 title: "15 · Human-in-the-loop — approvals, interventions, async feedback"
 
@@ -24,7 +25,7 @@ keywords:
 
 category: Control and reliability
 series: Harness Engineering
-part: "Part III — Control & Reliability"
+part: "Part III - Control and reliability"
 
 hero: diagrams/01-autonomy-spectrum.svg
 hero_alt: "Four stops labelled suggest, approve, act and notify, and autonomous, arranged left to right along a single axis running from less autonomy to more autonomy, each with a one-line note on what the human does at that stop."

@@ -1,3 +1,4 @@
+id: hrn-002
 slug: 02-anatomy-of-a-harness
 title: "02 · The anatomy of a harness"
 
@@ -28,7 +29,7 @@ keywords:
 
 category: Foundations
 series: Harness Engineering
-part: "Part I — Foundations"
+part: "Part I - Foundations"
 
 hero: diagrams/01-harness-anatomy.svg
 hero_alt: "The anatomy of a harness: a central agent loop driving the model through reason, act, and observe, flanked by four components that feed the model, four that govern it, and two that operate at larger scale."

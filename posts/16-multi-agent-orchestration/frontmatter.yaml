@@ -1,3 +1,4 @@
+id: hrn-016
 slug: 16-multi-agent-orchestration
 title: "16 · Multi-agent orchestration — topologies, and when not to"
 
@@ -24,7 +25,7 @@ keywords:
 
 category: Scale and orchestration
 series: Harness Engineering
-part: "Part IV — Scale & Orchestration"
+part: "Part IV - Scale and orchestration"
 
 hero: diagrams/01-topologies-gallery.svg
 hero_alt: "Four topology panels: a single agent with sub-tasks, an orchestrator-worker with a lead and workers, a pipeline of agents in sequence, and a swarm of peers around a shared repo."

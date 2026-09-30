@@ -1,3 +1,4 @@
+id: hrn-021
 slug: 21-observability-traces
 title: "21 · Observability & trace-driven repair — seeing what the harness did"
 
@@ -30,7 +31,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-trace-tree.svg
 hero_alt: "A waterfall of nested spans for one agent run: a root agent.run span over three iterations, each with a model call and a tool call, a slow bash span flagged in iteration two, a sub-agent span in iteration three, and a passing verify gate that ends the run with the stop reason verified."

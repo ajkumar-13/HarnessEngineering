@@ -1,3 +1,4 @@
+id: hrn-022
 slug: 22-evaluating-harnesses
 title: "22 · Evaluating harnesses — Terminal-Bench, SWE-bench, harness A/B"
 
@@ -29,7 +30,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-output-vs-trajectory.svg
 hero_alt: "Two panels side by side. On the left, an output eval scores one completion from one prompt on a numeric scale. On the right, a trajectory and outcome eval runs a whole multi-step agent run and asks whether the task resolved, such as tests passing or a pull request merging."

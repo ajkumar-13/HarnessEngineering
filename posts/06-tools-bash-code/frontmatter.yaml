@@ -1,3 +1,4 @@
+id: hrn-006
 slug: 06-tools-bash-code
 title: "06 · Tools as the agent's hands — bash, code, and schemas"
 
@@ -24,7 +25,7 @@ keywords:
 
 category: Core primitives
 series: Harness Engineering
-part: "Part II — Core Primitives"
+part: "Part II - Core primitives"
 
 hero: diagrams/01-tool-dispatch.svg
 hero_alt: "Tool dispatch flow: the model emits a tool call, the harness validates the input against the tool's schema, and either executes it or returns an error observation without running anything."

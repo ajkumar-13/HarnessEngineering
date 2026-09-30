@@ -1,3 +1,4 @@
+id: hrn-024
 slug: 24-build-minimal-harness
 title: "24 · Build #1 — a minimal agent harness from scratch"
 
@@ -21,7 +22,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-minimal-architecture.svg
 hero_alt: "A block diagram of Build #1: the loop at the centre calls the model and dispatches tool calls through a schema-validated registry to a bash and a write-file tool; a candidate final answer goes to a verification gate that either finishes the run as verified or injects a failure report back into the loop, with four layered stop conditions around it."

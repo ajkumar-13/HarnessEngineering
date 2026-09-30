@@ -1,3 +1,4 @@
+id: hrn-018
 slug: 18-long-horizon-ralph
 title: "18 · Long-horizon & multi-context execution — Ralph loops and context bridging"
 
@@ -28,7 +29,7 @@ keywords:
 
 category: Scale and orchestration
 series: Harness Engineering
-part: "Part IV — Scale & Orchestration"
+part: "Part IV - Scale and orchestration"
 
 hero: diagrams/01-ralph-loop.svg
 hero_alt: "The Ralph loop: a fresh context reads the spec on disk, does one task, commits, resets, and repeats, with the spec and repo persisting across iterations."

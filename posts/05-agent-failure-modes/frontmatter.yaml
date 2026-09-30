@@ -1,3 +1,4 @@
+id: hrn-005
 slug: 05-agent-failure-modes
 title: "05 · Agent failure modes — victory declaration, context anxiety, doom loops"
 
@@ -29,7 +30,7 @@ keywords:
 
 category: Foundations
 series: Harness Engineering
-part: "Part I — Foundations"
+part: "Part I - Foundations"
 
 hero: diagrams/01-failure-modes-grid.svg
 hero_alt: "A grid of six cards, one per failure mode: victory declaration, context anxiety, one-shotting, doom loop, silent drift, and destructive action, each with its symptom and the harness component that fixes it."

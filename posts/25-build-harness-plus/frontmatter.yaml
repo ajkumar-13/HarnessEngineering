@@ -1,3 +1,4 @@
+id: hrn-025
 slug: 25-build-harness-plus
 title: "25 · Build #2 — add hooks, sandbox, and sub-agents"
 
@@ -23,7 +24,7 @@ keywords:
 
 category: Production and builds
 series: Harness Engineering
-part: "Part V — Production & Builds"
+part: "Part V - Production and builds"
 
 hero: diagrams/01-layered-harness.svg
 hero_alt: "Build #1's core wrapped by a tracer, with a numbered three-stage pipeline applied to each tool call (a pre-tool hook that can block, a human approval gate for sensitive calls, then execution inside a sandbox), plus a delegate tool that spawns a sub-agent in its own context."

@@ -1,3 +1,4 @@
+id: hrn-014
 slug: 14-permissions-sandboxes
 title: "14 · Permissions, sandboxes & security — the AI control plane"
 
@@ -27,7 +28,7 @@ keywords:
 
 category: Control and reliability
 series: Harness Engineering
-part: "Part III — Control & Reliability"
+part: "Part III - Control and reliability"
 
 hero: diagrams/01-sandbox-boundary.svg
 hero_alt: "A sandbox bounding the bash tool with an allow-list, a working-directory jail, no network egress, a time limit, and an ephemeral runtime, with the host system out of reach beyond the boundary."

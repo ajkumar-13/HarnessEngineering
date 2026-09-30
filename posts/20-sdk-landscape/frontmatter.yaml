@@ -1,3 +1,4 @@
+id: hrn-020
 slug: 20-sdk-landscape
 title: "20 · The SDK & framework landscape — Agent SDK, LangGraph, and peers"
 
@@ -29,7 +30,7 @@ keywords:
 
 category: Scale and orchestration
 series: Harness Engineering
-part: "Part IV — Scale & Orchestration"
+part: "Part IV - Scale and orchestration"
 
 hero: diagrams/01-sdk-feature-matrix.svg
 hero_alt: "An illustrative feature matrix: six harness components against the Claude Agent SDK, the OpenAI Agents SDK, LangGraph, and rolling your own, with built-in, partial, and build-it-yourself marks."

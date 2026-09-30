@@ -1,3 +1,4 @@
+id: hrn-019
 slug: 19-loop-engineering
 title: "19 · Loop engineering — designing the loop that prompts the agent"
 
@@ -27,7 +28,7 @@ keywords:
 
 category: Scale and orchestration
 series: Harness Engineering
-part: "Part IV — Scale & Orchestration"
+part: "Part IV - Scale and orchestration"
 
 hero: diagrams/01-layered-exits.svg
 hero_alt: "The agent loop with four layered exits checked in order: verifier confirms the goal, hard max-iterations, token/time budget, and no-progress detection, any of which stops the loop with a reason."

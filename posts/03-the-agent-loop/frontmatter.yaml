@@ -1,3 +1,4 @@
+id: hrn-003
 slug: 03-the-agent-loop
 title: "03 · The agent loop — ReAct, control loops, and stopping"
 
@@ -24,7 +25,7 @@ keywords:
 
 category: Foundations
 series: Harness Engineering
-part: "Part I — Foundations"
+part: "Part I - Foundations"
 
 hero: diagrams/01-agent-loop.svg
 hero_alt: "The agent loop: a user task enters REASON, which either calls a tool (ACT then OBSERVE, looping back) or returns a final answer; a side panel lists the four stop conditions the loop checks each turn."
