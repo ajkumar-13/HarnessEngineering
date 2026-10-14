@@ -1,0 +1,720 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-009",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-009-q01",
+      "type": "order",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "ladder",
+        "information-loss"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put the four context-management moves of a long-running harness in order of how much information each loses, least first.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Reset the window behind a handoff file"
+        },
+        {
+          "key": "b",
+          "text": "Clear tool results already acted on"
+        },
+        {
+          "key": "c",
+          "text": "Offload a large output to disk and leave a pointer"
+        },
+        {
+          "key": "d",
+          "text": "Compact older turns into a summary"
+        }
+      ],
+      "answer": [
+        "c",
+        "b",
+        "d",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "Offloading is lossless: the output is relocated, not dropped. Clearing is nearly lossless: the raw bytes go, but the call can be re-run. Compaction is lossy: the summary keeps what its brief names. A reset is total: everything not in the handoff file is gone.",
+      "hints": [
+        "One of the four only moves bytes; one throws away a whole window."
+      ]
+    },
+    {
+      "id": "hrn-009-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "clearing",
+        "side-effects",
+        "exclude-tools"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Thirty turns ago an agent called `charge_card`, which returned a payment confirmation identifier. The window is filling and the harness is about to clear spent tool results. What should happen to that result?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Clear it to a stub like the others; the agent can re-run the call if it needs the identifier.",
+          "correct": false,
+          "feedback": "Re-running the call charges the card again. The stub's recovery path does not exist for a call with a side effect."
+        },
+        {
+          "key": "b",
+          "text": "Exclude it from clearing and carry it in the compaction brief.",
+          "correct": true,
+          "feedback": "Correct. A result that cannot be cheaply re-obtained is excluded from clearing and summarised, the one case where the cheaper rung is wrong."
+        },
+        {
+          "key": "c",
+          "text": "Drop it with no stub at all, since the agent has already acted on it and moved on.",
+          "correct": false,
+          "feedback": "Dropping it silently loses the only record of a payment the agent made; a later turn may need the identifier."
+        },
+        {
+          "key": "d",
+          "text": "Reset the window, because a side effect means the context cannot be managed safely.",
+          "correct": false,
+          "feedback": "A reset loses everything not written to the handoff, which would have to carry the identifier anyway; nothing here needs the most aggressive rung."
+        }
+      ],
+      "explanation": "Only deterministic results that are cheap to re-issue are safe to clear. A payment confirmation comes from a call with a side effect, so it is excluded (Anthropic's `exclude_tools` is this rule as configuration) and summarised instead.",
+      "hints": [
+        "Ask what \"re-run the call if needed\" would do for this particular call."
+      ]
+    },
+    {
+      "id": "hrn-009-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "compaction",
+        "tool-result-pairing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A transcript holds the goal and then 40 turns, each an assistant message with one `tool_use` block followed by a user message with its `tool_result`: 81 messages. A compactor keeps `messages[-5:]` verbatim and summarises the rest. What does the next request look like?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It opens on a `tool_result` whose `tool_use` was folded away, and the API rejects it.",
+          "correct": true,
+          "feedback": "Correct. The last five messages start on turn 38's result; its call, one message earlier, went into the summary."
+        },
+        {
+          "key": "b",
+          "text": "It is valid, because five is odd and an odd slice always starts on an assistant turn.",
+          "correct": false,
+          "feedback": "With 81 messages the slice starts at index 81 - 5 = 76, a user turn; the parity of the start depends on the length and the count together, not on the count alone."
+        },
+        {
+          "key": "c",
+          "text": "It is valid, but the goal is lost, because the goal sits in the first message, which is folded.",
+          "correct": false,
+          "feedback": "The goal sits in the head that is summarised, and the brief's contract keeps it verbatim; the request's problem is structural."
+        },
+        {
+          "key": "d",
+          "text": "It is valid, and the whole history is still read from the prompt cache.",
+          "correct": false,
+          "feedback": "A compaction rewrites the message list, so the cache keeps at most the tools and system prompt; and this request is not valid at all."
+        }
+      ],
+      "explanation": "In an agentic transcript every user turn after the first carries the result of the call just before it, so a cut by count lands between a call and its result half the time. `snippets/compact.py` prints exactly this case: `messages[-5:]` starts on a user turn with the orphaned `tool_result` tu_38.",
+      "hints": [
+        "Work out which message index the slice starts at, and what role it has.",
+        "A user message in this transcript carries the result of the message before it."
+      ]
+    },
+    {
+      "id": "hrn-009-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "prompt-caching",
+        "compaction",
+        "break-even"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A session sits at 160,000 tokens. A compaction brings it to 40,000 tokens, with a brief of 5,000 output tokens. Use Claude Sonnet 4.6's multipliers (output 5×, five-minute cache write 1.25×, cache read 0.1× of base input) and the model of one compaction: the summary call reads the cached 160,000 warm and writes the brief; the first call after writes the new prefix in place of the 0.1× read of the old one; every later call reads the shorter prefix. After how many later calls does the compaction break even? Give one decimal place.",
+      "answer": {
+        "value": 6.25,
+        "tolerance": 0.06,
+        "unit": "calls"
+      },
+      "precision_note": "Event: $16{,}000 + 5 \\times 5{,}000 + (1.25 \\times 40{,}000 - 16{,}000) = 16{,}000 + 25{,}000 + 34{,}000 = 75{,}000$ token-equivalents. Saving per later call: $0.1 \\times 120{,}000 = 12{,}000$. Break-even: $75{,}000 / 12{,}000 = 6.25$, as `event(40_000)` in `snippets/cache_cost.py` gives. Leaving out the brief's output gives 4.17, and not offsetting the first call's read gives 7.58; both fall outside the tolerance.",
+      "explanation": "The event is the summary call plus the write premium on the new prefix; the saving is the reads no longer paid on the 120,000 tokens removed. Dividing one by the other gives the number of later calls needed to earn the compaction back.",
+      "hints": [
+        "Split the event into the summary call (a warm read and an output) and the first call's write premium.",
+        "The saving per later call is 0.1× of the tokens the compaction removed."
+      ]
+    },
+    {
+      "id": "hrn-009-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "offloading",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "At the tool boundary, a 35,907-token build log is replaced by a 486-token pointer. The run then makes 20 more calls, each re-sending the whole history. How many input tokens does the offload save across those 20 calls, ignoring the prompt cache?",
+      "answer": {
+        "value": 708420,
+        "tolerance": 1,
+        "unit": "tokens"
+      },
+      "precision_note": "$(35{,}907 - 486) \\times 20 = 35{,}421 \\times 20 = 708{,}420$; the sizes are the ones `snippets/offload.py` prints. Forgetting the pointer gives 718,140, outside the tolerance.",
+      "explanation": "Every later call re-sends the history, so the saving per call is the log's size less the pointer's, and it is paid on each of the 20 calls.",
+      "hints": [
+        "What does each later call send instead of the log?"
+      ]
+    },
+    {
+      "id": "hrn-009-q06",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "tool-result-share",
+        "trace"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Running `uv run python posts/09-context-management-loop/snippets/transcript.py` prints the output shown. The test runs' tool results are failing build logs. What percentage of the whole run, sent as one request, are those build logs? Give one decimal place.",
+      "stimulus": {
+        "kind": "code",
+        "language": "text",
+        "content": "140 turns, 281 messages; tools and system prompt: 773 tokens\nwhole run as one request: 463,530 tokens against an illustrative window of 200,000\n  run_tests       227,592 tokens of tool results\n  query_metrics    49,654 tokens of tool results\n  read_file        39,658 tokens of tool results\n  grep             13,197 tokens of tool results\n  edit_file         1,466 tokens of tool results\n  create_ticket        37 tokens of tool results\ntool results: 72% of the request"
+      },
+      "answer": {
+        "value": 49.1,
+        "tolerance": 0.06,
+        "unit": "%"
+      },
+      "precision_note": "$227{,}592 / 463{,}530 = 0.4910$, so 49.1%. Dividing by the tool-result total instead ($227{,}592 / 331{,}604$, 68.6%) answers a different question and falls outside the tolerance.",
+      "explanation": "The tool-result share decides the branch: here half of the whole run is build logs, a single kind of output that offloading at the tool boundary removes, which is why the managed run of `snippets/ladder.py` never needs to clear before call 97.",
+      "hints": [
+        "The share is of the whole request, not of the tool results.",
+        "Divide the run_tests line by the whole-run total."
+      ]
+    },
+    {
+      "id": "hrn-009-q07",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "compaction",
+        "tool-result-pairing",
+        "cut"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "This compactor keeps the last `keep_last` messages verbatim and folds the rest into a brief. On an agentic transcript it sometimes produces a request the API rejects. Fix `compact` so that the kept tail never starts on a tool result whose call was folded away, the request still opens on a user turn and the roles alternate, and at least `keep_last` messages are kept verbatim.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def open_tool_uses(msgs):\n    \"\"\"Ids of tool_use blocks in msgs whose tool_result is not also in msgs.\"\"\"\n    used, answered = set(), set()\n    for m in msgs:\n        for b in m[\"content\"] if isinstance(m[\"content\"], list) else []:\n            if b.get(\"type\") == \"tool_use\":\n                used.add(b[\"id\"])\n            elif b.get(\"type\") == \"tool_result\":\n                answered.add(b[\"tool_use_id\"])\n    return used - answered\n\n\ndef compact(messages, summarise, *, keep_last=6):\n    \"\"\"Fold the head into one brief, cutting only where no tool call is left open.\"\"\"\n    head, tail = messages[:-keep_last], messages[-keep_last:]\n    if len(head) < 2:\n        return messages\n    brief = {\"role\": \"user\", \"content\": [{\"type\": \"text\", \"text\": summarise(head)}]}\n    return [brief] + tail\n",
+      "solution": "def open_tool_uses(msgs):\n    \"\"\"Ids of tool_use blocks in msgs whose tool_result is not also in msgs.\"\"\"\n    used, answered = set(), set()\n    for m in msgs:\n        for b in m[\"content\"] if isinstance(m[\"content\"], list) else []:\n            if b.get(\"type\") == \"tool_use\":\n                used.add(b[\"id\"])\n            elif b.get(\"type\") == \"tool_result\":\n                answered.add(b[\"tool_use_id\"])\n    return used - answered\n\n\ndef compact(messages, summarise, *, keep_last=6):\n    \"\"\"Fold the head into one brief, cutting only where no tool call is left open.\"\"\"\n    cut = max(1, len(messages) - keep_last)\n    while cut > 1 and (open_tool_uses(messages[:cut])\n                       or messages[cut][\"role\"] != \"assistant\"):\n        cut -= 1\n    head, tail = messages[:cut], messages[cut:]\n    if len(head) < 2:\n        return messages\n    brief = {\"role\": \"user\", \"content\": [{\"type\": \"text\", \"text\": summarise(head)}]}\n    return [brief] + tail\n",
+      "tests": "def run(n):\n    \"\"\"The goal, then n turns of (assistant tool_use, user tool_result).\"\"\"\n    msgs = [{\"role\": \"user\", \"content\": \"goal\"}]\n    for k in range(1, n + 1):\n        msgs.append({\"role\": \"assistant\", \"content\": [\n            {\"type\": \"text\", \"text\": f\"turn {k}\"},\n            {\"type\": \"tool_use\", \"id\": f\"tu_{k}\", \"name\": \"read_file\", \"input\": {\"path\": f\"f{k}.py\"}}]})\n        msgs.append({\"role\": \"user\", \"content\": [\n            {\"type\": \"tool_result\", \"tool_use_id\": f\"tu_{k}\", \"content\": f\"contents {k}\"}]})\n    return msgs\n\n\ndef check(msgs, keep_last):\n    seen = []\n    out = compact(msgs, lambda head: seen.append(len(head)) or f\"brief of {len(head)}\", keep_last=keep_last)\n    assert out[0][\"role\"] == \"user\", \"the request must open on a user turn\"\n    assert all(a[\"role\"] != b[\"role\"] for a, b in zip(out, out[1:])), \"roles must alternate\"\n    assert not open_tool_uses(out), \"a kept tool_use lost its result\"\n    for m in out:\n        for b in m[\"content\"] if isinstance(m[\"content\"], list) else []:\n            if b.get(\"type\") == \"tool_result\":\n                assert any(c.get(\"id\") == b[\"tool_use_id\"] for x in out if isinstance(x[\"content\"], list)\n                           for c in x[\"content\"]), \"a tool_result whose tool_use was cut away\"\n    assert out[1:] == msgs[len(msgs) - len(out) + 1:], \"the tail must be the original messages, verbatim\"\n    assert len(out) - 1 >= min(keep_last, len(msgs) - 1), \"keep at least keep_last messages verbatim\"\n    assert len(out) < len(msgs), \"a long run must actually be compacted\"\n    assert seen == [len(msgs) - len(out) + 1], \"summarise must see exactly the folded head\"\n    return out\n\n\n# 1. odd and even keep_last on the same run: both land on a call, never on a result\nfor keep in (2, 3, 4, 5, 6, 7):\n    out = check(run(40), keep)\n    assert out[1][\"role\"] == \"assistant\"\n# 2. the cut walks back, not forward: keep_last=5 keeps 6 messages, not 4\nassert len(check(run(40), 5)) == 7\n# 3. a short run with nothing worth folding comes back unchanged\nassert compact(run(1), lambda h: \"x\", keep_last=6) == run(1)\n# 4. a transcript whose last turn is still open: the open call stays with its turn\nmsgs = run(10) + [{\"role\": \"assistant\", \"content\": [{\"type\": \"tool_use\", \"id\": \"tu_x\", \"name\": \"grep\", \"input\": {}}]}]\nout = compact(msgs, lambda h: \"x\", keep_last=4)\nassert out[0][\"role\"] == \"user\" and out[-1] == msgs[-1] and out[1][\"role\"] == \"assistant\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "A cut by count lands between a call and its result whenever the arithmetic says so. The fix walks the cut back until no tool call in the head is left open and the tail starts with an assistant turn; the brief then goes in front as a user turn of its own, so the roles still alternate.",
+      "hints": [
+        "Start the cut where the slice would, then move it towards the front of the list.",
+        "Stop when the head has no call without its result and the first kept message is an assistant turn."
+      ]
+    },
+    {
+      "id": "hrn-009-q08",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "offloading",
+        "pointer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An offloader replaces a 2,000-line build log with a pointer that keeps its first 15 lines. Why should the pointer keep its last 15 lines as well?",
+      "answer": {
+        "model": "Because a failing build's error, and its final verdict, is at the end of the log.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?=\\W*\\w[\\w'-]*\\W+\\S+\\s+\\S)(?![\\s\\S]*\\bnot\\s+(only\\s+)?because\\b)(?![\\s\\S]*\\b(not|never|isn'?t|aren'?t|rarely|no)\\s+(at|in|near|on)\\s+the\\s+(very\\s+)?(end|ends|ending|last|bottom|tail|close)\\b)(?![\\s\\S]*\\b(errors?|fail\\w*|exceptions?|tracebacks?|stack\\s+traces?|what\\s+went\\s+wrong|exit\\s+(code|status)|verdicts?|outcomes?|final\\s+(results?|status))\\b(?:(?!\\b(not|never|isn'?t|aren'?t|rarely|no)\\b)[^.;\\n]){0,40}?\\b(at|in|near|on)\\s+the\\s+(very\\s+)?(start|beginning|top|head|first(\\s+\\d+)?\\s+lines?)\\b)(?![\\s\\S]*\\b(start|beginning|top|head|first(\\s+\\d+)?\\s+lines?)\\b[^.;\\n]{0,30}?\\b(contains?|holds?|shows?|has|have|carr(y|ies))\\s+the\\s+(errors?|fail\\w*|exceptions?|tracebacks?|stack\\s+traces?|what\\s+went\\s+wrong|exit\\s+(code|status)|verdicts?|outcomes?|final\\s+(results?|status))\\b)(?=[\\s\\S]*?(\\b(errors?|fail\\w*|exceptions?|tracebacks?|stack\\s+traces?|what\\s+went\\s+wrong|exit\\s+(code|status)|verdicts?|outcomes?|final\\s+(results?|status))\\b[^.;\\n]{0,80}?\\b(end|ends|ending|last|bottom|tail|close)\\b|\\b(end|ends|ending|last|bottom|tail|close)\\b[^.;\\n]{0,80}?\\b(errors?|fail\\w*|exceptions?|tracebacks?|stack\\s+traces?|what\\s+went\\s+wrong|exit\\s+(code|status)|verdicts?|outcomes?|final\\s+(results?|status))\\b|\\bfinal\\s+(results?|status|verdicts?|outcomes?)\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Offloading exists mostly for outputs like a build log, and a failing build reports its error and verdict at the end. A head-only pointer hides exactly the part the agent needs, which would force a re-read of the whole file.",
+      "hints": [
+        "Where in a failing build's output does the useful part appear?"
+      ]
+    },
+    {
+      "id": "hrn-009-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "prompt-caching",
+        "compaction",
+        "render-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness places a cache breakpoint at the end of its system prompt and then compacts the message list. On the first call after the compaction, which part of the request can still be read from the prompt cache?",
+      "answer": {
+        "model": "The tools and the system prompt: everything that renders before the messages.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?=\\W*\\w[\\w'-]*\\W+\\S+\\s+\\S)(?![\\s\\S]*\\bnothing\\b(?!\\s+(but|except|beyond|after|past|other\\s+than)\\b))(?![\\s\\S]*\\b(none\\s+of\\s+it|no\\s+part|neither|the\\s+whole\\s+(history|request|conversation|message\\s+list))\\b)(?![\\s\\S]*\\b(everything|all)\\s+(after|past|beyond|following)\\b)(?![\\s\\S]*\\b(not|except|but\\s+not|excluding|nor)\\s+(the\\s+)?(tools?|tool\\s+(definitions?|schemas?)|system(\\s+prompt)?)\\b)(?![\\s\\S]*\\bonly\\s+the\\s+(messages?|summary|brief|compaction|tail|recent|kept|history|tools?(?!\\s*(and|\\+|,|&))|system(\\s+prompt)?(?!\\s*(and|\\+|,|&)))\\b)(?![\\s\\S]*\\b(tools?|tool\\s+(definitions?|schemas?)|system(\\s+prompt)?)\\b(?:(?!messages?|history|summary|brief|tail)[^.;\\n]){0,40}?\\b(are|is|get|gets|must\\s+be|has\\s+to\\s+be|have\\s+to\\s+be|will\\s+be)\\s+(also\\s+)?(invalidated|lost|rewritten|re-?written|written\\s+again|missed|evicted|dropped|broken|re-?sent|re-?cached)\\b)(?=[\\s\\S]*(\\b(tools?|tool\\s+definitions?|tool\\s+schemas?)\\b[\\s\\S]*\\bsystem\\b|\\bsystem\\b[\\s\\S]*\\b(tools?|tool\\s+definitions?|tool\\s+schemas?)\\b|\\b(everything|all|the\\s+part|what(ever)?|the\\s+prefix)\\b[^.]*\\b(before|ahead\\s+of|but|except|up\\s+to)\\b[^.]*\\b(messages?|message\\s+list|breakpoint)\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The request renders tools, then system, then messages, and an entry covers everything up to its breakpoint. A compaction rewrites only the messages, so the entry ending at the system prompt still matches; in the snippet that is the 773 tokens of tools and system prompt.",
+      "hints": [
+        "Recall the order in which the request is rendered.",
+        "A rewrite invalidates only what comes at or after it."
+      ]
+    },
+    {
+      "id": "hrn-009-q10",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "prompt-caching",
+        "compaction",
+        "deep-vs-shallow"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Compacting a 160,000-token session to 130,000 tokens takes 62.5 later calls to pay for itself; compacting it to 25,000 takes 4.2. What makes the shallow compaction so slow to pay back?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The write is charged on the whole surviving prefix; the saving only on the tokens removed.",
+          "correct": true,
+          "feedback": "Correct. 1.25× of 130,000 is nearly the whole write, and 0.1× of 30,000 is a small saving per call."
+        },
+        {
+          "key": "b",
+          "text": "Its brief has more to cover, so its summary call writes more output tokens at 5× the input price.",
+          "correct": false,
+          "feedback": "Both use the same 5,000-token brief, so the summary call costs the same 41,000 equivalents in both columns; the length of the history does not change the brief."
+        },
+        {
+          "key": "c",
+          "text": "After a shallow compaction every later call is read at the full input price.",
+          "correct": false,
+          "feedback": "Later calls read the shorter prefix from cache at 0.1× in both cases; the difference is how much shorter it is."
+        },
+        {
+          "key": "d",
+          "text": "A shallow compaction also invalidates the system prompt's cache entry.",
+          "correct": false,
+          "feedback": "With a breakpoint at the end of the system prompt, neither compaction touches that entry."
+        }
+      ],
+      "explanation": "The table of `snippets/cache_cost.py` splits the event: the same summary call in both columns, then a write premium of 15,250 for the deep compaction against 146,500 for the shallow one, while the shallow one saves 3,000 a call against 13,500. Compact rarely and deeply.",
+      "hints": [
+        "Compare which line of the cost table differs most between the two columns."
+      ]
+    },
+    {
+      "id": "hrn-009-q11",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "trace",
+        "signals",
+        "observability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each signal logged on a long run to what it tells the harness. One description on the right matches none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Window fill on every call"
+        },
+        {
+          "key": "b",
+          "text": "Tool-result share of input tokens"
+        },
+        {
+          "key": "c",
+          "text": "Re-read rate of paths already read"
+        },
+        {
+          "key": "d",
+          "text": "Output tokens per turn plotted against fill"
+        },
+        {
+          "key": "e",
+          "text": "Cleared tool uses and tokens freed"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "The number every trigger depends on"
+        },
+        {
+          "key": "b",
+          "text": "Whether offloading or clearing will help, or history itself is the weight"
+        },
+        {
+          "key": "c",
+          "text": "A decision the agent has lost sight of"
+        },
+        {
+          "key": "d",
+          "text": "One shape context anxiety can take"
+        },
+        {
+          "key": "e",
+          "text": "Whether the clearing policy fired, and what it bought"
+        },
+        {
+          "key": "f",
+          "text": "Whether the model is large enough for the task"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d",
+        "e": "e"
+      },
+      "explanation": "The five signals are ordinary trace attributes. Window fill drives the triggers, the tool-result share picks the branch, repeat reads show a lost decision, shrinking turns as fill climbs are one shape of context anxiety, and the provider's edit report shows whether clearing fired. None of them measures whether a larger model is needed.",
+      "hints": [
+        "Start with the one every threshold in a context policy is compared against."
+      ]
+    },
+    {
+      "id": "hrn-009-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "prompt-caching",
+        "offloading",
+        "prevention"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Offloading turn 9's build log at the tool boundary, the next call reads 95% of itself from the prompt cache. Swapping the same pointer in ten turns later, after the log was appended, only 46% of that call matches the call before byte for byte. Why the difference?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The swap rewrites a message earlier in the history, so every block after it misses the cache.",
+          "correct": true,
+          "feedback": "Correct. A cache entry covers everything up to its breakpoint, so a change at the log's position invalidates all ten later turns."
+        },
+        {
+          "key": "b",
+          "text": "The pointer is larger when it is written later, so more of the request is new.",
+          "correct": false,
+          "feedback": "It is the same 486-token pointer in both cases; size is not what changed."
+        },
+        {
+          "key": "c",
+          "text": "The cache entry for the early turns expired during the ten turns in between.",
+          "correct": false,
+          "feedback": "Nothing in the comparison involves time; the snippet measures which bytes of the next request match the previous one."
+        },
+        {
+          "key": "d",
+          "text": "Any offload invalidates the system prompt's entry, and the later call has a larger history to re-read.",
+          "correct": false,
+          "feedback": "An offload at the tool boundary leaves the whole prefix, system prompt included, untouched; that is why the first case reads 95%."
+        }
+      ],
+      "explanation": "At the tool boundary the log never enters the prefix, so the offload is preventative and costs nothing in cache terms. Done after the append it is a clear, with a clear's bill: the rewrite at the log's position invalidates everything after it.",
+      "hints": [
+        "Find where in the request each version changes bytes the previous call sent.",
+        "A prefix match stops at the first changed block."
+      ]
+    },
+    {
+      "id": "hrn-009-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o5",
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "policy",
+        "design",
+        "exclude-tools"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A customer-support agent runs for hours. Its tools are `search_kb` (deterministic knowledge-base search), `read_logs` (returns up to 3,000 lines of a service log), `get_order_status` (live, changes over time) and `issue_refund` (a side effect returning a refund identifier). Design its context-management policy: which rung handles which results, where it runs, what triggers each rung, what is excluded from clearing and why, what the compaction brief must keep, and how the policy is checked.",
+      "kind": "design",
+      "solution": "1. **Offload at the tool boundary.** `read_logs` output over a few thousand characters goes to disk with a pointer carrying the head, the tail and a grep pattern; done inside the tool wrapper it is preventative and leaves the cached prefix untouched.\n2. **Clear spent results in batches.** `search_kb` results are deterministic and cheap to re-issue, so once acted on they become stubs, oldest first, keeping the newest few, and only when a clear frees enough tokens to be worth the cache invalidation (a `clear_at_least` floor).\n3. **Exclude what cannot be re-obtained.** `get_order_status` is live and `issue_refund` has a side effect: a stub promising a re-run would re-read a changed status or issue a second refund. Both are excluded from clearing and summarised into the brief instead, the case where the cheaper rung is wrong.\n4. **Compact rarely and deeply.** At a hard trigger with headroom for the summary call, fold the old head into a structured brief that keeps the goal verbatim, decisions with reasons, refund identifiers, the last order statuses with their times, and the next action; cut only where no tool call is left open; keep the system prompt outside the history with a cache breakpoint at its end.\n5. **Triggers on fill.** A soft trigger for the cheap moves and a hard one for compaction, in absolute tokens or a fraction of the budget, never turn counts.\n6. **Reset only across sessions.** If a case outgrows one window, write a handoff with the six contract fields and test it by seeding a fresh window with it alone.\n7. **Check it.** Log window fill, tool-result share and edits applied per call, and evaluate the agent with and without compaction to see whether the brief drops a load-bearing fact.",
+      "rubric": [
+        {
+          "criterion": "Offloads read_logs at the tool boundary with an actionable head-and-tail pointer, and says why the boundary matters for the cache",
+          "points": 2
+        },
+        {
+          "criterion": "Clears search_kb results in batches with a floor on tokens freed",
+          "points": 2
+        },
+        {
+          "criterion": "Excludes get_order_status and issue_refund from clearing, with the reason, and carries them in the summary",
+          "points": 3
+        },
+        {
+          "criterion": "Specifies a compaction brief with named fields and a safe cut, triggered on fill with headroom",
+          "points": 2
+        },
+        {
+          "criterion": "Includes a way to check the policy: per-call signals and an evaluation with and without compaction",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Section 9's ladder applied to a new agent: the cheapest rung that solves each problem, prevention first, the exception for results that cannot be re-obtained, deep compactions, and measurement before trust.",
+      "hints": [
+        "Sort the four tools by whether their results can be re-obtained cheaply, then by how large they are.",
+        "Decide which moves run before bytes enter the prefix and which rewrite it afterwards."
+      ]
+    },
+    {
+      "id": "hrn-009-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 10,
+      "tags": [
+        "reset",
+        "handoff",
+        "ralph-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Explain how the reset rung depends on the handoff file of post 08 and becomes the Ralph loop of post 18. Name the fields a handoff needs before a reset is safe, the test that shows it is complete, and the sign in a trace that a handoff is short a field.",
+      "kind": "connect",
+      "solution": "1. **Dependence on post 08.** A reset discards the window entirely, so the only thing that crosses it is state written to disk: the handoff file post 08 introduces, written atomically and rewritten rather than appended. Without it a fresh window starts from nothing.\n2. **The contract.** Six fields: a pointer to the spec, not a paraphrase; what is done, in verifiable terms such as commits and passing checks; the next concrete action; the state, meaning the branch, the last checkpoint and the paths that matter, including scratch files earlier rungs wrote; decisions with their reasons; open questions.\n3. **The completeness test.** Seed a fresh window with only the handoff and check that it can name the next action without asking a question.\n4. **The failure signature.** Repeated work at the start of each fresh window: the resumed session re-derives a decision the last one had settled, and each reset costs turns of rediscovery.\n5. **Post 18.** Doing the reset over and over against a written spec, one chunk of work per fresh window, is the Ralph loop: the move of this post becomes the architecture of long-horizon execution.",
+      "rubric": [
+        {
+          "criterion": "Explains that a reset carries only what is on disk, the post 08 handoff file",
+          "points": 2
+        },
+        {
+          "criterion": "Names the handoff fields, including verifiable done and the next concrete action",
+          "points": 2
+        },
+        {
+          "criterion": "States the completeness test and the failure signature in a trace",
+          "points": 2
+        },
+        {
+          "criterion": "Connects repeated resets against a written spec to the Ralph loop",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 6 treats the reset as the post 08 handoff doing context-management duty, defines the contract, its test and its failure signature, and names the repeated reset as post 18's Ralph loop.",
+      "hints": [
+        "Ask what survives when the window is thrown away.",
+        "Think of the reset done again and again against the same spec."
+      ],
+      "connects": [
+        "hrn-008",
+        "hrn-018"
+      ]
+    },
+    {
+      "id": "hrn-009-q15",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 1,
+      "tags": [
+        "prompt-caching",
+        "prevention"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these moves leaves the cached prefix of the next request whole?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Offloading a big output inside the tool wrapper",
+          "correct": true,
+          "feedback": "Correct. Inside the wrapper the output is offloaded before it is appended: the bytes never enter the prefix, so nothing already cached changes."
+        },
+        {
+          "key": "b",
+          "text": "Clearing the oldest spent tool results to one-line stubs",
+          "correct": false,
+          "feedback": "Clearing rewrites a message already sent, so the cache breaks from the first cleared result."
+        },
+        {
+          "key": "c",
+          "text": "Compacting the older turns into a structured brief",
+          "correct": false,
+          "feedback": "Compaction rewrites the message list; at best the tools and system prompt stay cached."
+        },
+        {
+          "key": "d",
+          "text": "Resetting the window behind a complete handoff file",
+          "correct": false,
+          "feedback": "A reset throws the window away and starts the message history over."
+        }
+      ],
+      "explanation": "Preventative moves act before bytes enter the prefix; corrective moves rewrite a prefix already built and cached. Offloading at the tool boundary is the only rung of the ladder that is preventative.",
+      "hints": [
+        "Ask which move acts before the bytes are sent at all."
+      ]
+    },
+    {
+      "id": "hrn-009-q16",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "clearing",
+        "prompt-caching",
+        "batching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`snippets/ladder.py` prints the rungs that fired in the managed run (shown). After the clear at call 97, 3% of that call matched the call before byte for byte; after the clear at call 123, 76% did. Why?",
+      "stimulus": {
+        "kind": "code",
+        "language": "text",
+        "content": "call  rung       before    after  shared with the call before\n  97  clear     160,617  126,229  4,465 of 126,229 (4%)\n 123  clear     172,367  161,705  122,790 of 161,705 (76%)\n 138  compact   190,428    8,447  773 of 8,447 (9%)"
+      },
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The first clear had stubbed the oldest results, so the second rewrote from much later in the list.",
+          "correct": true,
+          "feedback": "Correct. Oldest-first clearing rewrites from the first result it stubs; the second time, that result sat far down the list, so the prefix before it still matched."
+        },
+        {
+          "key": "b",
+          "text": "The second clear freed far fewer tokens, and the share of the cache a clear destroys is proportional to the tokens it frees.",
+          "correct": false,
+          "feedback": "What breaks the cache is the position of the first rewritten message, not the number of tokens freed."
+        },
+        {
+          "key": "c",
+          "text": "Between the two clears the harness moved the system prompt's breakpoint.",
+          "correct": false,
+          "feedback": "The breakpoint and the system prompt are the same throughout; only the message list changes."
+        },
+        {
+          "key": "d",
+          "text": "The compaction at call 138 restored the cache entries the first clear had broken.",
+          "correct": false,
+          "feedback": "The compaction came after both clears, and a compaction rewrites the history; it restores nothing."
+        }
+      ],
+      "explanation": "A clear rewrites the history from the first result it replaces. The first clear started at the run's first tool result, near the front; by call 123 those were stubs, so the rewrite began much later and the prefix up to it was still cached. Batching clears, and clearing enough each time, keeps the number of such rewrites small.",
+      "hints": [
+        "Ask where in the message list each clear made its first change.",
+        "A prefix stays cached up to the first changed block."
+      ]
+    }
+  ]
+}

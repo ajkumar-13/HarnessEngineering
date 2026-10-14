@@ -116,7 +116,7 @@ or with pip, as each companion's README shows (`python -m pip install -e ".[dev]
 
 [poster/one-page-of-harness-engineering.svg](poster/one-page-of-harness-engineering.svg) puts the whole series on one sheet, drawn by hand: the equation the series is built on, the eleven components around the loop, how the loop stops, how it fails, the verifier ladder, what survives a context reset, a panel of costs from the posts, and the order to build a harness in. It reads in light and dark mode and prints at A2.
 
-Two figures are animated, because a loop is a thing that happens over time: [the loop turning](posts/03-the-agent-loop/diagrams/06-the-loop-turning.svg) (reason, act, observe, and the stop check after every turn), in post 03, and [a context reset](posts/09-context-management-loop/diagrams/02-context-reset.svg) (a window filling to its limit, clearing on one frame, and the handoff file that survives it), in post 09. Only opacity is animated, and only when the reader's system allows motion; with motion off, each is a complete still.
+Two figures are animated, because a loop is a thing that happens over time: [the loop turning](posts/03-the-agent-loop/diagrams/06-the-loop-turning.svg) (reason, act, observe, and the stop check after every turn), in post 03, and [a context reset](posts/09-context-management-loop/diagrams/05-context-reset.svg) (a window filling to its limit, clearing on one frame, and the handoff file that survives it), in post 09. Only opacity is animated, and only when the reader's system allows motion; with motion off, each is a complete still.
 
 ## Corrections and feedback
 

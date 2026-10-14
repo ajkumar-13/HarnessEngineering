@@ -1,58 +1,57 @@
-# 09 · Context management inside the loop — compaction, offloading, resets
+# 09 - Context management inside the loop: compaction, offloading, resets
 
-> **TL;DR.** A running agent fills its own window: every turn appends the model's output and the tool results, so left alone the window swells until quality degrades (*context rot*, now happening dynamically as the loop runs). A harness that means to run for more than a few turns must **actively manage its own context**. The corrective moves form a ladder of increasing aggressiveness: **offload** a big output to disk (lossless), **clear** tool results that have been acted on (nearly lossless), **compact** older turns into a summary (lossy), and **reset** the window entirely behind a handoff file (total). Reach for the cheapest rung that works, and price every rung against the prompt cache before trusting the word "cheap".
+> **TL;DR.** A running agent fills its own window: every turn appends the model's output and the tool results, so left alone the window grows until quality degrades, the context rot of `ctx-006`, now happening while the loop runs. The harness pushes back with a ladder of moves tried cheapest first: **offload** a big output to disk (lossless), **clear** tool results already acted on (nearly lossless), **compact** older turns into a summary (lossy), and **reset** the window behind a handoff file (total). Every rung but offloading at the tool boundary rewrites the cached prefix, so each is priced against the prompt cache before the word "cheap" is trusted.
 >
-> **After reading this you will be able to:**
-> - Recognise context rot from a live trace rather than in principle, and tell which rung the run needs.
-> - Implement the three everyday moves: tool-output offloading, spent-result clearing, and rolling-summary compaction.
-> - Choose between offload, clear, compact, and reset, including the one case where the cheaper rung is the wrong answer.
-> - Trigger on window fill rather than turn count, and cost a compaction against the cache it invalidates.
+> **Prerequisites:** [post 08](../08-state-filesystem-git/index.md), state and the filesystem.
+> **Safe to skip?** Skip it if the reader can already offload, clear, compact and reset a long agent run, cut a message history without orphaning a tool result, and price a compaction against the prompt cache.
+>
+> **After reading, you will be able to:**
+>
+> - Tell context rot from a healthy long run by reading the window fill and the tool-result share of each call in a trace.
+> - Run the ladder offload, clear, compact and reset in order of cost, say what each loses, and record its tokens and cache reuse.
+> - Compact a message history under a written information-loss budget without orphaning a tool result.
+> - Price a clear or a compaction against the prompt cache, and explain why one deep compaction beats several shallow ones.
+> - Keep bytes out of the cached prefix, and choose the cheapest rung that works, including the case where clearing is wrong.
 
-![A bar chart of window fill on each of eight calls, as a percentage of the model limit, with a soft trigger at 80 % and a hard trigger at 95 % across a shaded rot zone: an offload and a clear after t4, a deep compaction after t7, a dashed unmanaged line that exhausts the window by t5, and five cards giving the signals to log on every call.](diagrams/01-window-timeline.svg)
-*The window is a budget you spend down every turn. Unmanaged, it overflows into the rot zone; managed, it stays low and the model stays sharp.*
+![A line chart of input tokens per model call over 140 calls of one generated run. The unmanaged run climbs in steps at each build log and passes the illustrative 200,000-token window at call 54. The managed run offloads the six build logs at the tool boundary, clears spent results at calls 97 and 123 after crossing the soft trigger, and compacts at call 138 on the hard trigger, falling to 8,447 tokens.](diagrams/01-window-timeline.svg)
 
-> The hardest of the three moves to picture is the reset, because the point of it is what is *not* carried over. [An animated version](diagrams/02-context-reset.svg) fills a window, clears it on one frame, and leaves the handoff file standing.
+*The window fills itself; the ladder pushes back, cheapest rung first, and the expensive rung fires once, late.*
 
 ---
 
-## 1. Context rot happens while the loop runs
+## 1. The question: how does a running harness keep its window from rotting?
 
-The Context Engineering series established that a context window is not a bucket but a sequence the model attends to non-uniformly: information in the deep middle is used less well than information at the ends (lost-in-the-middle), and as a window fills with tools, retrieved chunks, and history, accuracy falls (Context Engineering, Posts 03, 06). The name for that decay is *context rot*, and it is measured rather than asserted: Chroma evaluated eighteen large language models (LLMs) and found recall and reasoning sagging steadily as input length grew, on tasks the same model handled easily when they were short (Hong et al., 2025). Degradation starts well inside the advertised window. That series studied the phenomenon in a *single* assembled prompt.
+The sibling series established that a context window is not a bucket but a sequence the model attends to unevenly: information in the deep middle is used less well than information at the ends (lost-in-the-middle, `ctx-003`), and as a window fills with tools, retrieved chunks and history, accuracy falls (`ctx-006`). The name for that decay is *context rot*, and it is measured rather than asserted: Chroma's report (Hong, Troynikov and Huber, 14 July 2025) evaluated 18 large language models (LLMs) and found that performance degrades as input length grows, "often in surprising and non-uniform ways", even on simple tasks the same models handle when the input is short. That series studied the phenomenon in a *single* assembled prompt.
 
-In a harness, it is worse, because the rot is **dynamic**. The loop appends to the window every turn (the model's reasoning, each tool's output, every observation), so a window that started lean is bloated later whether you did anything or not, and how fast depends on what the tools return rather than on how many turns have passed. This is the dynamic behind *context anxiety*, the reported failure mode from [Post 05](../05-agent-failure-modes/index.md) where the model rushes as the window fills, and behind the slow quality slide of a long session. The window fills itself; the harness's job is to push back.
+In a harness the rot is **dynamic**. The loop appends to the window every turn (the model's reasoning, each tool's output, every observation), so a window that started lean is bloated later whatever the harness does, and how fast depends on what the tools return rather than on how many turns have passed. This is the setting of *context anxiety*, the failure mode of [post 05](../05-agent-failure-modes/index.md) in which a model wraps up early as the window fills (named by Anthropic, Rajasekaran, 24 March 2026, who also reports Opus 4.5 largely removing it). The window fills itself; the harness's job is to push back, and it can only because [post 08](../08-state-filesystem-git/index.md) gave the loop somewhere to put things. Every move in this post takes something out of the window, and the disk is what makes that safe.
 
-Pushing back is possible only because [Post 08](../08-state-filesystem-git/index.md) gave the loop somewhere to put things: the filesystem. Every move in this post is, at bottom, *moving state out of the window and onto disk.* The window is the model's desk; disk is the filing cabinet. Context management is keeping the desk clear.
+The figure at the top is one generated run of 140 calls, sent twice by `snippets/ladder.py` with illustrative sizes. Unmanaged, its 2,000-line build logs push the request past an illustrative 200,000-token window at call 54. Managed, the one lossy move fires once, at call 138. The rest of the post builds that policy rung by rung.
 
 ---
 
 ## 2. Reading the window: telling rot from a live run
 
-Every threshold in this post is a number somebody has to measure. A harness that cannot report its own window fill cannot trigger on it, and the decision list in §9 assumes a diagnosis the reader has already made. Five signals, all of them ordinary trace attributes ([Post 21](../21-observability-traces/index.md)), separate the cases.
+A harness that cannot report its own window fill cannot trigger on it. Five signals, all ordinary trace attributes ([post 21](../21-observability-traces/index.md)), separate the cases.
 
-| Signal | What to log | What it tells you |
+| Signal | What to log | What it says |
 |---|---|---|
 | **Window fill** | input tokens divided by the model's limit, on every call | The number every trigger below depends on. Log it per call, not per run. |
-| **Tool-result share** | tool-result tokens as a fraction of input tokens per call | Above roughly a half you are in the offload or clear case (§3, §4); below it, history itself is the weight and you are in the compact case (§5). |
-| **Re-read rate** | repeat reads of a path already read this run | The direct symptom of a lost decision: the agent no longer trusts, or no longer sees, what it already learned. |
-| **Turn length against fill** | output tokens per assistant turn, plotted against fill | Turns getting shorter as fill climbs is the shape context anxiety makes in a trace ([Post 05](../05-agent-failure-modes/index.md) §6). |
-| **Edits applied** | cleared tool uses and tokens freed, as reported by the provider | Whether your policy fired at all, and what it bought. Anthropic's context-editing responses carry exactly this (Anthropic, 2025). |
+| **Tool-result share** | tool-result tokens as a fraction of input tokens per call | High, and the offload or clear rungs will help; low, and history itself is the weight, the compact case. |
+| **Re-read rate** | repeat reads of a path already read this run | The direct symptom of a lost decision: the agent no longer sees, or no longer trusts, what it already learned. |
+| **Turn length against fill** | output tokens per assistant turn, plotted against fill | Turns getting shorter as fill climbs is one shape context anxiety can take in a trace ([post 05](../05-agent-failure-modes/index.md)). |
+| **Edits applied** | cleared tool uses and tokens freed, as the provider reports them | Whether the policy fired at all, and what it bought. Anthropic's context-editing responses carry exactly this. |
 
-The tool-result share is the one worth instrumenting first, because it decides the branch. A run whose window is 70 % stale tool output has a cheap fix; a run whose window is 70 % genuine history does not.
+The tool-result share is the one to instrument first, because it decides the branch. For the generated run, `uv run python posts/09-context-management-loop/snippets/transcript.py` reports tool results at 72% of the whole run sent as one request, 227,592 tokens of it build logs. A window that is mostly stale tool output has a cheap fix; one that is mostly genuine history does not. No measured cut-off separates the two; "high" is a judgement made per run.
 
 ---
 
 ## 3. Offload: move a big output out (lossless)
 
-The cheapest and safest move handles the most common cause of a sudden spike: a single tool that returns a wall of text. A build log, a large file, a database dump: two thousand lines that, dropped into the transcript, crowd out everything the model actually needs and ride along on every subsequent call.
+The cheapest and safest move handles a sudden spike: a single tool that returns a wall of text, a build log or a database dump, two thousand lines that crowd out what the model needs and ride along on every later call.
 
-The fix is **tool-output offloading**: if an output is large, write it to disk and return a *pointer*, a short note plus a way to get the rest (ai-boost, 2026). The full output is one read or grep away when the model wants it; until then it costs nothing.
+The fix is **tool-output offloading**. Addy Osmani's "Agent Harness Engineering" (19 April 2026) describes it: "The harness keeps the head and tail tokens above a threshold and offloads the full output to the filesystem, where the agent can read it on demand" (Osmani, 2026). The window gets a *pointer*, a short note plus a way to get the rest.
 
 ```python
-import re
-from pathlib import Path
-
-SAFE = re.compile(r"[^A-Za-z0-9._-]")
-
 def offload_if_big(output, scratch, name, *, limit=4000):
     """A large tool output goes to disk; the window gets a pointer instead."""
     if len(output) <= limit:
@@ -70,80 +69,75 @@ def offload_if_big(output, scratch, name, *, limit=4000):
             + "\nlast 15 lines:\n" + "\n".join(lines[-15:]))
 ```
 
-Three details in that function are the whole technique, and each is a place hand-rolled offloaders go wrong. **The threshold is a break-even, not a taste**: an output is worth offloading once carrying it costs more than the pointer plus the one re-read it will probably provoke, and a 4,000-character limit is roughly a thousand tokens against a replacement of a few hundred once its head and tail are counted. **Return the head *and* the tail**, because the example this section leads with is a build log and a failing build's error is at the end; a head-only pointer is the wrong default for the case it most exists to serve. And **a pointer must be actionable**: path, size, and the shape of the query that gets the rest (a grep pattern for a log, a line range for a file). A pointer that says only "output truncated" teaches the model that its tools are unreliable.
+Running `uv run python posts/09-context-management-loop/snippets/offload.py` from the series root applies it to the build log of turn 9 of the generated run and prints:
 
-The path handling is not decoration either. If `name` derives from a tool call or a model-supplied identifier, an unguarded join lets `../` write outside the scratch directory, which is the blast-radius problem [Post 14](../14-permissions-sandboxes/index.md) treats in full.
+```text
+offload: a build log of 2,000 lines, 35,907 tokens, becomes a pointer of 486 tokens
+  4,000 characters of this log are 1,446 tokens
+  the model-supplied name '../../turn 9.log' is written inside the scratch directory as .._.._turn_9.log
+  at the tool boundary, the next call sends 15,461 tokens, not 52,849, and shares 14,752 of 15,461 tokens (95%) with the call before
+  swapped in ten turns later instead, that call shares 14,917 of 32,405 tokens (46%) with the call before
+```
 
-This move is **lossless**: nothing is thrown away, only relocated. It is the one to reach for first, and for many agents it alone keeps the window healthy, because tool output, not reasoning, is usually what bloats a loop.
+Three details are the whole technique. **The threshold is a break-even, not a taste**: an output is worth offloading once carrying it costs more than the pointer plus the one re-read it will probably provoke; here the 4,000-character limit is 1,446 tokens of log against a pointer of 486. **Return the head *and* the tail**, because a failing build's error is at the end; a head-only pointer is the wrong default for the case offloading most exists to serve. And **a pointer must be actionable**: path, size, and the shape of the query that gets the rest. A pointer that says only "output truncated" teaches the model that its tools are unreliable.
+
+The path handling matters too. If `name` comes from a model-supplied identifier, an unguarded join lets `../` write outside the scratch directory, the blast-radius problem of [post 14](../14-permissions-sandboxes/index.md); the sanitiser makes it a plain file name, and the containment check catches what it misses.
+
+This move is **lossless**: nothing is thrown away, only relocated, and it is the one to reach for first. The last two lines of the output show why *where* it runs matters (section 8): at the tool boundary the log never enters the prefix; swapped in later, the pointer breaks the cache at the log's position.
 
 ---
 
 ## 4. Clear: retire spent tool results (nearly lossless)
 
-The second rung is the one most hand-rolled loops skip, and the one providers have started shipping on your behalf.
+A tool result has a short useful life. The agent reads a file, reasons about it, edits, and moves on; the lines stay in the transcript, re-sent on every later call. The *decision* made from them matters; the raw bytes do not.
 
-A tool result has a short useful life. The agent calls a file reader, reasons about the contents, makes an edit, and moves on. After that, those two hundred lines sit in the transcript forever, re-sent on every subsequent call, contributing nothing but cost and noise. The *decision* the agent made from them matters; the raw bytes do not.
-
-So: once a tool result has been acted on, replace it with a stub. `[read src/parser.py, 240 lines, cleared; re-read if needed]`. The agent keeps its own reasoning about the file, which is the part that carried the meaning, and the file is one call away if it turns out to be needed again. Context Engineering Post 12 §4 treats the same move from the token side, with reduction ranges and the safety rule below; this section is the runtime half.
+So once a tool result has been acted on, replace it with a stub: `[cleared: read_file, 52 lines; re-run the call if needed]`. The agent keeps its own reasoning about the file, the part that carried the meaning, and the file is one call away if it is needed again. `ctx-012` treats the same move from the token side; this section is the runtime half.
 
 ### The provider's version is the reference policy
 
-Anthropic's context-editing feature implements this rung server-side, behind the beta header `context-management-2025-06-27`, as a strategy named `clear_tool_uses_20250919` (Anthropic, 2025). Its parameters are worth reading even if you never call that application programming interface (API), because the parameter set *is* the policy this section has been gesturing at, and its defaults make a defensible starting point.
+Anthropic's context editing implements this rung on the server, behind the beta header `context-management-2025-06-27`, as the strategy `clear_tool_uses_20250919` ("Context editing", Claude Platform documentation, consulted October 2026). The mechanism matters more than the names, which drift: the edit is applied to the prompt before it reaches the model, oldest tool results first, each replaced by placeholder text, while the client keeps its full history. Its parameters *are* this section's policy.
 
 | Parameter | Default | What it decides |
 |---|---|---|
-| `trigger` | 100,000 input tokens | When clearing fires. An absolute token count, not a fraction of the window. |
-| `keep` | 3 most recent tool use/result pairs | The "never clear the most recent" rule, as a number. The agent may still be mid-way through reasoning about them. |
-| `clear_at_least` | none | A floor on tokens freed per activation. The strategy declines to fire if it cannot meet it. |
-| `exclude_tools` | none | Tools whose results are never cleared. This is the safety rule below, as configuration. |
+| `trigger` | 100,000 input tokens | When clearing fires: a count of input tokens or of tool uses, never a fraction of the window. |
+| `keep` | 3 tool uses | The "never clear the most recent" rule, as a number: the agent may still be reasoning about them. |
+| `clear_at_least` | none | A floor on tokens freed per activation; the strategy is not applied if it cannot meet it. |
+| `exclude_tools` | none | Tools whose uses and results are never cleared: the safety rule below, as configuration. |
 | `clear_tool_inputs` | `false` | By default the tool *call* stays visible and only its result is replaced, so the transcript still reads coherently. |
 
-One of those rows is a correction to the naive version. `clear_at_least` exists for a reason the documentation states outright: clearing "invalidates cached prompt prefixes when content is cleared", so you should "clear enough tokens to make the cache invalidation worthwhile" (Anthropic, 2025). Clearing is not free of cache damage; §7 prices it. Batch the clears, and the parameter enforces the batching for you.
+One row corrects the naive version. `clear_at_least` exists because clearing "Invalidates cached prompt prefixes when content is cleared", so the documentation's advice is to "clear enough tokens to make the cache invalidation worthwhile". Clearing is not free of cache damage; section 7 prices it. A request that turns the rung on carries one edit:
 
-```python
-from anthropic import Anthropic
-
-client = Anthropic()
-
-response = client.beta.messages.create(
-    model="claude-opus-5",
-    max_tokens=4096,
-    betas=["context-management-2025-06-27"],
-    context_management={"edits": [{
-        "type": "clear_tool_uses_20250919",
-        "trigger": {"type": "input_tokens", "value": 60000},
-        "keep": {"type": "tool_uses", "value": 5},
-        "clear_at_least": {"type": "input_tokens", "value": 10000},
-        "exclude_tools": ["create_ticket", "charge_card"],
-    }]},
-    tools=TOOLS,
-    messages=messages,
-)
-for edit in response.context_management.applied_edits:
-    log(edit.type, edit.cleared_tool_uses, edit.cleared_input_tokens)
+```json
+{"context_management": {"edits": [{
+  "type": "clear_tool_uses_20250919",
+  "trigger": {"type": "input_tokens", "value": 60000},
+  "keep": {"type": "tool_uses", "value": 5},
+  "clear_at_least": {"type": "input_tokens", "value": 10000},
+  "exclude_tools": ["create_ticket", "charge_card"]
+}]}}
 ```
 
-The measurement behind the rung is the strongest number in this post. On Anthropic's internal agentic-search evaluation, context editing alone improved task performance by 29 % over the baseline, and 39 % when combined with a memory tool; on a 100-turn web-search evaluation it cut token consumption by 84 % while letting runs finish that would otherwise have exhausted the window (Anthropic, 2025). That 84 % is also about as direct a measurement as exists of the claim this rung rests on: in a long agentic run, stale tool output is the bulk of the window, larger than reasoning or instructions.
+The response's `context_management.applied_edits` reports each edit with `cleared_tool_uses` and `cleared_input_tokens`, which is the "edits applied" signal of section 2.
+
+Anthropic's announcement, "Managing context on the Claude Developer Platform" (29 September 2025), gives the numbers behind the rung: on an internal agentic-search evaluation, "Context editing alone delivered a 29% improvement" and combining it with the memory tool "improved performance by 39% over baseline"; in a 100-turn web-search evaluation it let runs finish that would otherwise have exhausted the window "while reducing token consumption by 84%". These are **reported**: a vendor's own evaluation, whose tasks and baseline cannot be checked.
 
 ### The rule that decides whether clearing is safe at all
 
-`keep` and oldest-first govern *when* to clear. Neither governs *what* is safe to clear, and a stub that reads "re-read if needed" is a lie for any result that cannot be cheaply re-obtained.
-
-Only clear results that are **deterministic and cheap to re-issue**. A file read, a grep, a directory listing, a test run: clear those freely. A non-deterministic query, a timestamped snapshot, a metered API call, or anything with a side effect (a payment confirmation, a created ticket identifier, the response to a write) must not be cleared, because the stub promises a recovery path that does not exist and the agent will act on that promise. Those get **summarised**, not cleared: a deliberate downgrade to the more expensive rung, and the one case in this post where the cheaper rung is the wrong answer (Context Engineering, Post 12 §4). `exclude_tools` is that rule expressed as an allow-list, which is why it belongs in the table above rather than in a footnote.
+`keep` and oldest-first govern *when* to clear, not *what* is safe to clear, and a stub that says "re-run the call if needed" is a lie for a result that cannot be cheaply re-obtained. Only clear results that are **deterministic and cheap to re-issue**: a file read, a grep, a directory listing, a test run. A non-deterministic query, a timestamped snapshot, a metered call, or anything with a side effect (a payment confirmation, a created ticket's identifier) must not be cleared, because the stub promises a recovery path that does not exist and the agent will act on that promise. Those get **summarised**, the one case in this post where the cheaper rung is the wrong answer (`ctx-012` states the same rule). `exclude_tools` is that rule as configuration. In the generated run, the live latency readings of `query_metrics` and the ticket of `create_ticket` are excluded, and they are exactly what the compaction's brief later has to carry.
 
 ---
 
 ## 5. Compact: summarise the older turns (lossy)
 
-Offloading and clearing both handle *observations*. Sometimes the window fills with **history itself**: dozens of ordinary turns whose sheer number, not any single message, is the problem. The move here is **compaction**: replace the older turns with a summary of them.
+Offloading and clearing handle *observations*. Sometimes the window fills with **history itself**, dozens of ordinary turns, and the move is **compaction**: replace the older turns with a summary.
 
-The keyword is **lossy**. A summary is smaller than what it summarises *because it discards detail*, and the discarded detail might have mattered. So compaction is governed by an **information-loss budget**: decide, in advance, what must survive a summary and what may be dropped. This is the runtime edge of the *Compress* primitive the Context Engineering series treats in full (Post 12); the harness concerns are *when* it fires, *what* the summary is contractually required to keep, and *where* it is safe to cut.
+The keyword is **lossy**: a summary is smaller *because it discards detail*, and the detail might have mattered. So compaction is governed by an **information-loss budget**: decide, in advance, what must survive a summary and what may be dropped. This is the runtime edge of the *compress* strategy of `ctx-012`; the harness concerns are *when* it fires, *what* the summary is required to keep, and *where* it is safe to cut.
 
 ### The contract is the prompt
 
-An information-loss budget with no text is not a contract. Prefer a **structured** brief over free prose, because a structure you control is a structure you can trust to retain the load-bearing facts.
+An information-loss budget with no text is not a contract. A **structured** brief beats free prose, because a structure the harness controls is one it can trust to keep the load-bearing facts.
 
-```
+```text
 Summarise the run so far for the agent that will continue it.
 Preserve, in this order:
 1. The goal, verbatim, and every constraint the operator set.
@@ -155,13 +149,13 @@ Drop: verbatim tool output, superseded attempts, recap, politeness.
 Bullet points, under {target_tokens} tokens.
 ```
 
-Fields three and four are what make this a *run* brief rather than a *conversation* brief. A chat summariser that preserves decisions and open questions is doing its job; an agent resumed from that summary still does not know which files it has already edited or whether the suite was green when it stopped, and it will rediscover both at the cost of several turns.
+Fields three and four make this a *run* brief rather than a *conversation* brief. Without them, an agent resumed from the brief does not know which files it has edited or whether the suite was green, and rediscovers both at the cost of several turns.
 
 ### Cutting the history without breaking the request
 
-The obvious implementation slices the message list by count, and it produces an invalid request on its first real run. `messages[-keep_last:]` cuts wherever arithmetic lands, and in an agentic transcript that is usually between an assistant turn carrying a `tool_use` block and the user turn carrying its matching `tool_result`. Providers reject an orphaned `tool_result`, so the harness gets a 400 and no obvious reason for it. Injecting the brief as a fresh message immediately before another user turn is the second hazard in the same three lines.
+The obvious implementation slices the message list by count, `messages[-keep_last:]`, and it cuts wherever the arithmetic lands. In an agentic transcript every user turn after the first carries the result of the call just before it, so half the possible cuts fall between an assistant turn's `tool_use` block and the user turn holding its `tool_result`, and the request then opens on a result whose call is gone. The Anthropic Messages application programming interface (API) rejects such a request with a 400 error that does not point at the compactor.
 
-The fix is a policy and a loop: walk the cut backwards until it lands where no tool call is left open and the next message is a plain user turn, then fold the brief into that turn rather than adding a message of its own.
+The fix is a policy and a loop: walk the cut back until no tool call is left open and the kept tail starts with an assistant turn, then put the brief in front of it as a user turn of its own, which keeps the roles alternating.
 
 ```python
 def open_tool_uses(msgs):
@@ -177,143 +171,197 @@ def open_tool_uses(msgs):
 
 
 def compact(messages, summarise, *, keep_last=6):
-    """Fold the head into one brief, cutting only where no tool call is open."""
+    """Fold the head into one brief, cutting only where no tool call is left open."""
     cut = max(1, len(messages) - keep_last)
     while cut > 1 and (open_tool_uses(messages[:cut])
-                       or messages[cut]["role"] != "user"):
+                       or messages[cut]["role"] != "assistant"):
         cut -= 1
-    head, tail = messages[:cut], list(messages[cut:])
+    head, tail = messages[:cut], messages[cut:]
     if len(head) < 2:
         return messages                       # nothing worth folding yet
-    brief = {"type": "text", "text": "[brief of earlier turns]\n" + summarise(head)}
-    body = tail[0]["content"]
-    tail[0] = {"role": "user", "content": [brief] + (
-        body if isinstance(body, list) else [{"type": "text", "text": body}])}
-    return tail
+    brief = {"role": "user", "content": [
+        {"type": "text", "text": "[brief of earlier turns]\n" + summarise(head)}]}
+    return [brief] + tail                     # user, then the assistant turn the tail starts with
 ```
 
-The summariser is an injected callable rather than a method invented on some object, so the prompt above is what you swap when the loss budget changes; and the system prompt is pinned outside the message list entirely, so a compactor can never fold an instruction into the summary it is meant to obey.
+The summariser is an injected callable, so the prompt above is what changes when the loss budget does, and the system prompt is pinned outside the message list, so a compactor can never fold an instruction into the summary it is meant to obey. In `snippets/compact.py` the callable is a deterministic stand-in that keeps the contract's named fields (a model would write the brief); run over the first 40 turns of the generated run, `uv run python posts/09-context-management-loop/snippets/compact.py` begins:
 
-Pair integrity and message sequencing are also exactly what a server-side compactor handles for you. Anthropic ships one behind the beta header `compact-2026-01-12`: it summarises earlier context into a compaction block once input tokens reach a trigger that defaults to 150,000, and the caller's obligation reduces to appending the whole response content back, compaction block included (Anthropic, 2026). If your provider ships compaction, the boundary bug above is a good reason to use theirs rather than roll your own.
+```text
+naive cut, messages[-5:]: starts with a user turn; orphaned tool_result: ['tu_38']
+compact(keep_last=5): 81 -> 7 messages; the kept tail starts with an assistant turn; open tool calls: []
+compact(keep_last=6): 81 -> 7 messages; the kept tail starts with an assistant turn; open tool calls: []
+request: 139,570 -> 4,869 tokens; the brief: 467 tokens
+first call after it: 773 of 4,869 tokens are a byte-identical prefix (16%, tools and system prompt); the call after that: 4,869 of 8,169 (60%)
+```
+
+The figure below draws the first two lines: the naive cut lands on turn 38's result, and the safe cut moves back one message to the call that asked for it.
+
+![Turns 37 to 40 of the generated run as a row of message cards, each assistant turn a blue tool call and each user turn its green result. A red line shows the cut by count, the last five messages, starting on the result tu_38 whose call is cut away; a purple line one message earlier is the safe cut. Below, the compacted request of 7 messages: one user brief, then turn 38's call and result onward.](diagrams/02-safe-cut.svg)
+
+*A cut by count orphans a result half the time; walking back to an assistant turn never does.*
+
+A server-side compactor takes the cut out of the caller's hands, and Anthropic documents two kinds ("Compaction", Claude Platform documentation, consulted October 2026). *At a token threshold* (strategy `compact_20260112`, beta header `compact-2026-01-12`), the API summarises older context once input tokens reach a trigger that defaults to 150,000, returns a `compaction` block, and ignores everything before it once the caller appends the response. *On demand* (`compact-2026-09-04`), the caller requests the summary and puts the returned block first in `messages`; the documentation recommends this kind wherever it is available. The boundary bug above is a reason to use the provider's compactor where there is one.
 
 ### When to fire it
 
-"At a fill threshold" needs a number. The sibling series offers two as illustrative defaults rather than a measured law: a **soft trigger at 80 %** of the window, where the cheap moves run (clear results that have been acted on, drop low-priority material), and a **hard trigger at 95 %**, where older turns are summarised into a brief (Context Engineering, Post 12 §9). Tune both to your own token-usage variance, and move them down when tool outputs are large and variable. The gap between them exists so the expensive, lossy move is not the first thing that happens when a window gets busy.
+`ctx-012` sets two triggers as its policy, a starting point rather than a measured law: a **soft trigger at 80%** of the budget, where the cheap moves run, and a **hard trigger at 95%**, where older turns are summarised; both move down when tool outputs are large and variable. The gap keeps the lossy move from being the first thing that happens when a window gets busy: in the generated run the soft trigger clears at calls 97 and 123, and the hard trigger compacts once, at call 138.
 
-There is also a mechanical reason the hard trigger cannot sit as high as it reads: 95 % of a 200,000-token window leaves 10,000 tokens, which is not room enough for the summarisation to run inside the loop. The compaction has to be a separate request against the head, and the trigger has to leave headroom for it. Shipped systems, tellingly, use **absolute** token triggers as often as percentages: 100,000 input tokens for context editing, 150,000 for server-side compaction (Anthropic, 2025; Anthropic, 2026). An absolute trigger is easier to reason about when one policy runs against several models with different window sizes.
-
-Finally, trigger on *fill*, not on turn count. Twenty terse turns and five turns carrying a build log each are not the same situation, and a policy that counts turns will compact the first and miss the second.
+The hard trigger cannot sit as high as it reads: at 95% of a 200,000-token window only 10,000 tokens remain for the summarisation instruction and the brief, so the trigger has to leave headroom for the summary call, which is why `ctx-012` measures both against the window less an output reserve. Anthropic's server-side rungs use **absolute** triggers (100,000 input tokens for context editing, 150,000 for threshold compaction), easier to reason about when one policy runs against several windows. And trigger on *fill*, not turn count: twenty terse turns and five turns carrying build logs are not the same window.
 
 ---
 
 ## 6. Reset: wipe the window behind a handoff (total)
 
-When the window is *fundamentally* too full (the task has outgrown a single context, or rot has already set in and a summary cannot rescue it), the most aggressive move is a **full reset**: write a handoff file, discard the window entirely, and resume in a fresh one. That such a rung is needed at all is a reported finding rather than an inference: Anthropic's account of building a long-running coding agent records that compaction on its own was not sufficient at that length, and that the run depended on state written to disk and read back into each fresh context (Anthropic, 2025).
+When the task has outgrown a single context, or rot has set in and a summary cannot rescue it, the most aggressive move is a **full reset**: write a handoff file, discard the window, and resume in a fresh one. That such a rung is needed is a reported finding. Anthropic's "Effective harnesses for long-running agents" (Young, 26 November 2025) says of an agent with compaction available, "However, compaction isn't sufficient", and its harness carried each fresh context across on files and git (Anthropic, 2025). Its successor, "Harness design for long-running application development" (Rajasekaran, 24 March 2026), defines the move, "clearing the context window entirely and starting a fresh agent, combined with a structured handoff that carries the previous agent's state and the next steps", and contrasts it with compaction, which "doesn't give the agent a clean slate". The same article dropped resets once Opus 4.5 largely stopped showing context anxiety: a harness fits the model it runs (Anthropic, 2026).
 
-This is the [Post 08](../08-state-filesystem-git/index.md) handoff file doing context-management duty. The current state is distilled to disk; the window is thrown away; a new window is seeded with only the handoff and continues. The loss is **total**: everything not written to the handoff is gone. That is exactly why it is the last resort, and exactly why "the handoff must be complete" needs a definition rather than an adjective.
+This is the handoff file of [post 08](../08-state-filesystem-git/index.md) doing context-management duty, and the loss is **total**: everything not written to the handoff is gone. That is why it is the last resort, and why "the handoff must be complete" needs a definition.
 
-**The handoff contract.** Six fields, and a run that cannot fill one of them is not ready to reset:
+**The handoff contract.** Post 08's four sections (spec, done, next, state) plus two, six fields in all; a run that cannot fill one is not ready to reset:
 
 - a pointer to the spec or issue the work serves, not a paraphrase of it;
 - what is done, in terms a fresh session can verify (commits, passing checks);
 - what is next, as one concrete action rather than a theme;
+- the state: the branch, the last checkpoint, and the paths that matter, including the scratch files earlier rungs wrote;
 - decisions taken and the reason for each, so they are not relitigated;
-- open questions, including anything the run was blocked on;
-- the paths that matter, absolute, including the scratch files earlier rungs wrote.
+- open questions, including anything the run was blocked on.
 
-**The completeness test.** Seed a fresh window with only the handoff and check that it can name the next concrete action without asking a question. That is cheap to run, and it is the only test that matters.
+**The completeness test.** Seed a fresh window with only the handoff and check that it can name the next concrete action without asking a question.
 
-**The failure signature.** An incomplete handoff shows up in a trace as repeated work at the start of every fresh window: the resumed session re-derives a decision the previous one had already settled. If each reset costs three turns of rediscovery, the handoff is short a field.
+**The failure signature.** An incomplete handoff shows up in a trace as repeated work at the start of every fresh window: the resumed session re-derives a decision the previous one had settled. If each reset costs three turns of rediscovery, the handoff is short a field.
 
-The reset is what makes truly long-horizon work possible: running across dozens of wiped windows without unbounded context growth. Done over and over against a written spec, it *is* the **Ralph loop** of [Post 18](../18-long-horizon-ralph/index.md). Here it is one move among several; there it becomes the whole architecture.
-
-![Three cards escalating from offload (lossless) to compact (lossy) to reset (total), each with what it does, when to use it, what it costs and the numbers the post gives for it, over a band splitting the preventative moves from the corrective ones.](diagrams/02-three-moves.svg)
-*The three headline moves at a glance. §4's clear rung slots between the first two, and §7 adds the column none of the three cards carries.*
+Done over and over against a written spec, the reset *is* the **Ralph loop** of [post 18](../18-long-horizon-ralph/index.md). It is the hardest move to picture, because its point is what is *not* carried over; [an animated version](diagrams/05-context-reset.svg) fills a window, clears it on one frame, and leaves the handoff file standing.
 
 ---
 
 ## 7. What each move costs the prompt cache
 
-Every rung above has been priced in tokens saved. None has been priced against the **prompt cache**, and that is the line item most harnesses fail to budget for.
+Every rung so far has been priced in tokens saved; the line item most harnesses fail to budget for is the **prompt cache**. Prompt caching works on an exact **prefix** match: an entry is a hash of everything up to a breakpoint, so a change to any block at or before the breakpoint misses it, and the render order is tools, then system, then messages, each level invalidating the levels after it ("Prompt caching", Claude Platform documentation, consulted October 2026). Two consequences are more precise than "compaction is a cache miss".
 
-Prompt caching works on an exact **prefix** match: the key is the exact bytes of the rendered prompt up to each breakpoint, and any change at position *N* invalidates every breakpoint at or after *N*. The render order is tools, then system, then messages (Anthropic, 2025). Two consequences follow, and both are more precise than "compaction is a cache miss".
+**A rewrite of the message list is not a *full* miss.** Tools and system render before messages, so a breakpoint at the end of the system prompt survives a compaction. The threshold-compaction page says so: with that breakpoint, "The system prompt cache remains valid and is read from cache" and "Only the compaction summary needs to be written as a new cache entry". What is lost is the message history's cache, from the rewrite onward; the compaction in section 5 kept 773 tokens, the tools and the system prompt.
 
-**A rewrite of the message list is not a *full* miss.** Tools and system render before messages, so a breakpoint on the last system block survives a compaction untouched. Anthropic's compaction guidance says so directly: place a breakpoint at the end of the system prompt and, when compaction occurs, "the system prompt cache remains valid and is read from cache; only the compaction summary needs to be written as a new cache entry" (Anthropic, 2026). What you lose is the message history's cache, from the rewrite onward.
-
-**The bill is a cache write on the new prefix, not full price on the old one.** The pre-compaction window no longer exists, so nobody pays for it. What you pay is the write premium on the *post*-compaction prefix: 1.25× base input on the default five-minute time-to-live (TTL), 2× on the one-hour TTL, plus the loss of the roughly 0.1× reads you had been enjoying over the old prefix (Anthropic, 2025).
+**The bill is the summary and a write on the new prefix, not full price on the old window**, which is never sent again. The multipliers are per model; for Claude Sonnet 4.6, the rate post 03 uses, Anthropic's pricing page (consulted October 2026) gives input at 3 dollars per million tokens, output at 15 (5×), a five-minute cache write at 3.75 (1.25×; 2× for the one-hour cache) and a cache read at 0.30 (0.1×).
 
 ### The arithmetic
 
-Take a 200,000-token window, a session sitting at 160,000 tokens, and two candidate compactions. Costs are in *token-equivalents*: tokens multiplied by their price relative to base input, so a 0.1× read of 160,000 tokens costs 16,000 equivalents.
+Take a session at 160,000 tokens and two candidate compactions, with a brief of 5,000 tokens (illustrative sizes). Costs are in *token-equivalents*, tokens times their price relative to base input, so a 0.1× read of 160,000 tokens costs 16,000. Without a compaction every later call reads the 160,000 from cache; with one, the summary call reads that same cached prefix warm and writes the brief, the first call after it writes the new prefix in place of that read, and every call after that reads the shorter prefix. `uv run python posts/09-context-management-loop/snippets/cache_cost.py` prints:
 
-| Line item | Deep: 160K → 25K | Shallow: 160K → 130K |
-|---|---|---|
-| Summary call over the head, read warm at 0.1× | 13,500 | 3,500 |
-| Cache write on the new prefix at 1.25× | 31,300 | 162,500 |
-| **The compaction event** | **44,800** | **166,000** |
-| Saved on each later turn (0.1× of the tokens removed) | 13,500 | 3,000 |
-| **Turns to break even** | **about 3** | **about 55** |
+```text
+multipliers: output 5x, cache write 1.25x, cache read 0.1x of base input
+line item                                                 deep   shallow
+session after the compaction (tokens)                   25,000   130,000
+summary call: cached prefix read warm at 0.1x           16,000    16,000
+summary call: 5,000 output tokens at 5x                 25,000    25,000
+first call after: write at 1.25x less read at 0.1x      15,250   146,500
+the compaction event                                    56,250   187,500
+saved on every later call                               13,500     3,000
+calls to break even                                        4.2      62.5
+deep, summary call sent cold at 1x: event 180,250, break even after 13.4 calls
+deep event in dollars: $0.17; saved per later call: $0.0405
+ten shallow compactions to the same 25,000: 1,321,875, 23.5 times one deep one
+```
 
-That table is the whole argument for **compact rarely and deeply**, and the reason is not the one usually given. The write premium is charged on the entire surviving prefix, not on the part you removed, so a shallow compaction pays almost the full write price to buy almost no read saving. Ten small compactions are not ten times as expensive as one large one; they are worse than that, because each of the ten pays a write on a prefix that is still nearly full.
+That table is the argument for **compact rarely and deeply**. The write premium is charged on the entire surviving prefix, not on the part removed, so the shallow compaction pays nearly the full write to buy a tenth of the deep one's saving, and needs 62.5 later calls to earn it back against 4.2. Ten small compactions to the same size are not ten times as expensive as one large one; the last line says their events alone cost 23.5 times as much, because each pays a write on a prefix that is still nearly full.
 
-The table also contains a trick worth taking. The summary call there is read *warm*: issue the summarisation request against the still-cached prefix with a trailing "summarise the above" instruction rather than pasting the head into a fresh request, and the head is read at roughly 0.1× instead of 1×. On the deep column that turns a 135,000-equivalent summarisation into a 13,500-equivalent one, and drops break-even from about twelve turns to about three. The run-level economics of that stable prefix are [Post 23](../23-economics-haas/index.md); this section is one specific way a harness destroys it.
+The summary call is read *warm*: issued against the still-cached prefix with a trailing "summarise the above" instruction, rather than pasting the head into a fresh request, the head is read at 0.1× instead of 1×. Sent cold, the deep compaction costs 180,250 and breaks even after 13.4 calls instead of 4.2. The figure below plots the net cost of both compactions, call by call.
 
-Clearing pays a version of the same bill. The rule in §4 is oldest-first, so the rewrite lands near the front of the message list and invalidates nearly as much of the prefix as a compaction does. It is still the better rung, because it costs no model call and paraphrases nothing, but it is not free, and dribbling out a few cleared results per turn buys a fraction of the headroom for the same invalidation. Batch the clears.
+![A line chart of the net cost of a compaction, in token-equivalents, against the number of later calls, for two dashed illustrative lines. The deep compaction starts at 56,250 and crosses zero after 4.2 calls; the shallow one starts at 187,500 and crosses zero after 62.5 calls.](diagrams/03-break-even.svg)
+
+*The shallow compaction pays nearly the deep one's bill and earns a fraction of its saving.*
+
+Clearing pays a version of the same bill, because oldest-first lands the rewrite near the front: the clear that `snippets/offload.py` runs after turn 40 rewrote the run's first tool result, and the next call shares a prefix of only 4,465 of 51,775 tokens with the last, against 99% without it. The snippets report that byte-identical prefix, the most a cache can return: the API writes entries only at breakpoints and looks back at most 20 blocks for one. It is still the better rung (no model call, nothing paraphrased), but a few cleared results per turn buy a fraction of the headroom for the same invalidation. Batch the clears. The run-level economics of the stable prefix are [post 23](../23-economics-haas/index.md)'s.
 
 ---
 
 ## 8. Prevention: keeping bytes out of the prefix
 
-One move you have already met belongs alongside these: **progressive disclosure** ([Post 07](../07-skills-mcp-runtime/index.md), which pairs it with the Model Context Protocol, MCP). Loading a skill's tools only when a turn needs them is context management applied to *tool schemas* rather than to history or output.
+**Progressive disclosure** ([post 07](../07-skills-mcp-runtime/index.md), with the Model Context Protocol, MCP) belongs alongside these: loading a skill's tools only when a turn needs them is context management applied to *tool schemas*.
 
-The useful axis is not which move you use but *when* it acts. **Preventative** moves act before bytes enter the prefix: progressive disclosure keeps schemas out, and offloading at the tool boundary keeps large outputs out. **Corrective** moves act on bytes already there: clearing, compaction, and reset all rewrite a prefix that has been built and cached. Offloading sits on both sides of that line depending on where it runs. Offload inside the tool wrapper and it is preventative, costing nothing in cache terms; offload after the output has already been appended and you are performing a clear, with a clear's cache bill.
+The useful axis is not which move runs but *when* it acts. **Preventative** moves act before bytes enter the prefix: progressive disclosure keeps schemas out, and offloading at the tool boundary keeps large outputs out. **Corrective** moves act on bytes already there: clearing, compaction and reset all rewrite a prefix that has been built and cached. Offloading sits on both sides of that line. Run inside the tool wrapper it is preventative and costs nothing in cache terms (95% of the next call read from cache, in section 3's output); run after the output has been appended it is a clear, with a clear's bill (46%).
 
-That is the second, independent reason to build the preventative moves first. They are not merely cheaper: they are the only moves that leave the cached prefix untouched, and they reduce how often the corrective rungs have to run at all. Progressive disclosure earns that description on one condition: a newly triggered schema must be *appended* to the conversation rather than swapped into the tool block, which renders before system and messages alike, so swapping it invalidates the whole prefix and costs more than the schemas it keeps out ([Post 07](../07-skills-mcp-runtime/index.md) §6).
+That is a second reason to build the preventative moves first: they are the only moves that leave the cached prefix untouched, and they make the corrective rungs run less often. Progressive disclosure earns that on one condition: a newly loaded schema must be *appended* to the conversation rather than swapped into the tool block, which renders first, so a swap invalidates the whole prefix and costs more than the schemas it keeps out ([post 07](../07-skills-mcp-runtime/index.md)). Anthropic's caching documentation now describes a beta for exactly that, `inline-tools-2026-09-15`, which sends a new tool's definition in a mid-conversation system message and leaves `tools` as first sent.
 
 ---
 
 ## 9. Choosing between them
 
-The corrective moves form an escalation ladder, and the rule is to take the cheapest rung that solves the problem.
+The four moves form an escalation ladder, and the rule is to take the cheapest rung that solves the problem.
 
-- **A single big output spiked the window?** Offload it. Lossless, cheap, no cache cost if it runs at the tool boundary (§3).
-- **Old tool results nobody needs any more?** Clear them to stubs, in batches. No model call, nothing paraphrased (§4).
-- **Many ordinary turns are the weight?** Compact the old head deeply, keep recent turns verbatim (§5).
-- **The window is unrecoverable, or the task spans more than one window?** Reset behind a complete handoff (§6).
-- **The result cannot be re-obtained?** Break the ladder and summarise it, even though clearing looks cheaper (§4).
+- **A single big output spiked the window?** Offload it, at the tool boundary. Lossless, cheap, no cache cost.
+- **Old tool results nobody needs any more?** Clear them to stubs, in batches. No model call, nothing paraphrased.
+- **Many ordinary turns are the weight?** Compact the old head deeply, keep recent turns verbatim.
+- **The window is unrecoverable, or the task spans more than one window?** Reset behind a complete handoff.
+- **The result cannot be re-obtained?** Break the ladder and summarise it, even though clearing looks cheaper.
 
-![Four stacked rungs, cheapest first: offload, clear, compact, and reset, each with what it does, when to use it, what is lost, and what happens to the cached message history (untouched, broken from there on, rewritten from the cut, and starts over), over a table pricing a deep compaction against a shallow one in token-equivalents.](diagrams/03-escalation-ladder.svg)
-*The same ladder with the column that is rarely budgeted for. Only offloading leaves the prefix intact; clearing breaks it from the cleared position, which is why clears should be batched. The cache column describes the message history: a breakpoint at the end of the system prompt survives all four rungs (§7).*
+![Four cards stepping up, cheapest first. Offload, lossless, loses nothing and leaves the cache untouched at the tool boundary; clear, nearly lossless, loses the raw bytes and breaks the cache from the first cleared result; compact, lossy, loses what the brief drops and rewrites the cache after the system prompt; reset, total, loses all the handoff lacks and starts the cache over.](diagrams/04-ladder.svg)
 
-Set out with the cache column attached, the ladder reads differently from the way it is usually taught. Offloading is cheap in three separate senses (no model call, nothing paraphrased, no cache damage), clearing in two of the three, and compaction and reset in none. So "take the cheapest rung that works" survives, but the instruction underneath it is the interesting one: when you do reach for a rung that rewrites the prefix, make the rewrite large enough to be worth the invalidation.
+*Only offloading at the tool boundary leaves the cached prefix whole; every other rung rewrites it, so each rewrite should be large.*
 
-Two meta-rules sit above the ladder. First, **prefer prevention** (§8): progressive disclosure and tool-boundary offloading keep the window from filling, so the corrective rungs run less often. Second, **measure before you trust**: compaction and resets are lossy, and the only way to know your loss budget is right is to evaluate the agent with and without them ([Post 22](../22-evaluating-harnesses/index.md) §7). A summary that silently drops a load-bearing fact is a bug you can only catch by looking for it.
+With the cache column of the figure attached, offloading is cheap in three senses (no model call, nothing paraphrased, no cache damage), clearing in two, and compaction and reset in none. "Take the cheapest rung that works" survives, with a rule underneath it: a rung that rewrites the prefix should rewrite enough to be worth the invalidation. Above the ladder sit two meta-rules: **prefer prevention**, and **measure before trusting**: compaction and resets are lossy, and the only way to know a loss budget is right is to evaluate the agent with and without them ([post 22](../22-evaluating-harnesses/index.md)). A summary that silently drops a load-bearing fact is a bug found only by looking for it.
+
+---
+
+## 10. Make it run
+
+Every snippet runs offline from the series root over the same generated transcript, with `tiktoken` (in the root environment) counting tokens; its `cl100k_base` encoding is an OpenAI tokenizer standing in for the provider's, so the counts are illustrative too:
+
+```bash
+uv run python posts/09-context-management-loop/snippets/transcript.py
+uv run python posts/09-context-management-loop/snippets/offload.py
+uv run python posts/09-context-management-loop/snippets/compact.py
+uv run python posts/09-context-management-loop/snippets/cache_cost.py
+uv run python posts/09-context-management-loop/snippets/ladder.py
+```
+
+The first four print what sections 2, 3, 5 and 7 quote or cite. The last is the whole ladder on one run, the figure at the top of the post: the policy of section 5 before every call, offload at the tool boundary, a clear at the soft trigger when it frees at least 10,000 tokens, a compaction at the hard trigger. It prints tokens before and after each rung and how much of the rewritten request that call reads from cache:
+
+```text
+window 200,000 (illustrative); soft trigger 160,000; hard trigger 190,000; calls 2 to 141
+unmanaged: call 54 would send 201,343 tokens, past the window
+managed: build logs offloaded at the tool boundary before calls 10, 31, 52, 73, 94, 115
+call  rung       before    after  shared with the call before
+  97  clear     160,617  126,229  4,465 of 126,229 (4%)
+ 123  clear     172,367  161,705  122,790 of 161,705 (76%)
+ 138  compact   190,428    8,447  773 of 8,447 (9%)
+managed peak: 186,870 tokens; last call: 12,147
+```
+
+The second clear is the batching rule at work: no clear freed 10,000 tokens until call 123, and that one rewrote from a later position, so 76% of the call was still a byte-identical prefix of the one before. To run the policy over a captured transcript, replace `transcript()` with a loader that returns the same message list.
+
+---
+
+## 11. What can go wrong?
+
+These are the mistakes that applying this post's ideas actually produces.
+
+- **A compactor that cuts by count.** The first long run fails with a 400 error about a `tool_result` with no matching `tool_use`, on a request the harness assembled itself.
+- **Clearing a result that cannot be re-obtained.** The agent, told to "re-run the call if needed", queries a live metric again, gets a different number, and reasons from both as if they were one reading.
+- **Clearing a few results every turn.** Window fill stays flat, but cache reads in the usage figures fall to a few per cent of input on every call and the bill rises.
+- **A brief without the run fields.** After a compaction the agent re-reads files it has edited and re-runs a suite that was green, spending its first turns rediscovering what the brief dropped.
+- **A trigger with no headroom.** The summary call itself overflows the window, and the run fails at the moment it was trying to save itself.
 
 ---
 
 ## Common pitfalls
 
-- **Dumping big tool output into the transcript.** The single most common cause of a bloated window, and the cheapest to fix. Offload it at the tool boundary and return an actionable pointer with head and tail (§3).
-- **Summarising what could just be cleared.** A spent, re-issuable tool result can be stubbed for nothing; paraphrasing it costs a model call and risks altering it (§4, §5).
-- **Clearing a result that cannot be cheaply re-obtained.** A stub promising "re-read if needed" is a lie for a payment confirmation or a timestamped snapshot, and the agent will believe it. Exclude those tools and summarise them instead (§4).
-- **Compacting with no loss budget.** A brief that drops the goal, a decision, or which checks were green is worse than no brief. Write the summarisation prompt as a contract and pin the system prompt outside the head (§5).
-- **Compacting on turn count, and compacting little and often.** Five turns carrying build logs and twenty terse turns are not the same window, so trigger on fill; and a shallow compaction pays nearly the full cache-write premium to buy almost no read saving (§5, §7).
-- **Resetting behind an incomplete handoff.** Reset is total loss, so the handoff is the only thing that survives. Test it by seeding a fresh window with the handoff alone and checking that it can name the next action (§6).
-- **Trusting a lossy move without evaluating it.** Compaction and resets degrade an agent silently, which means the degradation is invisible until it is measured with and without them (§9).
+1. **Dumping big tool output into the transcript.** The most common cause of a bloated window, and the cheapest to fix: offload it at the tool boundary and return an actionable pointer with head and tail (section 3).
+2. **Summarising what could just be cleared.** A spent, re-issuable result can be stubbed for nothing; paraphrasing it costs a model call and risks altering it (sections 4 and 5).
+3. **Compacting with no loss budget.** A brief that drops the goal, a decision or which checks were green is worse than no brief; write the summarisation prompt as a contract (section 5).
+4. **Compacting little and often, or on turn count.** Trigger on fill, and make each compaction deep: a shallow one pays nearly the full cache write for almost no saving (sections 5 and 7).
+5. **Resetting behind an incomplete handoff.** Reset is total loss, so test the handoff by seeding a fresh window with it alone (section 6).
 
 ---
 
 ## Further reading
 
-- Hong, K., Troynikov, A., & Huber, J., "Context Rot: How Increasing Input Tokens Impacts LLM Performance" (2025): the eighteen-model evaluation behind the term, and evidence that degradation begins well inside the advertised window.
-- Anthropic, "Context editing" (2025-26): the `clear_tool_uses_20250919` strategy and its `trigger` / `keep` / `clear_at_least` / `exclude_tools` / `clear_tool_inputs` parameters, plus the documented note that clearing invalidates the cached prefix.
-- Anthropic, "Managing context on the Claude Developer Platform" (2025): the evaluation numbers for context editing, alone and combined with a memory tool, and the 84 % token reduction on a 100-turn web-search run.
-- Anthropic, "Compaction" (2026): server-side compaction, its absolute default trigger, its handling of tool-call pairing, and how to keep the system-prompt cache alive across a compaction.
-- Anthropic, "Effective harnesses for long-running agents" (2025): the report that compaction alone was not sufficient on a long-running build, and the on-disk artefacts each fresh context resumed from.
-- Anthropic, "Prompt caching" (2025): prefix matching, the tools/system/messages render order, and the read and write multipliers the arithmetic in §7 uses.
-- ai-boost, "awesome-harness-engineering" (2026): the "Context Delivery & Compaction" section (offloading, summarisation, resets).
-- Addy Osmani, "Agent Harness Engineering" (2026): compaction, tool-call offloading, and full resets as the runtime moves.
-- Context Engineering, Post 03: lost-in-the-middle and how models read a window; Post 06: the context failure modes and the context-rot findings; Post 12: the *Compress* primitive, tool-result clearing, and information loss.
+- Hong, Troynikov and Huber, "Context Rot: How Increasing Input Tokens Impacts LLM Performance" (Chroma, 14 July 2025): the 18-model evaluation behind the term.
+- Anthropic, "Context editing" (Claude Platform documentation): the clearing strategy, its parameters, and its note on cache invalidation.
+- Anthropic, "Managing context on the Claude Developer Platform" (29 September 2025): the reported evaluation numbers for context editing and the memory tool.
+- Anthropic, "Compaction" (Claude Platform documentation): compaction at a threshold and on demand.
+- Anthropic Engineering, Justin Young, "Effective harnesses for long-running agents" (26 November 2025), and Prithvi Rajasekaran, "Harness design for long-running application development" (24 March 2026): compaction not being sufficient, and the reset with a structured handoff.
+- Anthropic, "Prompt caching" and "Pricing" (Claude Platform documentation): prefix matching and the multipliers.
+- Addy Osmani, "Agent Harness Engineering" (19 April 2026): compaction, tool-call offloading with head and tail, and full resets as runtime moves.
+- ai-boost, "awesome-harness-engineering" (GitHub, 2026): the Context Delivery and Compaction section.
+- `ctx-003` (how models read a window), `ctx-006` (the context failure modes and context rot) and `ctx-012` (compress strategies, tool-result clearing, and the 80 and 95% triggers).
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
@@ -321,7 +369,5 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Post 10 — Continual learning & the ratchet](../10-continual-learning-ratchet/index.md)**: state that persists *across* tasks (the memory file, and turning failures into durable rules).
-- **[Post 18 — Long-horizon & multi-context execution](../18-long-horizon-ralph/index.md)**: the reset move as an architecture: Ralph loops over a written spec.
-- **[Post 08 — State & the filesystem](../08-state-filesystem-git/index.md)**: the disk every move in this post writes to, and the handoff file the reset rung depends on.
-- **[Post 07 — Skills & MCP in the runtime](../07-skills-mcp-runtime/index.md)**: progressive disclosure, the preventative context move that keeps tool schemas out of the window.
+- **[Post 10 - Continual learning and the ratchet: every mistake becomes a rule](../10-continual-learning-ratchet/index.md):** state that persists *across* tasks, the memory file and failures turned into durable rules.
+- **[Post 18 - Long-horizon and multi-context execution: Ralph loops and context bridging](../18-long-horizon-ralph/index.md):** the reset move as an architecture, Ralph loops over a written spec.
