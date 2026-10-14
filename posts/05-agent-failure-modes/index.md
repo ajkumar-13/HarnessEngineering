@@ -348,7 +348,7 @@ These are the mistakes that applying this post's ideas actually produces.
 - Kief Morris, "Humans and Agents in Software Engineering Loops" (martinfowler.com, 4 March 2026): humans outside, in and on the loop.
 - Drew Breunig, "How Long Contexts Fail" (22 June 2025): the context-layer taxonomy `ctx-006` adapts.
 - `ctx-006`: the five *context* failure modes this taxonomy sits above, and the diagnostic walk section 7 adapts.
-- Yao et al., "ReAct" (2022): the reason, act, observe loop that gives each failure its address.
+- Yao et al., "ReAct" (ICLR 2023): the reason, act, observe loop that gives each failure its address.
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 

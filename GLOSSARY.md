@@ -132,7 +132,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Loop engineering.** The discipline of designing the loop that drives an agent, especially its *layered exits*, instead of hand-writing each prompt. The line that carried the reframe is Peter Steinberger's: "You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents" (quoted in Osmani, 2026). See [Post 19](posts/19-loop-engineering/index.md).
 
-**Loop exits.** The four stop conditions every real loop carries, numbered the same way throughout the series and checked in this order: (1) the *final-answer exit*, the intended one; (2) the *iteration cap*; (3) the *budget exit*; (4) *no-progress detection*. The last three are guards. See [Post 03](posts/03-the-agent-loop/index.md).
+**Loop exits.** The four stop conditions every real loop carries, numbered the same way throughout the series: (1) the *final-answer exit*, the intended one; (2) the *iteration cap*; (3) the *budget exit*; (4) *no-progress detection*. The last three are guards. See [Post 03](posts/03-the-agent-loop/index.md).
 
 **MCP (Model Context Protocol).** An open protocol by which a host application's client connects to servers that expose tools, resources and prompts. This series looks at it from the host's side, as one way capability enters the loop at runtime; the protocol itself is the subject of the `mcp` series (`mcp-002`, `mcp-011`). See [Post 07](posts/07-skills-mcp-runtime/index.md).
 

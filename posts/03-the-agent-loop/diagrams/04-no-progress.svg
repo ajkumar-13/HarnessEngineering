@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-04-no-progress-title" aria-describedby="hrn-04-no-progress-desc">
+<title id="hrn-04-no-progress-title">Only the doom loop should stop</title>
+<desc id="hrn-04-no-progress-desc">Four scripted traces as rows of turns, each cell the turn's observation. Doom loop, run_tests, returns 1 failed five times. Build poll, build_status, returns running, running, passed, then run_tests returns all passed. Long build, build_status, returns running five times, then passed. Healthy edits, edit_file on a new line each turn, returns ok five times. Marks under turn 3 show where each detector fires, window 3 unless noted: the calls-only fingerprint, a square, stops the doom loop, the build poll and the long build; with the observation folded in, a circle, the doom loop and the long build; with a window of 6 for build_status, a diamond, only the doom loop. Stopping the doom loop is drawn in the gate colour; the other stops are false positives, in red. No detector stops the healthy edits.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--hrn-ink); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .f-purple { fill: var(--hrn-purple); }
+  .f-red { fill: var(--hrn-red); }
+  .s-orange-line { stroke: var(--hrn-orange-line); }
+  .s-purple { stroke: var(--hrn-purple); }
+  .s-red { stroke: var(--hrn-red); }
+  .s-surface { stroke: var(--hrn-surface); }
+</style>
+<defs>
+<marker id="hrn-04-no-progress-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="392">Only the doom loop should stop</text>
+<text x="40" y="76" class="t-subtitle" data-w="728">Where each no-progress detector fires, window 3 unless noted; traces from snippets/no_progress.py.</text>
+<text x="224" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 1</text>
+<text x="308" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 2</text>
+<text x="392" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 3</text>
+<text x="476" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 4</text>
+<text x="560" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 5</text>
+<text x="644" y="124" text-anchor="middle" class="t-tick" data-w="37">turn 6</text>
+<text x="40" y="152" class="t-label b" data-w="76">doom loop</text>
+<text x="40" y="172" class="t-code" data-w="77">run_tests</text>
+<rect x="184" y="136" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="224" y="160" text-anchor="middle" class="t-label" data-w="49">1 failed</text>
+<rect x="268" y="136" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="308" y="160" text-anchor="middle" class="t-label" data-w="49">1 failed</text>
+<rect x="352" y="136" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="392" y="160" text-anchor="middle" class="t-label" data-w="49">1 failed</text>
+<rect x="436" y="136" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="476" y="160" text-anchor="middle" class="t-label" data-w="49">1 failed</text>
+<rect x="520" y="136" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="560" y="160" text-anchor="middle" class="t-label" data-w="49">1 failed</text>
+<path d="M366.6,186.6 H377.4 V197.4 H366.6 Z" class="f-purple s-surface w1"/>
+<circle cx="392" cy="192" r="6" class="f-purple s-surface w1"/>
+<path d="M412,184.8 L419.2,192 L412,199.2 L404.8,192 Z" class="f-purple s-surface w1"/>
+<text x="40" y="236" class="t-label b" data-w="67">build poll</text>
+<text x="40" y="256" class="t-code" data-w="103">build_status</text>
+<rect x="184" y="220" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="224" y="244" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="268" y="220" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="308" y="244" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="352" y="220" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="392" y="244" text-anchor="middle" class="t-label" data-w="49">passed</text>
+<rect x="436" y="220" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="476" y="244" text-anchor="middle" class="t-label" data-w="68">all passed</text>
+<path d="M366.6,270.6 H377.4 V281.4 H366.6 Z" class="f-red s-surface w1"/>
+<text x="40" y="320" class="t-label b" data-w="71">long build</text>
+<text x="40" y="340" class="t-code" data-w="103">build_status</text>
+<rect x="184" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="224" y="328" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="268" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="308" y="328" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="352" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="392" y="328" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="436" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="476" y="328" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="520" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="560" y="328" text-anchor="middle" class="t-label" data-w="51">running</text>
+<rect x="604" y="304" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="644" y="328" text-anchor="middle" class="t-label" data-w="49">passed</text>
+<path d="M366.6,354.6 H377.4 V365.4 H366.6 Z" class="f-red s-surface w1"/>
+<circle cx="392" cy="360" r="6" class="f-red s-surface w1"/>
+<text x="40" y="404" class="t-label b" data-w="92">healthy edits</text>
+<text x="40" y="424" class="t-code" data-w="77">edit_file</text>
+<rect x="184" y="388" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="224" y="412" text-anchor="middle" class="t-label" data-w="16">ok</text>
+<rect x="268" y="388" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="308" y="412" text-anchor="middle" class="t-label" data-w="16">ok</text>
+<rect x="352" y="388" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="392" y="412" text-anchor="middle" class="t-label" data-w="16">ok</text>
+<rect x="436" y="388" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="476" y="412" text-anchor="middle" class="t-label" data-w="16">ok</text>
+<rect x="520" y="388" width="80" height="40" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="560" y="412" text-anchor="middle" class="t-label" data-w="16">ok</text>
+<text x="708" y="140" class="t-head" data-w="69">detector</text>
+<path d="M711.5,159.5 H720.5 V168.5 H711.5 Z" class="f-ink s-surface w1"/>
+<text x="740" y="168" class="t-label" data-w="151">calls only (companion)</text>
+<circle cx="716" cy="188" r="5" class="f-ink s-surface w1"/>
+<text x="740" y="192" class="t-label" data-w="94">+ observation</text>
+<path d="M716,206 L722,212 L716,218 L710,212 Z" class="f-ink s-surface w1"/>
+<text x="740" y="216" class="t-label" data-w="130">+ window 6, polling</text>
+<text x="708" y="268" class="t-head" data-w="68">the stop</text>
+<rect x="708" y="284" width="16" height="16" class="f-purple s-purple w1"/>
+<text x="740" y="296" class="t-label" data-w="124">right: a doom loop</text>
+<rect x="708" y="308" width="16" height="16" class="f-red s-red w1"/>
+<text x="740" y="320" class="t-label" data-w="168">wrong: progress stopped</text>
+<text x="40" y="504" class="t-note" data-w="640">Folding in the result spares a build that changes; a wider window spares one that takes its time.</text>
+</svg>

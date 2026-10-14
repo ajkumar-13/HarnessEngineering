@@ -1,38 +1,26 @@
 id: hrn-003
 slug: 03-the-agent-loop
-title: "03 · The agent loop — ReAct, control loops, and stopping"
-
-description: >
-  At its core, a harness is a loop: the model reasons, the harness runs the tool it asked
-  for, feeds the result back, and calls the model again: reason → act → observe, repeated.
-  The model itself is stateless; the loop is what carries the conversation forward.
-
-author: "Ajay"
+title: "03 - The agent loop: ReAct, control loops, and stopping"
+summary: "A harness is a loop of reason, act and observe around a model that keeps nothing between calls. The engineering is in when it stops: a final answer read from the stop reason, an iteration cap, a budget, and no-progress detection."
 date: 2026-07-10
-last_modified: 2026-09-05
-
-tags: [harness-engineering, foundations, agent-loop, react]
-
-keywords:
-  - harness engineering
-  - foundations
-  - agent loop
-  - react
-  - stop conditions
-  - no memory between calls
-  - when to stop
-  - interrupted mid-turn
-
-category: Foundations
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part I - Foundations"
-
+level: intermediate
+reading_time: 24
+tags: [harness-engineering, agent-loop, react, stop-conditions, tool-use, foundations]
 hero: diagrams/01-agent-loop.svg
-hero_alt: "The agent loop: a user task enters REASON, which either calls a tool (ACT then OBSERVE, looping back) or returns a final answer; a side panel lists the four stop conditions the loop checks each turn."
-
-reading_time: 27
-toc: true
-draft: false
-canonical_url: ""
-prev: ../02-anatomy-of-a-harness/
-next: ../04-harness-beats-model/
+prerequisites: [hrn-002]
+code: included
+outcomes:
+  - id: o1
+    text: "Write the minimal reason, act, observe loop over a provider API, answering every `tool_use` block by id in one user message of results."
+  - id: o2
+    text: "Act on every `stop_reason` value, and take the final-answer exit on a terminal stop reason rather than on a missing tool call."
+  - id: o3
+    text: "Explain why the model is stateless, what the loop must carry and re-send on every turn, and what re-sending a growing history costs in tokens."
+  - id: o4
+    text: "Implement the four exits in order, size the cap and the budget from a run's token arithmetic, and detect no progress without killing a polling agent."
+  - id: o5
+    text: "Choose between batch and streaming turns, and say what streaming does and does not buy a loop."
+recommended: [ctx-005, ctx-008]

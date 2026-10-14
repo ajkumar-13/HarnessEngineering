@@ -1,0 +1,768 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-003",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-003-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "tool-use",
+        "wire-format"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "One assistant turn contains two `tool_use` blocks, both calling `read_file`, with ids `tu_7` and `tu_8`. How should the harness send the results back?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Two user messages, one per result, in the order the calls appeared.",
+          "correct": false,
+          "feedback": "Anthropic's parallel tool use page names a separate message per result as the wrong format for parallel calls: such a history teaches the model to stop making them."
+        },
+        {
+          "key": "b",
+          "text": "One user message holding two `tool_result` blocks, each repeating its call's id in `tool_use_id`.",
+          "correct": true,
+          "feedback": "Right: each result names the call it answers, and the turn's results travel together in one user message."
+        },
+        {
+          "key": "c",
+          "text": "One user message holding two `tool_result` blocks, matched to their calls by the tool name `read_file`.",
+          "correct": false,
+          "feedback": "Both calls have the same name, so the name cannot say which result answers which call; the id can."
+        },
+        {
+          "key": "d",
+          "text": "Two messages with the role `tool`, one per result.",
+          "correct": false,
+          "feedback": "The Anthropic Messages API has no third role: tool results travel in a message with the role `user`."
+        }
+      ],
+      "explanation": "Section 3: every tool call is answered by id, and one turn's results go back together in a single user message of `tool_result` blocks. Pairing by name fails as soon as one turn calls the same tool twice.",
+      "hints": [
+        "Two rules govern the reply: how a result finds its call, and how many messages carry the results."
+      ]
+    },
+    {
+      "id": "hrn-003-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "control-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put the steps of one iteration of the minimal control loop in the order the loop performs them, for a turn in which the model asks for tools.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Append all the tool results as one user message."
+        },
+        {
+          "key": "b",
+          "text": "Send the messages so far to the model."
+        },
+        {
+          "key": "c",
+          "text": "Run each tool the response asked for."
+        },
+        {
+          "key": "d",
+          "text": "Append the model's response as an assistant message."
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "c",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 2's loop calls the model (reason), appends the assistant message, runs every tool the response asked for (act), and appends all the results as one user message (observe) before the next iteration calls the model again.",
+      "hints": [
+        "The loop is reason, act, observe; each of the first and last has an append."
+      ]
+    },
+    {
+      "id": "hrn-003-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "stop-reason"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Name the field of a provider response that the final-answer exit should read, rather than looking for a missing tool call.",
+      "answer": {
+        "model": "stop_reason",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not|never|rather\\s+than|instead\\s+of|no)\\s+(the\\s+)?[`'\\\"]?stop[_ ]?reason)(?![\\s\\S]*stop[_ ]?reason[`'\\\"]?\\s+(is\\s+not|isn't|is\\s+wrong)\\b)(?![\\s\\S]*\\n[^\\n]*\\b(tool_use|tool_calls?|stop_sequence|stop_details|end_turn|content)\\b)[\\s\\S]*?\\bstop[_ ]?reason\\b"
+        ]
+      },
+      "explanation": "Section 4: every response carries `stop_reason`, which says why generation stopped. Exit (1) is a terminal `stop_reason` (`end_turn` or `stop_sequence`) with no tool call; a missing tool call alone is also what a truncated or refused turn looks like.",
+      "hints": [
+        "It says why the model stopped generating."
+      ]
+    },
+    {
+      "id": "hrn-003-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "stop-reason"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A response arrives with no `tool_use` block. For which values of `stop_reason` may the loop take exit (1), the final answer? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "`end_turn`",
+          "correct": true,
+          "feedback": "The model finished on its own: this is the answer."
+        },
+        {
+          "key": "b",
+          "text": "`max_tokens`",
+          "correct": false,
+          "feedback": "The turn was cut off at the output ceiling; it is truncated, not finished, so raise the ceiling or continue it."
+        },
+        {
+          "key": "c",
+          "text": "`stop_sequence`",
+          "correct": true,
+          "feedback": "A configured stop string ended the turn; it is terminal, and the loop reads `stop_sequence` to see which one fired."
+        },
+        {
+          "key": "d",
+          "text": "`pause_turn`",
+          "correct": false,
+          "feedback": "A server-side tool loop hit its limit; the turn continues when the assistant content is sent back."
+        },
+        {
+          "key": "e",
+          "text": "`refusal`",
+          "correct": false,
+          "feedback": "The model declined; the loop surfaces it and stops, but it is not an answer to the task."
+        },
+        {
+          "key": "f",
+          "text": "`model_context_window_exceeded`",
+          "correct": false,
+          "feedback": "The response filled the context window, so it is treated as truncated."
+        }
+      ],
+      "explanation": "Section 4 defines exit (1) as a terminal stop reason with no tool call, and the terminal set is `end_turn` and `stop_sequence`. The other four values also arrive without a tool call, and none of them is an answer.",
+      "hints": [
+        "Ask which values mean the model finished on its own terms.",
+        "Truncation, a refusal and a paused server tool all arrive without a tool call too."
+      ]
+    },
+    {
+      "id": "hrn-003-q05",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "stop-reason"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each `stop_reason` to what the loop should do with the response.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`end_turn`"
+        },
+        {
+          "key": "b",
+          "text": "`tool_use`"
+        },
+        {
+          "key": "c",
+          "text": "`max_tokens`"
+        },
+        {
+          "key": "d",
+          "text": "`pause_turn`"
+        },
+        {
+          "key": "e",
+          "text": "`refusal`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "Take exit (1): this is the answer."
+        },
+        {
+          "key": "q",
+          "text": "Run the requested tools, append the results, keep looping."
+        },
+        {
+          "key": "r",
+          "text": "Treat it as truncated: raise the ceiling or continue the response."
+        },
+        {
+          "key": "s",
+          "text": "Send the assistant content back as it is to continue the turn."
+        },
+        {
+          "key": "t",
+          "text": "Surface it and stop."
+        },
+        {
+          "key": "u",
+          "text": "Retry the same request unchanged until a tool call appears."
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t"
+      },
+      "explanation": "Section 4's table, from Anthropic's \"Stop reasons and fallback\" page: `end_turn` is the answer; `tool_use` means run the tools and loop; `max_tokens` is a truncation to continue or retry with a higher ceiling; `pause_turn` is continued by sending the assistant content back; `refusal` is surfaced and the run stops. Retrying the same request unchanged is the right action for none of them.",
+      "hints": [
+        "Separate the values that end the turn for good from those that leave work unfinished.",
+        "One action applies to none of the five."
+      ]
+    },
+    {
+      "id": "hrn-003-q06",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "exits",
+        "stop-reason"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`check_exits` decides, after each model call, which of the four exits fires, or returns `None` to keep looping. The version below has two bugs: it takes a truncated or refused turn as a final answer, and a run that has just finished can still be reported as over budget. Fix it so exit (1) is a terminal `stop_reason` with no tool call and the exits are checked in the companion's order.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "TERMINAL = {\"end_turn\", \"stop_sequence\"}\n\n\ndef check_exits(stop_reason, tool_calls, step, max_iters, tokens_used, token_budget, recent, window=3):\n    \"\"\"Return the exit that fires after this model call, or None to keep looping.\n\n    stop_reason   the provider's stop_reason for the response just received\n    tool_calls    the tool calls that response asked for (a list, possibly empty)\n    step          the iteration just completed, counting from 1\n    tokens_used   tokens spent so far, including this call\n    token_budget  the budget in tokens, or None for no budget\n    recent        fingerprints of every tool-calling turn so far, oldest first, this turn's included\n    Exits are checked in the companion's order and named as it names them:\n    \"completed\", \"budget\", \"no_progress\", \"max_iters\".\n    \"\"\"\n    if token_budget is not None and tokens_used >= token_budget:\n        return \"budget\"\n    if not tool_calls:\n        return \"completed\"\n    last = recent[-window:]\n    if len(last) == window and len(set(last)) == 1:\n        return \"no_progress\"\n    if step >= max_iters:\n        return \"max_iters\"\n    return None\n",
+      "solution": "TERMINAL = {\"end_turn\", \"stop_sequence\"}\n\n\ndef check_exits(stop_reason, tool_calls, step, max_iters, tokens_used, token_budget, recent, window=3):\n    \"\"\"Return the exit that fires after this model call, or None to keep looping.\n\n    stop_reason   the provider's stop_reason for the response just received\n    tool_calls    the tool calls that response asked for (a list, possibly empty)\n    step          the iteration just completed, counting from 1\n    tokens_used   tokens spent so far, including this call\n    token_budget  the budget in tokens, or None for no budget\n    recent        fingerprints of every tool-calling turn so far, oldest first, this turn's included\n    Exits are checked in the companion's order and named as it names them:\n    \"completed\", \"budget\", \"no_progress\", \"max_iters\".\n    \"\"\"\n    if stop_reason in TERMINAL and not tool_calls:\n        return \"completed\"\n    if token_budget is not None and tokens_used >= token_budget:\n        return \"budget\"\n    last = recent[-window:]\n    if len(last) == window and len(set(last)) == 1:\n        return \"no_progress\"\n    if step >= max_iters:\n        return \"max_iters\"\n    return None\n",
+      "tests": "def ex(stop_reason=\"tool_use\", tool_calls=(\"call\",), step=1, max_iters=12, tokens_used=0, token_budget=None,\n       recent=(\"a\",), window=3):\n    return check_exits(stop_reason, list(tool_calls), step, max_iters, tokens_used, token_budget, list(recent), window)\n\n# exit (1) is a terminal stop_reason with no tool call, not merely a missing tool call\nassert ex(\"end_turn\", ()) == \"completed\"\nassert ex(\"stop_sequence\", ()) == \"completed\"\nassert ex(\"end_turn\", (\"call\",)) is None   # a turn that asks for a tool is never the answer\nfor reason in (\"max_tokens\", \"refusal\", \"pause_turn\", \"model_context_window_exceeded\"):\n    assert ex(reason, (), recent=()) is None, reason\n\n# exit (1) is checked first: a run that has just finished is not cut off by a guard\nassert ex(\"end_turn\", (), tokens_used=500, token_budget=100) == \"completed\"\nassert ex(\"end_turn\", (), step=12, max_iters=12) == \"completed\"\n\n# exit (3): the budget, reached exactly or passed\nassert ex(tokens_used=120, token_budget=120) == \"budget\"\nassert ex(tokens_used=150, token_budget=120) == \"budget\"\nassert ex(tokens_used=119, token_budget=120) is None\nassert ex(tokens_used=10**9, token_budget=None) is None\n\n# exit (4): the last `window` fingerprints are identical, and only once there are that many\nassert ex(recent=(\"a\", \"a\", \"a\")) == \"no_progress\"\nassert ex(recent=(\"a\", \"a\")) is None\nassert ex(recent=(\"a\",), window=3) is None\nassert ex(recent=(\"b\", \"a\", \"a\", \"a\")) == \"no_progress\"\nassert ex(recent=(\"a\", \"a\", \"a\", \"b\")) is None\nassert ex(recent=(\"a\", \"a\"), window=2) == \"no_progress\"\n\n# exit (2): the cap, after the others\nassert ex(step=12, max_iters=12, recent=(\"x\", \"y\")) == \"max_iters\"\nassert ex(step=11, max_iters=12, recent=(\"x\", \"y\")) is None\nassert ex(step=12, max_iters=12, tokens_used=200, token_budget=100) == \"budget\"\nassert ex(step=12, max_iters=12, recent=(\"z\", \"z\", \"z\")) == \"no_progress\"\nprint(\"all tests passed\")\n",
+      "explanation": "Sections 4 and 7: exit (1) is a terminal `stop_reason` (`end_turn`, `stop_sequence`) with no tool call, and it is checked first, so that a run which has just succeeded is not cut off by a guard; then the budget, no progress and the cap. The tests also pin the budget at exactly its ceiling and the no-progress window's length rule.",
+      "hints": [
+        "Which test fails first on the starter, and which value of `stop_reason` does it use?",
+        "Move the final-answer check to the top, and make it read `stop_reason` as well as the tool calls."
+      ]
+    },
+    {
+      "id": "hrn-003-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "cost",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Take the series' illustrative running example: the first request sends 6,000 input tokens and each turn appends 3,100 more, so every request re-sends the whole history. A run answers at iteration 8. How many input tokens has it been billed for in total, and what do they cost at 3 dollars per million input tokens?",
+      "answer": {
+        "parts": [
+          {
+            "label": "input tokens billed",
+            "value": 134800,
+            "tolerance": 100,
+            "unit": "tokens"
+          },
+          {
+            "label": "cost",
+            "value": 0.4044,
+            "tolerance": 0.006,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "Closed form 8 x (6,000 + 27,700) / 2 = 134,800, as snippets/run_cost.py computes with inputs(8); 134,800 x 3 / 10^6 = 0.4044. The nearest wrong method, eight times the last request, gives 221,600 tokens and 0.66 dollars.",
+      "explanation": "Request $n$ sends $6{,}000 + 3{,}100(n - 1)$ tokens, so the eighth sends 27,700, and the run is billed for all eight: $8 \\times (6{,}000 + 27{,}700) / 2 = 134{,}800$ tokens. At 3 dollars per million that is $134{,}800 \\times 3 / 10^6 = 0.4044$ dollars, about 40 cents.",
+      "hints": [
+        "The run pays for every request, not only the last.",
+        "The requests rise evenly, so the total is the number of requests times the average of the first and the last."
+      ]
+    },
+    {
+      "id": "hrn-003-q08",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "cost",
+        "observations"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In a 12-turn run that re-sends its whole history every turn, the tool result of turn 3 is a 10,000-token log, kept in the history for the rest of the run. How many extra input tokens does that log add to the run's bill, counting every request that re-sends it?",
+      "answer": {
+        "value": 90000,
+        "tolerance": 100,
+        "unit": "tokens"
+      },
+      "precision_note": "(12 - 3) x 10,000 = 90,000, the rule snippets/run_cost.py applies to its log (re-sent on 12 - LOG_TURN turns). Counting turn 3 as well gives 100,000; reading it once gives 10,000.",
+      "explanation": "The log joins the history with turn 3's result, so it is first sent on request 4 and then on every request up to 12: nine requests, $9 \\times 10{,}000 = 90{,}000$ tokens. Section 8 does the same with a 20,000-token log at turn 5: seven requests, 140,000 tokens.",
+      "hints": [
+        "The result of turn 3 is first sent to the model on the request after turn 3.",
+        "Count the requests from 4 to 12."
+      ]
+    },
+    {
+      "id": "hrn-003-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "budget",
+        "companion"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The companion's `run()` adds each call's tokens and only then checks `tokens_used >= token_budget`. A scripted model spends 70 tokens on every turn and never answers, with `token_budget=200` and `max_iters=100`. On which iteration does the run stop, and with how many tokens used?",
+      "answer": {
+        "parts": [
+          {
+            "label": "iteration",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "tokens used",
+            "value": 210,
+            "tolerance": 0,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "Run with the companion: run(ScriptedModel([tool_response('echo', {'text': str(i)}, id=f't{i}', tokens=70) for i in range(100)]), DEFAULT_TOOLS, 'task', max_iters=100, token_budget=200) returns budget, 3 iterations, 210 tokens; as snippets/four_exits.py does with 50 and 120.",
+      "explanation": "Section 7: the companion checks the budget after the call it has already paid for. After iteration 2 it has spent 140, under 200; iteration 3 brings it to 210, which passes the check, so it stops with `budget` at iteration 3 having spent 210, 10 over. A reserve-before-spend check would have stopped before the third call, at 140.",
+      "hints": [
+        "Add 70 per iteration and test after each addition.",
+        "The check fires on the first total that is at least 200."
+      ]
+    },
+    {
+      "id": "hrn-003-q10",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Prompt caching reuses the longest identical head of a request. In what order are the three parts of an Anthropic request rendered for that match?",
+      "answer": {
+        "model": "Tools, then the system prompt, then the messages.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not|maybe|perhaps|probably|i\\s+think|unsure)\\b)(?![\\s\\S]*\\b(messages?|history|conversation)\\b[\\s\\S]*\\b(tools?|system)\\b)(?![\\s\\S]*\\bsystem\\b[\\s\\S]*\\btools?\\b)[\\s\\S]*\\btools?\\b[\\s\\S]*\\bsystem\\b[\\s\\S]*\\b(messages?|history|conversation)\\b"
+        ]
+      },
+      "explanation": "Section 5: the request is rendered tools, then the system prompt, then the messages, which is why an append-only history keeps the earlier head identical and why a timestamp in the system prompt or a re-sorted tool list misses the cache on every later turn.",
+      "hints": [
+        "The part that changes most often comes last."
+      ]
+    },
+    {
+      "id": "hrn-003-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "false-positive"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent polls `build_status` with identical arguments on three consecutive turns and reads \"running\", \"running\", \"passed\". The loop uses the companion's no-progress check, which fingerprints each turn's tool calls, with a window of 3. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The loop stops with `no_progress` on turn 3, a false positive: the build had just passed.",
+          "correct": true,
+          "feedback": "The fingerprint sees three identical calls and nothing of the results, so the window collapses on turn 3."
+        },
+        {
+          "key": "b",
+          "text": "The loop continues, because the third result differs from the first two.",
+          "correct": false,
+          "feedback": "That is the folded fingerprint of section 9, not the companion's: the companion's check never reads the observation."
+        },
+        {
+          "key": "c",
+          "text": "The loop stops on turn 2, after the first repeat.",
+          "correct": false,
+          "feedback": "A window of 3 needs three fingerprints before it can fire; a single repeat is not treated as a stall."
+        },
+        {
+          "key": "d",
+          "text": "The loop never stops on this pattern, because `sort_keys=True` makes polling calls differ.",
+          "correct": false,
+          "feedback": "`sort_keys=True` makes identical calls serialise identically whatever their key order; it does the opposite of separating them."
+        }
+      ],
+      "explanation": "Section 9: the companion's fingerprint is built from the calls only, so three identical calls fill the window with one value and exit (4) fires on turn 3, although the third result shows progress. Folding the observation into the fingerprint is the cheapest cure.",
+      "hints": [
+        "What goes into the companion's fingerprint, and what does not?",
+        "Compare the three fingerprints, not the three results."
+      ]
+    },
+    {
+      "id": "hrn-003-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A build reports \"running\" on five consecutive polls before it passes. Which change lets it finish while still stopping a doom loop of identical failing test runs within three turns?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Fold each turn's observation into the fingerprint, and keep the window at 3 for every tool, polled or not.",
+          "correct": false,
+          "feedback": "The five polls return the same \"running\", so the folded fingerprints repeat and the window still fires on turn 3."
+        },
+        {
+          "key": "b",
+          "text": "Fold the observation in and give `build_status` a window of 6, keeping 3 for other tools.",
+          "correct": true,
+          "feedback": "Five identical polls never fill a window of 6, and the failing test runs still fill their window of 3 on turn 3."
+        },
+        {
+          "key": "c",
+          "text": "Drop `sort_keys=True`, so the polls fingerprint differently.",
+          "correct": false,
+          "feedback": "The polls send identical arguments, so their fingerprints match with or without sorted keys; dropping it only lets a real repeat with reordered keys escape."
+        },
+        {
+          "key": "d",
+          "text": "Lower the window to 2 for every tool.",
+          "correct": false,
+          "feedback": "A shorter window fires sooner, on turn 2, which stops the build even earlier."
+        }
+      ],
+      "explanation": "Section 9's snippet prints it: folding the observation in still stops the long build on turn 3, because \"running\" repeats; a window of 6 for the polled tool, with the observation folded in, lets it finish, while `run_tests`, still on a window of 3, stops the doom loop on turn 3.",
+      "hints": [
+        "Five identical results in a row defeat one of the refinements on its own.",
+        "A per-tool setting can treat the polled tool differently from the rest."
+      ]
+    },
+    {
+      "id": "hrn-003-q13",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "streaming"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "What does a streaming turn genuinely buy a loop that a batch turn does not?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The model generates its response faster.",
+          "correct": false,
+          "feedback": "The model spends the same time generating either way; streaming changes when the harness sees the tokens."
+        },
+        {
+          "key": "b",
+          "text": "A tool can start as soon as its call is complete, before the rest of the response has arrived.",
+          "correct": true,
+          "feedback": "That is the bounded latency saving, plus output a human sees at once and can interrupt."
+        },
+        {
+          "key": "c",
+          "text": "Interleaved thinking, in which the model reasons between tool results, which only works on a streamed request.",
+          "correct": false,
+          "feedback": "Interleaved thinking is switched on by the request's thinking configuration, not by streaming the response."
+        },
+        {
+          "key": "d",
+          "text": "A loop with fewer exits, since the harness watches every token.",
+          "correct": false,
+          "feedback": "The loop's logic, including all four exits, is identical in batch and streaming."
+        }
+      ],
+      "explanation": "Section 10: streaming lets the harness start a tool when its `tool_use` block is complete, before the rest of the response arrives, and lets a human see output at once and interrupt mid-turn. It does not change how long the model takes, what it decides, or the loop's exits, and interleaved thinking is set by the request's thinking configuration.",
+      "hints": [
+        "Separate when the harness sees tokens from what the model does."
+      ]
+    },
+    {
+      "id": "hrn-003-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 10,
+      "tags": [
+        "streaming",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team proposes switching its agent to streaming turns for two reasons: its agents sometimes deliver answers that stop mid-sentence, and most of its turns end in a single tool call whose latency it wants to cut. Critique the proposal: say what streaming would and would not change for each reason, and what the team should do instead or as well.",
+      "kind": "critique",
+      "solution": "**Truncated answers.** Streaming does not fix them. An answer that stops mid-sentence is a turn cut off at `max_tokens` that the loop accepted as final, because exit (1) is written as \"no tool call\". The fix is in the exit check: take exit (1) only on a terminal `stop_reason` (`end_turn` or `stop_sequence`) with no tool call, and handle `max_tokens` by raising the ceiling or continuing the response. That holds in batch and streaming alike.\n\n**Latency on single-call turns.** Streaming lets a harness start a tool when its `tool_use` block is complete, which is earlier than the end of the response only if the response goes on after that block, for example with a second parallel call. When a single tool call ends the response, the block completes with the response and streaming saves nothing; post 23 makes the same point.\n\n**What streaming does buy.** Output a human sees at once, and the ability to interrupt a run mid-turn, the basis of approvals and steering. If those matter, streaming is worth its cost: a buffer of `partial_json` fragments parsed at `content_block_stop`, and handling for a call that is half received when the stream drops.\n\n**Recommendation.** Fix exit (1) now; stay batch unless interruptibility or visible output is the goal; for latency, look at tool time and parallel calls first.",
+      "rubric": [
+        {
+          "criterion": "Locates the truncated answers at exit (1) and fixes them with a terminal stop_reason check, not with streaming",
+          "points": 3
+        },
+        {
+          "criterion": "Explains that streaming saves only the response after the first complete call, so nothing when a single call ends the response",
+          "points": 3
+        },
+        {
+          "criterion": "Names what streaming does buy (visible output, mid-turn interruption) and what it costs (buffer, half-received calls)",
+          "points": 2
+        },
+        {
+          "criterion": "Gives a clear recommendation consistent with the analysis",
+          "points": 1
+        }
+      ],
+      "answer_length": "three or four short paragraphs",
+      "explanation": "Section 4 places the truncated answer at the exit check, not the schedule; section 10 bounds what streaming saves to the response after the first complete call and lists what genuinely belongs to streaming.",
+      "hints": [
+        "Where in the loop is an answer that stops mid-sentence accepted as final?",
+        "When a tool call is the last block of a response, how much of the response is left after it is complete?"
+      ]
+    },
+    {
+      "id": "hrn-003-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "budget",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The companion checks its token budget after the model call it has already paid for, so a run can end over budget by a full turn. Design a reserve-before-spend budget check for a loop that re-sends its growing history every turn: say what it estimates before each call, when it stops, and what the run should return when it stops, so that the work is not lost.",
+      "kind": "design",
+      "connects": [
+        "hrn-019",
+        "hrn-023"
+      ],
+      "solution": "**Estimate before the call.** The next request re-sends the whole history, so its input size is known before the call: count the tokens of the tools, the system prompt and the messages about to be sent. The output is not known, so reserve its ceiling, the request's `max_tokens`. The cost of the next call is at most input plus `max_tokens` (or the dollar equivalent at the stated rates).\n\n**Stop before breaching.** If `tokens_used` plus that reservation would exceed the budget, do not make the call: take exit (3) now. The run then ends at or under its budget, never one turn over, which matters most late in a long run, when one request can be tens of thousands of tokens.\n\n**Return a resumable state.** As section 5 says of every exit, return a reason and a state: the messages, the step counter and the tokens spent, persisted so that a caller with more budget can resume at the same step instead of paying for the earlier turns again. Post 19 treats every guard exit this way, as a handoff rather than a full stop.\n\n**Keep the order.** Exit (1) is still checked first on each response received, so the reservation never cuts off a run that has just answered. Post 23 prices the same arithmetic in dollars.",
+      "rubric": [
+        {
+          "criterion": "Estimates the next call from the known size of the history to be re-sent plus a reserved output ceiling",
+          "points": 3
+        },
+        {
+          "criterion": "Stops before the call that would breach the budget, so the run never ends over it",
+          "points": 2
+        },
+        {
+          "criterion": "Returns a resumable state (messages, step, tokens spent) rather than only a reason",
+          "points": 2
+        },
+        {
+          "criterion": "Keeps exit (1) first and connects the design to posts 19 or 23",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7 shows the overshoot (150 tokens spent against a budget of 120) and names post 19's reserve-before-spend and resumable handoff; section 5 says why the next request's size is known before the call (it is the history about to be re-sent) and what state an exit must return.",
+      "hints": [
+        "The input of the next request is not a guess: it is the history about to be sent.",
+        "The output is the part that must be reserved: use the call's output ceiling."
+      ]
+    },
+    {
+      "id": "hrn-003-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 8,
+      "tags": [
+        "final-answer",
+        "verification"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team's agent stops on exit (1) with a confident summary, \"All tests pass, the migration is complete\", and the next deployment fails. Explain why taking exit (1) correctly is not the same as finishing the task, which named failure mode this is, and which component closes the gap.",
+      "kind": "connect",
+      "connects": [
+        "hrn-005",
+        "hrn-011"
+      ],
+      "solution": "Exit (1) reads the model's own signal: a terminal `stop_reason` and no tool call. Even when it is implemented correctly, it says only that the model believes it is finished, not that the work is correct; the exits bound turns, spend and repetition, and none of them checks the outcome. An agent that announces the task complete when it is not is **victory declaration**, the first of the six failure modes of post 05, which Faros AI lists as agents marking a task complete \"without verifying the outcome\". The component that closes the gap is **verification** (post 11): before the final answer is accepted, the harness checks it against ground truth (here, running the tests and the migration checks itself) and, if the check fails, feeds the failure back into the loop instead of exiting. The exit stays the intended one; verification decides whether it may be taken.",
+      "rubric": [
+        {
+          "criterion": "States that exit (1) reflects the model's own judgement that it is done, not the correctness of the work",
+          "points": 2
+        },
+        {
+          "criterion": "Names victory declaration as the failure mode",
+          "points": 2
+        },
+        {
+          "criterion": "Names verification against ground truth as the fix, gating or feeding back before the exit is accepted",
+          "points": 2
+        }
+      ],
+      "answer_length": "one paragraph",
+      "explanation": "Section 7: exit (1) means the model thinks it is done; whether the work is correct is a separate question, verification (post 11), and a model that merely declares victory is the first failure mode of post 05.",
+      "hints": [
+        "Separate what the exit check reads from what the task requires.",
+        "One component of the eleven checks work against ground truth."
+      ]
+    },
+    {
+      "id": "hrn-003-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "tool-errors"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A tool raises `FileNotFoundError` in the middle of a turn that made three tool calls. What should the harness do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Let the exception end the run, so the failure is not hidden.",
+          "correct": false,
+          "feedback": "One bad argument then ends the run and loses the transcript; the model never gets the chance to correct itself."
+        },
+        {
+          "key": "b",
+          "text": "Return the error as that call's `tool_result` with `is_error` set, together with the other two results in one user message.",
+          "correct": true,
+          "feedback": "The failure becomes an observation the model reads next turn, and every call is still answered by id."
+        },
+        {
+          "key": "c",
+          "text": "Skip that call's result and send the other two, so the model is not confused by an error.",
+          "correct": false,
+          "feedback": "Every `tool_use` block needs its `tool_result`; leaving one out fails with the API's missing-result error."
+        },
+        {
+          "key": "d",
+          "text": "Return the error text as an ordinary `tool_result` with no flag, so that it reads exactly like any other tool output in the history.",
+          "correct": false,
+          "feedback": "Without `is_error` the block is ordinary output, not a failed call; the documentation sets the flag \"if the tool execution resulted in an error\"."
+        }
+      ],
+      "explanation": "Section 3: a tool never raises into the loop. The harness catches the exception and returns it as that call's `tool_result` with `is_error` set, alongside the other results in the same user message, so the model reads the failure on the next turn and can correct itself.",
+      "hints": [
+        "Who should learn about the failure, and when?",
+        "The other two calls still need their results."
+      ]
+    }
+  ]
+}

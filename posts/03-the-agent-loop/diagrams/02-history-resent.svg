@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-history-resent-title" aria-describedby="hrn-02-history-resent-desc">
+<title id="hrn-02-history-resent-title">Every call re-sends the whole history</title>
+<desc id="hrn-02-history-resent-desc">Three columns, one per model call of a scripted run of the companion's loop: two tool calls, then an answer. Each column lists the request in the order sent: tools and system prompt, the same head every time, then the messages so far. Call 1 carries 1 message, the user's task; call 2 carries 3, adding the assistant's calculator tool_use and its tool_result; call 3 carries 5, adding the echo tool_use and its result. Under each column, the response the model returned: tool_use calculator, tool_use echo, the final answer. Arrows show each response appended to the next call's request. The model keeps nothing between calls.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--hrn-blue-soft); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .s-blue-line { stroke: var(--hrn-blue-line); }
+  .s-orange-line { stroke: var(--hrn-orange-line); }
+</style>
+<defs>
+<marker id="hrn-02-history-resent-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="451">Every call re-sends the whole history</text>
+<text x="40" y="76" class="t-subtitle" data-w="615">What the companion's loop sent the model on each call of one scripted run, recorded.</text>
+<text x="56" y="128" class="t-head" data-w="43">call 1</text>
+<text x="312" y="128" text-anchor="end" class="t-note" data-w="73">1 message</text>
+<rect x="56" y="144" width="256" height="28" rx="4" class="card"/>
+<text x="68" y="164" class="t-label" data-w="34">tools</text>
+<rect x="56" y="180" width="256" height="28" rx="4" class="card"/>
+<text x="68" y="200" class="t-label" data-w="101">system prompt</text>
+<rect x="56" y="216" width="256" height="28" rx="4" class="card"/>
+<text x="68" y="236" class="t-label" data-w="91">user: the task</text>
+<path d="M184,244 L184,409" class="flow" marker-end="url(#hrn-02-history-resent-arrow)"/>
+<text x="196" y="332" class="t-note" data-w="69">model call</text>
+<rect x="56" y="412" width="256" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="68" y="432" class="t-label" data-w="187">returns: tool_use, calculator</text>
+<path d="M312,428 L332,428 L332,264 L349,264" class="flow" marker-end="url(#hrn-02-history-resent-arrow)"/>
+<text x="352" y="128" class="t-head" data-w="43">call 2</text>
+<text x="608" y="128" text-anchor="end" class="t-note" data-w="81">3 messages</text>
+<rect x="352" y="144" width="256" height="28" rx="4" class="card"/>
+<text x="364" y="164" class="t-label" data-w="34">tools</text>
+<rect x="352" y="180" width="256" height="28" rx="4" class="card"/>
+<text x="364" y="200" class="t-label" data-w="101">system prompt</text>
+<rect x="352" y="216" width="256" height="28" rx="4" class="card"/>
+<text x="364" y="236" class="t-label" data-w="91">user: the task</text>
+<rect x="352" y="252" width="256" height="28" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="364" y="272" class="t-label" data-w="200">assistant: tool_use, calculator</text>
+<rect x="352" y="288" width="256" height="28" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="364" y="308" class="t-label" data-w="109">user: tool_result</text>
+<path d="M480,316 L480,409" class="flow" marker-end="url(#hrn-02-history-resent-arrow)"/>
+<text x="492" y="368" class="t-note" data-w="69">model call</text>
+<rect x="352" y="412" width="256" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="364" y="432" class="t-label" data-w="154">returns: tool_use, echo</text>
+<path d="M608,428 L628,428 L628,336 L645,336" class="flow" marker-end="url(#hrn-02-history-resent-arrow)"/>
+<text x="648" y="128" class="t-head" data-w="43">call 3</text>
+<text x="904" y="128" text-anchor="end" class="t-note" data-w="81">5 messages</text>
+<rect x="648" y="144" width="256" height="28" rx="4" class="card"/>
+<text x="660" y="164" class="t-label" data-w="34">tools</text>
+<rect x="648" y="180" width="256" height="28" rx="4" class="card"/>
+<text x="660" y="200" class="t-label" data-w="101">system prompt</text>
+<rect x="648" y="216" width="256" height="28" rx="4" class="card"/>
+<text x="660" y="236" class="t-label" data-w="91">user: the task</text>
+<rect x="648" y="252" width="256" height="28" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="660" y="272" class="t-label" data-w="200">assistant: tool_use, calculator</text>
+<rect x="648" y="288" width="256" height="28" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="660" y="308" class="t-label" data-w="109">user: tool_result</text>
+<rect x="648" y="324" width="256" height="28" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="660" y="344" class="t-label" data-w="167">assistant: tool_use, echo</text>
+<rect x="648" y="360" width="256" height="28" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="660" y="380" class="t-label" data-w="109">user: tool_result</text>
+<path d="M776,388 L776,409" class="flow" marker-end="url(#hrn-02-history-resent-arrow)"/>
+<text x="788" y="404" class="t-note" data-w="69">model call</text>
+<rect x="648" y="412" width="256" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="660" y="432" class="t-label" data-w="136">returns: final answer</text>
+<text x="40" y="504" class="t-note" data-w="702">The model keeps nothing between calls; each reply is appended and sent again with everything before it.</text>
+</svg>

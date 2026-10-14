@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-05-batch-vs-streaming-title" aria-describedby="hrn-05-batch-vs-streaming-desc">
+<title id="hrn-05-batch-vs-streaming-title">Streaming starts a tool as soon as its call is complete</title>
+<desc id="hrn-05-batch-vs-streaming-desc">A schematic of one turn on one time axis, without numbers. The response holds narration, then tool call A, then tool call B, generated in that order and equally long in both lanes. Batch: tool A starts only after the last token of the response, and tool B after tool A, then the next call. Streaming: tool A starts as soon as call A's block is complete, while call B is still being generated; tool B starts when its own block is complete. The streaming lane reaches the next call earlier, and a bracket marks the time saved, which comes from the part of the response generated after call A.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--hrn-blue-ink); }
+  .f-blue-soft { fill: var(--hrn-blue-soft); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .s-blue { stroke: var(--hrn-blue); }
+  .s-blue-line { stroke: var(--hrn-blue-line); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-orange-line { stroke: var(--hrn-orange-line); }
+</style>
+<defs>
+<marker id="hrn-05-batch-vs-streaming-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="654">Streaming starts a tool as soon as its call is complete</text>
+<text x="40" y="76" class="t-subtitle" data-w="810">Schematic, no measured durations: two tool calls in one response, run one after another as the companion does.</text>
+<text x="40" y="156" class="t-label b" data-w="41">batch</text>
+<text x="120" y="156" class="t-note" data-w="42">model</text>
+<text x="120" y="204" class="t-note" data-w="53">harness</text>
+<rect x="192" y="136" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="264" y="156" text-anchor="middle" class="t-label" data-w="61">narration</text>
+<rect x="336" y="136" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="408" y="156" text-anchor="middle" class="t-label" data-w="37">call A</text>
+<rect x="480" y="136" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="552" y="156" text-anchor="middle" class="t-label" data-w="37">call B</text>
+<rect x="624" y="184" width="116" height="32" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="680" y="204" text-anchor="middle" class="t-label" data-w="40">tool A</text>
+<rect x="744" y="184" width="116" height="32" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="800" y="204" text-anchor="middle" class="t-label" data-w="40">tool B</text>
+<path d="M864,128 L864,224" class="s-ink w15 nofill"/>
+<text x="856" y="140" text-anchor="end" class="t-note" data-w="56">next call</text>
+<text x="40" y="308" class="t-label b" data-w="72">streaming</text>
+<text x="120" y="308" class="t-note" data-w="42">model</text>
+<text x="120" y="356" class="t-note" data-w="53">harness</text>
+<rect x="192" y="288" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="264" y="308" text-anchor="middle" class="t-label" data-w="61">narration</text>
+<rect x="336" y="288" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="408" y="308" text-anchor="middle" class="t-label" data-w="37">call A</text>
+<rect x="480" y="288" width="140" height="32" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="552" y="308" text-anchor="middle" class="t-label" data-w="37">call B</text>
+<rect x="480" y="336" width="116" height="32" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="536" y="356" text-anchor="middle" class="t-label" data-w="40">tool A</text>
+<rect x="624" y="336" width="116" height="32" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="680" y="356" text-anchor="middle" class="t-label" data-w="40">tool B</text>
+<path d="M744,280 L744,376" class="s-ink w15 nofill"/>
+<text x="736" y="292" text-anchor="end" class="t-note" data-w="56">next call</text>
+<path d="M480,272 L480,376" class="s-blue w15 nofill d-lead"/>
+<text x="472" y="284" text-anchor="end" class="t-note f-blue-ink" data-w="103">call A complete</text>
+<path d="M744,392 Q744,396 752,396 L796,396 Q804,396 804,400 Q804,396 812,396 L856,396 Q864,396 864,392" class="brace"/>
+<g data-grid="skip">
+<text x="804" y="420" text-anchor="middle" class="t-note" data-w="40">saved</text>
+</g>
+<path d="M192,464 L877,464" class="flow" marker-end="url(#hrn-05-batch-vs-streaming-arrow)"/>
+<text x="880" y="456" text-anchor="end" class="t-note" data-w="30">time</text>
+<text x="40" y="504" class="t-note" data-w="535">If the response ended with call A, both lanes would start it at the same moment.</text>
+</svg>

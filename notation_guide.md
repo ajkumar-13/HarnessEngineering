@@ -60,7 +60,7 @@ The groups: **the loop** at the centre; **four that feed it** (tools, state, con
 
 ## 3. The four exits of the loop
 
-Every real loop carries four stop conditions, numbered the same way everywhere, written (1) to (4) in plain text, and checked in this order (post 03):
+Every real loop carries four stop conditions, numbered the same way everywhere, written (1) to (4) in plain text, and numbered in this order (post 03); the companion checks (1), (3) and (4) after each model call and the cap (2) as the turns run out:
 
 | Exit | Name | What fires it |
 |---|---|---|
