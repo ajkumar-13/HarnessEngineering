@@ -34,7 +34,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Compaction.** Replacing a span of conversation history with a shorter summary of it, in place, to reclaim window space. Lossy by construction, and it invalidates every prompt-cache breakpoint at or after the rewrite. See [Post 09](posts/09-context-management-loop/index.md).
 
-**Context anxiety.** One of the six *failure modes*: as the context window fills, output quality drops and the model cuts corners or races to finish. Countered by active *context management*: compaction, *tool-output offloading*, and resets. See [Post 05](posts/05-agent-failure-modes/index.md).
+**Context anxiety.** One of the six *failure modes*, named by Anthropic (Rajasekaran, 2026): as the context window fills, output quality drops and the model cuts corners or races to finish. Countered by active *context management*: compaction, *tool-output offloading*, and resets. See [Post 05](posts/05-agent-failure-modes/index.md).
 
 **Context bridge.** The pair of on-disk artefacts a reset crosses on: a fixed spec saying what the goal is, and a moving *handoff file* saying where the work stands. A fresh window that has both is not starting from nothing. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
@@ -54,7 +54,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Coordination tax.** The overhead a multi-agent design pays and a single agent never does: per-agent fixed tokens, latency set by the slowest worker plus synthesis, and partial failure. It should be priced before it is paid. See [Post 16](posts/16-multi-agent-orchestration/index.md).
 
-**Custom harness.** A harness a team builds and owns, chosen when the work needs a loop, tool set, or guardrail a *prebuilt harness* does not expose. See [Post 02](posts/02-anatomy-of-a-harness/index.md).
+**Custom harness.** The layer a team adds on top of a *prebuilt harness*: its tools, its memory file, its enforcement hooks, its sandbox policy and its evaluations; the policy that runs on the mechanism a vendor ships. See [Post 02](posts/02-anatomy-of-a-harness/index.md).
 
 **Decider.** The half of an *approval gate* that returns the verdict: a human, a model classifier, or a stub in a test. Separating it from the policy, which decides which calls are gated at all, is what makes a gate testable. See [Post 15](posts/15-human-in-the-loop/index.md).
 
@@ -156,7 +156,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **One writer always.** The 2026 revision of the single-agent steelman: extra agents may contribute intelligence, but only one of them writes. It permits *orchestrator-worker* while still refusing the uncoordinated swarm. See [Post 16](posts/16-multi-agent-orchestration/index.md).
 
-**One-shotting.** One of the six *failure modes*: the agent attempts a whole multi-step task in a single sweep, producing one large change that is hard to review and usually wrong somewhere. Countered by a *planner, generator, evaluator* split that forces decomposition. See [Post 05](posts/05-agent-failure-modes/index.md).
+**One-shotting.** One of the six *failure modes*: the agent attempts a whole multi-step task in a single sweep, producing one large change that is hard to review and often wrong somewhere. Countered by a *planner, generator, evaluator* split that forces decomposition. See [Post 05](posts/05-agent-failure-modes/index.md).
 
 **Orchestration.** The ninth of the *eleven components*, one of the two that work at a larger scale: coordinating several agents as units, one level up from a single-agent harness. A harness drives one model; an orchestrator manages many agents. Powerful and over-used: the default is one agent with sub-tasks. See [Post 16](posts/16-multi-agent-orchestration/index.md).
 
@@ -176,7 +176,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Planner, generator, evaluator.** A pattern that splits planning, doing, and grading across separate agents, because an independent evaluator does not skew positive the way self-grading does. Osmani (2026) calls it "GANs for prose", after the generator and discriminator of a generative adversarial network. See [Post 12](posts/12-planner-generator-evaluator/index.md).
 
-**Prebuilt harness.** A vendor's or framework's ready-made runtime that ships the loop, tools and guardrails. Faster to adopt, and its abstractions are its opinions. See [Post 20](posts/20-sdk-landscape/index.md).
+**Prebuilt harness.** A vendor's or framework's ready-made runtime that ships the loop, tools and guardrails. Faster to adopt, and its abstractions are its opinions. See [Post 02](posts/02-anatomy-of-a-harness/index.md) and [Post 20](posts/20-sdk-landscape/index.md).
 
 **Production funnel.** The staged measurement that converts evals into money: first-pass success rate, then defect-escape rate, then dollars per merged pull request. It supplies the denominator a token figure alone is missing. See [Post 22](posts/22-evaluating-harnesses/index.md).
 
@@ -194,7 +194,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Re-entry tax.** The fixed cost every fresh context pays before it does useful work (read the spec, read the handoff, orient in the repository), split into a frozen half a prompt cache serves and a volatile half it cannot. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
-**ReAct.** Reason, act, observe: the interleaving of reasoning steps and tool actions that most agent loops implement, named by the ReAct line of work (Yao et al., 2022). See [Post 03](posts/03-the-agent-loop/index.md).
+**ReAct.** Reason, act, observe: the interleaving of reasoning steps and tool actions that most agent loops implement, named by the ReAct line of work (Yao et al., 2023). See [Post 03](posts/03-the-agent-loop/index.md).
 
 **Refused.** A tool outcome distinct from blocked, denied and ok: the call reached the tool and the sandbox stopped it from inside. Without its own outcome a sandbox refusal is indistinguishable in a trace from a command that ran. See [Post 21](posts/21-observability-traces/index.md).
 
@@ -232,7 +232,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Steering.** Injecting a human message into a running agent so that it lands as the next observation rather than restarting the run. A property of the loop's input mode, not a feature added above the loop. See [Post 15](posts/15-human-in-the-loop/index.md).
 
-**Stop condition.** Any rule that ends a loop; the four a production loop carries are the *loop exits* (final answer, iteration cap, budget, no progress). Most agent bugs are stop-condition bugs, not reasoning bugs. See [Post 03](posts/03-the-agent-loop/index.md).
+**Stop condition.** Any rule that ends a loop; the four a production loop carries are the *loop exits* (final answer, iteration cap, budget, no progress). This series argues that many agent failures are stop-condition faults rather than reasoning faults; the claim rests on which failures have been named, not on a measurement. See [Post 03](posts/03-the-agent-loop/index.md).
 
 **Stop gate.** A blocking hook on the loop's termination event that refuses the final-answer exit while a deterministic check is still failing: the verification loop promoted from a request into an exit the model cannot open. It needs an iteration cap beside it, or a gate that never passes is an infinite loop. See [Post 13](posts/13-hooks-enforcement/index.md).
 
@@ -252,7 +252,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Tool poisoning.** An injection planted in a tool's description rather than in its output, read by the model and usually invisible to the user (OWASP, 2025). It includes the "rug pull", where a server changes a description after the tool was approved. See [Post 14](posts/14-permissions-sandboxes/index.md).
 
-**Tool-call signature.** Tool name plus normalised arguments: the fingerprint whose repetition across consecutive turns is the classic *doom loop*. Comparing signatures alone misses an agent wandering in circles, so the observed effect is folded in beside it. See [Post 05](posts/05-agent-failure-modes/index.md).
+**Tool-call signature.** Tool name plus normalised arguments: the fingerprint whose repetition across consecutive turns is the classic *doom loop*. Comparing signatures alone cannot tell a poll whose result changes from a retry whose result does not; the companion's detector compares signatures only, and comparing the results as well separates the two. See [Post 05](posts/05-agent-failure-modes/index.md).
 
 **Tool-output offloading.** Writing a large tool output (a 2,000-line log) to disk and returning a pointer, so that it costs one line in the window rather than a re-send every turn. The pointer has to be actionable: a path the agent can genuinely read back. See [Post 09](posts/09-context-management-loop/index.md).
 
@@ -268,7 +268,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Validate-then-execute.** The two-step dispatch discipline: check the arguments against the schema, then run only if they pass. The schema is the contract, and a call that violates it is refused and handed back for the model to fix. See [Post 06](posts/06-tools-bash-code/index.md).
 
-**Verification.** The sixth of the *eleven components*, one of the four that govern the loop: checking the agent's work against something other than its own word (tests, a schema, a compiler, an independent evaluator) so that errors surface at the step that caused them. Its principle is "success is silent, failures are verbose". One of the four components a system must have to count as a harness. See [Post 11](posts/11-verification-loops/index.md).
+**Verification.** The sixth of the *eleven components*, one of the four that govern the loop: checking the agent's work against something other than its own word (tests, a schema, a compiler, an independent evaluator) so that errors surface at the step that caused them. Its principle, HumanLayer's as Osmani (2026) reports it, is "success is silent, failures are verbose". One of the four components a system must have to count as a harness. See [Post 11](posts/11-verification-loops/index.md).
 
 **Verification gate.** The check on the loop's exit that a candidate answer must pass before the run counts as done, which turns *victory declaration* from a judgement call into a fact about the repository. See [Post 11](posts/11-verification-loops/index.md).
 

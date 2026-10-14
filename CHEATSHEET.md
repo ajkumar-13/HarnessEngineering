@@ -30,15 +30,15 @@
 
 | # | Component | One-line job |
 |---|-----------|--------------|
-| 1 | **Loop** | Drive the model through reason, act, observe; decide when to stop (post 03). |
-| 2 | **Tools** | The agent's hands: bash and code execution beat fifty bespoke tools; skills and MCP extend them at runtime (posts 06, 07). |
-| 3 | **State** | Durable memory on the filesystem; git for versioning and rollback (post 08). |
-| 4 | **Context management** | Offload, clear, compact, reset: keep the window useful as it fills (post 09). |
-| 5 | **Memory** | Carry knowledge across sessions in a memory file; the ratchet writes to it (post 10). |
-| 6 | **Verification** | Check each step against ground truth; fail fast before errors compound (posts 11, 12). |
-| 7 | **Hooks** | Deterministic enforcement of the rules the model cannot be trusted to keep (post 13). |
-| 8 | **Permissions** | Sandbox, declarative rules and approvals: bound the blast radius (posts 14, 15). |
-| 9 | **Orchestration** | Coordinate several agents as units, one level up; the default is one agent (posts 16, 17). |
+| 01 | **Loop** | Drive the model through reason, act, observe; decide when to stop (post 03). |
+| 02 | **Tools** | The agent's hands: bash and code execution are the general-purpose default, and ten focused tools beat fifty overlapping ones; skills and MCP extend them at runtime (posts 06, 07). |
+| 03 | **State** | Durable memory on the filesystem; git for versioning and rollback (post 08). |
+| 04 | **Context management** | Offload, clear, compact, reset: keep the window useful as it fills (post 09). |
+| 05 | **Memory** | Carry knowledge across sessions in a memory file; the ratchet writes to it (post 10). |
+| 06 | **Verification** | Check each step against ground truth; fail fast before errors compound (posts 11, 12). |
+| 07 | **Hooks** | Deterministic enforcement of the rules the model cannot be trusted to keep (post 13). |
+| 08 | **Permissions** | Sandbox, declarative rules and approvals: bound the blast radius (posts 14, 15). |
+| 09 | **Orchestration** | Coordinate several agents as units, one level up; the default is one agent (posts 16, 17). |
 | 10 | **Long-horizon patterns** | Ralph loops, context bridging, work across many fresh contexts (posts 18, 19). |
 | 11 | **Observability** | A trace per run; find the failing component, then fix it (post 21). |
 
@@ -50,14 +50,14 @@ The loop is the centre. Components 2 to 5 feed it, 6 to 8 and 11 govern it, and 
 
 | Failure mode | Symptom | Harness fix |
 |--------------|---------|-------------|
-| **Victory declaration** | "Done!", but it is not | A verification gate on the final-answer exit (component 6) |
-| **Context anxiety** | Rushes as the window fills | Compaction or a reset (component 4) |
+| **Victory declaration** | "Done!", but it is not | A verification gate on the final-answer exit (component 06) |
+| **Context anxiety** | Rushes as the window fills | Compaction or a reset (component 04) |
 | **One-shotting** | Attempts everything at once | A planner, generator, evaluator split (post 12) |
 | **Doom loop** | Repeats, no progress | The no-progress exit, (4) |
 | **Silent drift** | Ignores conventions, run after run | A memory-file line backed by a hook (the ratchet) |
-| **Destructive action** | `rm -rf`, a force-push, `DROP TABLE` | A deny-list hook and a sandbox (components 7 and 8) |
+| **Destructive action** | `rm -rf`, a force-push, `DROP TABLE` | A deny-list hook and a sandbox (components 07 and 08) |
 
-*Legend: "component N" is a row of the components table above; (1) to (4) are the loop exits; "post NN" is a post of this series.*
+*Legend: "component NN" is a row of the components table above; (1) to (4) are the loop exits; "post NN" is a post of this series.*
 
 ---
 
