@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-coordination-tax-title" aria-describedby="hrn-02-coordination-tax-desc">
+<title id="hrn-02-coordination-tax-title">An orchestrator costs eleven chats more than one agent</title>
+<desc id="hrn-02-coordination-tax-desc">A horizontal bar chart of tokens per task, with dashed illustrative bars on one axis from 0 to 600,000. One chat turn uses 40,000 tokens; a single agent in a loop 160,000, four times the chat; an orchestrator with sub-agents 600,000, fifteen times. A brace under the axis spans 160,000 to 600,000 and is labelled the coordination tax, 440,000 tokens or eleven chats. Multipliers cited from Anthropic, 13 June 2025.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--hrn-ink); }
+  .f-neutral-soft { fill: var(--hrn-neutral-soft); }
+  .s-grid { stroke: var(--hrn-grid); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="hrn-02-coordination-tax-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="686">An orchestrator costs eleven chats more than one agent</text>
+<text x="40" y="76" class="t-subtitle" data-w="655">Multipliers cited from Anthropic (13 June 2025), applied to an illustrative 40,000-token task.</text>
+<g data-grid="skip">
+<path d="M248,112 L248,352" class="s-grid w075 nofill"/>
+<text x="248" y="372" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<path d="M405.33,112 L405.33,352" class="s-grid w075 nofill"/>
+<text x="404" y="372" text-anchor="middle" class="t-tick" data-w="50">200,000</text>
+<path d="M562.67,112 L562.67,352" class="s-grid w075 nofill"/>
+<text x="564" y="372" text-anchor="middle" class="t-tick" data-w="50">400,000</text>
+<path d="M720,112 L720,352" class="s-grid w075 nofill"/>
+<text x="720" y="372" text-anchor="middle" class="t-tick" data-w="50">600,000</text>
+<path d="M248,112 L248,352" class="s-ink-muted w1 nofill"/>
+</g>
+<text x="40" y="156" class="t-label" data-w="92">One chat turn</text>
+<g data-grid="skip">
+<rect x="248" y="128" width="31.47" height="48" class="f-neutral-soft" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="248" y="128" width="31.47" height="48" class="w15 nofill s-ink-muted d-proj" data-fit="skip"/>
+</g>
+<text x="288" y="156" class="t-value f-ink" data-w="47">40,000</text>
+<text x="40" y="236" class="t-label" data-w="147">Single agent in a loop</text>
+<g data-grid="skip">
+<rect x="248" y="208" width="125.87" height="48" class="f-neutral-soft" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="248" y="208" width="125.87" height="48" class="w15 nofill s-ink-muted d-proj" data-fit="skip"/>
+</g>
+<text x="380" y="236" class="t-value f-ink" data-w="144">160,000, 4× the chat</text>
+<text x="40" y="316" class="t-label" data-w="169">Orchestrator, sub-agents</text>
+<rect x="248" y="288" width="472" height="48" class="f-neutral-soft" data-fit="skip"/>
+<rect x="248" y="288" width="472" height="48" class="w15 nofill s-ink-muted d-proj" data-fit="skip"/>
+<text x="728" y="316" class="t-value f-ink" data-w="153">600,000, 15× the chat</text>
+<text x="484" y="396" text-anchor="middle" class="t-note" data-w="103">tokens per task</text>
+<g data-grid="skip">
+<path d="M373.87,256 L373.87,376" class="s-ink-muted w1 nofill d-ref"/>
+</g>
+<path d="M373.87,420 Q373.87,424 381.87,424 L538.93,424 Q546.93,424 546.93,428 Q546.93,424 554.93,424 L712,424 Q720,424 720,420" class="brace"/>
+<g data-grid="skip">
+<text x="546.93" y="448" text-anchor="middle" class="t-note" data-w="284">coordination tax: 440,000 tokens, 11 chats</text>
+</g>
+<rect x="40" y="412" width="16" height="16" class="s-ink-muted w15 nofill d-lead"/>
+<text x="72" y="424" class="t-label" data-w="69">illustrative</text>
+</svg>

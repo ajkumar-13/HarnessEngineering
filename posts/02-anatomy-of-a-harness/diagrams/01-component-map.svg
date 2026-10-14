@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-01-component-map-title" aria-describedby="hrn-01-component-map-desc">
+<title id="hrn-01-component-map-title">Eleven components around one loop</title>
+<desc id="hrn-01-component-map-desc">The component map of a harness. At the centre, component 01, the loop: reason in the model colour, act in the act colour and observe in the state colour, joined clockwise. On the left, the four components that feed the model: 02 tools, 03 state, 04 context management, 05 memory, with an arrow into the loop labelled feed. On the right, the four that govern it: 06 verification, 07 hooks, 08 permissions, 11 observability, with an arrow into the loop labelled govern. A frame around everything carries the two at a larger scale: 09 orchestration and 10 long-horizon patterns. A legend names the four colours: model, act, state, gate.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--hrn-blue); }
+  .f-blue-soft { fill: var(--hrn-blue-soft); }
+  .f-green { fill: var(--hrn-green); }
+  .f-green-ink { fill: var(--hrn-green-ink); }
+  .f-green-soft { fill: var(--hrn-green-soft); }
+  .f-ink-muted { fill: var(--hrn-ink-muted); }
+  .f-neutral-soft { fill: var(--hrn-neutral-soft); }
+  .f-orange { fill: var(--hrn-orange); }
+  .f-orange-ink { fill: var(--hrn-orange-ink); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .f-purple { fill: var(--hrn-purple); }
+  .f-purple-ink { fill: var(--hrn-purple-ink); }
+  .f-purple-soft { fill: var(--hrn-purple-soft); }
+  .f-surface { fill: var(--hrn-surface); }
+  .s-blue { stroke: var(--hrn-blue); }
+  .s-border { stroke: var(--hrn-border); }
+  .s-green { stroke: var(--hrn-green); }
+  .s-green-line { stroke: var(--hrn-green-line); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+  .s-orange { stroke: var(--hrn-orange); }
+  .s-orange-line { stroke: var(--hrn-orange-line); }
+  .s-purple { stroke: var(--hrn-purple); }
+  .s-purple-line { stroke: var(--hrn-purple-line); }
+  .s-rule { stroke: var(--hrn-rule); }
+</style>
+<defs>
+<marker id="hrn-01-component-map-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="446">Eleven components around one loop</text>
+<text x="40" y="76" class="t-subtitle" data-w="650">Four feed the model, four govern it, and two work at a larger scale than one running agent.</text>
+<rect x="40" y="104" width="880" height="372" rx="8" class="w15 nofill s-rule" data-fit="skip"/>
+<text x="72" y="136" class="t-head" data-w="125">Feed the model</text>
+<text x="376" y="136" class="t-head" data-w="71">The core</text>
+<text x="648" y="136" class="t-head" data-w="75">Govern it</text>
+<rect x="72" y="152" width="240" height="44" rx="8" class="f-orange-soft"/>
+<rect x="72" y="152" width="240" height="44" rx="8" class="w1 nofill s-orange-line" data-fit="skip"/>
+<text x="88" y="180" class="t-value f-orange-ink" data-w="17">02</text>
+<text x="120" y="180" class="t-label" data-w="38">Tools</text>
+<rect x="72" y="204" width="240" height="44" rx="8" class="f-green-soft"/>
+<rect x="72" y="204" width="240" height="44" rx="8" class="w1 nofill s-green-line" data-fit="skip"/>
+<text x="88" y="232" class="t-value f-green-ink" data-w="17">03</text>
+<text x="120" y="232" class="t-label" data-w="37">State</text>
+<rect x="72" y="256" width="240" height="44" rx="8" class="f-neutral-soft"/>
+<rect x="72" y="256" width="240" height="44" rx="8" class="w1 nofill s-border" data-fit="skip"/>
+<text x="88" y="284" class="t-value f-ink-muted" data-w="17">04</text>
+<text x="120" y="284" class="t-label" data-w="146">Context management</text>
+<rect x="72" y="308" width="240" height="44" rx="8" class="f-green-soft"/>
+<rect x="72" y="308" width="240" height="44" rx="8" class="w1 nofill s-green-line" data-fit="skip"/>
+<text x="88" y="336" class="t-value f-green-ink" data-w="17">05</text>
+<text x="120" y="336" class="t-label" data-w="56">Memory</text>
+<rect x="648" y="152" width="240" height="44" rx="8" class="f-purple-soft"/>
+<rect x="648" y="152" width="240" height="44" rx="8" class="w1 nofill s-purple-line" data-fit="skip"/>
+<text x="664" y="180" class="t-value f-purple-ink" data-w="17">06</text>
+<text x="696" y="180" class="t-label" data-w="76">Verification</text>
+<rect x="648" y="204" width="240" height="44" rx="8" class="f-purple-soft"/>
+<rect x="648" y="204" width="240" height="44" rx="8" class="w1 nofill s-purple-line" data-fit="skip"/>
+<text x="664" y="232" class="t-value f-purple-ink" data-w="17">07</text>
+<text x="696" y="232" class="t-label" data-w="43">Hooks</text>
+<rect x="648" y="256" width="240" height="44" rx="8" class="f-purple-soft"/>
+<rect x="648" y="256" width="240" height="44" rx="8" class="w1 nofill s-purple-line" data-fit="skip"/>
+<text x="664" y="284" class="t-value f-purple-ink" data-w="17">08</text>
+<text x="696" y="284" class="t-label" data-w="82">Permissions</text>
+<rect x="648" y="308" width="240" height="44" rx="8" class="f-green-soft"/>
+<rect x="648" y="308" width="240" height="44" rx="8" class="w1 nofill s-green-line" data-fit="skip"/>
+<text x="664" y="336" class="t-value f-green-ink" data-w="17">11</text>
+<text x="696" y="336" class="t-label" data-w="88">Observability</text>
+<rect x="376" y="152" width="208" height="200" rx="8" class="f-surface"/>
+<rect x="376" y="152" width="208" height="200" rx="8" class="w15 nofill s-ink-muted" data-fit="skip"/>
+<text x="392" y="180" class="t-value f-ink-muted" data-w="17">01</text>
+<text x="424" y="180" class="t-label b" data-w="37">Loop</text>
+<rect x="440" y="200" width="80" height="32" rx="8" class="f-blue-soft"/>
+<rect x="440" y="200" width="80" height="32" rx="8" class="w1 nofill s-blue" data-fit="skip"/>
+<text x="480" y="220" text-anchor="middle" class="t-label" data-w="46">reason</text>
+<rect x="496" y="288" width="72" height="32" rx="8" class="f-orange-soft"/>
+<rect x="496" y="288" width="72" height="32" rx="8" class="w1 nofill s-orange" data-fit="skip"/>
+<text x="532" y="308" text-anchor="middle" class="t-label" data-w="21">act</text>
+<rect x="392" y="288" width="80" height="32" rx="8" class="f-green-soft"/>
+<rect x="392" y="288" width="80" height="32" rx="8" class="w1 nofill s-green" data-fit="skip"/>
+<text x="432" y="308" text-anchor="middle" class="t-label" data-w="54">observe</text>
+<path d="M520,232 L538.99,285.17" class="flow" marker-end="url(#hrn-01-component-map-arrow)"/>
+<path d="M496,304 L475,304" class="flow" marker-end="url(#hrn-01-component-map-arrow)"/>
+<path d="M424,288 L446.82,234.76" class="flow" marker-end="url(#hrn-01-component-map-arrow)"/>
+<path d="M312,252 L373,252" class="flow" marker-end="url(#hrn-01-component-map-arrow)"/>
+<text x="344" y="240" text-anchor="middle" class="t-note" data-w="30">feed</text>
+<path d="M648,252 L587,252" class="flow" marker-end="url(#hrn-01-component-map-arrow)"/>
+<text x="616" y="240" text-anchor="middle" class="t-note" data-w="47">govern</text>
+<text x="72" y="388" class="t-head" data-w="132">At a larger scale</text>
+<rect x="72" y="404" width="240" height="44" rx="8" class="f-neutral-soft"/>
+<rect x="72" y="404" width="240" height="44" rx="8" class="w1 nofill s-border" data-fit="skip"/>
+<text x="88" y="432" class="t-value f-ink-muted" data-w="17">09</text>
+<text x="120" y="432" class="t-label" data-w="92">Orchestration</text>
+<rect x="328" y="404" width="256" height="44" rx="8" class="f-neutral-soft"/>
+<rect x="328" y="404" width="256" height="44" rx="8" class="w1 nofill s-border" data-fit="skip"/>
+<text x="344" y="432" class="t-value f-ink-muted" data-w="17">10</text>
+<text x="376" y="432" class="t-label" data-w="150">Long-horizon patterns</text>
+<rect x="648" y="400" width="16" height="16" class="f-blue s-blue w1"/>
+<text x="680" y="412" class="t-label" data-w="42">model</text>
+<rect x="648" y="432" width="16" height="16" class="f-green s-green w1"/>
+<text x="680" y="444" class="t-label" data-w="34">state</text>
+<rect x="776" y="400" width="16" height="16" class="f-orange s-orange w1"/>
+<text x="808" y="412" class="t-label" data-w="21">act</text>
+<rect x="776" y="432" width="16" height="16" class="f-purple s-purple w1"/>
+<text x="808" y="444" class="t-label" data-w="30">gate</text>
+</svg>

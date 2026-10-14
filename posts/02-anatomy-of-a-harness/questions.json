@@ -1,0 +1,790 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-002",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-002-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 1,
+      "tags": [
+        "components",
+        "governs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which set is exactly the four components that govern the model on the map?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Verification, hooks, permissions and orchestration",
+          "correct": false,
+          "feedback": "Orchestration works at a larger scale than one running agent; it coordinates several agents and sits in the scale tier with long-horizon patterns."
+        },
+        {
+          "key": "b",
+          "text": "Tools, state, context management and memory",
+          "correct": false,
+          "feedback": "These four feed the model: they decide what capability and information it has on each turn."
+        },
+        {
+          "key": "c",
+          "text": "Verification, hooks, permissions and observability",
+          "correct": true,
+          "feedback": "Correct. These decide what the model may do, whether its work is real, and what can be seen afterwards."
+        },
+        {
+          "key": "d",
+          "text": "Loop, verification, hooks and permissions",
+          "correct": false,
+          "feedback": "The loop is the core the other ten attach to, not one of the governing four; observability is the fourth."
+        }
+      ],
+      "explanation": "The governing four are verification (06), hooks (07), permissions (08) and observability (11). Observability is numbered last because it is taught in Part V, but it governs the loop like the other three.",
+      "hints": [
+        "Ask which components decide what the model may do and what can be seen afterwards."
+      ]
+    },
+    {
+      "id": "hrn-002-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "11",
+      "est_minutes": 3,
+      "tags": [
+        "components",
+        "numbering"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put these components in the order of their numbers on the map, lowest first.",
+      "items": [
+        {
+          "key": "a",
+          "text": "orchestration"
+        },
+        {
+          "key": "b",
+          "text": "tools"
+        },
+        {
+          "key": "c",
+          "text": "observability"
+        },
+        {
+          "key": "d",
+          "text": "verification"
+        },
+        {
+          "key": "e",
+          "text": "loop"
+        },
+        {
+          "key": "f",
+          "text": "context management"
+        },
+        {
+          "key": "g",
+          "text": "permissions"
+        }
+      ],
+      "answer": [
+        "e",
+        "b",
+        "f",
+        "d",
+        "g",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "The numbering is 01 loop, 02 tools, 04 context management, 06 verification, 08 permissions, 09 orchestration, 11 observability. The numbers follow the order of the posts that treat them, which is why observability (post 21) comes after orchestration (post 16) although it governs the loop.",
+      "hints": [
+        "The loop is 01, and the four that feed the model come next.",
+        "Observability is numbered after both components of the scale tier."
+      ]
+    },
+    {
+      "id": "hrn-002-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "components",
+        "context-management"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Name component 04 of the map, the one that keeps a long-running loop's window useful as it fills.",
+      "answer": {
+        "model": "Context management.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\bnot\\s+(called\\s+|named\\s+)?context\\s+management)(?![\\s\\S]*\\b(tools?|state|memory|loop|verification|hooks|permissions)\\s*(,|/|\\bor\\b|\\band\\b)\\s*context)(?![\\s\\S]*\\bcontext(-|\\s+)(window\\s+)?management\\s*(,|/|\\bor\\b|\\band\\b)\\s*(tools?|state|memory|loop|verification|hooks|permissions)\\b)[\\s\\S]*\\bcontext(-|\\s+)(window\\s+)?management\\b"
+        ]
+      },
+      "explanation": "Component 04 is context management, one of the four that feed the model. It fights context rot at runtime by offloading, clearing, compacting and resetting, and post 09 treats it.",
+      "hints": [
+        "It decides what enters and leaves the model's window."
+      ]
+    },
+    {
+      "id": "hrn-002-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "constitutive",
+        "de-macedo"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Laid over the map, which four components are the conditions a system must meet to count as an agent harness at all?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Loop, tools, memory across sessions and verification",
+          "correct": false,
+          "feedback": "Memory across sessions is standard in production but not required; the third condition is context management, which decides what enters and leaves the window."
+        },
+        {
+          "key": "b",
+          "text": "Loop, tools, context management and verification",
+          "correct": true,
+          "feedback": "Correct. These are the agent loop, the tool interface, context management and the control mechanisms, which the series files under verification."
+        },
+        {
+          "key": "c",
+          "text": "Loop, tools, verification and orchestration",
+          "correct": false,
+          "feedback": "The definition states that a harness does not require a multi-agent architecture; orchestration is optional."
+        },
+        {
+          "key": "d",
+          "text": "Loop, hooks, permissions and observability",
+          "correct": false,
+          "feedback": "A harness with no tool interface cannot perceive or alter its environment; hooks and permissions are standard but optional."
+        }
+      ],
+      "explanation": "De Macedo (2026) gives four necessary and sufficient conditions: an agent loop, a tool interface, context management, and control mechanisms (limits, verification, deterministic actions). On the map they are 01, 02, 04 and 06; the other seven are standard but optional.",
+      "hints": [
+        "One of the four decides what enters and leaves the model's window."
+      ]
+    },
+    {
+      "id": "hrn-002-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "constitutive",
+        "boundary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A system sends one request to a model with a tool schema, executes the single tool call the model returns, checks the result against a JSON schema, and returns it. Nothing is sent back to the model. By the constitutive test, what is it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A harness, because it has a tool interface and a check",
+          "correct": false,
+          "feedback": "Two conditions are not enough: the test needs all four, and this system has no loop and no context management."
+        },
+        {
+          "key": "b",
+          "text": "A harness that is missing only some of the optional components",
+          "correct": false,
+          "feedback": "The loop and context management are constitutive, not optional; missing either makes it something else."
+        },
+        {
+          "key": "c",
+          "text": "Not a harness: with no loop it is a generator, not an agent",
+          "correct": true,
+          "feedback": "Correct. Without an agent loop the system answers once and stops; it is a generator, not an agent, whatever else it has."
+        },
+        {
+          "key": "d",
+          "text": "An orchestrator, because it coordinates a model and a tool",
+          "correct": false,
+          "feedback": "An orchestrator coordinates several agents as units; this system has no agent at all."
+        }
+      ],
+      "explanation": "The test is all four conditions at runtime. This system has a tool interface and a schema check, but the result never returns to the model, so there is no loop interleaving reasoning, action and observation; de Macedo's paper calls such a system a generator rather than an agent.",
+      "hints": [
+        "Count how many of the four conditions the system meets.",
+        "Ask whether the observation ever goes back to the model."
+      ]
+    },
+    {
+      "id": "hrn-002-q06",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "constitutive",
+        "companion"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The minimal harness of `code/24-minimal-harness/` meets three of the four constitutive conditions. Which condition does it not meet?",
+      "answer": {
+        "model": "Context management: there is no compaction anywhere in harness.py, and its default cap of 12 iterations keeps the transcript short instead.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(meets|has|includes|satisfies)\\s+(the\\s+)?(context|compaction))(?![\\s\\S]*\\b(not|no|lacks?|lacking|missing|skips?|without|fails?)\\b[^.;,]{0,30}\\b(loop|tools?|tool interface|verification|control)\\b)(?![\\s\\S]*\\b(loop|tools?|tool interface|verification|control)\\s*(,|\\bor\\b|/)\\s*(the\\s+)?context)(?![\\s\\S]*\\bcontext(\\s+management)?\\s*(,|\\bor\\b|/)\\s*(the\\s+)?(loop|tools?|tool interface|verification|control)\\b)[\\s\\S]*(\\bcontext(-|\\s+)(window\\s+)?management\\b|\\bcompaction\\b|\\bmanaging (the|its) (context|window)\\b|\\b(never|doesn't|does not|no)\\s+manag(e|es|ing)\\b[^.;]{0,20}\\b(context|window)\\b)"
+        ]
+      },
+      "explanation": "Build #1 has the loop, a tool registry and a verification gate, but no compaction anywhere in `harness.py`: it meets three of the four conditions and skips context management. Its short default cap of 12 iterations is what keeps the transcript small enough not to need managing.",
+      "hints": [
+        "List the four conditions and the three engine modules of the companion.",
+        "Which condition has no module in `harness.py`, `tools.py` or `verify.py`?"
+      ]
+    },
+    {
+      "id": "hrn-002-q07",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "diagnosis",
+        "failure-modes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each complaint to the component a team should change first. Two components on the right fit none of them.",
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d",
+        "e": "e"
+      },
+      "left": [
+        {
+          "key": "a",
+          "text": "\"It said it was done, and it wasn't.\""
+        },
+        {
+          "key": "b",
+          "text": "\"It has been going in circles for twenty minutes.\""
+        },
+        {
+          "key": "c",
+          "text": "\"It gets rushed and sloppy near the end of a long run.\""
+        },
+        {
+          "key": "d",
+          "text": "\"It ran a force-push nobody asked for.\""
+        },
+        {
+          "key": "e",
+          "text": "\"It failed, and nobody can say where.\""
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "06 verification, on the final-answer exit"
+        },
+        {
+          "key": "b",
+          "text": "01 loop, its no-progress exit"
+        },
+        {
+          "key": "c",
+          "text": "04 context management"
+        },
+        {
+          "key": "d",
+          "text": "07 hooks, with 08 permissions"
+        },
+        {
+          "key": "e",
+          "text": "11 observability"
+        },
+        {
+          "key": "f",
+          "text": "09 orchestration"
+        },
+        {
+          "key": "g",
+          "text": "05 memory, with no hook"
+        }
+      ],
+      "explanation": "Victory declaration is fixed by verification on exit (1); a doom loop by the no-progress exit (4); context anxiety by context management; a destructive action by a deny-list hook plus a sandbox; and a failure nobody can locate is the symptom of missing observability. Another agent fixes none of them, and a memory line with no hook is the fix that decays.",
+      "hints": [
+        "Name the failure mode behind each complaint first.",
+        "One complaint is not a failure of any component; it is the symptom of a missing one."
+      ]
+    },
+    {
+      "id": "hrn-002-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "diagnosis",
+        "silent-drift"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "\"It keeps ignoring a convention the team agreed last week.\" Which change does the map point to?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Write the convention into the memory file and enforce it with a hook",
+          "correct": true,
+          "feedback": "Correct. The memory line is the feed fix that tells the model; the hook is the govern fix that makes the rule hold when the model forgets."
+        },
+        {
+          "key": "b",
+          "text": "Write the convention into the memory file",
+          "correct": false,
+          "feedback": "A memory line alone is a feed fix and can be ignored; without a hook the convention drifts again on a long run."
+        },
+        {
+          "key": "c",
+          "text": "Switch to a stronger model that follows written conventions more reliably",
+          "correct": false,
+          "feedback": "Silent drift is a harness failure: nothing in the harness carries or enforces the rule. A stronger model still forgets what nobody wrote down."
+        },
+        {
+          "key": "d",
+          "text": "Lower the iteration cap",
+          "correct": false,
+          "feedback": "The cap bounds how long a stuck run lasts; it has nothing to do with whether a convention is followed."
+        }
+      ],
+      "explanation": "This is silent drift, and it spans two groups on purpose: memory (05) feeds the rule to the model, and a hook (07) enforces it unconditionally. The pair is the ratchet that post 10 builds.",
+      "hints": [
+        "The fix spans two groups: one feeds the model, one governs it."
+      ]
+    },
+    {
+      "id": "hrn-002-q09",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "11",
+      "est_minutes": 10,
+      "tags": [
+        "components",
+        "groups",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`group(n)` should return the group of component `n` on the map (`\"core\"`, `\"feeds\"`, `\"governs\"` or `\"scale\"`), accepting `\"01\"` to `\"11\"` or 1 to 11, and raise `ValueError` for anything else. The version below assumes the groups follow the numbering in blocks. Fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def group(n):\n    \"\"\"Return the group of component n (\"01\" to \"11\", or 1 to 11) on the map:\n    \"core\", \"feeds\", \"governs\" or \"scale\". Anything else raises ValueError.\"\"\"\n    k = int(n)\n    if k == 1:\n        return \"core\"\n    if 2 <= k <= 5:\n        return \"feeds\"\n    if 6 <= k <= 8:\n        return \"governs\"\n    return \"scale\"\n",
+      "solution": "GROUPS = {1: \"core\", 2: \"feeds\", 3: \"feeds\", 4: \"feeds\", 5: \"feeds\",\n          6: \"governs\", 7: \"governs\", 8: \"governs\", 11: \"governs\",\n          9: \"scale\", 10: \"scale\"}\n\n\ndef group(n):\n    \"\"\"Return the group of component n (\"01\" to \"11\", or 1 to 11) on the map:\n    \"core\", \"feeds\", \"governs\" or \"scale\". Anything else raises ValueError.\"\"\"\n    if isinstance(n, str) and len(n) == 2 and n.isdigit():\n        k = int(n)\n    elif isinstance(n, int) and not isinstance(n, bool):\n        k = n\n    else:\n        raise ValueError(f\"not a component number: {n!r}\")\n    if k not in GROUPS:\n        raise ValueError(f\"not a component number: {n!r}\")\n    return GROUPS[k]\n",
+      "tests": "expected = {\"01\": \"core\", \"02\": \"feeds\", \"03\": \"feeds\", \"04\": \"feeds\", \"05\": \"feeds\",\n            \"06\": \"governs\", \"07\": \"governs\", \"08\": \"governs\",\n            \"09\": \"scale\", \"10\": \"scale\", \"11\": \"governs\"}\nfor n, g in expected.items():\n    assert group(n) == g, (n, group(n), g)\n    assert group(int(n)) == g, (int(n), g)\n\n# observability is numbered last but governs the loop; it is not part of the scale tier\nassert group(\"11\") == \"governs\"\nassert group(9) == \"scale\" and group(10) == \"scale\"\n\n# anything that is not a component number, or not written as one, is refused\nfor bad in (0, 12, \"00\", \"12\", -1, \"011\", 1.5):\n    try:\n        group(bad)\n    except ValueError:\n        pass\n    else:\n        raise AssertionError(f\"group({bad!r}) should raise ValueError\")\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The numbering follows the order of the posts, not the groups: observability is 11 but governs the loop, while orchestration (09) and long-horizon patterns (10) are the scale tier. The starter files 11 under scale and also accepts 12 or 0 silently; an explicit table of the eleven, with a `ValueError` for anything outside it, fixes both. `int()` alone is not enough: it turns `\"011\"` into 11 and 1.5 into 1, so the form of the input is checked first.",
+      "hints": [
+        "Check which group component 11 belongs to.",
+        "Map each of the eleven numbers explicitly, and refuse any number that is not in the map."
+      ]
+    },
+    {
+      "id": "hrn-002-q10",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "prebuilt",
+        "custom"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An SDK ships a hook system, a permission model and tool dispatch: the mechanism. In a word or a short phrase, what does the team using it still supply for each of the three?",
+      "answer": {
+        "model": "The policy: the hooks themselves, the permission rules and the tools.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(nothing|no polic(y|ies)|none)\\b)(?![\\s\\S]*\\b(sdk|vendor|harness)\\s+(supplies|ships|writes|provides|gives)\\s+(the\\s+)?(polic|rules|hooks|tools))(?![\\s\\S]*\\bteam\\s+(supplies|writes|provides|adds)\\s+(only\\s+)?(the\\s+)?(mechanism|machinery))[\\s\\S]*\\b(polic(y|ies)|rules?|the (actual\\s+)?hooks|its own hooks|own tools)\\b"
+        ]
+      },
+      "explanation": "The mechanism is inherited and the policy is the team's: the SDK gives a hook system and the team writes the hooks, a permission model and the team writes the rules, tool dispatch and the team writes the tools.",
+      "hints": [
+        "The SDK ships the machinery; ask what runs on it."
+      ]
+    },
+    {
+      "id": "hrn-002-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "prebuilt",
+        "permissions",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team adopts an agent SDK, keeps its default permission settings and adds its own tools. On the first long task the agent deletes a directory, and no error is raised anywhere. What is the most accurate diagnosis?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The SDK has no permission model, so the team must build one from scratch",
+          "correct": false,
+          "feedback": "The SDK ships a permission model; the mechanism was there. What was missing was the policy that runs on it."
+        },
+        {
+          "key": "b",
+          "text": "Nobody wrote the permission policy, and an over-broad policy fails silently",
+          "correct": true,
+          "feedback": "Correct. Permissions are on both sides of the seam: the mechanism is inherited, the policy is the team's, and a policy that is too broad emits no error."
+        },
+        {
+          "key": "c",
+          "text": "The model should have refused the command; a more careful model is the right fix",
+          "correct": false,
+          "feedback": "Bounding the blast radius is the harness's job, not the model's judgement; a sandbox and a deny-list hook hold whatever the model decides."
+        },
+        {
+          "key": "d",
+          "text": "The agent needed a sub-agent to review each command",
+          "correct": false,
+          "feedback": "Orchestration adds another agent and its token cost; the missing piece is a permission policy and a hook, both on one agent."
+        }
+      ],
+      "explanation": "This is one of the mistakes the post lists: counting the SDK as the whole harness. Permissions (08) appear on both sides of the seam, and of the three ownership questions the second applies: getting it wrong fails silently, so the team owns the policy and tests it.",
+      "hints": [
+        "Ask which side of the prebuilt and custom seam the missing piece sits on.",
+        "Recall which ownership question asks whether a mistake would fail silently."
+      ]
+    },
+    {
+      "id": "hrn-002-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "diagnosis",
+        "prebuilt",
+        "custom",
+        "lab"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A coding agent built on an agent SDK, with the team's own tools and memory file, keeps announcing that a refactor is complete while the test suite still fails. Locate the failure on the map, name the failure mode, say which component changes and on which exit, and say which half of the seam, prebuilt or custom, owns the fix and why. Then name the post that treats the component and the post that catalogues the failure mode. Say also why giving the agent more context about the task would not fix it.",
+      "kind": "design",
+      "solution": "The complaint is \"it said it was done, and it wasn't\": victory declaration, the first failure mode post 05 catalogues. It sits in the governs group, and the component to change is verification (06), placed on exit (1), the final-answer exit, so that the loop may only finish when the test suite passes; a failing check is fed back into the loop rather than ending the run. The SDK supplies the loop and its exits, which is the prebuilt mechanism, but what counts as done for this repository, here the test command and its pass condition, is policy only the team can write: getting it wrong fails silently, and no competitor could copy it from public documentation. So the fix is custom, written on a prebuilt mechanism. Adding more context about the task would be a feed fix for a govern failure and would leave the false completion in place. Post 11 treats verification loops, and post 05 catalogues victory declaration; post 20 is where the prebuilt half is chosen.",
+      "rubric": [
+        {
+          "criterion": "Names victory declaration and places it in the governs group",
+          "points": 2
+        },
+        {
+          "criterion": "Names verification (06) on exit (1), the final-answer exit, with the tests as ground truth",
+          "points": 2
+        },
+        {
+          "criterion": "Assigns the fix to the custom layer, with a reason from the ownership questions (silent failure, or not copyable)",
+          "points": 2
+        },
+        {
+          "criterion": "Rejects a feed fix such as more context or a bigger model, with the reason",
+          "points": 1
+        },
+        {
+          "criterion": "Names post 11 for the component and post 05 for the failure mode",
+          "points": 1
+        }
+      ],
+      "answer_length": "one paragraph",
+      "explanation": "The map turns the complaint into a located one: victory declaration, verification on the final-answer exit, and a pass condition only the team can define. The mechanism of the loop is inherited; the definition of done is policy.",
+      "hints": [
+        "Translate the complaint into a failure mode first, then into a group and a component.",
+        "Run the three ownership questions on the check that decides when the agent may stop."
+      ],
+      "connects": [
+        "hrn-005",
+        "hrn-011",
+        "hrn-020"
+      ]
+    },
+    {
+      "id": "hrn-002-q13",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "coordination-tax",
+        "tokens",
+        "snippet"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Run the post's snippet for a task whose chat form costs 25,000 tokens (illustrative). How many tokens does the single agent in a loop use, how many does the orchestrator with sub-agents use, and what is the coordination tax between them?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import sys\nsys.path.insert(0, \"posts/02-anatomy-of-a-harness/snippets\")  # run from the series root\nfrom coordination_tax import rows, coordination_tax\nfor row in rows(25_000):\n    print(row)\nprint(coordination_tax(25_000))",
+        "caption": "A call to snippets/coordination_tax.py with a 25,000-token chat."
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "single agent in a loop",
+            "value": 100000,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          },
+          {
+            "label": "orchestrator with sub-agents",
+            "value": 375000,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          },
+          {
+            "label": "coordination tax",
+            "value": 275000,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "4 x 25,000 = 100,000; 15 x 25,000 = 375,000; 375,000 - 100,000 = 275,000 (coordination_tax(25_000) returns (275000, 11.0)). Subtracting the chat instead of the single agent gives 350,000, outside the tolerance.",
+      "explanation": "The cited multipliers are about 4x and 15x a chat interaction (Anthropic, 2025), so the single agent uses $4 \\times 25{,}000 = 100{,}000$ tokens and the orchestrator $15 \\times 25{,}000 = 375{,}000$. The coordination tax is the gap between them, $275{,}000$ tokens, still eleven chats' worth.",
+      "hints": [
+        "Multiply the chat form by each cited multiplier.",
+        "The tax is the orchestrator minus the single agent, not minus the chat."
+      ]
+    },
+    {
+      "id": "hrn-002-q14",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "coordination-tax",
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team has a budget of 1,000,000 tokens a day for one kind of task whose chat form costs 40,000 tokens (illustrative), and uses the cited multipliers of about 4x for a single agent and 15x for a multi-agent system. How many whole tasks a day fit in the budget with a single agent, and how many with the orchestrator?",
+      "answer": {
+        "parts": [
+          {
+            "label": "whole tasks a day, single agent",
+            "value": 6,
+            "tolerance": 0,
+            "unit": "tasks"
+          },
+          {
+            "label": "whole tasks a day, orchestrator",
+            "value": 1,
+            "tolerance": 0,
+            "unit": "tasks"
+          }
+        ]
+      },
+      "precision_note": "1,000,000 / 160,000 = 6.25, so 6 whole tasks; 1,000,000 / 600,000 = 1.67, so 1 whole task (a second would overrun the budget). Rounding 1.67 up to 2 is the nearest wrong method.",
+      "explanation": "A single agent spends $4 \\times 40{,}000 = 160{,}000$ tokens a task and fits $\\lfloor 1{,}000{,}000 / 160{,}000 \\rfloor = 6$ tasks; the orchestrator spends $600{,}000$ and fits $1$. A budget is a ceiling, so a partial task does not count.",
+      "hints": [
+        "Work out the tokens per task for each shape first.",
+        "Divide the budget by each and keep the whole number below it."
+      ]
+    },
+    {
+      "id": "hrn-002-q15",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "coordination-tax",
+        "share"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "With the cited multipliers of about 4x and 15x the tokens of a chat, what share of an orchestrator's token spend is the coordination tax over a single agent? Give a percentage to one decimal place.",
+      "answer": {
+        "value": 73.3,
+        "tolerance": 0.05,
+        "unit": "%"
+      },
+      "precision_note": "(15 - 4) / 15 = 11 / 15 = 0.7333, which is 73.3%. It does not depend on the size of the task. 440,000 / 560,000 = 78.6% (the tax over the spend above the chat) is the nearest wrong method.",
+      "explanation": "The tax is $15c - 4c = 11c$ for a chat form of $c$ tokens, and the orchestrator spends $15c$, so the share is $11/15 \\approx 73.3\\%$ whatever $c$ is: on the post's 40,000-token task, 440,000 of 600,000 tokens.",
+      "hints": [
+        "Write both spends as multiples of the chat form.",
+        "Divide the difference by the orchestrator's multiple."
+      ]
+    },
+    {
+      "id": "hrn-002-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 10,
+      "tags": [
+        "constitutive",
+        "context-management"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A demonstration agent has a loop, a few general tools and a verifier that runs the tests before it may finish. It passes every short demonstration, then on its first long task its output gets rushed and sloppy as the run goes on. Explain, using the constitutive test, why the demonstration looked complete and was not; name the failure mode it shows; say what the team should add, in the order to try it; and say why a bigger model would not fix it.",
+      "kind": "explain",
+      "solution": "The demo has three of the four constitutive conditions: the loop (01), a tool interface (02) and a control mechanism in verification (06). It lacks the third, context management (04), the part that decides what enters and leaves the model's window. On short runs the window never fills, so the missing part is invisible and the demo looks complete. On a long task every turn appends to the transcript, the window fills with stale results, and the output degrades: the context anxiety failure mode, whose fix is context management. By the test the system was not yet a harness: in de Macedo's words, without context management \"there is no viable loop\". The team should add the ladder of post 09, tried cheapest first: offload large tool outputs to disk, clear results already acted on, compact older turns, and reset behind a handoff file. A bigger model would not fix it, because the problem is what the harness lets accumulate in the window.",
+      "rubric": [
+        {
+          "criterion": "Identifies context management (04) as the missing constitutive condition",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why short runs hide the gap and long runs expose it (the window fills)",
+          "points": 2
+        },
+        {
+          "criterion": "Names the symptom as context anxiety or context rot",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes the offload, clear, compact, reset moves, cheapest first",
+          "points": 2
+        },
+        {
+          "criterion": "Rejects a bigger model as the fix, with the reason",
+          "points": 1
+        }
+      ],
+      "answer_length": "one paragraph",
+      "explanation": "The constitutive test makes the gap visible: loop, tools and verification without context management look complete only until the window fills. The fix is the component, not the model.",
+      "hints": [
+        "Count which of the four conditions the demonstration meets.",
+        "Ask what changes between a short run and a long one inside the window."
+      ]
+    },
+    {
+      "id": "hrn-002-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "orchestration",
+        "evidence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Anthropic reports that token usage by itself explains 80% of the performance variance on BrowseComp, and that its multi-agent system beat single-agent Claude Opus 4 by 90.2% on an internal research evaluation. What follows for the single-agent default?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Multi-agent systems are better in general, so orchestration should become the default shape for any task",
+          "correct": false,
+          "feedback": "Much of the gain is bought with tokens, about 15x a chat against 4x for one agent; the result holds for breadth-first research, not for every task."
+        },
+        {
+          "key": "b",
+          "text": "Spending tokens buys much of the gain, so orchestration needs a real reason such as breadth-first work",
+          "correct": true,
+          "feedback": "Correct. The same report that gives the gain shows it is largely bought with tokens, so the extra spend has to be justified by work that splits into independent paths."
+        },
+        {
+          "key": "c",
+          "text": "Token count does not affect quality, so the coordination tax can be ignored",
+          "correct": false,
+          "feedback": "The 80% figure says the opposite: token usage is the largest single factor in performance on that evaluation."
+        },
+        {
+          "key": "d",
+          "text": "The 15x multiplier is a measured constant for every task",
+          "correct": false,
+          "feedback": "It is a typical figure from one team's systems, cited as about 15x; the post applies it to an illustrative task, not as a law."
+        }
+      ],
+      "explanation": "The default is one agent, as simple as works (Anthropic, 2024). Orchestration survives because spending more tokens buys much of the improvement on breadth-first work (Anthropic, 2025), so it needs a reason of that kind; anything narrower is one agent with sub-tasks.",
+      "hints": [
+        "Ask what the 80% figure says about where the improvement comes from."
+      ]
+    }
+  ]
+}
