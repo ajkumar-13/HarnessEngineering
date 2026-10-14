@@ -20,6 +20,35 @@ desktop.ini
 # are published with their figures.
 /posts/*/diagrams/excalidraw/
 
+# ===== Loose notes / drafts / archives =====
+# Root-only loose .txt notes (don't ignore data fixtures under code/**/*.txt)
+/*.txt
+*.rar
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tgz
+
+# ===== Memory / scratch =====
+/memories/
+.scratch/
+scratch/
+TODO.local.md
+
+# ===== Env / caches =====
+.env
+.env.*
+!.env.example
+.python-version
+.mypy_cache/
+.ruff_cache/
+
+# ===== Diagram render byproducts =====
+*.drawio.bkp
+*.excalidraw.bak
+.preview/
+
 # ===== Python =====
 __pycache__/
 *.py[cod]
