@@ -1,38 +1,25 @@
 id: hrn-006
 slug: 06-tools-bash-code
-title: "06 · Tools as the agent's hands — bash, code, and schemas"
-
-description: >
-  Tools are the ACT step of the loop: the surface through which a model changes the world.
-  The durable lesson of 2025–26 is counter-intuitive: instead of building a bespoke tool
-  for every action, give the model a few general-purpose tools (above all bash and code
-  execution) and let it compose them.
-
-author: "Ajay"
+title: "06 - Tools as the agent's hands: bash, code, and schemas"
+summary: "Tools are the act step of the loop. A few general tools, above all bash and code execution, beat a zoo of narrow ones, and a call is reliable when it is validated against its schema before anything runs."
 date: 2026-07-16
-last_modified: 2026-09-05
-
-tags: [harness-engineering, primitives, tools, mcp, bash]
-
-keywords:
-  - harness engineering
-  - primitives
-  - tools
-  - mcp
-  - bash
-  - next single user message
-  - progressive disclosure
-
-category: Core primitives
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part II - Core primitives"
-
+level: intermediate
+reading_time: 22
+tags: [harness-engineering, core-primitives, tools, tool-schemas, bash, validation, parallel-tool-use]
 hero: diagrams/01-tool-dispatch.svg
-hero_alt: "Tool dispatch flow: the model emits a tool call, the harness validates the input against the tool's schema, and either executes it or returns an error observation without running anything."
-
-reading_time: 25
-toc: true
-draft: false
-canonical_url: ""
-prev: ../05-agent-failure-modes/
-next: ../07-skills-mcp-runtime/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain a tool call as a request on the wire, a `tool_use` block answered by a `tool_result` with its id, and say what the harness owns between the two."
+  - id: o2
+    text: "Argue for bash and code execution as general-purpose tools over a zoo of narrow ones, and name when a bespoke tool still wins."
+  - id: o3
+    text: "Design a tool schema that teaches the model when not to call it, and say what its definition costs on every call."
+  - id: o4
+    text: "Validate every tool call against its schema before executing it, and tell a schema-invalid, a semantically wrong and a dangerous call apart."
+  - id: o5
+    text: "Shape a tool's return value, answer parallel tool calls in one well-formed message, and curate the fewest tools that cover the space."

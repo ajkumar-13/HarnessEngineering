@@ -1,0 +1,727 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-006",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-006-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "wire-format",
+        "tool-use"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness has sent back a `tool_result` block. What tells the model which of its tool calls this result answers?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Its position: the first result in the message answers the first call.",
+          "correct": false,
+          "feedback": "Position is a convenience; the documentation matches each result to its call by id, so a reordered reply still pairs correctly."
+        },
+        {
+          "key": "b",
+          "text": "Its `tool_use_id`, which repeats the call's `id`.",
+          "correct": true,
+          "feedback": "Right: the id pair is the only correspondence between a request and its answer."
+        },
+        {
+          "key": "c",
+          "text": "The tool name, which the result block repeats from the call.",
+          "correct": false,
+          "feedback": "A `tool_result` carries no tool name, and two calls to the same tool in one turn would be indistinguishable by name."
+        },
+        {
+          "key": "d",
+          "text": "The message role, which is set to the tool's name.",
+          "correct": false,
+          "feedback": "The result travels in a message whose role is `user`; there is no role per tool."
+        }
+      ],
+      "explanation": "The model's `tool_use` block carries an `id`; the harness's `tool_result` repeats it in `tool_use_id`. That pair is the whole link between request and answer, which is also what lets several calls in one turn be answered together.",
+      "hints": [
+        "Look for the one field the two blocks share."
+      ]
+    },
+    {
+      "id": "hrn-006-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "dispatch",
+        "validation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put the steps the companion takes for one `bash` call that passes every check in the order it takes them, from the model's `tool_use` block to the string the loop sends back.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Check the command against the deny-list."
+        },
+        {
+          "key": "b",
+          "text": "Look up the tool by its name in the registry."
+        },
+        {
+          "key": "c",
+          "text": "Prefix a non-zero exit status to the output, or return \"(no output)\" for an empty one."
+        },
+        {
+          "key": "d",
+          "text": "Validate the input object against the tool's schema."
+        },
+        {
+          "key": "e",
+          "text": "Hand the command to the runner."
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "a",
+        "e",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "`dispatch()` first finds the tool (an unknown name returns an error string), then validates the input against that tool's schema; only a valid call reaches the tool's `run`, which checks the deny-list before the runner sees the command and shapes the result with the exit prefix afterwards.",
+      "hints": [
+        "The schema belongs to a tool, so something must happen before validation.",
+        "The deny-list is inside the bash tool, which only runs once the input is valid."
+      ]
+    },
+    {
+      "id": "hrn-006-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "general-tools",
+        "bespoke-tools"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent already has `bash` in a continuous-integration runner. Which new capability is the best case for a bespoke tool rather than another shell command?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Running the test suite after each edit and reading the failures it prints.",
+          "correct": false,
+          "feedback": "Test output is text a person reads, and the model has seen `pytest` and its kin constantly; the shell covers it."
+        },
+        {
+          "key": "b",
+          "text": "A customer refund of a capped amount, approved by a person each time.",
+          "correct": true,
+          "feedback": "Right: the action needs its own permission, and a harness can permit `issue_refund` while refusing `bash`; it cannot permit half a shell."
+        },
+        {
+          "key": "c",
+          "text": "Listing the files changed on the current branch, using `git diff --name-only`.",
+          "correct": false,
+          "feedback": "The model has seen `git` constantly, and the result is a listing a person reads; a general tool fits."
+        },
+        {
+          "key": "d",
+          "text": "Searching the whole repository for every definition of one function name.",
+          "correct": false,
+          "feedback": "A search is a shell one-liner the model composes easily, and its result is text; nothing calls for its own permission or a typed result."
+        }
+      ],
+      "explanation": "Four questions decide it: is there a process to spawn, what comes back, does the action need its own permission, has the model seen the interface. A refund that must be approved on its own fails the permission question for a general tool: to an approver, \"allow this bash command\" is a decision about a string, not a capability.",
+      "hints": [
+        "Ask which of these a human approver would need to allow on its own."
+      ]
+    },
+    {
+      "id": "hrn-006-q04",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "bespoke-tools"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Each situation below argues for a bespoke tool instead of the shell. Match it to the question that decides it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The agent runs inside a browser page."
+        },
+        {
+          "key": "b",
+          "text": "The result is an identifier that a billing service consumes downstream."
+        },
+        {
+          "key": "c",
+          "text": "Reviewers must be able to allow refunds while refusing everything else."
+        },
+        {
+          "key": "d",
+          "text": "The capability is an internal service invented last quarter."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "Is there a process to spawn?"
+        },
+        {
+          "key": "q",
+          "text": "What comes back?"
+        },
+        {
+          "key": "r",
+          "text": "Does the action need its own permission?"
+        },
+        {
+          "key": "s",
+          "text": "Has the model seen this interface?"
+        },
+        {
+          "key": "t",
+          "text": "Would a shell command work?"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s"
+      },
+      "explanation": "A browser page has no process to fork; typed data consumed by code is a question of what comes back; a capability approved on its own is a permission question; an interface with no training precedent is the last question. \"Would a shell command work\" decides none of them, because a shell command nearly always would.",
+      "hints": [
+        "One question on the right is the one the post says never decides it."
+      ]
+    },
+    {
+      "id": "hrn-006-q05",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "deny-list",
+        "sandbox",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "connects": [
+        "hrn-005",
+        "hrn-014"
+      ],
+      "prompt": "A team's agent has one tool, `bash`, guarded by a regular-expression deny-list like the companion's. The team argues: \"one tool means one boundary, the deny-list blocks `rm -rf`, so the agent cannot destroy production data.\" Critique the argument and say what the team should build instead.",
+      "kind": "critique",
+      "solution": "**What is right.** One general tool is one place to put a gate instead of fifty, and a deny-list is a cheap first filter and a legible audit line.\n\n**What is wrong.** One boundary is not a narrow boundary: the shell must now contain arbitrary code. A deny-list matches spellings, and the shell offers unbounded spellings of every effect: against the companion's twelve patterns `rm -rf /` is blocked, while `rm --recursive --force /`, `find / -delete` and a Python one-liner calling `shutil.rmtree` all reach the runner. The Replit incident of July 2025, a production database reportedly deleted during a code freeze, is the destructive-action failure mode with a public record; the vendor's remedies were all harness changes.\n\n**What to build.** The operating-system boundary of post 14: a working-directory jail, an allow-list, no network egress, a timeout, and credentials that cannot reach production from the agent's environment. Keep the deny-list as a filter and an audit line. Put actions that must be approved on their own (a production database change) behind a bespoke tool with its own permission, because an approver cannot allow half a shell.",
+      "rubric": [
+        {
+          "criterion": "Grants what the argument gets right: one surface to gate, a deny-list as a cheap filter and audit line",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that a deny-list matches spellings, not effects, with at least one concrete bypass of the rm -rf pattern",
+          "points": 3
+        },
+        {
+          "criterion": "Names the boundary that holds: an operating-system sandbox (jail, allow-list, no egress, timeout) or credentials kept away from production",
+          "points": 3
+        },
+        {
+          "criterion": "Uses the destructive-action failure mode or the Replit incident to show the fix is a harness change",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a bespoke, separately approvable tool for actions that need their own permission",
+          "points": 2
+        }
+      ],
+      "answer_length": "three short paragraphs",
+      "explanation": "Sections 3 to 5: a single general surface is one boundary to build, not one that holds. The companion's deny-list blocks one spelling of a deletion and lets four other commands through; post 14's sandbox and post 05's destructive-action mode supply the rest.",
+      "hints": [
+        "Try writing the same deletion three ways without the letters `rm -r`.",
+        "Ask what stops the command once a pattern has missed it."
+      ]
+    },
+    {
+      "id": "hrn-006-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 1,
+      "tags": [
+        "schema-design",
+        "descriptions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Most of a tool description shapes how the model calls the tool. Which kind of line in a description is the one that prevents a call altogether?",
+      "answer": {
+        "model": "The negative line that says when not to call the tool, such as \"do not use this to read a file\".",
+        "accept": [
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?![\\s\\S]*\\b(not|never)\\s+(the\\s+)?(negative|when\\s+not|do\\s+not))(?!\\s*(the\\s+)?(name|enum|parameters?|schema|return|required|type)\\b)[\\s\\S]*\\bnegative\\b",
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?![\\s\\S]*\\b(not|never)\\s+(the\\s+)?(negative|when\\s+not|do\\s+not))(?!\\s*(the\\s+)?(name|enum|parameters?|schema|return|required|type)\\b)[\\s\\S]*\\b(when|where|what|which\\s+cases?)\\b[^.]{0,30}\\b(not|n't|never)\\b[^.]{0,20}\\b(call|use|invoke|used|called)",
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?![\\s\\S]*\\b(not|never)\\s+(the\\s+)?(negative|when\\s+not|do\\s+not))(?!\\s*(the\\s+)?(name|enum|parameters?|schema|return|required|type)\\b)[\\s\\S]*\\b(do\\s+not|don't|never(\\s+to)?|not\\s+to)\\s+(use|call|invoke)\\b"
+        ]
+      },
+      "explanation": "The line that tells the model when *not* to call the tool is the only part of a description that prevents a call rather than shaping one; \"do not use this to read a file\" stops a class of misuse before it happens, which is why the shortest useful description still keeps it.",
+      "hints": [
+        "Think of the line that steers the model away from the tool, not towards it."
+      ]
+    },
+    {
+      "id": "hrn-006-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "tokens",
+        "cost",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness exposes nine tools whose definitions are about 105 tokens each, and a run lasts thirty turns; every turn re-reads the whole tool block. How many tokens of tool definitions does the run read, and what do they cost as cache reads, priced at 0.1 times an input rate of 3 dollars per million tokens?",
+      "answer": {
+        "parts": [
+          {
+            "label": "tool-definition tokens read",
+            "value": 28350,
+            "tolerance": 10,
+            "unit": "tokens"
+          },
+          {
+            "label": "cost as cache reads",
+            "value": 0.008505,
+            "tolerance": 0.0006,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "9 x 105 = 945 tokens a call; 945 x 30 = 28,350; 28,350 x 3 x 0.1 / 10^6 = 0.008505 dollars, the arithmetic of snippets/run_tests_schema.py. The uncached price, 0.085 dollars, is ten times too high.",
+      "explanation": "The tool block is $9 \\times 105 = 945$ tokens and is read on every turn: $945 \\times 30 = 28{,}350$ tokens. As cache reads at $0.1 \\times 3 = 0.30$ dollars per million, that is $28{,}350 \\times 0.30 / 10^6 \\approx 0.0085$ dollars, under a cent. The money is a rounding error; thirty readings of the menu are not.",
+      "hints": [
+        "Multiply the size of one block by the number of times it is read.",
+        "A cache read costs a tenth of the input rate."
+      ]
+    },
+    {
+      "id": "hrn-006-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "prompt-caching",
+        "tool-definitions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "To keep the model aware of the date, an engineer appends today's date to the `description` of one tool on every request. Under Anthropic's prompt caching, what does this do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nothing measurable, because tool descriptions are cached apart from the conversation.",
+          "correct": false,
+          "feedback": "The cache is one prefix in the order tools, system, messages; there is no separate cache for descriptions."
+        },
+        {
+          "key": "b",
+          "text": "It re-bills only that one tool's definition at the full input rate on each request.",
+          "correct": false,
+          "feedback": "A prefix match cannot skip a changed block: everything after the change misses the cache too."
+        },
+        {
+          "key": "c",
+          "text": "It invalidates the whole cached prefix, system prompt and history included.",
+          "correct": true,
+          "feedback": "Right: modifying a tool definition invalidates the whole cache, because the tools come first in the prefix."
+        },
+        {
+          "key": "d",
+          "text": "It invalidates the cached tool block but leaves the system prompt and history cached.",
+          "correct": false,
+          "feedback": "The system prompt and the messages come after the tools in the prefix, so they are invalidated with them."
+        }
+      ],
+      "explanation": "The provider renders tools, then the system prompt, then the messages, and caching reuses the longest identical head. A tool edit changes the very first block, so nothing after it can be reused; Anthropic's documentation states that modifying tool definitions invalidates the entire cache. A tool block is versioned between deployments, not tuned per request.",
+      "hints": [
+        "Recall the order in which a request is rendered.",
+        "A prefix cache reuses only what is identical from the very first token."
+      ]
+    },
+    {
+      "id": "hrn-006-q09",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "dispatch",
+        "validation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`dispatch` below is meant to be the tool contract: validate the call against the tool's schema, execute only if it passes, and return every outcome as a string. As written it runs the tool before checking the input, raises on a tool name it does not know, and lets a tool's exception escape into the loop. Fix `dispatch`; `validate` is correct as it stands.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def validate(tool_input, schema):\n    \"\"\"Return a list of problems; an empty list means valid.\n    Checks required keys, unexpected keys, and keys whose schema type is \"string\".\"\"\"\n    problems = []\n    for key in schema.get(\"required\", []):\n        if key not in tool_input:\n            problems.append(f\"missing required property '{key}'\")\n    props = schema.get(\"properties\", {})\n    for key, value in tool_input.items():\n        if key not in props:\n            problems.append(f\"unexpected property '{key}'\")\n        elif props[key].get(\"type\") == \"string\" and not isinstance(value, str):\n            problems.append(f\"'{key}' must be a string\")\n    return problems\n\n\ndef dispatch(tools, name, tool_input):\n    \"\"\"tools maps a tool name to (schema, run). Validate, then execute.\n    Always return a string the loop can feed back to the model; never raise.\"\"\"\n    schema, run = tools[name]\n    output = run(tool_input)\n    problems = validate(tool_input, schema)\n    if problems:\n        return \"error: invalid input: \" + \"; \".join(problems)\n    return output\n",
+      "solution": "def validate(tool_input, schema):\n    \"\"\"Return a list of problems; an empty list means valid.\n    Checks required keys, unexpected keys, and keys whose schema type is \"string\".\"\"\"\n    problems = []\n    for key in schema.get(\"required\", []):\n        if key not in tool_input:\n            problems.append(f\"missing required property '{key}'\")\n    props = schema.get(\"properties\", {})\n    for key, value in tool_input.items():\n        if key not in props:\n            problems.append(f\"unexpected property '{key}'\")\n        elif props[key].get(\"type\") == \"string\" and not isinstance(value, str):\n            problems.append(f\"'{key}' must be a string\")\n    return problems\n\n\ndef dispatch(tools, name, tool_input):\n    \"\"\"tools maps a tool name to (schema, run). Validate, then execute.\n    Always return a string the loop can feed back to the model; never raise.\"\"\"\n    if name not in tools:\n        return f\"error: unknown tool '{name}'\"\n    schema, run = tools[name]\n    problems = validate(tool_input, schema)\n    if problems:\n        return \"error: invalid input: \" + \"; \".join(problems)\n    try:\n        return run(tool_input)\n    except Exception as e:\n        return f\"error: {type(e).__name__}: {e}\"\n",
+      "tests": "calls = []\n\n\ndef echo(args):\n    calls.append(args)\n    return \"ran \" + args[\"command\"]\n\n\ndef boom(args):\n    calls.append(args)\n    raise ValueError(\"kaboom\")\n\n\nSCHEMA = {\"type\": \"object\", \"properties\": {\"command\": {\"type\": \"string\"}},\n          \"required\": [\"command\"], \"additionalProperties\": False}\ndef crash(args):\n    raise RuntimeError(\"disk on fire\")\n\n\nTOOLS = {\"bash\": (SCHEMA, echo), \"boom\": (SCHEMA, boom), \"crash\": (SCHEMA, crash)}\n\nassert dispatch(TOOLS, \"bash\", {\"command\": \"ls\"}) == \"ran ls\"\n\ncalls.clear()\nout = dispatch(TOOLS, \"bash\", {\"cmd\": \"ls\"})\nassert isinstance(out, str) and out.startswith(\"error: invalid input\"), out\nassert calls == [], \"an invalid call reached the tool\"\n\nout = dispatch(TOOLS, \"bash\", {\"command\": 42})\nassert isinstance(out, str) and out.startswith(\"error: invalid input\"), out\nassert calls == [], \"a wrongly typed call reached the tool\"\n\nout = dispatch(TOOLS, \"boom\", {\"cmd\": \"x\"})\nassert isinstance(out, str) and out.startswith(\"error: invalid input\"), out\nassert calls == [], \"validation must come before execution\"\n\nout = dispatch(TOOLS, \"nope\", {\"command\": \"ls\"})\nassert isinstance(out, str) and out.startswith(\"error\") and \"nope\" in out, out\n\nout = dispatch(TOOLS, \"boom\", {\"command\": \"ls\"})\nassert isinstance(out, str) and out.startswith(\"error\") and \"kaboom\" in out, out\nout = dispatch(TOOLS, \"crash\", {\"command\": \"ls\"})\nassert isinstance(out, str) and out.startswith(\"error\") and \"disk on fire\" in out, out\nassert dispatch(TOOLS, \"bash\", {\"command\": \"pwd\"}) == \"ran pwd\"\nprint(\"all tests passed\")\n",
+      "explanation": "The companion's `dispatch()` is the reference: an unknown tool returns `error: unknown tool '...'`, a call with schema problems returns `error: invalid input: ...` without running, and a tool's exception is caught and returned as `error: <type>: <message>`. Every branch returns a string, so a bad call becomes an observation the model corrects next turn instead of a crash.",
+      "hints": [
+        "Move the check so that nothing runs until the input has passed it.",
+        "Two more failures must become strings: a name that is not in `tools`, and an exception raised by `run`."
+      ]
+    },
+    {
+      "id": "hrn-006-q10",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "validation",
+        "three-gates"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Through the companion's `dispatch()`, the call `{\"command\": \"cat /tmp/nope\"}` comes back as `(exit 1) cat: /tmp/nope: No such file or directory`. Which gate caught the problem?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The schema validator, which checked the input before anything was allowed to run.",
+          "correct": false,
+          "feedback": "The call is schema-valid: `command` is present and is a string, so validation passes it."
+        },
+        {
+          "key": "b",
+          "text": "The deny-list, which matched the command and refused it before the runner saw it.",
+          "correct": false,
+          "feedback": "A deny-list refusal reads `blocked: ...` and the runner is never reached; this command ran."
+        },
+        {
+          "key": "c",
+          "text": "The tool at run time: the command ran, failed, and its exit status was surfaced.",
+          "correct": true,
+          "feedback": "Right: a schema-valid but semantically wrong call is caught by the tool, and the `(exit 1)` prefix tells the model it failed."
+        },
+        {
+          "key": "d",
+          "text": "The provider's strict mode, which rejected the path while generating the tool call.",
+          "correct": false,
+          "feedback": "Strict mode constrains the call's shape while it is generated; it cannot know whether a file exists, and this call's shape was valid."
+        }
+      ],
+      "explanation": "Section 7 separates three kinds of wrongness: schema-invalid (the validator), schema-valid but semantically wrong (the tool at run time) and schema-valid and dangerous (a deny-list, then a sandbox). `snippets/three_gates.py` shows this call is the only one of the three that reaches the runner.",
+      "hints": [
+        "Is anything wrong with the call's shape?",
+        "Which string would a refused call start with?"
+      ]
+    },
+    {
+      "id": "hrn-006-q11",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "structured-outputs",
+        "validation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "OpenAI's strict mode compiles a tool's schema into a grammar, so a call it generates always has the schema's shape. In a word or a phrase, what does it still leave for the harness to check?",
+      "answer": {
+        "model": "Semantic validity: whether the call makes sense, its meaning (a path that exists, an argument that is right), which the harness still has to check.",
+        "accept": [
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?![\\s\\S]*\\b(guarantees?|covers?|ensures?)\\s+(the\\s+)?(semantic|semantics|meaning|sense)\\b)(?![\\s\\S]*\\b(not|no|never|isn't|without)\\s+(the\\s+|its\\s+|any\\s+)?(semantic|semantics|meaning|sense)\\b)(?![\\s\\S]*\\bmeaning(less)?\\s+is\\s+(guaranteed|covered)\\b)[\\s\\S]*\\b(semantic(s|ally)?|meaning|makes?\\s+sense|sensible|(the\\s+)?sense\\b)",
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?![\\s\\S]*\\b(not|no|never)\\s+(whether|if)\\b)[\\s\\S]*\\bwhether\\b[^.]{0,40}\\b(correct|right|valid\\s+in\\s+context|sensible|exists?)\\b",
+          "(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)^(?!\\s*(nothing|none)\\b)(?![\\s\\S]*\\b(guarantees?|covers?|ensures?)\\s+(the\\s+|its\\s+)?(safety|correctness|danger)\\b)(?![\\s\\S]*\\b(not|no|never|isn't|without)\\s+(the\\s+|its\\s+|any\\s+|for\\s+)?(safety|safe|danger|dangerous|harm|correct(ness)?|right)\\b)[\\s\\S]*\\b(safety|safe|dangerous|danger|harmful|destructive|(correct(ness)?|right(ness)?)\\s+(of\\s+)?(the\\s+)?(values?|arguments?|args|paths?|inputs?)|(values?|arguments?|args|inputs?|paths?)\\s+(are|is)\\s+(correct|right|sensible|real))\\b"
+        ]
+      },
+      "explanation": "Strict mode guarantees shape, not sense: a schema-valid call can still name a file that does not exist or an argument that is wrong for the task. The ladder of output guarantees in `ctx-021` ends at grammar-constrained decoding, and even that rung leaves the meaning to the application, so the harness still validates semantics (and safety) on every call.",
+      "hints": [
+        "Shape is one half of correctness; name the other half."
+      ]
+    },
+    {
+      "id": "hrn-006-q12",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "tool-curation",
+        "rag-mcp"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "RAG-MCP reports 13.62% tool-selection accuracy with every MCP server description in the prompt and 43.13% when only the best-matching description is retrieved and sent, with average prompts of 2,133.84 and 1,084.00 tokens respectively. By what factor did accuracy rise, and by what percentage did the average prompt fall?",
+      "answer": {
+        "parts": [
+          {
+            "label": "accuracy factor",
+            "value": 3.167,
+            "tolerance": 0.04,
+            "unit": "times"
+          },
+          {
+            "label": "prompt reduction",
+            "value": 49.2,
+            "tolerance": 0.6,
+            "unit": "%"
+          }
+        ]
+      },
+      "precision_note": "43.13 / 13.62 = 3.167; (2,133.84 - 1,084.00) / 2,133.84 = 49.2%. The kept share, 1,084.00 / 2,133.84 = 50.8%, is the nearest wrong reading, and the difference 29.51 is not a factor.",
+      "explanation": "Accuracy rose by $43.13 / 13.62 \\approx 3.17$ times, \"more than triples\" in the paper's words. The prompt fell by $(2{,}133.84 - 1{,}084.00) / 2{,}133.84 \\approx 49.2\\%$, about half; the abstract rounds this to \"over 50%\", which the table does not quite support.",
+      "hints": [
+        "A factor is a ratio, not a difference.",
+        "The reduction is the tokens saved divided by the original prompt."
+      ]
+    },
+    {
+      "id": "hrn-006-q13",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "deny-list",
+        "bash"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these commands passes the companion's shipped deny-list and reaches the runner?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`sudo rm x`",
+          "correct": false,
+          "feedback": "The list blocks any command containing the word `sudo`."
+        },
+        {
+          "key": "b",
+          "text": "`git push origin main --force`",
+          "correct": false,
+          "feedback": "A pattern matches `git push` followed anywhere on the line by `--force`."
+        },
+        {
+          "key": "c",
+          "text": "`find / -delete`",
+          "correct": true,
+          "feedback": "Right: no pattern mentions `find` or `-delete`, so this deletion reaches the runner while `rm -rf /` is blocked."
+        },
+        {
+          "key": "d",
+          "text": "`mkfs.ext4 /dev/sda`",
+          "correct": false,
+          "feedback": "The pattern `\\bmkfs\\b` matches `mkfs` before the dot."
+        }
+      ],
+      "explanation": "The deny-list matches spellings, not effects. `snippets/deny_list_bypass.py` runs the shipped patterns: `rm -rf /` is blocked while `rm --recursive --force /`, `find / -delete` and a Python one-liner calling `shutil.rmtree` pass. The boundary that holds is the operating-system sandbox of post 14.",
+      "hints": [
+        "Three of these four appear, word for word or by pattern, in the list of twelve.",
+        "Which option deletes files without using the word `rm`?"
+      ]
+    },
+    {
+      "id": "hrn-006-q14",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "parallel-tool-use",
+        "wire-format"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The model's turn contains three `tool_use` blocks, `t1`, `t2` and `t3`. The harness runs them in sequence, `t1` fails, and it decides not to run the other two. What should its reply be?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One user message with three `tool_result` blocks: `t1` with its error, `t2` and `t3` with `is_error: true` and a reason.",
+          "correct": true,
+          "feedback": "Right: one result for every call, all in the next user message, the unrun calls reported rather than dropped."
+        },
+        {
+          "key": "b",
+          "text": "One user message holding only `t1`'s result, since `t2` and `t3` never ran and so produced nothing to report.",
+          "correct": false,
+          "feedback": "Every `tool_use` block needs a `tool_result`; a call the harness chose not to run is still answered, with `is_error: true`."
+        },
+        {
+          "key": "c",
+          "text": "Three user messages, one per `tool_result`, so that the failure of `t1` and the two skipped calls each stand on their own.",
+          "correct": false,
+          "feedback": "Separate messages per result are the formatting error Anthropic's page names first: they teach the model to avoid parallel calls."
+        },
+        {
+          "key": "d",
+          "text": "One user message that opens with a text block explaining that `t1` failed, followed by the three `tool_result` blocks.",
+          "correct": false,
+          "feedback": "Every `tool_result` block goes before any text content in the message."
+        }
+      ],
+      "explanation": "Anthropic's \"Parallel tool use\" page: return one `tool_result` for each `tool_use` block, all together in the next user message, matched by `tool_use_id`, results before any text; a call not run still gets a result with `is_error: true` and a brief explanation.",
+      "hints": [
+        "Count the results the model must receive."
+      ]
+    },
+    {
+      "id": "hrn-006-q15",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "parallel-tool-use",
+        "latency"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Take illustrative figures: on a thirty-turn run, ten turns each ask for four independent file reads of 150 ms each, and every other turn asks for a single call. How many seconds of tool time does running each batch of four in parallel save over running them in sequence?",
+      "answer": {
+        "value": 4.5,
+        "tolerance": 0.05,
+        "unit": "seconds"
+      },
+      "precision_note": "Sequence: 10 x 4 x 150 ms = 6,000 ms; parallel: 10 x 150 ms = 1,500 ms; saved 4,500 ms = 4.5 s. Counting all thirty turns, 30 x 450 ms = 13.5 s, is the nearest wrong method.",
+      "explanation": "Only the batched turns change. In sequence each batch takes $4 \\times 150 = 600$ ms, in parallel about 150 ms, so each saves 450 ms, and ten batches save $10 \\times 450 = 4{,}500$ ms, 4.5 seconds. The single-call turns take the same time either way, and nothing about what the agent concludes changes: the prize is latency only.",
+      "hints": [
+        "Turns with a single call gain nothing."
+      ]
+    },
+    {
+      "id": "hrn-006-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "return-value",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A `run_build` tool returns the build's stdout on success, an empty string when the build prints nothing, the raw stderr of a failure (sometimes 30 MB of it) with no other marker, and raises a `TimeoutError` when the build hangs. Redesign its return value and say what each change prevents in the loop.",
+      "kind": "design",
+      "solution": "**Surface the exit status.** Prefix a failure with its code, `(exit 2) ...`, as the companion's bash tool does. A bare stderr string carries nothing that marks it as a failure, so the model may report success on the strength of a string that said otherwise.\n\n**Never return an empty string.** Return `(no output)`. An empty observation gives the model nothing to tell a quiet success from a broken tool, and a retry is the natural response.\n\n**Cap the result and return a pointer.** Write the full log to disk and return a short summary with the path, for example `{\"ok\": false, \"exit\": 2, \"tail\": \"...last 40 lines...\", \"log_path\": \"/tmp/build-7.log\"}`. A result joins the history and is re-sent on every later turn, so a 30 MB log would be paid for again and again and crowd the window; the full text stays one `grep` away (post 09's offloading move).\n\n**Never raise.** Catch the timeout and return `error: TimeoutError: build exceeded 600 s` as the observation; an exception that escapes ends the turn instead of letting the model react.\n\n**Treat the content as untrusted.** Build output can echo text from dependencies or fetched pages; it re-enters the window as content, not instructions.",
+      "rubric": [
+        {
+          "criterion": "Prefixes failures with the exit status and explains that a bare stderr string can be read as success",
+          "points": 2
+        },
+        {
+          "criterion": "Replaces the empty string with an explicit marker and says why an empty observation is ambiguous",
+          "points": 2
+        },
+        {
+          "criterion": "Caps the result and returns a pointer to the full log, explaining that a result is re-sent on every later turn",
+          "points": 3
+        },
+        {
+          "criterion": "Turns the timeout into an error string instead of an exception that escapes the loop",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that tool output is untrusted text in the window",
+          "points": 1
+        }
+      ],
+      "answer_length": "four or five short paragraphs",
+      "explanation": "Section 8: the return value is the other half of the contract. Surface the exit status, never return an empty string, cap the result and return a pointer, and treat the result as untrusted; section 7 adds that a tool must never raise into the loop.",
+      "hints": [
+        "Go through the four outcomes one by one and ask what the model reads in each.",
+        "A result, unlike a definition, stays in the history: what does that do to a 30 MB log?"
+      ]
+    }
+  ]
+}
