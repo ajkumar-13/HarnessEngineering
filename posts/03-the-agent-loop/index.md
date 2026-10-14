@@ -10,7 +10,7 @@
 ![The agent loop: a user task enters REASON, which either calls a tool (ACT then OBSERVE, looping back) or returns a final answer, with a strip noting that exit 1 is a terminal stop_reason rather than an absent tool call; a panel shows one turn on the wire, pairing a tool_use id with the tool_result that answers it; and four cards below give the stop conditions with what fires each and the code companion's default.](diagrams/01-agent-loop.svg)
 *The loop is small. The engineering is in the exits: a final answer is the goal; the other three are guards, against a loop that never ends, one that costs too much, and one that has stopped getting anywhere.*
 
-> An [animated version of this loop](../../assets/animations/01-the-loop-turning.svg) walks one stage at a time, which is worth a look if the exits read as a list here rather than as four things checked on every turn. It falls back to a still, so nothing is lost if your reader does not animate it.
+> An [animated version of this loop](diagrams/01-the-loop-turning.svg) walks one stage at a time, which is worth a look if the exits read as a list here rather than as four things checked on every turn. It falls back to a still, so nothing is lost if your reader does not animate it.
 
 ---
 

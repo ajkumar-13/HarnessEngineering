@@ -1,4 +1,26 @@
-# Python
+# ===== OS / editor =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Claude Code: local settings =====
+.claude/
+
+# ===== Poster and diagram working files (not shipped) =====
+# poster/: only the rendered sheet is published.
+/poster/README.md
+/poster/*.excalidraw
+# Excalidraw working directories: the editable scenes and their notes. The rendered SVG is
+# published one level up, in posts/NN-slug/diagrams/; figure sources in posts/NN-slug/diagrams/src/
+# are published with their figures.
+/posts/*/diagrams/excalidraw/
+
+# ===== Python =====
 __pycache__/
 *.py[cod]
 *$py.class
@@ -19,31 +41,32 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv/
+venv/
+env/
+ENV/
 
-# pytest
+# ===== pytest =====
 .pytest_cache/
 .coverage
 htmlcov/
 
-# Virtual environments
-venv/
-env/
-ENV/
-.venv
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Node (if needed)
+# ===== Node (in case of static-site tooling) =====
 node_modules/
 npm-debug.log
 yarn-error.log
 
-# OS
-.DS_Store
-Thumbs.db
+# Maintainers' question viewer, built on demand by series-standard/tools/build_questions_html.py
+/.review/
+
+# Authoring material (series-standard Section 3.1): kept on the author's machine, not published.
+# The website reads posts/, code/, projects/, series.yaml, pyproject.toml, uv.lock, poster/*.svg
+# and the root reference pages only. assets/ holds the design tokens, the figure design page and
+# the old Excalidraw generator.
+/plan.md
+/CONTRIBUTING.md
+/verify/
+/tools/
+/templates/
+/audits/
+/assets/

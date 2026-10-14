@@ -1,4 +1,4 @@
-# Harness Engineering — Cheatsheet
+# Harness Engineering cheatsheet
 
 *One page. `Agent = Model + Harness`. The harness is everything that is not the model.*
 
@@ -7,22 +7,22 @@
 ## The agent loop
 
 ```
-        ┌──────────────────────────────────────────┐
-        │                                          │
-        ▼                                          │
-   ┌─────────┐    ┌──────────┐     ┌──────────┐    │
-   │ REASON  │──▶ │   ACT    │──▶ │ OBSERVE  │────┘
-   │ (model) │    │ (tool)   │     │ (result) │
-   └─────────┘    └──────────┘     └──────────┘
-        │
-        ▼   stop when ANY fires:
-   ① model returns a final answer    ← the intended exit (verify it, Post 11)
-   ② hard max-iteration cap          ← infinite-loop backstop
-   ③ token / time budget exhausted   ← cost ceiling
-   ④ no-progress detection           ← thrashing guard
+        +------------------------------------------+
+        |                                          |
+        v                                          |
+   +---------+    +----------+    +----------+     |
+   | REASON  |--> |   ACT    |--> | OBSERVE  |-----+
+   | (model) |    |  (tool)  |    | (result) |
+   +---------+    +----------+    +----------+
+        |
+        v   stop when ANY fires, checked in this order:
+   (1) model returns a final answer    <- the intended exit (verify it, post 11)
+   (2) hard iteration cap              <- infinite-loop backstop
+   (3) token or time budget exhausted  <- cost ceiling
+   (4) no progress detected            <- thrashing guard
 ```
 
-**Most agent bugs are stop-condition bugs, not reasoning bugs.**
+**Most agent bugs are stop-condition bugs, not reasoning bugs.** Exits (2) to (4) are guards: a run that takes one did not finish, and should return where it stopped as well as why (post 19).
 
 ---
 
@@ -30,55 +30,56 @@
 
 | # | Component | One-line job |
 |---|-----------|--------------|
-| 1 | **Agent loop** | Drive the model reason→act→observe; decide when to stop. |
-| 2 | **Tools / code exec** | The agent's hands — bash and code beat fifty bespoke tools. |
-| 3 | **State / filesystem** | Durable memory; git for versioning and rollback. |
-| 4 | **Context management** | Compaction, tool-output offloading, resets — fight context rot. |
-| 5 | **Memory / continual learning** | Carry knowledge across sessions; the ratchet. |
-| 6 | **Verification** | Check each step; fail fast before errors compound. |
-| 7 | **Hooks / enforcement** | Deterministic rules the model can't be trusted to keep. |
-| 8 | **Permissions / sandbox** | Bound the blast radius; isolate execution. |
-| 9 | **Orchestration** | Coordinate multiple agents as units (one level up). |
-| 10 | **Long-horizon patterns** | Ralph loops, context bridging, multi-context builds. |
-| 11 | **Observability** | Traces per run; see it, then fix the failing component. |
+| 1 | **Loop** | Drive the model through reason, act, observe; decide when to stop (post 03). |
+| 2 | **Tools** | The agent's hands: bash and code execution beat fifty bespoke tools; skills and MCP extend them at runtime (posts 06, 07). |
+| 3 | **State** | Durable memory on the filesystem; git for versioning and rollback (post 08). |
+| 4 | **Context management** | Offload, clear, compact, reset: keep the window useful as it fills (post 09). |
+| 5 | **Memory** | Carry knowledge across sessions in a memory file; the ratchet writes to it (post 10). |
+| 6 | **Verification** | Check each step against ground truth; fail fast before errors compound (posts 11, 12). |
+| 7 | **Hooks** | Deterministic enforcement of the rules the model cannot be trusted to keep (post 13). |
+| 8 | **Permissions** | Sandbox, declarative rules and approvals: bound the blast radius (posts 14, 15). |
+| 9 | **Orchestration** | Coordinate several agents as units, one level up; the default is one agent (posts 16, 17). |
+| 10 | **Long-horizon patterns** | Ralph loops, context bridging, work across many fresh contexts (posts 18, 19). |
+| 11 | **Observability** | A trace per run; find the failing component, then fix it (post 21). |
+
+The loop is the centre. Components 2 to 5 feed it, 6 to 8 and 11 govern it, and 9 and 10 work at a larger scale.
 
 ---
 
-## Agent failure modes → the fix
+## Agent failure modes and the fix
 
 | Failure mode | Symptom | Harness fix |
 |--------------|---------|-------------|
-| **Victory declaration** | "Done!" — but it isn't | Verification loop (#6) |
-| **Context anxiety** | Rushes as window fills | Compaction / reset (#4) |
-| **One-shotting** | Attempts everything at once | Planner/generator split (Post 12) |
-| **Doom loop** | Repeats, no progress | No-progress stop condition (④) |
-| **Silent drift** | Ignores conventions | Memory file + hook (the ratchet) |
-| **Destructive action** | `rm -rf`, force-push | Deny-list hook + sandbox (#7, #8) |
+| **Victory declaration** | "Done!", but it is not | A verification gate on the final-answer exit (component 6) |
+| **Context anxiety** | Rushes as the window fills | Compaction or a reset (component 4) |
+| **One-shotting** | Attempts everything at once | A planner, generator, evaluator split (post 12) |
+| **Doom loop** | Repeats, no progress | The no-progress exit, (4) |
+| **Silent drift** | Ignores conventions, run after run | A memory-file line backed by a hook (the ratchet) |
+| **Destructive action** | `rm -rf`, a force-push, `DROP TABLE` | A deny-list hook and a sandbox (components 7 and 8) |
 
-*Legend: `#N` = the harness component numbered above · `④` = the loop exit · `Post N` = a later post.*
+*Legend: "component N" is a row of the components table above; (1) to (4) are the loop exits; "post NN" is a post of this series.*
 
 ---
 
 ## The ratchet principle
 
-> **Every mistake becomes a rule.** A failure turns into three durable constraints:
-> a **memory-file line** (so the model reads it), a **hook** (so it's enforced), and a **reviewer check** (so it's caught). Nothing regresses twice.
+> **Every mistake becomes a rule.** A failure turns into three durable constraints: a **memory-file line** (so the model reads it), a **hook** (so it is enforced), and a **reviewer check** (so it is caught). Nothing regresses twice.
 
 ---
 
-## Decision tree — which discipline?
+## Which discipline does a problem belong to?
 
 ```
 Is the problem about WHAT THE MODEL SEES in one call?
-   └─ yes → CONTEXT ENGINEERING  (the prior series)
-Is the problem about HOW THE MODEL RUNS — loop, tools, verify, guardrails?
-   └─ yes → HARNESS ENGINEERING  (this series)
+   -> yes: CONTEXT ENGINEERING  (the context-engineering series)
+Is the problem about HOW THE MODEL RUNS: loop, tools, verification, guardrails?
+   -> yes: HARNESS ENGINEERING  (this series)
 Is the problem about COORDINATING MANY AGENTS as units?
-   └─ yes → ORCHESTRATION  (Part IV)
+   -> yes: ORCHESTRATION  (Part IV)
 ```
 
 ---
 
-*Start reading at [Post 01 — From context to harness](posts/01-from-context-to-harness/index.md), or jump to the part you need: [I Foundations](posts/01-from-context-to-harness/index.md) · [II Core primitives](posts/06-tools-bash-code/index.md) · [III Control & reliability](posts/11-verification-loops/index.md) · [IV Scale & orchestration](posts/16-multi-agent-orchestration/index.md) · [V Production & builds](posts/21-observability-traces/index.md).*
+*Start reading at [post 01, From context to harness: the third era](posts/01-from-context-to-harness/index.md), or jump to the part needed: [I Foundations](posts/01-from-context-to-harness/index.md), [II Core primitives](posts/06-tools-bash-code/index.md), [III Control and reliability](posts/11-verification-loops/index.md), [IV Scale and orchestration](posts/16-multi-agent-orchestration/index.md), [V Production and builds](posts/21-observability-traces/index.md).*
 
-*Terms in [GLOSSARY.md](GLOSSARY.md). Sources in [REFERENCES.md](REFERENCES.md). The series plan, for contributors, is [HARNESS-PLAN.md](HARNESS-PLAN.md).*
+*Terms in the [glossary](GLOSSARY.md), the fixed vocabulary in the [notation guide](notation_guide.md), sources in the [references](REFERENCES.md).*

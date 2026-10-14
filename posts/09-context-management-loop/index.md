@@ -11,7 +11,7 @@
 ![A bar chart of window fill on each of eight calls, as a percentage of the model limit, with a soft trigger at 80 % and a hard trigger at 95 % across a shaded rot zone: an offload and a clear after t4, a deep compaction after t7, a dashed unmanaged line that exhausts the window by t5, and five cards giving the signals to log on every call.](diagrams/01-window-timeline.svg)
 *The window is a budget you spend down every turn. Unmanaged, it overflows into the rot zone; managed, it stays low and the model stays sharp.*
 
-> The hardest of the three moves to picture is the reset, because the point of it is what is *not* carried over. [An animated version](../../assets/animations/02-context-reset.svg) fills a window, clears it on one frame, and leaves the handoff file standing.
+> The hardest of the three moves to picture is the reset, because the point of it is what is *not* carried over. [An animated version](diagrams/02-context-reset.svg) fills a window, clears it on one frame, and leaves the handoff file standing.
 
 ---
 
