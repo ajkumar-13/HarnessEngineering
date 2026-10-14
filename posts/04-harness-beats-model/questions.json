@@ -1,0 +1,773 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-004",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-004-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "evidence-grades"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team reports its agent's score on one benchmark before and after a change to its harness, with the same model on both runs. Which grade does that evidence earn?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Firm: the same model on the same benchmark, before and after a harness change.",
+          "correct": true,
+          "feedback": "Correct. Holding the model and the benchmark fixed and changing only the harness is the strongest of the three grades."
+        },
+        {
+          "key": "b",
+          "text": "Controlled: a comparison of scaffolds set up as a study across several models.",
+          "correct": false,
+          "feedback": "Controlled is a designed comparison of scaffolds with the model and tasks held fixed, such as Starace's three scaffolds across five models; a single before-and-after is firm."
+        },
+        {
+          "key": "c",
+          "text": "Reported: a claim quoted at one remove whose base cannot be checked.",
+          "correct": false,
+          "feedback": "Here the model, the benchmark and both scores are given by the team that ran them, so nothing is quoted at one remove."
+        },
+        {
+          "key": "d",
+          "text": "Illustrative: a number chosen to make the arithmetic concrete.",
+          "correct": false,
+          "feedback": "Illustrative is a claim label for invented sizes, not an evidence grade; these scores were measured."
+        }
+      ],
+      "explanation": "The post grades a claim that the harness beats the model as firm (same model, same benchmark, before and after a harness change), controlled (a comparison of scaffolds with the model and tasks held fixed) or reported (quoted at one remove, unchecked). LangChain's 52.8% to 66.5% on Terminal-Bench 2.0 is the firm example.",
+      "hints": [
+        "Ask what was held fixed and who measured it."
+      ]
+    },
+    {
+      "id": "hrn-004-q02",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "1",
+      "est_minutes": 3,
+      "tags": [
+        "evidence-grades",
+        "classification"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Assign each result to the grade it earns. One option on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`deepagents-cli` on Terminal-Bench 2.0, 52.8% then 66.5%, `gpt-5.2-codex` on both runs, only the harness changed"
+        },
+        {
+          "key": "b",
+          "text": "Three scaffolds across five models on GAIA, tasks and conditions held fixed, pre-registered, three attempts per question"
+        },
+        {
+          "key": "c",
+          "text": "\"Performance gaps of up to 6x\" for the same model, attributed to university research without a link"
+        },
+        {
+          "key": "d",
+          "text": "Per-model profiles on a subset of τ²-bench, each model scored against its own default harness by the team that built the profiles"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "firm"
+        },
+        {
+          "key": "b",
+          "text": "controlled"
+        },
+        {
+          "key": "c",
+          "text": "reported"
+        },
+        {
+          "key": "d",
+          "text": "illustrative"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "a"
+      },
+      "explanation": "The LangChain campaign and the per-model profiles are both one model on one benchmark before and after a harness change: firm (the profiles with the qualification that the team chose the subset). Starace's study is a designed comparison of scaffolds with tasks held fixed: controlled. MindStudio's multiple names no model, benchmark or base: reported. Illustrative is a claim label for invented sizes, not a grade.",
+      "hints": [
+        "Firm and controlled both hold the model fixed; one is a before-and-after, the other a designed comparison."
+      ]
+    },
+    {
+      "id": "hrn-004-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "swe-agent",
+        "evidence-grades"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "SWE-agent, with GPT-4 Turbo as its model, resolved 12.47% of the full SWE-bench test set, against a previous best of 3.8%. Why can that pair not be read as the effect of the interface alone?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The 3.8% came from a different model, Claude 3 Opus, in a non-interactive retrieval setting.",
+          "correct": true,
+          "feedback": "Correct. Both the model and the harness differ between the two numbers. The interface-only comparison is the ablation on SWE-bench Lite: 18.0% against 11.0% for a shell-only agent, GPT-4 Turbo on both."
+        },
+        {
+          "key": "b",
+          "text": "The 3.8% was measured on SWE-bench Lite, a smaller and easier 300-task subset of the full test set.",
+          "correct": false,
+          "feedback": "Both numbers are on the full test set of 2,294 tasks; the Lite subset is where the paper's ablation runs."
+        },
+        {
+          "key": "c",
+          "text": "The paper is a preprint, so its comparison has not been checked by reviewers.",
+          "correct": false,
+          "feedback": "SWE-agent was published at NeurIPS 2024; the problem is what the two numbers hold fixed, not the venue."
+        },
+        {
+          "key": "d",
+          "text": "A resolve rate under 50% on a benchmark is within noise and cannot show an effect.",
+          "correct": false,
+          "feedback": "A low absolute rate does not make a difference noise; 286 of 2,294 tasks against 3.8% is a large gap. The issue is that the model changed too."
+        }
+      ],
+      "explanation": "A harness-only comparison holds the model fixed. The 12.47% against 3.8% headline compares SWE-agent with GPT-4 Turbo to a retrieval-augmented system with Claude 3 Opus, so it mixes a model change with a harness change. The paper's own harness-only result is the SWE-bench Lite ablation: with GPT-4 Turbo fixed, 18.0% for the agent-computer interface against 11.0% for the default Linux shell, which the post grades controlled.",
+      "hints": [
+        "List what differs between the system that scored 12.47% and the one that scored 3.8%.",
+        "A harness-only claim needs the model to be the same on both sides."
+      ]
+    },
+    {
+      "id": "hrn-004-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "swe-agent",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "On SWE-bench Lite's 300 tasks, with GPT-4 Turbo held fixed, the agent-computer interface resolved 18.0% and the shell-only agent 11.0%. How many more tasks did the interface resolve, and what is that as a relative increase over the shell-only agent, in percent to one decimal place?",
+      "answer": {
+        "parts": [
+          {
+            "label": "additional tasks resolved",
+            "value": 21,
+            "tolerance": 0,
+            "unit": "tasks"
+          },
+          {
+            "label": "relative increase",
+            "value": 63.6,
+            "tolerance": 0.05,
+            "unit": "%"
+          }
+        ]
+      },
+      "precision_note": "0.18 x 300 = 54 and 0.11 x 300 = 33, so 21 more; 21 / 33 = 0.636, a 63.6% increase (the paper rounds it to 64%). Dividing by the larger rate, 7 / 18 = 38.9%, or quoting 7 points, is wrong.",
+      "explanation": "$0.18 \\times 300 = 54$ and $0.11 \\times 300 = 33$ tasks, so the interface resolved $21$ more. Relative to the shell-only agent that is $21 / 33 = 0.636$, a 63.6% increase, which the paper reports as 64%. The absolute difference is 7.0 points.",
+      "hints": [
+        "Turn each rate into a count of the 300 tasks first.",
+        "A relative increase divides the difference by the starting value."
+      ]
+    },
+    {
+      "id": "hrn-004-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "economics",
+        "break-even"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Illustrative sizes. A model upgrade doubles the price per token, so each run costs $2C$ where $C$ is today's price. The harness fix that would do the same job costs one engineer-day, worth 1,500 runs at today's price, paid once. The system makes 300 runs a day. After how many runs has the upgrade's extra cost matched the fix, and how many days is that?",
+      "answer": {
+        "parts": [
+          {
+            "label": "break-even",
+            "value": 1500,
+            "tolerance": 0.5,
+            "unit": "runs"
+          },
+          {
+            "label": "days at 300 runs a day",
+            "value": 5,
+            "tolerance": 0.05,
+            "unit": "days"
+          }
+        ]
+      },
+      "precision_note": "The upgrade adds (2 - 1)C = C per run, so 1,500C / C = 1,500 runs, and 1,500 / 300 = 5 days (break_even_runs(multiple=2, fix=1_500) in snippets/upgrade_cost.py). Dividing by the multiple, 1,500 / 2 = 750 runs, is the nearest wrong method.",
+      "explanation": "Only the extra cost counts against the fix: doubling the price adds $(2 - 1)C = C$ per run, so the upgrade has spent the fix's $1{,}500C$ after $1{,}500$ runs, five days at 300 a day. After that the upgrade keeps costing and the fix does not.",
+      "hints": [
+        "What does the upgrade add to each run, beyond what the run costs today?",
+        "Divide the one-off cost by the extra cost per run."
+      ]
+    },
+    {
+      "id": "hrn-004-q06",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "tokens",
+        "snippet"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The post's illustrative run starts at 6,000 input tokens and appends 3,100 per turn, every turn re-reading the history before it. If the run takes 16 iterations instead of 12, how many input tokens does it read in total, and how many times the input of a context that stayed at 6,000 tokens on every turn? Give the factor to two decimal places.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "from upgrade_cost import input_tokens\ngrown = input_tokens(iters=16)\nprint(grown, grown / (16 * 6_000))",
+        "caption": "Run from posts/04-harness-beats-model/snippets/; it answers the question."
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "input tokens over 16 iterations",
+            "value": 468000,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          },
+          {
+            "label": "factor over a context that never grew",
+            "value": 4.875,
+            "tolerance": 0.006,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "16 x 6,000 + 3,100 x (0 + 1 + ... + 15) = 96,000 + 372,000 = 468,000; 468,000 / 96,000 = 4.875. Scaling the 12-turn total linearly (276,600 x 16 / 12 = 368,800) is the nearest wrong method.",
+      "explanation": "Turn $i$ reads $6{,}000 + 3{,}100(i - 1)$ tokens, so 16 turns read $16 \\times 6{,}000 + 3{,}100 \\times 120 = 468{,}000$, against $96{,}000$ for a context that never grew: $4.875$ times. At 12 turns the factor was 3.84; it grows with the length of the run, which is why every extra turn of a stuck run costs more than the one before.",
+      "hints": [
+        "Write the read on turn i, then add the 16 terms.",
+        "The growth part is 3,100 times the sum 0 + 1 + ... + 15."
+      ]
+    },
+    {
+      "id": "hrn-004-q07",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "scope",
+        "vocabulary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Once a harness supplies the right tools, the right context and a sound control flow, a better harness stops helping, because what binds is whether the frozen weights can use them. What does the post call that limit?",
+      "answer": {
+        "model": "The scaffolding ceiling.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|isn't|is not|never|no)\\s+(the\\s+|a\\s+)?scaffold)[\\s\\S]*\\bscaffold(ing)?[\\s-]+ceiling\\b"
+        ]
+      },
+      "explanation": "Section 1 names the limit the scaffolding ceiling: no middleware supplies reasoning the weights lack, which is why the claim is not that any model with a good harness beats any model.",
+      "hints": [
+        "It is named after the layer around the model, and after a limit overhead."
+      ]
+    },
+    {
+      "id": "hrn-004-q08",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "rank",
+        "score"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness change took an agent \"from Top 30 to Top 5\" on a leaderboard and raised its score by 13.7 points on a fixed task set. In one sentence, why is the leaderboard move the weaker of the two numbers?",
+      "answer": {
+        "model": "Because a rank also moves with how crowded the leaderboard is around the agent, while the score measures the agent alone on a fixed set of tasks.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(score\\b(?!\\s+(gain|change|delta|increase|jump|improvement|rise)\\b)|scores\\b)[^.;]{0,40}\\b(depends?|moves?|changes?|varies|vary|shifts?|is affected|is influenced)\\b[^.;]{0,30}\\b(crowd|other|field|densit|dense|sparse|competitor|neighbo|who else))(?![\\s\\S]*\\bscores?\\b[^.;]{0,20}\\b(is|are)\\s+(the\\s+)?(weaker|less reliable|worse|less useful)\\b)(?![\\s\\S]*\\b(ranks?|rankings?|positions?|places?)\\b[^.;]{0,20}\\b(does not|doesn't|do not|don't|never|is not|isn't)\\b(?!\\s+(just|only|simply|merely)\\b)[^.;]{0,30}\\b(depend|move|change|vary|shift|affected|influenced|relative))(?![\\s\\S]*\\b(ranks?|rankings?|positions?)\\b[^.;]{0,30}\\b(stronger|better|more reliable|firmer)\\b)(?=[\\s\\S]*\\b(ranks?|ranking|position|places?|leaderboard)\\b)(?=[\\s\\S]*\\b(depend\\w*|mov\\w*|chang\\w*|var(y|ies)|shift\\w*|reflect\\w*|affect\\w*|influenc\\w*|relative|compar\\w*|measur\\w*|determin\\w*|conflat\\w*)\\b)[\\s\\S]*\\b(crowd(ed|ing)?|dens(e|ity)|sparse|other\\s+(entries|agents|submissions|teams|competitors|systems|models|harnesses|entrants)|competitors|the field|field around|neighbo\\w*|who else|rest of the (leaderboard|field|board))\\b"
+        ]
+      },
+      "explanation": "A rank conflates the improvement with the density of the field: the same 13.7 points could move two places on a sparse leaderboard and twenty on a crowded one (illustrative numbers). The score is measured on fixed tasks with fixed weights, so it carries the argument.",
+      "hints": [
+        "What else, besides the agent, decides where it sits on a leaderboard?"
+      ]
+    },
+    {
+      "id": "hrn-004-q09",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "co-training",
+        "native-harness"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Models are post-trained with their harnesses in the loop. What does that imply about the best harness for a given task?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the harness the model was post-trained with, because training made the model best at its conventions.",
+          "correct": false,
+          "feedback": "Co-training makes the model better at its native harness's conventions, but the sources reject that conclusion: Opus 4.6 in Claude Code scores far below Opus 4.6 in other harnesses."
+        },
+        {
+          "key": "b",
+          "text": "It need not be the one the model was trained with; the native harness is a baseline to measure against.",
+          "correct": true,
+          "feedback": "Correct. Trivedy: \"this doesn't mean that the best harness for your task is the one a model was post-trained with\"; fit to the model and the task is what pays."
+        },
+        {
+          "key": "c",
+          "text": "Any harness works equally well, since a capable model adapts to whatever tools it is given.",
+          "correct": false,
+          "feedback": "Co-training creates overfitting: change a tool's logic, such as `apply_patch`, and a model trained on it does worse."
+        },
+        {
+          "key": "d",
+          "text": "It is the harness with the most middleware, since the LangChain gains all came from middleware.",
+          "correct": false,
+          "feedback": "The LangChain changes also touched the system prompt and the reasoning settings, and more middleware is not the same as a better fit."
+        }
+      ],
+      "explanation": "Training with a harness in the loop couples a model to that harness's conventions, which is why changing a tool's logic can hurt. But both Trivedy and Osmani conclude that the best harness is the one designed for the task; the model's own harness is a reference fit to measure against, not a guaranteed best.",
+      "hints": [
+        "The post quotes a leaderboard observation about one model inside and outside its vendor's harness."
+      ]
+    },
+    {
+      "id": "hrn-004-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "co-training",
+        "distillation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Ding et al. report that after distilling discovered skills into the weights, a model passes 27.7% on FeatureBench with no external scaffold, a retention of 85.2%. What does the 85.2% measure?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The post-distillation passed rate divided by the passed rate the model reached with the skills.",
+          "correct": true,
+          "feedback": "Correct. The paper defines retention as post-distillation over with-skill passed rate: 27.7% is 85.2% of what the model passed with the scaffold."
+        },
+        {
+          "key": "b",
+          "text": "The share of FeatureBench tasks the distilled model passes once the scaffold is removed.",
+          "correct": false,
+          "feedback": "That share is the 27.7% itself; the 85.2% compares it with the scaffolded rate."
+        },
+        {
+          "key": "c",
+          "text": "The share of the discovered skills that survive in the scaffold graph after distillation.",
+          "correct": false,
+          "feedback": "Retention here is about the model's passed rate, not about how many skills remain in the graph."
+        },
+        {
+          "key": "d",
+          "text": "The relative improvement of the distilled model over the original model before any skills were found.",
+          "correct": false,
+          "feedback": "The improvement from discovered skills is the separate 8.1 points; 85.2% is a ratio of two passed rates."
+        }
+      ],
+      "explanation": "Retention is post-distillation passed rate over with-skill passed rate. It is the last step of the co-training loop measured directly: a pattern surviving in the weights once the harness that taught it is gone.",
+      "hints": [
+        "Two passed rates are involved: one with the scaffold, one without.",
+        "Which of them is 27.7%?"
+      ]
+    },
+    {
+      "id": "hrn-004-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "distillation",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Ding et al. report a post-distillation passed rate of 27.7% on FeatureBench and a retention of 85.2%. What passed rate did the model reach with the skills still attached? Give a percentage to one decimal place.",
+      "answer": {
+        "value": 32.5,
+        "tolerance": 0.05,
+        "unit": "%"
+      },
+      "precision_note": "27.7 / 0.852 = 32.51, which rounds to 32.5. Multiplying instead (27.7 x 0.852 = 23.6) or adding the 8.1 points (35.8) are the nearest wrong methods.",
+      "explanation": "From retention $= 27.7 / r$, the with-skills rate is $r = 27.7 / 0.852 = 32.5\\%$. The distilled model with no scaffold keeps about five of every six tasks it passed with the skills.",
+      "hints": [
+        "Write the definition as an equation with one unknown.",
+        "Solve for the with-skills rate by dividing, not multiplying."
+      ]
+    },
+    {
+      "id": "hrn-004-q12",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "model-choice",
+        "procedure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent underperforms. Put these moves in the order the post recommends.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Name the failure mode behind the failing runs"
+        },
+        {
+          "key": "b",
+          "text": "Add the cheap harness fixes: a verification gate, a stop condition, a hook"
+        },
+        {
+          "key": "c",
+          "text": "Fit the harness to the model: its prompting guide, its tool conventions, its SDK as a reference run"
+        },
+        {
+          "key": "d",
+          "text": "Upgrade the model, once the three runs show a genuine model gap"
+        },
+        {
+          "key": "e",
+          "text": "Re-measure on the fixed task set"
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "Diagnose, exhaust the cheap harness fixes, fit the harness to the model, upgrade only for a genuine model gap, and re-measure after every change. The first three are paid once in engineer-hours; the upgrade is paid per token on every run, which is why it comes last of the changes.",
+      "hints": [
+        "The only move that keeps costing on every run comes after every move that is paid once.",
+        "Measuring closes the sequence, because every change before it is a hypothesis."
+      ]
+    },
+    {
+      "id": "hrn-004-q13",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "three-run-test",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "For a task the agent fails, the replay with the missing information placed at the top of the window still fails, the same task under a harness fitted to the model passes, and the next model up, with the harness unchanged, also passes. What is the verdict?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A harness-fit problem: port the pattern that fixed it, and keep the current model.",
+          "correct": true,
+          "feedback": "Correct. The fitted harness passed with the same model, so the gap closes without an upgrade; the bigger model passing as well does not make it a model problem."
+        },
+        {
+          "key": "b",
+          "text": "A model problem, because the next model up passed with the harness unchanged.",
+          "correct": false,
+          "feedback": "A model problem needs the replay and the fitted harness both to fail first. Reading the bigger model's pass on its own is the mistake of running the last run first."
+        },
+        {
+          "key": "c",
+          "text": "A context-placement problem, because the window was assembled by the same harness.",
+          "correct": false,
+          "feedback": "The replay with the information placed by hand failed, which rules out placement as the cause."
+        },
+        {
+          "key": "d",
+          "text": "No verdict, because two of the three runs passed and they disagree about the cause.",
+          "correct": false,
+          "feedback": "The runs are read in order: the first one that passes names the cause, and here that is the fitted harness."
+        }
+      ],
+      "explanation": "The three runs are read in order: a pass on the replay means context placement, a pass under a fitted harness means harness fit, and only if both fail and the bigger model passes is there a model problem. Here the second run passes, so the gap is closable in the harness at no per-run cost.",
+      "hints": [
+        "Which run holds the model fixed and changes only the harness?",
+        "Only if the first two fail does the third decide anything."
+      ]
+    },
+    {
+      "id": "hrn-004-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 8,
+      "tags": [
+        "three-run-test",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`verdict(a_passes, b_passes, c_passes)` reads the three-run test for one failing task. The version below makes the mistake that leads a team to buy a bigger model for a harness gap. Fix it so the runs are read in the order the test intends.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def verdict(a_passes, b_passes, c_passes):\n    \"\"\"Read the three-run test for one failing task. Each argument is True if that run resolved it.\n\n    a: the trace replayed with the missing information placed at the top of the window (model, harness fixed)\n    b: the same task under a harness fitted to the model (model fixed)\n    c: the same task with the next model up, harness unchanged (harness fixed)\n    Return \"context\", \"harness\", \"model\", or \"unresolved\" when no run passes.\n    \"\"\"\n    if c_passes:\n        return \"model\"\n    if a_passes:\n        return \"context\"\n    if b_passes:\n        return \"harness\"\n    return \"unresolved\"\n",
+      "solution": "def verdict(a_passes, b_passes, c_passes):\n    \"\"\"Read the three-run test for one failing task. Each argument is True if that run resolved it.\n\n    a: the trace replayed with the missing information placed at the top of the window (model, harness fixed)\n    b: the same task under a harness fitted to the model (model fixed)\n    c: the same task with the next model up, harness unchanged (harness fixed)\n    Return \"context\", \"harness\", \"model\", or \"unresolved\" when no run passes.\n    \"\"\"\n    if a_passes:\n        return \"context\"\n    if b_passes:\n        return \"harness\"\n    if c_passes:\n        return \"model\"\n    return \"unresolved\"\n",
+      "tests": "# 1. a model problem only when the replay and the fitted harness both fail and the bigger model passes\nassert verdict(False, False, True) == \"model\"\n\n# 2. the bigger model passing does not decide anything while an earlier run passes too\nassert verdict(False, True, True) == \"harness\"\nassert verdict(True, False, True) == \"context\"\nassert verdict(True, True, True) == \"context\"\n\n# 3. the order between the first two runs: placement is checked before harness fit\nassert verdict(True, True, False) == \"context\"\nassert verdict(False, True, False) == \"harness\"\nassert verdict(True, False, False) == \"context\"\n\n# 4. nothing passed: no run names a cause\nassert verdict(False, False, False) == \"unresolved\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The starter checks the bigger model first, so any task the bigger model can pass is called a model problem, including ones a fitted harness or a placed fact would have fixed. The runs are read in order: the replay (context), then the fitted harness (harness), and only then the bigger model.",
+      "hints": [
+        "Which run's pass should only count when both of the other runs have failed?",
+        "Check the replay first, the fitted harness second, the bigger model last."
+      ]
+    },
+    {
+      "id": "hrn-004-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "evidence-grades"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A vendor's slide says: \"Our harness moved a leading model 25 places up a public coding leaderboard, and harnesses make any model up to 6x better.\" Critique the slide with this post's grades and its five questions, say what each claim would need before it could be quoted as a measurement, and rewrite the slide's message as one sentence the evidence supports.",
+      "kind": "critique",
+      "solution": "1. **The leaderboard claim is a rank, not a score.** A rank also moves with how crowded the leaderboard is, so 25 places says little on its own. Before quoting it, the slide needs the model named and held fixed, the benchmark and its version, the harness changes, and the score before and after; with those it would be firm, like LangChain's 52.8% to 66.5% on Terminal-Bench 2.0.\n2. **\"Any model\" overreaches the claim.** The claim is about a given model on a given agentic task. The scaffolding ceiling limits it, and harness gains are model-specific: per-model profiles exist because one harness does not fit every model.\n3. **\"Up to 6x\" is reported.** With no model, benchmark or base, it answers none of the five questions; its direction agrees with firm and controlled results, but the multiple cannot be quoted. To become controlled it would need a designed comparison with the model and tasks held fixed, such as Starace's three scaffolds across five models.\n4. **Benchmarks move.** Even a firm number belongs to one benchmark version (Terminal-Bench 2.1 revised 28 of the 2.0 tasks) and one task distribution, so a team should measure its own harness on its own tasks (post 22).\n5. **A supported sentence.** \"On one benchmark, with the model held fixed, our harness changes raised the score from X% to Y%; we have not measured other models or tasks.\"",
+      "rubric": [
+        {
+          "criterion": "Identifies the 25 places as a rank and explains why a score delta with the model fixed is needed instead",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies \"any model\" as an overreach, citing the scaffolding ceiling or the model-specific gains",
+          "points": 2
+        },
+        {
+          "criterion": "Grades the 6x multiple as reported and says what a controlled version would need",
+          "points": 2
+        },
+        {
+          "criterion": "Applies at least three of the five questions explicitly",
+          "points": 2
+        },
+        {
+          "criterion": "Rewrites the message as a scoped, supportable sentence",
+          "points": 2
+        }
+      ],
+      "answer_length": "three paragraphs",
+      "explanation": "The post's grades and its five questions are a checklist for exactly this slide: the rank is the weaker number, the multiple is reported, and \"any model\" ignores the scaffolding ceiling and the model-specific nature of harness gains. Post 22 is where a team measures the claim for itself.",
+      "hints": [
+        "Take the slide's two claims separately, and ask the five questions of each.",
+        "For each claim, say which grade it earns now and what would raise it."
+      ],
+      "connects": [
+        "hrn-022",
+        "hrn-001"
+      ]
+    },
+    {
+      "id": "hrn-004-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "three-run-test",
+        "economics",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team's coding agent declares tasks complete when their tests still fail, on about a third of a fixed 60-task set. The team proposes moving to a model that costs 2.5 times as much per token. The loop has no verification gate. Using the three-run test and the order of moves, design what the team should run before deciding, say how each possible outcome changes the decision, and explain the cost argument with illustrative numbers chosen for the purpose.",
+      "stimulus": {
+        "kind": "data",
+        "content": "Failure: tasks declared complete with failing tests, about 20 of 60.\nLoop: no verification gate.\nProposal: a model at 2.5 times the price per token.",
+        "caption": "An illustrative failing agent."
+      },
+      "kind": "design",
+      "solution": "1. **Diagnose first.** Declaring a task complete while its tests fail is victory declaration (post 05), fixed by verification, so the first move is a harness fix, not a model.\n2. **Add the cheap fix.** Gate exit (1) on the tests: the run may only finish when they pass. That is hours of work.\n3. **Run the three runs on the tasks still failing.** A: replay with the missing information placed at the top of the window; a pass means context placement. B: the same tasks under a harness fitted to the model (its SDK harness or a per-model profile); a pass means harness fit. C: the bigger model with the harness unchanged; a pass counts as a model gap only if A and B failed.\n4. **Read the outcomes.** If the gate alone closes most of the 20, the upgrade was never needed. If A or B passes, fix context or port the pattern. Only if A and B fail and C passes is the upgrade justified, for those tasks.\n5. **The cost argument.** The upgrade adds 1.5C to every run, forever; the gate is paid once. If the fix is worth, say, 600 runs at today's price, the upgrade has cost more after 600 / 1.5 = 400 runs.\n6. **Re-measure** with a paired A/B on the fixed 60 tasks, reading the paired counts, not only the mean.",
+      "rubric": [
+        {
+          "criterion": "Names the failure as victory declaration and the verification gate as the first fix",
+          "points": 2
+        },
+        {
+          "criterion": "Describes runs A, B and C with what each holds fixed",
+          "points": 2
+        },
+        {
+          "criterion": "Reads the outcomes in order: a model problem only if A and B fail and C passes",
+          "points": 2
+        },
+        {
+          "criterion": "Makes the once-against-per-run cost argument with explicit, labelled arithmetic",
+          "points": 2
+        },
+        {
+          "criterion": "Ends with a paired re-measurement on the fixed task set",
+          "points": 1
+        }
+      ],
+      "answer_length": "four paragraphs",
+      "explanation": "The failure is a harness failure with a known fix, so the order of moves puts the verification gate first and the upgrade last. The three runs decide whether any gap left is a model gap, and the cost argument is a constant against a rate: the extra per-run cost of the upgrade passes any one-off fix after enough runs.",
+      "hints": [
+        "Name the failure mode before choosing any fix.",
+        "For the cost argument, compute the upgrade's extra cost per run, not its whole cost."
+      ]
+    },
+    {
+      "id": "hrn-004-q17",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "skill-issue",
+        "evidence-grades"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "HumanLayer writes that over dozens of projects and hundreds of agent sessions its team kept reaching the same conclusion: \"it's not a model problem. It's a configuration problem.\" How does the post treat that evidence?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As reported: one team's experience with no measured rate behind it, made concrete by the six failure modes.",
+          "correct": true,
+          "feedback": "Correct. It is a qualitative line of evidence; the failure catalogue of post 05 ties each mode to a harness component."
+        },
+        {
+          "key": "b",
+          "text": "As firm: hundreds of sessions with the same models amount to a before-and-after measurement of the harness.",
+          "correct": false,
+          "feedback": "Firm needs one model on one benchmark with scores before and after a harness change; no scores are given."
+        },
+        {
+          "key": "c",
+          "text": "As controlled: a study across dozens of projects with the model held fixed in each.",
+          "correct": false,
+          "feedback": "Nothing was held fixed by design and no comparison is published, so it is not a controlled study."
+        },
+        {
+          "key": "d",
+          "text": "As a measured share: most failures are configuration, so most fixes belong in the harness.",
+          "correct": false,
+          "feedback": "\"Most\" has no count behind it; treating it as a measured share promotes a reported claim."
+        }
+      ],
+      "explanation": "The skill-issue reframe is reported evidence: a practitioner's conclusion with no measured rate. It agrees in direction with the firm and controlled results, and post 05 gives it a concrete form by tying each of the six failure modes to the harness component that fixes it.",
+      "hints": [
+        "Ask whether any number in the quotation could be checked."
+      ],
+      "connects": [
+        "hrn-005"
+      ]
+    }
+  ]
+}

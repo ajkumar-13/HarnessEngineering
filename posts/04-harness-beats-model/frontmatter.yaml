@@ -1,39 +1,26 @@
 id: hrn-004
 slug: 04-harness-beats-model
-title: "04 · Why the harness beats the model — the evidence"
-
-description: >
-  The founding claim of harness engineering is that the machine around the model is a
-  bigger performance lever than the model itself: the same model can succeed or fail on
-  the same task depending only on its harness. This post states that claim carefully,
-  grades the evidence for it in order of strength, says plainly what that evidence does
-  not show, and turns it into a rule: before reaching for a bigger model, check whether
-  the gap you are seeing is a harness gap.
-
-author: "Ajay"
+title: "04 - Why the harness beats the model: the evidence"
+summary: "For a given model on a given agentic task, the harness often moves performance more than a model swap would. This post grades that evidence as firm, controlled or reported and says what it does not show."
 date: 2026-07-12
-last_modified: 2026-09-05
-
-tags: [harness-engineering, foundations, evidence, evaluation]
-
-keywords:
-  - harness engineering
-  - foundations
-  - evidence
-  - evaluation
-  - scaffolding ceiling
-  - measure your own harness
-
-category: Foundations
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part I - Foundations"
-
-hero: diagrams/01-harness-gap.svg
-hero_alt: "A leaderboard-rank axis showing one coding agent at about rank 30 in a default harness and about rank 5 in a tuned harness on Terminal-Bench 2.0, moving about 25 places with the model held fixed; a box below states Agent = Model + Harness."
-
-reading_time: 27
-toc: true
-draft: false
-canonical_url: ""
-prev: ../03-the-agent-loop/
-next: ../05-agent-failure-modes/
+level: beginner
+reading_time: 23
+tags: [harness-engineering, foundations, evidence, evaluation, benchmarks, terminal-bench]
+hero: diagrams/01-graded-evidence.svg
+prerequisites: [hrn-001]
+code: none
+outcomes:
+  - id: o1
+    text: "State the claim that the harness beats the model with its scope, and say what it does not claim."
+  - id: o2
+    text: "Grade a harness performance claim as firm, controlled or reported, and say what each published result does not show."
+  - id: o3
+    text: "Explain how co-training couples a model to its harness, and why the best harness for a task need not be the one the model was trained in."
+  - id: o4
+    text: "Run the three-run test that tells a harness problem from a model problem, and read its verdict."
+  - id: o5
+    text: "Order the moves for an underperforming agent, and show why a harness fix bought once beats a model upgrade paid on every run."
+recommended: [hrn-003]

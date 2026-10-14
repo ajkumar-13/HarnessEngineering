@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-04-buy-once-rent-forever-title" aria-describedby="hrn-04-buy-once-rent-forever-desc">
+<title id="hrn-04-buy-once-rent-forever-title">A fix is paid once; an upgrade is paid on every run</title>
+<desc id="hrn-04-buy-once-rent-forever-desc">A line chart of extra spend, in units of C, one run's price today, against the number of runs from 0 to 1,000, with illustrative sizes. The harness fix is a flat dashed ink line at 1,000, paid once. The model upgrade, which triples the price per token, is a dashed blue line rising by 2 a run from 0 to 2,000. They cross at 500 runs, marked, which is 2.5 days at 200 runs a day. Computed by snippets/upgrade_cost.py.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--hrn-blue-ink); }
+  .f-ink { fill: var(--hrn-ink); }
+  .s-blue { stroke: var(--hrn-blue); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-surface { stroke: var(--hrn-surface); }
+</style>
+<defs>
+<marker id="hrn-04-buy-once-rent-forever-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="hrn-04-buy-once-rent-forever-clip-1"><rect x="90" y="122" width="700" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="608">A fix is paid once; an upgrade is paid on every run</text>
+<text x="40" y="76" class="t-subtitle" data-w="699">Extra spend in units of C, one run's price today. Illustrative sizes, from snippets/upgrade_cost.py.</text>
+<g data-grid="skip">
+<path d="M96,428H784M96,353H784M96,278H784M96,203H784M96,128H784" class="gridline"/>
+<text x="88" y="432" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="88" y="357" text-anchor="end" class="t-tick" data-w="23">500</text>
+<text x="88" y="282" text-anchor="end" class="t-tick" data-w="35">1,000</text>
+<text x="88" y="207" text-anchor="end" class="t-tick" data-w="35">1,500</text>
+<text x="88" y="132" text-anchor="end" class="t-tick" data-w="35">2,000</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="268" y="448" text-anchor="middle" class="t-tick" data-w="23">250</text>
+<text x="440" y="448" text-anchor="middle" class="t-tick" data-w="23">500</text>
+<text x="612" y="448" text-anchor="middle" class="t-tick" data-w="23">750</text>
+<text x="784" y="448" text-anchor="middle" class="t-tick" data-w="35">1,000</text>
+<path d="M96,128V428H784" class="axis"/>
+<g clip-path="url(#hrn-04-buy-once-rent-forever-clip-1)">
+<path d="M96,278 L164.8,278 L233.6,278 L302.4,278 L371.2,278 L440,278 L508.8,278 L577.6,278 L646.4,278 L715.2,278 L784,278" class="s-ink w15 nofill d-proj"/>
+<path d="M96,428 L164.8,398 L233.6,368 L302.4,338 L371.2,308 L440,278 L508.8,248 L577.6,218 L646.4,188 L715.2,158 L784,128" class="s-blue w15 nofill d-proj"/>
+</g>
+<text x="796" y="283" class="t-note f-ink" data-w="73">harness fix</text>
+<text x="796" y="133" class="t-note f-blue-ink" data-w="102">model upgrade</text>
+</g>
+<text x="96" y="116" class="t-note" data-w="168">extra spend, in units of C</text>
+<text x="440" y="472" text-anchor="middle" class="t-note" data-w="30">runs</text>
+<g data-grid="skip">
+<path d="M440,272 L446,278 L440,284 L434,278 Z" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="454" y="306" class="t-value" data-w="150">break-even: 500 runs</text>
+</g>
+<g data-grid="skip">
+<text x="454" y="326" class="t-note" data-w="176">2.5 days at 200 runs a day</text>
+</g>
+<path d="M120,148 H144" class="s-ink w15 nofill d-proj"/>
+<text x="152" y="152" class="t-label" data-w="107">illustrative sizes</text>
+<text x="40" y="504" class="t-note" data-w="511">A constant against a rate: real numbers move the crossing, never the shape.</text>
+</svg>

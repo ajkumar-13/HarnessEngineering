@@ -68,6 +68,8 @@ Two works by one author under two mastheads count as one source: Osmani's "Agent
 - Trivedy, "The Anatomy of an Agent Harness": see post 01 (the co-training loop, its overfitting, and "this doesn't mean that the best harness for your task is the one a model was post-trained with").
 - Osmani, "Agent Harness Engineering": see post 01 (the co-training flywheel and the skill-issue reframe as reported).
 - `ctx-001` (`context-engineering`, "Why context engineering, and why now"): the original model-problem-versus-context-problem test that this post extends to harnesses.
+- Rajasekaran (Anthropic), "Harness design for long-running application development": see post 12 (Sonnet 4.5's context anxiety; "Opus 4.5 largely removed that behavior on its own").
+- `ctx-020` (`context-engineering`, "Evaluation"): the output-level counterpart of the harness A/B.
 
 ## Post 05 - Agent failure modes: victory declaration, context anxiety, doom loops
 

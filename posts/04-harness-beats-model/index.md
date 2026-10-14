@@ -1,170 +1,179 @@
-# 04 · Why the harness beats the model — the evidence
+# 04 - Why the harness beats the model: the evidence
 
-> **TL;DR.** The founding claim of harness engineering is that the machine around the model is a bigger performance lever than the model itself: the same model can succeed or fail on the same task depending only on its harness. This post states that claim carefully, lays out the evidence in order of strength (a same-model, harness-only move of 13.7 points on Terminal-Bench 2.0; a controlled scaffold comparison worth up to 28 points; a peer-reviewed interface-only result that predates the word "harness"), says plainly what that evidence does not show, explains *why* it holds through the model-and-harness co-training flywheel, and turns it into a practical rule: before you reach for a bigger model, check whether the gap you are seeing is a harness gap.
+> **TL;DR.** The founding claim of harness engineering is that, for a given model on a given agentic task, the harness often moves performance more than a plausible model swap would. This post grades the evidence as firm, controlled or reported (a same-model gain of 13.7 points on Terminal-Bench 2.0, a controlled scaffold comparison worth up to 28 points, a peer-reviewed interface-only ablation), says what it does not show, explains how models are coupled to the harnesses they were trained in, and turns it into a three-run test and an order of moves: rule out a harness gap before paying for a bigger model.
 >
-> **After reading this you will be able to:**
-> - State the "harness beats model" claim precisely, without overclaiming.
-> - Grade any harness performance claim you meet, and tell a firm figure from a reported one.
-> - Decide, in front of a real underperforming agent, whether to change the harness or the model.
+> **Prerequisites:** [post 01](../01-from-context-to-harness/index.md).
+> **Safe to skip?** Skip it if the reader can already grade a harness result as firm, controlled or reported, say why a leaderboard rank is weaker evidence than a score, and run a test that separates a harness problem from a model problem.
+>
+> **After reading, you will be able to:**
+>
+> - State the claim that the harness beats the model with its scope, and say what it does not claim.
+> - Grade a harness performance claim as firm, controlled or reported, and say what each published result does not show.
+> - Explain how co-training couples a model to its harness, and why the best harness for a task need not be the one the model was trained in.
+> - Run the three-run test that tells a harness problem from a model problem, and read its verdict.
+> - Order the moves for an underperforming agent, and show why a harness fix bought once beats a model upgrade paid on every run.
 
-![Two panels over a graded evidence row. A leaderboard-rank axis puts one coding agent at about rank 30 in a default harness and about rank 5 in a tuned harness on Terminal-Bench 2.0, about 25 places apart; beside it, two bars show the same result as a score, 52.8% against 66.5% of the 89 tasks resolved, a gain of 13.7 points with the model held fixed at gpt-5.2-codex. Four cards grade the evidence behind the picture, from that before-and-after through a controlled study worth up to 28 points and a peer-reviewed 12.5% against 3.8%, down to a reported multiple of about 6x whose base is not stated. A box reads Agent = Model + Harness.](diagrams/01-harness-gap.svg)
-*The vivid version of one reported result: the same model, two harnesses, about 25 leaderboard places apart. §2 gives the firmer number behind the picture, which is the score, not the rank.*
+![A dot plot of five cited results, each one model under a weaker and a stronger harness: Terminal-Bench 2.0, 52.8% to 66.5%, firm; two models on a tau-squared-bench subset, 33% to 53% and 43% to 53%, firm; SWE-bench Lite, 11.0% to 18.0%, controlled; GAIA Level 2, 56% to 84%, controlled. A sixth row, the reported sixfold spread, has no marks: it names no model, benchmark or base.](diagrams/01-graded-evidence.svg)
+
+*Every graded result holds the model fixed and moves the score; the reported multiple cannot even be plotted.*
 
 ---
 
-## 1. The claim, stated carefully
+## 1. The question: how strong is the evidence?
 
-Here is the claim in one sentence: **for agentic tasks, the harness explains more of the variance in real-world performance than the choice of model does.** [Post 01](../01-from-context-to-harness/index.md) gave the slogan (*a decent model with a great harness beats a great model with a bad harness*), and this post is the evidence and the reasoning behind it.
+The claim in one sentence: **for a given model on a given agentic task, the harness often moves performance more than a plausible model swap would.** [Post 01](../01-from-context-to-harness/index.md) gave the slogan, Addy Osmani's "A decent model with a great harness beats a great model with a bad harness" (Osmani, 2026), and took a first look at the evidence. This post asks how strong that evidence is and what it does not show.
 
-The claim now has a formal statement in the literature. Zhang et al. (2026) name it the **Binding Constraint Thesis**: for long-horizon tasks compared across models of comparable frontier capability, the execution harness (the layer governing context construction, tool interaction, orchestration and verification) is often a stronger determinant of performance than the model it wraps, so that "performance variance is governed more by harness configuration than by model choice". Their argument treats the harness as the controller of a closed-loop system and the model as the stochastic policy that controller governs, which is the reason a small harness change can outrun a model substitution rather than merely rival it.
+The claim has a formal statement in the literature. Zhang et al. ("Stop Comparing LLM Agents Without Disclosing the Harness", 7 May 2026) call it the **Binding Constraint Thesis**: for long-horizon tasks across models of comparable frontier capability, "performance variance is governed more by harness configuration than by model choice" (Zhang et al., 2026). They treat the harness as the controller of a closed-loop system and the large language model (LLM) as the stochastic policy it governs, which is why a small harness change can shift performance by more than substituting one model for another.
 
-It is worth saying what the claim is *not*, because it is easy to overreach:
+The claim is easy to overreach, so its limits come first:
 
-- It is **not** "models do not matter." A more capable model raises the ceiling for every harness. The claim is about where the *marginal* engineering effort pays off today, not about which term is larger in the abstract.
-- It is **not** "any model with a good harness beats any model." Call the reason the **scaffolding ceiling**: once the harness supplies the right tools, the right context and a sane control flow, what binds is whether the frozen weights can exploit them, and no amount of middleware supplies reasoning capacity the weights lack. The 2026 survey of agent and harness design frames precisely this question, asking whether the bottleneck sits in the foundation model, in the execution harness, or in the coupling between them, and answers that agent quality emerges from the interaction rather than from either term alone (Guo et al., 2026).
-- It **is** "for a *given* model on a *given* agentic task, the harness usually moves performance more than a plausible model swap would."
+- It is **not** "models do not matter." A more capable model raises the ceiling for every harness; the claim is about where the marginal engineering effort pays off today.
+- It is **not** "any model with a good harness beats any model." Call the limit the **scaffolding ceiling**: once the harness supplies the right tools, context and control flow, what binds is whether the frozen weights can use them. Guo et al.'s survey of agent and harness design (14 June 2026) asks whether the bottleneck sits in the model, the harness or the coupling between them, and argues that agent quality emerges from their interaction with the task and the evaluation, not from the model or the harness alone (Guo et al., 2026).
+- It **is** a claim about one model and one task: hold those fixed, and the harness is the larger lever.
 
-The split between the two terms is easier to see in code than in prose. The entry point of this series' minimal build ([`code/24-minimal-harness/`](../../code/24-minimal-harness/)) takes the model as one argument among nine:
+The split between the two terms of `Agent = Model + Harness` is visible in code. `uv run python posts/04-harness-beats-model/snippets/harness_knobs.py` reads the signature of `run()`, the entry point of this series' minimal build in [`code/24-minimal-harness/`](../../code/24-minimal-harness/), and sorts its parameters:
 
-```python
-def run(model: Model, registry: ToolRegistry, task: str, *,
-        system: Optional[str] = None, verify: Optional[Verifier] = None,
-        workspace: Optional[Workspace] = None, max_iters: int = 12,
-        token_budget: Optional[int] = None, no_progress_window: int = 3) -> Result:
+```text
+run() takes 9 parameters
+the model:   model
+the task:    task
+the harness: registry, system, verify, workspace, max_iters, token_budget, no_progress_window (7)
 ```
 
-`model` is one parameter and `task` is another. The remaining seven are the harness: the tools the agent may call, the system prompt, the verification gate, the workspace it writes to, and three of the four stop conditions (the fourth, a verified final answer, is the gate). This post argues that on a real task, tuning those seven moves the outcome more than swapping the first.
+The other seven are the harness: the tools (`registry`), the system prompt, the verification gate, the workspace, and exits (2) to (4) of [post 03](../03-the-agent-loop/index.md), the iteration cap, the budget and the no-progress window; exit (1), a final answer, is what the verification gate checks. The claim is that on a real task, tuning those seven moves the outcome more than swapping `model`.
 
-With that scoped, the evidence, strongest first.
+The evidence comes in three grades, used for every performance claim in this series ([notation guide](../../notation_guide.md)):
+
+- **Firm:** the same model on the same benchmark, before and after a harness change.
+- **Controlled:** a comparison of scaffolds with the model and the tasks held fixed, set up as a study.
+- **Reported:** a claim quoted at one remove, whose model, benchmark or base cannot be checked.
+
+A reported multiple is never promoted to a measured one. The figure at the top plots every graded result of this post on one axis, and the sections below take them strongest first.
 
 ---
 
 ## 2. The firm evidence: one model, one benchmark, seven harness changes
 
-The cleanest public data point is a before-and-after with the weights pinned. In February 2026 the LangChain team reported improving their coding agent, `deepagents-cli`, from **52.8% to 66.5% on Terminal-Bench 2.0, a gain of 13.7 points, with the model held fixed at gpt-5.2-codex** (Trivedy, LangChain, 2026). Only the harness changed. In leaderboard terms that took the agent from just outside the top thirty into the top five, which is what the hero diagram draws, and what secondary write-ups picked up (Faros AI, 2026).
+The cleanest public result is a before-and-after with the weights pinned. In "Improving Deep Agents with harness engineering" (LangChain blog, 17 February 2026), Viv Trivedy reports that LangChain took its coding agent, `deepagents-cli`, from 52.8% to 66.5% on Terminal-Bench 2.0, a gain of 13.7 points, keeping the model fixed at `gpt-5.2-codex` and changing only the harness (Trivedy, 2026). In leaderboard terms the agent went "from Top 30 to Top 5", the baseline having been "just outside the Top 30 of the leaderboard" at the time. This is the firm grade: one model, one benchmark, a harness change in between.
 
-The benchmark matters to the reading. Terminal-Bench 2.0 is 89 hard, human-verified tasks in containers, spanning software engineering, machine learning, security, data processing, scientific computing and system administration, executed under the Harbor runner that spins up a sandbox per task and scores the result. It is not a quiz. Each task either resolves or does not.
+Terminal-Bench 2.0, released by Stanford University and the Laude Institute on 7 November 2025, has 89 human-verified tasks, each run in its own container with tests that check the final state; the LangChain runs used the Harbor runner, which starts a sandbox per task, drives the agent loop and scores the result (Terminal-Bench, 2025; Trivedy, 2026). On 89 tasks the gain is $0.137 \times 89 = 12.2$ tasks' worth of resolve rate, about 47 tasks rising to about 59 (this series' arithmetic).
 
-Run the deduction on the **score**, not the rank. A fixed set of 89 containerised tasks, a fixed set of weights, and 13.7 more points of resolved-rate: that is 13.7 points of capability that were always inside the model and were not being elicited. Nothing about the model changed, so nothing about the model can explain the change. The rank move is the vivid consequence, and it is the weaker number, because rank conflates the improvement with the density of the field around it. On a sparse leaderboard the same 13.7 points might move two places; on a crowded one, two points might move twenty. Quote the score; illustrate with the rank.
+The deduction runs on the **score**, not the rank. Fixed tasks, fixed weights, and 13.7 more points of resolve rate: that capability was in the model all along and was not being drawn out. The rank is the weaker number, because it also moves with how crowded the leaderboard is: the same 13.7 points could move two places on a sparse leaderboard and twenty on a crowded one (illustrative numbers).
 
-What makes this result useful rather than merely encouraging is that the primary source lists what was changed, and every item is a component this series has a post about. The mapping below is this series' vocabulary applied to their list, not a claim LangChain makes:
+The write-up lists what was changed. It turns three knobs, the system prompt, the tools and the middleware (LangChain's term for hooks around model and tool calls), and sets how much reasoning the model spends at each stage. The article does not number its changes; this series counts seven, and the mapping onto components and failure modes is this series' reading, not LangChain's:
 
-| Harness change (Trivedy, LangChain, 2026) | Surface | Component in this series | Failure mode it closes |
-| --- | --- | --- | --- |
-| A plan / build / verify / fix phase structure in the system prompt | System prompt | Verification loop ([Post 11](../11-verification-loops/index.md)) | Victory declaration |
-| **PreCompletionChecklistMiddleware**: intercepts the agent before it exits and forces a re-check against the task specification | Middleware | Verification gate ([Post 11](../11-verification-loops/index.md)) | Victory declaration |
-| **LocalContextMiddleware**: maps the working directory and its neighbours at startup, and runs commands to discover the tooling actually installed | Tools and context | Context management ([Post 09](../09-context-management-loop/index.md)) | Silent drift |
-| Prompting for testable code: exact paths, named edge cases, output a grader can check programmatically | System prompt | Tool and output contracts ([Post 06](../06-tools-bash-code/index.md)) | One-shotting |
-| Injected time-budget warnings so the agent knows how much run it has left | Middleware | Stop conditions ([Posts 03](../03-the-agent-loop/index.md), [19](../19-loop-engineering/index.md)) | Context anxiety |
-| **LoopDetectionMiddleware**: counts edits per file through tool-call hooks and prompts a rethink after N | Middleware | No-progress detection ([Post 19](../19-loop-engineering/index.md)) | Doom loop |
-| An "xhigh-high-xhigh" reasoning sandwich: more reasoning compute on planning and verification than on the implementation in between | Run configuration | Run economics ([Post 23](../23-economics-haas/index.md)) | One-shotting |
+| Change, as the write-up describes it (Trivedy, 2026) | Component | Failure mode it targets |
+| --- | --- | --- |
+| System-prompt guidance for a build-verify loop: planning and discovery, build, verify, fix | verification | victory declaration |
+| `PreCompletionChecklistMiddleware`: "intercepts the agent before it exits and reminds it to run a verification pass against the Task spec" | verification | victory declaration |
+| `LocalContextMiddleware`: maps the working directory and its parent and child directories at start-up, and runs bash commands to find tools such as Python installations | context management | none of the six: an agent that does not know its environment |
+| Prompting for testable code: file paths in the task specification followed exactly, edge cases tested, work measured against programmatic tests | context management | none of the six: work a grader cannot check |
+| Injected time-budget warnings that nudge the agent to finish and shift to verification | loop (the budget, made visible to the model) | none of the six: a run that times out |
+| `LoopDetectionMiddleware`: tracks per-file edit counts through tool-call hooks and suggests reconsidering the approach after N edits to the same file | hooks | doom loop |
+| An "xhigh-high-xhigh" reasoning sandwich: more reasoning on planning and verification than on the build between them | none of the eleven: a model setting the harness chooses | none of the six |
 
-Read the middle column and the right-hand column together. The levers that moved a real leaderboard by 13.7 points are the eleven components of [Post 02](../02-anatomy-of-a-harness/index.md) and the six failure modes of [Post 05](../05-agent-failure-modes/index.md), under other names. That is the strongest single argument this series can make for its own contents.
+The figure below places each change on one run: every change sits around the model call, and none touches the weights.
 
-Two honest caveats. The source does not publish a per-change delta, so the table attributes *kind*, not magnitude: it does not tell you that loop detection was worth four points and the checklist three. And this is one team's iterative campaign against one benchmark, which §5 returns to.
+![One Terminal-Bench run left to right in three phases, plan and discover, build, verify and fix, around one unchanged model, gpt-5.2-codex. The system prompt spans the run; the reasoning setting reads xhigh, high, xhigh. Local context acts at the start, loop detection on repeated edits, time-budget warnings along the run, and the pre-completion checklist as a gate at the exit.](diagrams/02-changes-around-the-model.svg)
+
+*Seven changes, all in the system prompt, the middleware or the run settings; the model is the one thing that stayed the same.*
+
+Two caveats belong with the result. The source publishes no per-change delta, so the table attributes kind, not size. Its one isolated comparison is about the reasoning setting: `xhigh` throughout scored 53.9%, "due to agent timeouts", against 63.6% at `high` (Trivedy, 2026). And this is one team's iterative campaign against one benchmark, a limit taken up below.
+
+The same team ran a second firm experiment. "Tuning Deep Agents to Work Well with Different Models" (LangChain blog, 29 April 2026) starts from "A single harness can't be optimal for every model" and builds per-model profiles: overrides for the system prompt, the tools and their names, the middleware, the sub-agents and the skills. On a curated subset of harder τ²-bench tasks, a profile moved GPT-5.3-Codex from 33% to 53% and Claude Opus 4.7 from 43% to 53%, each against the default harness with the same model (Trivedy and Daugherty, 2026). That is firm, with one qualification: the team that tuned the harness chose the subset.
 
 ---
 
 ## 3. The controlled evidence: hold the model, vary the scaffold
 
-A single team's before-and-after is a strong existence proof and a weak generalisation. Two other results carry the generalisation.
+A single team's before-and-after is a strong existence proof and a weak generalisation. Two studies built as comparisons carry the generalisation.
 
-The first is a controlled comparison. Starace (2026) ran a pre-registered study of three scaffolds (ReAct, a planner-actor-rater multi-agent design, and planner-then-executor) against five models from three providers on the GAIA assistant benchmark, holding tasks and run conditions fixed and taking three attempts per question. The finding: "Scaffold choice alone moves measured accuracy by as much as 28 percentage points within a single model." The paper's conclusion is the sharper half, and it is worth reading twice: "single-scaffold capability numbers are scaffold-conditional estimates and ... the elicitation gap is not guaranteed to shrink as models improve."
+The first is Jason Starace's "Scaffold Effects on GAIA: A Controlled Comparison" (7 June 2026), a pre-registered study of three scaffolds (ReAct; planner-actor-rater, a multi-agent design; and planner-then-executor) across five models from three providers (Claude Opus 4.7, Claude Sonnet 4.6, Claude Haiku 4.5, Gemini 3.1 Pro Preview and GPT-5.5) on the validation questions of GAIA, a benchmark of questions for general assistants, at Levels 1 and 2, with tasks and conditions held fixed and three attempts per question. The finding: "Scaffold choice alone moves measured accuracy by as much as 28 percentage points within a single model." The cell is Claude Opus 4.7 at Level 2, where planner-actor-rater scored 84% and ReAct 56%, on the paper's robust slice, which drops the attempts hit by a provider software bug (Starace, 2026). This is the controlled grade.
 
-Two things follow. First, that study names the phenomenon better than this series did. **Elicitation gap** is the literature's term for what Post 01 called the harness gap: the distance between what a model can do and what its scaffold lets it do. Use whichever word your audience knows; they are the same quantity. Second, the elicitation gap is the standing answer to "why not simply wait for the next model." Waiting is only a strategy if the gap closes on its own, and the controlled evidence says it is not guaranteed to.
+Its conclusion is the sharper half: "single-scaffold capability numbers are scaffold-conditional estimates and that the elicitation gap is not guaranteed to shrink as models improve" (Starace, 2026). The **elicitation gap**, a term the paper takes from earlier work at METR on agent time horizons, is the distance between what a model can do and what its scaffold lets it do: what [post 01](../01-from-context-to-harness/index.md) calls a harness gap. Starace pre-registered the prediction that more capable models would be less sensitive to the scaffold, and the data rejected it in direction: the most capable Anthropic model gained the most from structured scaffolds at the harder level. Waiting for the next model is a strategy only if the gap closes on its own, and the controlled evidence says it is not guaranteed to.
 
-The second result predates the vocabulary entirely. SWE-agent (Yang et al., 2024) held GPT-4 Turbo fixed and changed only the interface the model acted through, building what the authors called an agent-computer interface: a small set of well-shaped commands for viewing, editing and running code, with guardrails on their output. It resolved 12.5% of the full SWE-bench test set against 3.8% for the previous best non-interactive retrieval-augmented system. That is more than three times the resolved-rate, from interface design alone, in a peer-reviewed paper published two years before anyone in this literature wrote the word "harness". The idea is older than its name.
+The second result predates the vocabulary. SWE-agent (Yang et al., first posted May 2024; NeurIPS 2024) changed only the interface a model acts through: an agent-computer interface (ACI) of a few well-shaped commands for viewing, searching and editing files, with guardrails and concise feedback after every action. With GPT-4 Turbo it resolved 12.47% of the full SWE-bench test set, 286 of 2,294 tasks, against a previous best of 3.8% from a non-interactive, retrieval-augmented system (Yang et al., 2024); that 3.8% belongs to a different model, Claude 3 Opus, in a different setting, so it is not a harness-only comparison. The harness-only comparison is the paper's ablation on SWE-bench Lite, 300 tasks: with GPT-4 Turbo held fixed, the ACI resolved 18.0% against 11.0% for an agent given only the default Linux shell, which the authors report as a 64% relative increase. That is controlled, peer-reviewed, and about twenty-one months older than the February 2026 articles that named harness engineering.
 
 ---
 
 ## 4. The softer evidence: reported multiples, treated as reported
 
-Beyond controlled work you will meet stronger-sounding figures: that the *same* model varies **several-fold** across harnesses. The most-quoted is a same-model spread of up to sixfold, which circulates through secondary write-ups (MindStudio, 2026). Follow that citation chain and it attributes the figure to Stanford and Tsinghua scaffold research without linking the underlying comparison, so a reader cannot check the model, the benchmark, or the baseline the multiple is a multiple *of*.
+Beyond the studies, stronger-sounding figures circulate: that the same model varies several-fold across harnesses. MindStudio's "What Is Harness Engineering?" (8 May 2026) says that "the same underlying model can produce performance gaps of up to 6x depending on how the agent wrapper" is designed, and attributes the figure to Stanford and Tsinghua research without linking it (MindStudio, 2026). The article names no model, no benchmark and no baseline for the figure, so a reader cannot check what the multiple is a multiple of. It is reported: the honest use of it is "large, and in the same direction as the firm results", never "six times".
 
-This series does not invent numbers, and reported numbers are labelled as reported. So the multiple is *reported*: the honest use of it is "large, and consistently in the same direction," not "exactly six times."
+The contrast generalises into a checklist. Five questions grade any harness performance claim, including the ones in this post:
 
-That contrast is more useful than the discount alone, because it generalises into a checklist. Five questions grade any harness performance claim, including the ones in this post:
-
-| Question to ask of the claim | LangChain, +13.7 pts | Starace, up to 28 pts | The reported ~6× |
+| Question to ask of the claim | LangChain, +13.7 points | Starace, up to 28 points | The reported 6x |
 | --- | --- | --- | --- |
-| Is the model named and held fixed? | Yes: gpt-5.2-codex | Yes: five models, each held fixed | Not stated |
+| Is the model named and held fixed? | Yes: `gpt-5.2-codex` | Yes: five models, each held fixed | Not stated |
 | Is the benchmark and its version named? | Yes: Terminal-Bench 2.0 | Yes: GAIA validation, Levels 1 and 2 | Not stated |
-| Is the harness specification published? | Yes: the changes are listed | Yes: three named scaffolds, pre-registered | No |
+| Is the harness specification published? | The changes are listed | Three named scaffolds, pre-registered | No |
 | Controlled comparison, or a snapshot? | Iterative before-and-after, one team | Controlled, three attempts per question | Unknown |
 | Score delta, or rank delta? | Score: +13.7 points | Score: percentage points | A multiple, base unstated |
 
-A claim that answers the first three questions is usable. A claim that answers none of them is a direction, not a number. Note that the checklist is not kind to the figure this post finds most quotable, which is the point of running it.
-
-The reason to mention the reported multiples at all is that the *direction* is consistent. The two 2026 papers that survey this evidence across sources report the same sign (Zhang et al., 2026; Guo et al., 2026), and no source this series found reports that swapping harnesses barely moves a fixed model. When independent sources agree on a large effect in the same direction, the effect is probably real even when the precise multiple is not. The correct response to any of these figures is still to **measure your own harness** ([Post 22](../22-evaluating-harnesses/index.md)); the token-side companion to that trajectory-level measurement is output evaluation (Context Engineering, Post 20).
+A claim that answers the first three questions is usable; a claim that answers none of them is a direction, not a number. The reported figures are still worth mentioning, because their direction agrees with every firm and controlled result above, as both 2026 papers find (Zhang et al., 2026; Guo et al., 2026). The response to any of them is the same: **measure one's own harness** ([post 22](../22-evaluating-harnesses/index.md)); the output-level counterpart of that trajectory-level measurement is `ctx-020`.
 
 ---
 
 ## 5. What the evidence does not show
 
-A post whose selling point is honesty about numbers owes its own numbers the same scepticism. Four limits, each traceable.
+A post arguing for honesty about numbers owes its own numbers the same scepticism. Five limits:
 
-**Rank is not score.** The hero diagram charts a leaderboard move because that is the form the result circulated in, and it is the weaker of the two available numbers for the reason §2 gave. Where the two disagree in any write-up you read, follow the score.
+**Rank is not score.** The headline result circulated as a leaderboard move ("Top 30 to Top 5"), and secondary write-ups turn it into exact places (Faros AI, 2026). Where a write-up's rank and score disagree, follow the score.
 
-**A benchmark-tuned harness can overfit its benchmark.** Seven changes iterated against Terminal-Bench 2.0 are seven opportunities to fit that task distribution. Nothing in the result promises the same 13.7 points on your codebase, which is exactly why [Post 22](../22-evaluating-harnesses/index.md) puts a held-out split and production metrics above any leaderboard.
+**A harness tuned on a benchmark can overfit it.** Seven changes iterated against Terminal-Bench 2.0 are seven chances to fit that task distribution, and the LangChain write-up says so itself: "Changes that overfit to a task are bad for generalization and can lead to regressions in other Tasks" (Trivedy, 2026). Nothing promises 13.7 points on another codebase, which is why [post 22](../22-evaluating-harnesses/index.md) puts a held-out split and production metrics above any leaderboard.
 
-**Harness gains are model-specific and do not transfer for free.** The same team's follow-up found that one harness cannot be optimal for every model, because providers differ in prompting conventions and in the tool implementations they expect. Building per-model profiles moved their tau2-bench results from 33% to 53% for one model and from 43% to 53% for another (Trivedy and Daugherty, 2026). A harness copied from another team's model is not the harness they measured.
+**Harness gains are model-specific.** Per-model profiles exist because providers differ in prompting conventions and in the tool implementations they expect, and a profile moved its model by ten to twenty points (Trivedy and Daugherty, 2026). A harness copied from a team that runs another model is not the harness they measured.
 
-**Benchmarks move under the results built on them.** Terminal-Bench 2.1 revised 28 of the 2.0 tasks, correcting dependencies that had drifted, resource budgets too tight for valid solutions, and instructions that did not match their tests. Scores across versions are not directly comparable, and this post's own headline figure is attached to a version that has since been superseded.
+**Benchmarks move under the results built on them.** Terminal-Bench 2.1 (6 May 2026) was released "to fix issues in 28 of the 89 tasks in Terminal-Bench 2.0", in external dependencies, resource budgets and misspecified tasks, and its release notes report that most representative agent-model pairs score higher on 2.1 (Terminal-Bench, 2026). A 2.0 score and a 2.1 score are not the same measurement, and this post's headline figure belongs to a version that has since been revised.
 
-The disciplined conclusion is the one Zhang et al. (2026) draw: "Until harness specifications are disclosed, leaderboard comparisons for long-horizon agents should be treated as incomplete and potentially misleading." That standard applies to the numbers above as much as to anyone else's.
+**The effect is not universal.** Starace's review of related work cites a large controlled study on safety benchmarks in which scaffold effects were small once the evaluation format was held constant (Starace, 2026). The claim is about agentic tasks where the harness decides what the model can reach and when it stops; on a task where the harness has little to decide, it has little to add.
+
+The disciplined conclusion is the one Zhang et al. draw: "Until harness specifications are disclosed, leaderboard comparisons for long-horizon agents should be treated as incomplete and potentially misleading" (Zhang et al., 2026). That standard applies to the numbers above as much as to anyone else's.
 
 ---
 
 ## 6. The "skill issue" reframe: failures are configuration, not weights
 
-There is a complementary, more qualitative line of evidence: when practitioners *audit* their agent failures, most turn out to be fixable in the harness. The framing that stuck is the **"skill issue" reframe** (popularised by HumanLayer, via Osmani, 2026): the majority of agent failures are *configuration* problems, not model-weight problems.
+A complementary, qualitative line of evidence comes from practitioners who audit their own agent failures. HumanLayer's "Skill Issue: Harness Engineering for Coding Agents" (12 March 2026) puts it bluntly: "over the course of dozens of projects and hundreds of agent sessions, we kept arriving at the same conclusion: it's not a model problem. It's a configuration problem." (HumanLayer, 2026). Osmani's article spread the framing as the **"skill issue" reframe**: most agent failures come down to configuration rather than model weights (Osmani, 2026). It is the experience of one team, with no counts behind "most", so it is reported.
 
-[Post 05](../05-agent-failure-modes/index.md) is the catalogue that makes this concrete. All six of its failure modes are harness problems rather than model ones: five (victory declaration, context anxiety, one-shotting, doom loops, silent drift) are fixed by a harness component, and the sixth (destructive action) is bounded by a guardrail. None is fixed by a better model. Only when the right information is demonstrably in the window, in a sensible place, the loop has verified the work, and the model *still* cannot do the task, do you have a genuine model problem (the test [Post 01](../01-from-context-to-harness/index.md) §4 states, and Context Engineering, Post 01 §5 before it).
+[Post 05](../05-agent-failure-modes/index.md) is the catalogue that makes the reframe concrete. Its six failure modes are harness problems: victory declaration, context anxiety, one-shotting, doom loop and silent drift are each fixed by a harness component, and destructive action is bounded by hooks and permissions. A newer model can reduce one of them: in "Harness design for long-running application development" (Anthropic Engineering, 24 March 2026), Prithvi Rajasekaran reports that Sonnet 4.5 showed context anxiety and that "Opus 4.5 largely removed that behavior on its own" (Anthropic, 2026). The harness fix still comes first, because it works on the model in hand. A genuine model problem is what is left when the right information is demonstrably in the window, in a sensible place, the loop has verified the work, and the model still cannot do the task: the test post 01 gives, and `ctx-001` gave for the window before it.
 
-Notice that this reframe and the table in §2 are the same observation from two directions. The failure catalogue predicts which components will pay; the LangChain campaign is a case of someone paying them and reporting the total. This reframe is also optimistic, which is why it is worth internalising: most of the gap between what your agent does and what the model can do is *yours to close*, today, without waiting for the next model.
+The reframe and the table of LangChain's changes are one observation from two directions: the failure catalogue predicts which components will pay, and the LangChain campaign is a team paying for them and reporting the total. It is also the optimistic reading: most of the gap between what an agent does and what its model can do is closable by whoever owns the harness, without waiting for the next model.
 
 ---
 
-## 7. Why it holds: the co-training flywheel
+## 7. Why it holds: models are trained inside harnesses
 
-The evidence says the harness is a large lever. The *mechanism* that keeps it large is a feedback loop between harnesses and model training.
+The evidence says the harness is a large lever. The mechanism that keeps it large is a feedback loop between harnesses and model training, which Trivedy describes in "The Anatomy of an Agent Harness" (LangChain blog, 10 March 2026) and Osmani popularised. Trivedy's account: "Today's agent products like Claude Code and Codex are post-trained with models and harnesses in the loop." The loop itself: "Useful primitives are discovered, added to the harness, and then used when training the next generation of models. As this cycle repeats, models become more capable within the harness they were trained in." (Trivedy, 2026).
 
-![A four-step cycle: harnesses discover a useful pattern, it is standardised into a product or software development kit, the next model trains against it, the model gets better at using it, and harnesses exploit the improvement, repeating each model generation. A side panel gives what follows for a model in its native harness. Below, three cards carry the published measurements of the loop: discovered scaffolds worth +8.1 points on FeatureBench, 85.2% of that performance retained in the weights after distillation at 27.7% passed with no scaffold at all, and per-model harness profiles moving tau2-bench from 33% to 53%.](diagrams/02-cotraining-flywheel.svg)
-*Useful harness patterns become training signal for the next model, which is why a model feels sharper inside the harness it was shaped with.*
+![A cycle of four steps: a useful primitive is discovered in a harness, added to the harness, used to train the next model, and the model becomes more capable inside that harness. Beside it, two cards: discovered skills added 8.1 points on FeatureBench and the distilled model still passed 27.7% with no scaffold, 85.2% retained; and the side effect, overfitting, with Opus 4.6 scoring far lower in Claude Code than in other harnesses.](diagrams/03-co-training-loop.svg)
 
-The loop runs like this (Osmani, 2026):
+*The loop that makes a model good at its own harness also makes it awkward in others, so fit to the task, not the brand, is what to optimise.*
 
-1. A harness discovers a useful pattern: bash-as-a-universal-tool, plan files, hooks, a particular tool-calling shape.
-2. The pattern gets standardised into a product or software development kit (SDK): Claude Code, the Codex harness, the agent SDKs.
-3. The next generation of models is trained against traces full of that pattern.
-4. Those models get *better at using* the pattern, and the next harness exploits the improvement.
+The figure above draws the loop and the two things measured about it. The first is that the loop can be run on purpose. Ding et al. ("Scaffold-Mediated Post-Training", 2026) organise procedural scaffolds into a graph that co-evolves with the model's parameters through discovery, distillation and recompilation. On FeatureBench, automatically discovered skills improve the passed rate by 8.1 percentage points, and after distillation the model still passes 27.7% "without any external scaffold", a retention of 85.2%, defined as the post-distillation passed rate over the rate with the skills (Ding et al., 2026). The last step of the loop, a pattern surviving in the weights once the harness that taught it is gone, is measured directly, in one preprint.
 
-That is a blogger's framing of the loop, and it deserves more than a blogger's evidence. Two anchors carry it.
-
-**The loop has been run deliberately, and measured.** Ding et al. (2026) implement it as an explicit training procedure they call scaffold-mediated post-training: procedural scaffolds are organised into a graph that co-evolves with model parameters through discovery, distillation and recompilation. On the FeatureBench task set, automatically discovered scaffolds lift the passed rate by 8.1 percentage points, and after distilling those scaffolds into the weights the model keeps a 27.7% passed rate **with no external scaffold at all**, a retention of 85.2% of the scaffolded performance. That last figure is step 4 of the flywheel measured directly: the pattern survives in the weights once the harness that taught it is taken away.
-
-**The consequence is measurable too, and it is narrower than "use the vendor's own tool."** What the tuning evidence shows is that a harness performs best on the model it was tuned *for*, with gains of ten to twenty points on a tool-use benchmark from per-model profiles alone (Trivedy and Daugherty, 2026). Vendor SDKs are the common case of that, because they were tuned against their own model, but the operative property is fit, not branding. A carefully tuned in-house harness on a model you profiled beats a native SDK you never measured.
+The second is the side effect, and it cuts against the obvious conclusion. Training with a harness in the loop "creates this overfitting", Trivedy writes, citing the `apply_patch` tool of the Codex prompting guide: change the tool's logic and a model trained on it does worse. And then: "But this doesn't mean that the best harness for your task is the one a model was post-trained with." On the Terminal-Bench 2.0 leaderboard, "Opus 4.6 in Claude Code scores far below Opus 4.6 in other harnesses" (Trivedy, 2026). Osmani draws the same line: the best harness "isn't necessarily the one the model was trained inside; it's the one designed for your task" (Osmani, 2026).
 
 Two practical consequences follow:
 
-- **A model feels different inside the harness it was shaped with.** The same weights dropped into a generic harness are not the same experience. This is why "just use the best model" quietly underrates the harness: the best model was co-trained with a harness you may not be running.
-- **Harness patterns have a shelf life and a compounding value.** A pattern you invent today may become a native model capability in a generation (Ding et al.'s 85.2% retention is that happening on purpose), and the patterns you adopt from the model's native harness are the ones it is *best* at.
+- **Fit, not branding, is the operative property.** A harness performs best on the model and the task it was tuned for. A model's own software development kit (SDK) is a useful reference fit, because it carries the conventions the model was trained against, but it is a baseline to measure against, not a guaranteed best.
+- **Harness patterns have a shelf life.** A pattern adopted today may become native model behaviour in a generation, which is what Ding et al.'s 85.2% retention does on purpose. The LangChain write-up says as much of its loop detection: "As models improve, these guardrails will likely be unnecessary, but today helps agents execute correctly and autonomously" (Trivedy, 2026).
 
 ---
 
 ## 8. Telling a harness problem from a model problem, in three runs
 
-§6 gave the test for a genuine model problem: the right information is in the window, in the right place, the loop has verified the work, and the model still fails. A test is only useful if you can run it. Three runs establish it, each holding something different fixed. Take the failing trace ([Post 21](../21-observability-traces/index.md)) and replay it three ways:
+The test for a genuine model problem (the right information in the window, in the right place, the loop has verified the work, and the model still fails) is only useful if it can be run. Three runs establish it, each holding something different fixed. Take the failing trace ([post 21](../21-observability-traces/index.md)) and replay it three ways:
 
 | Run | What it holds fixed | What a pass means | What to do next |
 | --- | --- | --- | --- |
-| **A.** Replay the trace with the missing information hand-placed at the top of the window | Model, harness, task | It was a context-placement problem | Fix retrieval, ordering or compaction ([Post 09](../09-context-management-loop/index.md); Context Engineering, Post 01 §5) |
-| **B.** Run the same task under the model's own SDK harness, unmodified | Model, task | It was a harness-fit problem | Adopt or port the pattern that fixed it ([Post 20](../20-sdk-landscape/index.md); §7) |
-| **C.** Run the same task with the next model up, harness unchanged | Harness, task | A genuine model gap, *given this harness* | Upgrade, then re-measure ([Post 22](../22-evaluating-harnesses/index.md)) |
+| **A.** Replay the trace with the missing information placed by hand at the top of the window | Model, harness, task | It was a context-placement problem | Fix retrieval, ordering or compaction ([post 09](../09-context-management-loop/index.md); `ctx-001`) |
+| **B.** Run the same task under a harness fitted to the model: its own SDK harness, or a per-model profile | Model, task | It was a harness-fit problem | Port the pattern that fixed it ([post 20](../20-sdk-landscape/index.md)) |
+| **C.** Run the same task with the next model up, harness unchanged | Harness, task | A genuine model gap, given this harness | Upgrade, then re-measure ([post 22](../22-evaluating-harnesses/index.md)) |
 
-Only if A and B fail and C passes do you have a model problem. Even then, read the verdict precisely: the model problem is what *remains* after the harness gap is closed, not what you saw at the start. Run C before runs A and B and you will attribute the harness gap to the model, buy a bigger model, and never learn that a stop condition would have done it.
+Only if A and B fail and C passes is there a model problem. Even then the verdict is precise: the model problem is what remains after the harness gap is closed, not what was seen at the start. Running C before A and B attributes the harness gap to the model: the team buys a bigger model and never learns that a stop condition would have done it.
 
-None of this is trustworthy on one task. A harness A/B needs a fixed task set, graded objectively, with the model argument identical on both sides ([Post 22](../22-evaluating-harnesses/index.md)):
+None of this is trustworthy on one task. A harness A/B needs a fixed task set, graded objectively, with the model identical on both sides ([post 22](../22-evaluating-harnesses/index.md)). `snippets/harness_ab.py` holds the tally:
 
 ```python
 def harness_ab(tasks, run_a, run_b):
@@ -184,60 +193,82 @@ def harness_ab(tasks, run_a, run_b):
             "wins_a": wins_a, "wins_b": wins_b, "ties": ties}
 ```
 
-The paired counts matter as much as the delta: a config two points ahead on the mean may have fixed five tasks and broken three, and only the row-by-row tally shows it. Point `run_a` and `run_b` at two configurations of [`code/24-minimal-harness/`](../../code/24-minimal-harness/), which takes every harness knob as a keyword argument.
+The paired counts matter as much as the delta. The snippet runs it on 100 illustrative tasks where configuration B fixes five of A's failures and breaks three of A's successes, and `uv run python posts/04-harness-beats-model/snippets/harness_ab.py` prints:
 
-Treat that function as the skeleton rather than the instrument. The version that survives contact with reality repeats every task across several seeds, puts the discordant counts through a significance test, and takes its graders and its held-out split from [Post 22](../22-evaluating-harnesses/index.md). That post also works out how little a small set buys you: a 6.7-point lift over sixty tasks can still be indistinguishable from a coin flip. §5's caution about single results applies to your own measurements as much as to other people's.
+```text
+resolved: A 50%, B 52%, delta +2%
+paired:   B fixed 5, B broke 3, unchanged 92
+```
+
+The mean says two points better; the tally says eight tasks changed, three of them for the worse. To run it for real, point `run_a` and `run_b` at two configurations of [`code/24-minimal-harness/`](../../code/24-minimal-harness/), which takes every harness parameter as a keyword argument.
+
+That function is the skeleton, not the instrument. The real version repeats every task across seeds, puts the discordant counts through a significance test, and takes its graders and held-out split from [post 22](../22-evaluating-harnesses/index.md), which also shows how little a small set buys: on its illustrative 60-task example, a 6.7-point lift from 12 discordant pairs is consistent with a coin flip.
 
 ---
 
-## 9. So how should you choose a model?
+## 9. How to choose a model once the claim is accepted
 
-Accepting the claim does not mean ignoring model choice; it means *ordering* your moves correctly. A practical procedure when an agent underperforms:
+Accepting the claim does not mean ignoring model choice; it means ordering the moves. When an agent underperforms:
 
-1. **Diagnose first ([Post 05](../05-agent-failure-modes/index.md)).** Name the failure mode. If it is one of the six harness-fixable modes, a bigger model is the wrong tool.
-2. **Exhaust the cheap harness fixes.** A verification loop, a stop condition, or a hook: these are hours of work, not a re-architecture, and they are where the leaderboard move came from (§2).
-3. **Use the harness your model was tuned for.** Given the flywheel (§7), a model performs best in a harness fitted to it, and the vendor's own SDK is usually the nearest available fit.
-4. **Upgrade the model only when the gap is a genuine model problem.** Establish that with the three runs in §8, not by intuition. Then a stronger model is exactly right.
-5. **Re-measure after every change ([Post 22](../22-evaluating-harnesses/index.md)).** Every figure in this post, yours included, is a measurement, not a law.
+1. **Diagnose first ([post 05](../05-agent-failure-modes/index.md)).** Name the failure mode. If it is one of the six, its harness fix comes before any bigger model.
+2. **Exhaust the cheap harness fixes.** A verification gate, a stop condition, a hook: hours of work, not a re-architecture, and the kind of change behind the 13.7 points.
+3. **Fit the harness to the model.** Start from what the model was trained against (its provider's prompting guide, its tool conventions, its own SDK as a reference run) and tune for the task, as the per-model profiles did.
+4. **Upgrade the model only when the gap is a genuine model problem.** Establish it with the three runs, not by intuition; then a stronger model is exactly right.
+5. **Re-measure after every change ([post 22](../22-evaluating-harnesses/index.md)).** Every figure in this post, and every figure a team produces, is a measurement, not a law.
 
-![A ladder of five numbered steps with the cost of each: diagnose first, free and minutes; exhaust the cheap harness fixes, hours; use the model's native harness, one migration; only now upgrade the model, more per token forever; re-measure after every change, an afternoon per change. A dashed red arrow skips from step one straight to step four, labelled as the common and most expensive move.](diagrams/03-choose-model-order.svg)
-*The rungs are cheap until step 4, and step 4 is the only one you keep paying for per token.*
+The order is not arbitrary, because the costs have different shapes. Steps 1 to 3 are paid once, in engineer-hours; step 4 is paid per token, on every run, for as long as the system lives. Take [post 23](../23-economics-haas/index.md)'s illustrative running example: twelve iterations, the first request 6,000 tokens, each turn appending 3,100 more, so every turn re-reads the history before it. Write the price of one run today as $C$. A model upgrade that triples the price per token makes each run cost $3C$, an extra $2C$ on every run. Set that against the stop condition nobody wrote: one engineer-day, paid once, taken here to be worth 1,000 runs at today's price. All of these sizes are illustrative, and `uv run python posts/04-harness-beats-model/snippets/upgrade_cost.py` works them through:
 
-Reading the ladder with the costs attached explains why the order is not arbitrary. Steps 1 to 3 are one-off costs paid in engineer-hours; step 4 is a *recurring* cost paid per token, on every run, for as long as the system lives.
+```text
+one run reads 276,600 input tokens; a context that never grew would read 72,000
+growth multiplies the input by 3.84
+upgrade: 3C a run, 2C extra on every run
+fix: 1,000C once; break-even after 500 runs, 2.5 days at 200 runs a day
+```
 
-The asymmetry is worth working out rather than asserting. Take the run model from [Post 23](../23-economics-haas/index.md): a task that resolves in twelve iterations re-reads its whole history every turn, with the context growing from about 6,000 tokens at iteration one to about 40,000 at iteration twelve. The input bill for one run is roughly iterations times average context, so about 12 × 23,000 = 276,000 input tokens. Growth alone has almost quadrupled it against the 72,000 tokens a non-growing context would have cost.
+![A line chart of extra spend, in units of one run's price today, against runs, illustrative. The harness fix is a flat dashed line at 1,000; the model upgrade a dashed line rising by 2 a run to 2,000 at 1,000 runs. They cross at 500 runs, two and a half days at 200 runs a day.](diagrams/04-buy-once-rent-forever.svg)
 
-Now write the run's current price as C. A model upgrade that triples the input price makes each run cost about 3C, because that run is overwhelmingly input tokens, so the upgrade adds 2C on every run, forever. Set that against the stop condition you did not write: one engineer-day, paid once. If an engineer-day is worth about 1,000 runs at the current price, the upgrade has cost more than the fix would have after 500 runs, and at 200 runs a day that break-even arrives inside three days. Substitute your own numbers; the shape does not change, because one side of the comparison is a constant and the other is a rate.
+*One side of the comparison is a constant and the other is a rate, so the rate always wins in the end; only the crossing point depends on the numbers.*
 
-That is the real argument for the order, and it is not that model upgrades are expensive in absolute terms. It is that you buy a harness fix once and rent a model upgrade indefinitely, so the cheap rungs are worth spending first even when the upgrade would also have worked. The upgrade is still available afterwards, and by then you will know whether you still need it.
+The figure above draws it: the fix is a flat line, the upgrade a rising one, and they cross after $1{,}000 / 2 = 500$ runs. Real numbers move the crossing, not the shape. The argument is not that upgrades are expensive in absolute terms; it is that a harness fix is bought once and a model upgrade is rented indefinitely, so the cheap rungs come first even when the upgrade would also have worked. The upgrade is still available afterwards, and by then the team knows whether it is needed.
+
+---
+
+## 10. What can go wrong?
+
+These are the mistakes that applying this post's ideas actually produces.
+
+- **The rank in the slide deck.** "Top 30 to Top 5" goes into a design review as "25 places", and nobody can say what 25 places is worth on another leaderboard: the number that carried the argument was the 13.7-point score.
+- **A reported multiple as a target.** A team promises "six times better" from a new harness, and cannot say six times what, on which benchmark, against which baseline.
+- **Another team's harness, another team's model.** The harness is copied from a write-up and run on a different model; the score barely moves, and the conclusion drawn is that harness work does not pay.
+- **The upgrade before the diagnosis.** The agent declares victory without running the tests; the team moves to a stronger model, and gets the same unfinished task, declared done more fluently, at three times the price per run.
+- **Run C alone.** The bigger model passes the failing task, and the team records a model problem, without having tried the replay with the information placed by hand or a harness fitted to the model.
+- **An A/B read from the mean.** A configuration two points ahead on one pass over a small set ships, and the next run puts it two points behind: the paired counts were a handful of tasks either way.
 
 ---
 
 ## Common pitfalls
 
-- **Overclaiming the thesis.** "Harness beats model" is scoped to a *given* model on *agentic* tasks. It is not "models are irrelevant", and the scaffolding ceiling is why (§1).
-- **Charting the vivid number when a firmer one exists.** A rank move is memorable and field-dependent; the score delta behind it is the number that carries the argument. Check whether the primary source published scores before you draw ranks (§2, §5).
-- **Quoting reported multiples as measured facts.** The "~6×" figure is reported by a secondary source that does not link its own primary; run the five-question checklist before repeating any figure, including these (§4).
-- **Upgrading the model before diagnosing.** All six failure modes are harness problems, not model ones; a bigger model spends more to hide them (§6, §9).
-- **Declaring a model problem without the three runs.** "The model still cannot do it" is a conclusion that requires evidence from a replay and a native-harness run, not a hunch (§8).
-- **Copying another team's harness and expecting their numbers.** Harness gains are model-specific; profiles tuned for one provider moved a tool-use benchmark by ten to twenty points, which is also the size of the loss when the fit is wrong (§5, §7).
-- **Treating any of these figures as stable.** Leaderboards, models and benchmarks all move; Terminal-Bench 2.1 revised 28 of the tasks this post's headline number was measured on. The *mechanism* is durable; the numbers are snapshots (§5).
+1. **Overclaiming the thesis.** "Harness beats model" is scoped to a given model on agentic tasks; the scaffolding ceiling is why it is not "models are irrelevant".
+2. **Quoting the vivid number when a firmer one exists.** A rank moves with the crowd around it; the score delta on a fixed task set is the number that carries the argument.
+3. **Promoting a reported figure.** A multiple with no model, benchmark or base stays reported, however often it is repeated; run the five questions before repeating it.
+4. **Assuming the native harness is the best harness.** Co-training couples a model to its harness, but the best harness is the one fitted to the task; measure the native one, do not assume it.
+5. **Treating any of these figures as stable.** Leaderboards, models and benchmarks move: Terminal-Bench 2.1 revised 28 of the 89 tasks the headline result was measured on. The mechanism is durable; the numbers are snapshots.
 
 ---
 
 ## Further reading
 
-- Trivedy, V. (LangChain), "Improving Deep Agents with harness engineering" (17 February 2026): the primary source for the same-model, harness-only move from 52.8% to 66.5% on Terminal-Bench 2.0, with the seven changes listed.
-- Zhang, Y., Wang, J., Ge, Y., Xu, W., Hamm, J., and Reddy, C. K., "Stop Comparing LLM Agents Without Disclosing the Harness" (2026): the Binding Constraint Thesis, a variance-decomposition protocol, and the disclosure standard §5 closes on.
-- Starace, J., "Scaffold Effects on GAIA: A Controlled Comparison" (2026): three scaffolds, five models, tasks held fixed, and up to 28 percentage points of within-model movement; the source of the term *elicitation gap*.
-- Yang, J., Jimenez, C., et al., "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering" (2024): the peer-reviewed, interface-only result (12.5% against 3.8%, GPT-4 Turbo fixed) that predates the vocabulary.
-- Guo, J., et al., "From Question Answering to Task Completion: A Survey on Agent System and Harness Design" (2026): the model-versus-harness-versus-coupling question, and the six runtime responsibilities a harness decomposes into.
-- Ding, F., et al., "Scaffold-Mediated Post-Training: Co-Evolving Model Parameters and Procedural Scaffold Graphs" (2026): the co-training flywheel executed as a training procedure, with the 85.2% retention figure after the scaffold is removed.
-- Trivedy, V., and Daugherty, M. (LangChain), "Tuning Deep Agents to Work Well with Different Models" (29 April 2026): why one harness cannot be optimal for every model, with per-model tuning worth ten to twenty points.
-- Faros AI, "Harness Engineering: Making AI Coding Agents Work in 2026": the secondary summary through which the leaderboard move circulated.
-- MindStudio, "What Is Harness Engineering?" (2026): the reported several-fold same-model spread, and a worked example of a citation chain that stops short of its primary.
-- Osmani, A., "Agent Harness Engineering" (2026): the co-training flywheel framing and the "skill issue" reframe, the latter via HumanLayer.
-- Context Engineering, Post 01 §5: the original model-problem-versus-context-problem test that §6 and §8 extend to harnesses.
+- Viv Trivedy, "Improving Deep Agents with harness engineering" (LangChain blog, 17 February 2026). The firm result and the changes behind it.
+- Viv Trivedy and M. Daugherty, "Tuning Deep Agents to Work Well with Different Models" (LangChain blog, 29 April 2026). Per-model profiles.
+- Viv Trivedy, "The Anatomy of an Agent Harness" (LangChain blog, 10 March 2026). The co-training loop and its overfitting.
+- Y. Zhang et al., "Stop Comparing LLM Agents Without Disclosing the Harness" (arXiv, 7 May 2026). The Binding Constraint Thesis.
+- J. Starace, "Scaffold Effects on GAIA: A Controlled Comparison" (arXiv, 7 June 2026). Up to 28 points within one model.
+- J. Yang, C. E. Jimenez, et al., "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering" (NeurIPS 2024). The interface-only ablation.
+- J. Guo et al., "From Question Answering to Task Completion: A Survey on Agent System and Harness Design" (arXiv, 14 June 2026).
+- F. Ding et al., "Scaffold-Mediated Post-Training: Co-Evolving Model Parameters and Procedural Scaffold Graphs" (arXiv, 2026). The loop run as a training procedure.
+- HumanLayer, "Skill Issue: Harness Engineering for Coding Agents" (12 March 2026), and Addy Osmani, "Agent Harness Engineering" (19 April 2026). The "skill issue" reframe.
+- MindStudio, "What Is Harness Engineering?" (8 May 2026). The reported sixfold spread.
+- Terminal-Bench 2.0 (Stanford University and the Laude Institute, 7 November 2025) and Terminal-Bench 2.1 (6 May 2026).
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
@@ -245,7 +276,5 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Post 05 — Agent failure modes](../05-agent-failure-modes/index.md)**: the catalogue behind the "skill issue" reframe, the six harness-fixable failures one by one.
-- **[Post 02 — The anatomy of a harness](../02-anatomy-of-a-harness/index.md)**: the eleven levers this post says matter more than the model, and the map §2's table lands on.
-- **[Post 20 — The SDK & framework landscape](../20-sdk-landscape/index.md)**: where §9's "use the harness your model was tuned for" turns into a choice between real SDKs.
-- **[Post 22 — Evaluating harnesses](../22-evaluating-harnesses/index.md)**: how to measure the claim on your own system instead of trusting a reported figure.
+- **[Post 05 - Agent failure modes: victory declaration, context anxiety, doom loops](../05-agent-failure-modes/index.md):** the six harness failures behind the "skill issue" reframe, one by one, with the component that fixes each.
+- **[Post 22 - Evaluating harnesses: Terminal-Bench, SWE-bench, harness A/B](../22-evaluating-harnesses/index.md):** how to measure the claim on a team's own system instead of trusting anyone's figure, this post's included.

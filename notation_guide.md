@@ -94,7 +94,7 @@ A claim that the harness is a bigger lever than the model is graded by the stren
 |---|---|---|
 | firm | the same model on the same benchmark, before and after a harness change | one coding agent on Terminal-Bench 2.0 with the model held fixed (Trivedy, 2026) |
 | controlled | a comparison of scaffolds with the model and the tasks held fixed | a pre-registered study of three scaffolds across five models (Starace, 2026) |
-| reported | a multiple quoted at one remove, whose model, benchmark or base cannot be checked | a same-model spread of "up to sixfold" in secondary write-ups (MindStudio, 2026) |
+| reported | a claim quoted at one remove, whose model, benchmark or base cannot be checked | a same-model spread of "up to sixfold" in secondary write-ups (MindStudio, 2026) |
 
 A reported multiple is never promoted to a measured one, and a post states what the evidence does not show.
 
