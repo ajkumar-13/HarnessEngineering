@@ -31,7 +31,7 @@
 | # | Component | One-line job |
 |---|-----------|--------------|
 | 01 | **Loop** | Drive the model through reason, act, observe; decide when to stop (post 03). |
-| 02 | **Tools** | The agent's hands: bash and code execution are the general-purpose default, and ten focused tools beat fifty overlapping ones; skills and MCP extend them at runtime (posts 06, 07). |
+| 02 | **Tools** | The agent's hands: bash and code execution are the general-purpose default, and ten focused tools beat fifty overlapping ones (Osmani's argument); skills and MCP extend them at runtime (posts 06, 07). |
 | 03 | **State** | Durable memory on the filesystem; git for versioning and rollback (post 08). |
 | 04 | **Context management** | Offload, clear, compact, reset: keep the window useful as it fills (post 09). |
 | 05 | **Memory** | Carry knowledge across sessions in a memory file; the ratchet writes to it (post 10). |
@@ -63,7 +63,7 @@ The loop is the centre. Components 2 to 5 feed it, 6 to 8 and 11 govern it, and 
 
 ## The ratchet principle
 
-> **Every mistake becomes a rule.** A failure turns into three durable constraints: a **memory-file line** (so the model reads it), a **hook** (so it is enforced), and a **reviewer check** (so it is caught). Nothing regresses twice.
+> **Every mistake becomes a rule.** A failure turns into three durable constraints: a **memory-file line** (so the model reads it), a **hook** (so it is enforced), and a **reviewer check** (so it is caught). The same class of mistake does not recur.
 
 ---
 

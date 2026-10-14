@@ -86,9 +86,9 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Handoff artefact.** A structured file (spec, plan, state summary) that carries context from one agent, iteration, or session to the next: the mechanism that lets work survive a context reset. See [Post 08](posts/08-state-filesystem-git/index.md).
 
-**Handoff contract.** The fields a *handoff file* must carry for a reset to be safe: a spec pointer, what is done, what is next, decisions and their reasons, open questions, and the paths that matter. Its completeness test is to seed a fresh window with the handoff alone and check that it can name the next concrete action. See [Post 18](posts/18-long-horizon-ralph/index.md).
+**Handoff contract.** The fields a *handoff file* must carry for a reset to be safe: a spec pointer, what is done, what is next, the state (branch, last checkpoint and the paths that matter), decisions and their reasons, and open questions. Its completeness test is to seed a fresh window with the handoff alone and check that it can name the next concrete action. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
-**Handoff file.** The concrete artefact a *handoff artefact* is written to: a file on disk carrying the spec, the plan and the state a fresh context needs to continue. Rewritten each iteration, never appended to. See [Post 08](posts/08-state-filesystem-git/index.md).
+**Handoff file.** The concrete artefact a *handoff artefact* is written to: a file on disk carrying the spec, what is done, what is next and a checkable state, which is what a fresh context needs to continue. Rewritten each iteration, never appended to. See [Post 08](posts/08-state-filesystem-git/index.md).
 
 **Harness.** Everything that is not the model: the runtime that drives a single agent through the loop, tools, state, context management, memory, verification, hooks, permissions, and observability. *Orchestration* and *long-horizon patterns* appear on the same component map but operate at a larger scale. In the nesting the series uses, the model sits inside the scaffold, the scaffold inside the harness, and the harness inside orchestration. See [Post 01](posts/01-from-context-to-harness/index.md) and [Post 02](posts/02-anatomy-of-a-harness/index.md).
 
@@ -190,7 +190,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Ralph loop.** The simplest long-horizon pattern (named by Huntley, 2025): feed the same prompt against a written spec, let the agent do one task and commit, reset to a fresh context, and repeat until done. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
-**Ratchet.** The principle "every mistake becomes a rule": each failure is converted into durable constraints (a *memory file* line so the model reads it, a *hook* so it is enforced, a reviewer check so it is caught) so that it cannot recur. Also *ratchet principle*. See [Post 10](posts/10-continual-learning-ratchet/index.md).
+**Ratchet.** The principle "every mistake becomes a rule": each failure is converted into durable constraints (a *memory file* line so the model reads it, a *hook* so it is enforced, a reviewer check so it is caught) so that it has to defeat all three to recur. Also *ratchet principle*. See [Post 10](posts/10-continual-learning-ratchet/index.md).
 
 **Re-entry tax.** The fixed cost every fresh context pays before it does useful work (read the spec, read the handoff, orient in the repository), split into a frozen half a prompt cache serves and a volatile half it cannot. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
@@ -200,7 +200,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Resolved-rate.** The share of benchmark tasks a harness actually completed, reported as a mean over several seeds with its spread, because agent runs are stochastic. It means little without the cost per resolved task beside it. See [Post 22](posts/22-evaluating-harnesses/index.md).
 
-**Rollback.** Discarding everything since a *checkpoint*, tracked changes and untracked debris alike. What makes a reversible action cheap enough to take without asking first. See [Post 08](posts/08-state-filesystem-git/index.md).
+**Rollback.** Discarding the tracked changes since a *checkpoint* and the untracked debris inside the paths the step could touch; ignored files and untracked files elsewhere are kept. What makes a reversible action cheap enough to take without asking first. See [Post 08](posts/08-state-filesystem-git/index.md).
 
 **Rubber-stamp rate.** The proportion of approval requests answered without engagement, and the number that separates an approval gate from approval theatre. Measurable only if approvals are recorded, not just denials. See [Post 15](posts/15-human-in-the-loop/index.md).
 
@@ -228,7 +228,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Stall signal.** The thing a *no-progress detection* actually compares: a tool-call signature, an observable effect on disk, or a verifier score. A detector tuned to one shape of stall will not catch another. See [Post 19](posts/19-loop-engineering/index.md).
 
-**State.** The third of the *eleven components*, one of the four that feed the loop: what the agent keeps on disk rather than in the window (intermediate results, plans, a handoff file), with git adding versioning and rollback. The window is small and expensive; the filesystem is large and cheap. See [Post 08](posts/08-state-filesystem-git/index.md).
+**State.** Component 03, one of the *eleven components* and of the four that feed the loop: what the agent keeps on disk rather than in the window (intermediate results, plans, a handoff file), with git adding versioning and rollback. The window is small and expensive; the filesystem is large and cheap. See [Post 08](posts/08-state-filesystem-git/index.md).
 
 **Steering.** Injecting a human message into a running agent so that it lands as the next observation rather than restarting the run. A property of the loop's input mode, not a feature added above the loop. See [Post 15](posts/15-human-in-the-loop/index.md).
 
@@ -254,7 +254,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Tool-call signature.** Tool name plus normalised arguments: the fingerprint whose repetition across consecutive turns is the classic *doom loop*. Comparing signatures alone cannot tell a poll whose result changes from a retry whose result does not; the companion's detector compares signatures only, and comparing the results as well separates the two. See [Post 05](posts/05-agent-failure-modes/index.md).
 
-**Tool-output offloading.** Writing a large tool output (a 2,000-line log) to disk and returning a pointer, so that it costs one line in the window rather than a re-send every turn. The pointer has to be actionable: a path the agent can genuinely read back. See [Post 09](posts/09-context-management-loop/index.md).
+**Tool-output offloading.** Writing a large tool output (a 2,000-line log) to disk and returning a pointer, so that the window carries a short pointer (path, size, head and tail) rather than the whole output on every later call. The pointer has to be actionable: a path the agent can genuinely read back. See [Post 09](posts/09-context-management-loop/index.md).
 
 **Tool-using evaluator.** A grader with its own tools and its own loop, which gathers first-hand evidence (running the suite, driving the application, querying the database) instead of judging the generator's account of the work. A verifier, not a judge. See [Post 12](posts/12-planner-generator-evaluator/index.md).
 
