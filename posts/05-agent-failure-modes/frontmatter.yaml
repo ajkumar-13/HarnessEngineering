@@ -1,43 +1,26 @@
 id: hrn-005
 slug: 05-agent-failure-modes
-title: "05 · Agent failure modes — victory declaration, context anxiety, doom loops"
-
-description: >
-  Autonomous agents do not fail randomly; they fail in a small set of recurring, nameable
-  ways, each mapping to a harness component you can change. This post catalogues six:
-  victory declaration, context anxiety, one-shotting, doom loops, silent drift, and
-  destructive action.
-
-author: "Ajay"
+title: "05 - Agent failure modes: victory declaration, context anxiety, doom loops"
+summary: "Autonomous agents fail in six recurring, nameable ways, each fixed by a harness component rather than a bigger model. A trace shows which mode a bad run is, and the mode names the fix."
 date: 2026-07-14
-last_modified: 2026-09-05
-
-tags: [harness-engineering, foundations, failure-modes, debugging]
-
-keywords:
-  - harness engineering
-  - foundations
-  - failure modes
-  - debugging
-  - verification loop
-  - context management
-  - no-progress stop condition
-  - deny-list hook
-  - initialiser agent
-  - coding agent
-  - planner split
-  - durable state
-
-category: Foundations
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part I - Foundations"
-
+level: intermediate
+reading_time: 23
+tags: [harness-engineering, foundations, failure-modes, debugging, observability, agent-loop]
 hero: diagrams/01-failure-modes-grid.svg
-hero_alt: "A grid of six cards, one per failure mode: victory declaration, context anxiety, one-shotting, doom loop, silent drift, and destructive action, each with its symptom and the harness component that fixes it."
-
-reading_time: 26
-toc: true
-draft: false
-canonical_url: ""
-prev: ../04-harness-beats-model/
-next: ../06-tools-bash-code/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Recognise each of the six failure modes, victory declaration to destructive action, from a symptom or a trace, and name the component that fixes it."
+  - id: o2
+    text: "Say what each mode costs and who pays, and work out what a doom loop costs with and without the no-progress exit."
+  - id: o3
+    text: "Separate the confusable pairs of modes with the one measurement that tells each pair apart."
+  - id: o4
+    text: "Use the triage table to decide which fix to build first, and say which failures fall outside the six."
+  - id: o5
+    text: "Run a trace fingerprint over archived runs, count hits per mode, and show that victory declaration appears only as a completed stop joined to a failed check."
+recommended: [ctx-006]

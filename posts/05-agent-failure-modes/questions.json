@@ -1,0 +1,729 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-005",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-005-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 1,
+      "tags": [
+        "victory-declaration",
+        "symptom"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent ends its run with \"All tests pass; the task is complete.\" The continuous integration run on its branch is red. Which failure mode is this, and what fixes it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Doom loop, fixed by the no-progress exit",
+          "correct": false,
+          "feedback": "A doom loop repeats one action without progress; this run stopped, and claimed success."
+        },
+        {
+          "key": "b",
+          "text": "Victory declaration, fixed by verification",
+          "correct": true,
+          "feedback": "Correct. The agent announced completion that a check against ground truth contradicts, and a check on the exit is the fix."
+        },
+        {
+          "key": "c",
+          "text": "Silent drift, fixed by memory and hooks",
+          "correct": false,
+          "feedback": "Silent drift is a convention ignored run after run; one false claim of success inside a run is not it."
+        },
+        {
+          "key": "d",
+          "text": "Context anxiety, fixed by context management",
+          "correct": false,
+          "feedback": "Context anxiety is work that degrades or wraps up early as the window fills; nothing here points to the window."
+        }
+      ],
+      "explanation": "Victory declaration is an agent announcing the task complete when it is not: tests still red, the feature half-built. Its fix is verification on the loop's exit.",
+      "hints": [
+        "Compare what the agent said with what the check found."
+      ]
+    },
+    {
+      "id": "hrn-005-q02",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "triage",
+        "components"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each failure mode to the component that fixes it. One component on the right fixes none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Victory declaration"
+        },
+        {
+          "key": "b",
+          "text": "Context anxiety"
+        },
+        {
+          "key": "c",
+          "text": "One-shotting"
+        },
+        {
+          "key": "d",
+          "text": "Doom loop"
+        },
+        {
+          "key": "e",
+          "text": "Silent drift"
+        },
+        {
+          "key": "f",
+          "text": "Destructive action"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "Verification: a check against ground truth before the loop may exit"
+        },
+        {
+          "key": "b",
+          "text": "Context management: offload, clear, compact or reset"
+        },
+        {
+          "key": "c",
+          "text": "A planner, generator, evaluator split"
+        },
+        {
+          "key": "d",
+          "text": "The loop's no-progress exit"
+        },
+        {
+          "key": "e",
+          "text": "Memory and hooks: the ratchet"
+        },
+        {
+          "key": "f",
+          "text": "Hooks and permissions: a deny-list hook inside a sandbox"
+        },
+        {
+          "key": "g",
+          "text": "A model with a larger context window"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d",
+        "e": "e",
+        "f": "f"
+      },
+      "explanation": "The triage table pairs each mode with its component: verification, context management, the planner split, the no-progress exit, the ratchet (a memory-file rule backed by a hook), and hooks with permissions. None of the six is fixed by a larger model; even context anxiety, which a newer model is reported to reduce, has a harness fix that does not wait for one.",
+      "hints": [
+        "Ask where each fix sits: on the exit, between turns, before the first edit, after each model call, at session start, or before a tool runs.",
+        "The unused one is not a harness component."
+      ]
+    },
+    {
+      "id": "hrn-005-q03",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.6",
+      "est_minutes": 2,
+      "tags": [
+        "destructive-action",
+        "safety"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Why is destructive action the one failure mode whose fix must run before the action rather than after it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the most frequent of the six modes.",
+          "correct": false,
+          "feedback": "The post claims nothing about frequency; the argument is about recovery, not how often it happens."
+        },
+        {
+          "key": "b",
+          "text": "A re-run cannot undo what the command reached.",
+          "correct": true,
+          "feedback": "Correct. The other five cost a run that a re-run reclaims; a dropped table stays dropped."
+        },
+        {
+          "key": "c",
+          "text": "The model cannot see dangerous commands in its own output.",
+          "correct": false,
+          "feedback": "The model sees what it writes; the point is that judgement, however good, is not a safety control."
+        },
+        {
+          "key": "d",
+          "text": "Hooks can only fire before a tool call.",
+          "correct": false,
+          "feedback": "Hooks fire at several lifecycle points, after an edit as well; the reason is that there is no after for this mode."
+        }
+      ],
+      "explanation": "Five of the six are performance failures that a re-run recovers; destructive action is a safety failure, and whatever the command reached is gone. So its fix, a deny-list hook inside a sandbox, has to stop the call before it runs.",
+      "hints": [
+        "Look at the last column of the cost table."
+      ]
+    },
+    {
+      "id": "hrn-005-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "doom-loop",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A loop's transcript grows by 2,500 tokens a turn and is re-read on every call, so turn $k$ reads $2{,}500k$ input tokens. From turn 3 on, the model makes the same call every turn. The no-progress exit has a window of three. How many input tokens does the run read in all before the exit fires?",
+      "answer": {
+        "value": 37500,
+        "tolerance": 1,
+        "unit": "tokens"
+      },
+      "precision_note": "Turns 3, 4 and 5 are the three identical calls, so the exit fires on turn 5: $2{,}500 \\times (1 + 2 + 3 + 4 + 5) = 2{,}500 \\times 15 = 37{,}500$. Confirmed by running the companion loop with these sizes. Stopping on turn 4 (25,000) or turn 6 (52,500), or counting only the last turn's read (12,500), falls outside the tolerance.",
+      "explanation": "The exit needs three consecutive identical calls. The first repeat is turn 3, so turns 3, 4 and 5 fill the window and the run stops on turn 5. Each turn reads the whole transcript so far, so the total is $2{,}500 \\times 15$.",
+      "hints": [
+        "Find the turn on which the window first holds three identical calls.",
+        "Add the reads of every turn up to that one: $2{,}500 \\times (1 + 2 + \\dots + n)$."
+      ]
+    },
+    {
+      "id": "hrn-005-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "doom-loop",
+        "iteration-cap",
+        "quadratic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The same stuck loop (2,500 tokens added per turn, every turn re-reading the transcript, the same call from turn 3) runs with the no-progress exit switched off and an iteration cap of 20. How many times as many input tokens does it read as the run stopped by a no-progress window of three? Give the answer to two decimal places.",
+      "answer": {
+        "value": 14.0,
+        "tolerance": 0.005,
+        "unit": "times"
+      },
+      "precision_note": "Cap only: $2{,}500 \\times 20 \\times 21 / 2 = 525{,}000$. No-progress exit on turn 5: $2{,}500 \\times 15 = 37{,}500$. Ratio $525{,}000 / 37{,}500 = 14.00$, confirmed by running the companion loop both ways. The turn ratio $20 / 5 = 4$, which ignores that each turn re-reads the transcript, falls outside the tolerance.",
+      "explanation": "The cost of a run of $n$ turns is $2{,}500 \\, n(n+1)/2$, quadratic in $n$, so stopping at turn 20 instead of turn 5 costs $420 / 30 = 14$ times as much, not four times.",
+      "hints": [
+        "Work out each run's total with the sum $1 + 2 + \\dots + n$.",
+        "The cap-only run lasts 20 turns; the other stops on turn 5."
+      ]
+    },
+    {
+      "id": "hrn-005-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "victory-declaration",
+        "join",
+        "trace"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In an archive of finished runs, a run that declared victory falsely and a run that really finished carry the same stop reason, `COMPLETED`. What has to be joined to the stop reason to tell them apart?",
+      "answer": {
+        "model": "The verdict of a downstream check on the work: whether its tests or verification passed.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|no|without|never|isn'?t|doesn'?t need|does not need|don'?t need|do not need)\\s+(an?\\s+|the\\s+|any\\s+)?(downstream\\s+|external\\s+|separate\\s+)?(checks?|tests?|verif\\w*|verdicts?|ci)\\b)(?![\\s\\S]*\\b(checks?|tests?|verification)\\s+(is|are)\\s+(not|irrelevant|unnecessary))(?!(?:(?!\\b(?:not|unlike|rather\\s+than|instead\\s+of|than|besides|beyond|other\\s+than)\\b)[\\s\\S])*?\\b(signatures?|fingerprints?|tokens?|iterations?|tool[- ]calls?|turn counts?|(the\\s+)?(model|agent)'?s?\\s+own\\s+\\w+|self[- ]?(evaluat|assess|report|check|verif|grad|review)\\w*)\\b)(?=[\\s\\S]*\\b(checks?|checked|tests?|test suite|verif\\w*|verdicts?|ci|continuous integration|grader|ground truth|evaluat\\w*|reviews?)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Victory declaration is a join, not a pattern: runs the harness called `COMPLETED` whose downstream check disagreed. Nothing in the stop reason or the call signatures separates a false finish from a true one; only the check's verdict does, which is what `snippets/trace_fingerprint.py` shows with run-02 and run-01.",
+      "hints": [
+        "The stop reason records what the model claimed; something else records what was true."
+      ]
+    },
+    {
+      "id": "hrn-005-q07",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "no-progress",
+        "polling",
+        "false-positive"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A no-progress detector with a window of three compares only the tool calls of each turn. It stops a healthy run that polled a build three times with identical calls while the build moved from queued to running. Besides the calls, what should the comparison include so that this run would continue?",
+      "answer": {
+        "model": "What the calls returned: the results, or observations, of the repeated calls.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|no|without|never|ignor\\w*|exclud\\w*)\\s+(just\\s+|only\\s+)?(the\\s+|their\\s+|its\\s+)?(tool\\s+)?(results?|observations?|outputs?|responses?)\\b)(?!(?:(?!\\b(?:not|unlike|rather\\s+than|instead\\s+of|than|besides|beyond|other\\s+than)\\b)[\\s\\S])*?\\b(arguments?|args|inputs?|parameters?|params|tokens?|turn counts?|timestamps?)\\b)(?=[\\s\\S]*\\b(results?|observations?|outputs?|responses?|what\\s+(each\\s+|the\\s+)?(calls?|tools?|it|they|build)\\s+(returned|returns|gave|gives|produced|reported|says|said)|returned values?|build status(es)?|observed state|state changed|whether the state changed)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The shipped detector compares tool calls, not observations, so it cannot tell a poll whose result changes from a retry whose result does not. Comparing the results as well separates run-05 (queued, then running) from run-04 (the same failure every time).",
+      "hints": [
+        "The calls were identical; something else about those turns was not.",
+        "Look at what came back from the build on each poll."
+      ]
+    },
+    {
+      "id": "hrn-005-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "differential-diagnosis",
+        "context-anxiety"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Late in long runs, an agent's answers get worse and it skips steps. Its trace shows roughly the same amount of work on every turn, and the decline tracks turn number and window fill, not task difficulty. Which mode is it, and what ruled out the confusable one?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One-shotting: the late turns are where the large, undocumented change finally lands.",
+          "correct": false,
+          "feedback": "One-shotting shows as one enormous turn and near-empty ones after; here the work per turn is even."
+        },
+        {
+          "key": "b",
+          "text": "Context anxiety: quality falls with turn index while work per turn stays even.",
+          "correct": true,
+          "feedback": "Correct. Even work per turn rules out one-shotting, and a decline that follows window fill is anxiety's shape."
+        },
+        {
+          "key": "c",
+          "text": "Doom loop: the agent repeats itself more and more as the window fills up.",
+          "correct": false,
+          "feedback": "A doom loop repeats the same call signature; nothing here says the calls repeat."
+        },
+        {
+          "key": "d",
+          "text": "Victory declaration: the agent wants to finish, so it stops checking.",
+          "correct": false,
+          "feedback": "Victory declaration is a false claim of completion caught by a check; the measurement here is quality against turn index."
+        }
+      ],
+      "explanation": "The confusable pair is context anxiety and one-shotting, separated by work done per turn against turn index and quality against task difficulty. Anxiety tracks turn index and window fill; one-shotting is one enormous first turn.",
+      "hints": [
+        "Two modes both make late turns look bad; one of them concentrates the work in a single turn.",
+        "Even work per turn rules one of the two out."
+      ]
+    },
+    {
+      "id": "hrn-005-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "differential-diagnosis",
+        "silent-drift",
+        "memory"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent keeps writing `unittest` tests in a project that uses `pytest`, run after run. The team reads the assembled prompt of one such run and finds no mention of the test framework anywhere. What is the right diagnosis?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Silent drift: add a hook that rejects `unittest` imports in every test file.",
+          "correct": false,
+          "feedback": "Drift is a rule that was in the window and still ignored; this rule never reached the window, so the first fix is to write it down."
+        },
+        {
+          "key": "b",
+          "text": "Not drift yet: a missing memory file, so the rule goes in one first.",
+          "correct": true,
+          "feedback": "Correct. If the rule is not in the window, the agent cannot be drifting from it; the gap is the memory file."
+        },
+        {
+          "key": "c",
+          "text": "Victory declaration: the agent claims the tests are done.",
+          "correct": false,
+          "feedback": "Nothing here is a false claim of completion; the finding recurs across runs."
+        },
+        {
+          "key": "d",
+          "text": "A model problem: a stronger model would infer the framework.",
+          "correct": false,
+          "feedback": "The harness never told the model the convention; changing the model skips the cheaper fix."
+        }
+      ],
+      "explanation": "The differential table separates silent drift from a convention never written down by reading the assembled prompt for that run: if the rule is not in the window, it is a missing memory file (post 10). The hook that makes it stick comes after the rule exists.",
+      "hints": [
+        "Drift means departing from something the agent was given.",
+        "Ask where a convention has to live for the harness to send it every session."
+      ]
+    },
+    {
+      "id": "hrn-005-q10",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "diagnosis",
+        "cost-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put these diagnostic tests in the order the post walks them, cheapest first.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Read each run's stop reason"
+        },
+        {
+          "key": "b",
+          "text": "Compare successive tool-call signatures over the transcript"
+        },
+        {
+          "key": "c",
+          "text": "Plot answer quality against turn index"
+        },
+        {
+          "key": "d",
+          "text": "Run an LLM judge over sampled runs"
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "partial_credit": true,
+      "explanation": "The stop reason is free because the loop records it; signatures are one pass over the transcript; quality against turn index needs a metric; an LLM judge over sampled runs is the dearest, so it comes last. The idea follows `ctx-006`'s checklist, which orders its questions by the evidence each needs.",
+      "hints": [
+        "One of them the loop already records for free.",
+        "The last one calls a model."
+      ]
+    },
+    {
+      "id": "hrn-005-q11",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "scope",
+        "outside-the-six"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these failures fall outside the six runtime failure modes? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "A rate-limit error from the provider ends a run mid-task.",
+          "correct": true,
+          "feedback": "Correct. A systems failure: an ordinary engineering bug that deserves a bounded retry, not a mode."
+        },
+        {
+          "key": "b",
+          "text": "A tool result carries instructions planted by an attacker, and the agent follows them.",
+          "correct": true,
+          "feedback": "Correct. An adversarial failure: an attack rather than a gap, handled by permissions and sandboxing."
+        },
+        {
+          "key": "c",
+          "text": "The key fact sits in the middle of a long window and the answer ignores it.",
+          "correct": true,
+          "feedback": "Correct. A context-layer failure, lost-in-the-middle, from `ctx-006`: what the model sees on one call."
+        },
+        {
+          "key": "d",
+          "text": "The agent re-runs the same failing command for twenty turns.",
+          "correct": false,
+          "feedback": "That is a doom loop, one of the six, fixed by the no-progress exit."
+        }
+      ],
+      "explanation": "Three classes sit deliberately outside the six: context-layer failures (one window read badly), systems failures (rate limits, transport errors, malformed JSON) and adversarial failures (prompt injection, tool poisoning). A reader whose bug is one of them should stop hunting for a mode.",
+      "hints": [
+        "Ask whether each is a gap in the harness's runtime, or something else: one window, the infrastructure, or an attacker."
+      ],
+      "connects": [
+        "hrn-014",
+        "hrn-019",
+        "hrn-021"
+      ]
+    },
+    {
+      "id": "hrn-005-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 10,
+      "tags": [
+        "no-progress",
+        "fingerprint",
+        "polling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`doom_loop_turns` scans an archived run for the doom-loop signature. As written it compares only the calls, so it flags a healthy build poll whose results changed. Fix it so that a window counts only when the calls are identical and the results that came back (ignoring calls that never ran) did not change.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def doom_loop_turns(turns, window=3):\n    \"\"\"Indices of turns where a doom loop shows: the last `window` turns made identical calls\n    and nothing they returned changed. Each turn is (signature, result); result is None when\n    the call never ran (the exit fired first).\"\"\"\n    sigs = [sig for sig, _ in turns]\n    return [i for i in range(window - 1, len(sigs))\n            if len(set(sigs[i - window + 1:i + 1])) == 1]\n",
+      "solution": "def doom_loop_turns(turns, window=3):\n    \"\"\"Indices of turns where a doom loop shows: the last `window` turns made identical calls\n    and nothing they returned changed. Each turn is (signature, result); result is None when\n    the call never ran (the exit fired first).\"\"\"\n    hits = []\n    for i in range(window - 1, len(turns)):\n        recent = turns[i - window + 1:i + 1]\n        same_calls = len({sig for sig, _ in recent}) == 1\n        returned = {res for _, res in recent if res is not None}\n        if same_calls and len(returned) <= 1:\n            hits.append(i)\n    return hits\n",
+      "tests": "t = (\"run_tests\", \"{}\")\ns = (\"build_status\", \"{\\\"id\\\": 7}\")\nr = (\"read_file\", \"{\\\"path\\\": \\\"app.py\\\"}\")\n\n# 1. a doom loop: the same call, the same failure; the third call never ran\nassert doom_loop_turns([(r, \"src\"), (t, \"1 failed\"), (t, \"1 failed\"), (t, None)]) == [3]\n\n# 2. a poll: identical calls, but the build moved on, so it is progress\nassert doom_loop_turns([((\"bash\", \"make ci\"), \"ok\"), (s, \"queued\"), (s, \"running\"), (s, None)]) == []\n\n# 3. a poll that then stalls: flagged only once three turns show the same call and the same result\nassert doom_loop_turns([(s, \"queued\"), (s, \"running\"), (s, \"running\"), (s, \"running\")]) == [3]\n\n# 4. different calls that happen to return the same text are not a doom loop, nor is a window with one repeat\nassert doom_loop_turns([(r, \"ok\"), (t, \"ok\"), ((\"edit_file\", \"{}\"), \"ok\")]) == []\nassert doom_loop_turns([(t, \"1 failed\"), (t, \"1 failed\"), (r, None)]) == []\n\n# 5. a long doom loop is flagged at every full window; short runs and other windows\nassert doom_loop_turns([(t, \"1 failed\")] * 5) == [2, 3, 4]\nassert doom_loop_turns([(t, \"1 failed\")] * 2) == []\nassert doom_loop_turns([(t, \"1 failed\")] * 2, window=2) == [1]\nassert doom_loop_turns([(t, None)] * 3) == [2]\nassert doom_loop_turns([]) == []\n\n# 6. a result that changes in the middle of the window is progress, even if the first and last match\nassert doom_loop_turns([(t, \"1 failed\"), (t, \"2 failed\"), (t, \"1 failed\")]) == []\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The starter is the shipped detector's rule: identical signatures over the window. Section 6 states its limitation, that it cannot tell a poll whose result changes from a retry whose result does not, and the archive query adds the results. A call that never ran returned nothing, so it cannot show a change and is left out of the comparison; three identical calls with no results at all stay flagged, because nothing shows progress.",
+      "hints": [
+        "Keep the signature test, and add a second condition on the results inside the same window.",
+        "Collect the results that are not None into a set; more than one distinct value means something changed."
+      ]
+    },
+    {
+      "id": "hrn-005-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "anthropic",
+        "long-running",
+        "case-study"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Anthropic's long-running-agent harness changed no model, yet closed the failures its first attempts showed. Name the failures the article reports, map each of the coding agent's standing rules to the failure mode it closes and the component it is, and explain why the feature list is JSON rather than Markdown.",
+      "kind": "connect",
+      "solution": "1. **The failures.** The agent tried to do too much at once, an attempt to one-shot the app (one-shotting); that over-reach often left it out of context mid-feature, handing the next session a half-implemented, undocumented feature (the full window context management addresses, though the article reports exhaustion rather than rushing); and a later session saw progress and declared the job done (victory declaration).\n2. **A feature list with a pass or fail per feature, verified end to end before a feature is marked passing.** Verification (post 11): done becomes a count of passing checks, so a false claim of completion is contradicted by a file.\n3. **One feature at a time.** The planner split at its smallest (post 12): the decomposition is written down before any code exists, so one-shotting has nowhere to go.\n4. **Commit with descriptive messages and summarise progress in the progress file.** State (post 08) and the handoff that makes a fresh context survivable, turning a full window into a scheduled stop.\n5. **JSON over Markdown.** The article reports that the model is less likely to inappropriately change or overwrite a JSON file than a Markdown one: the ratchet's instinct applied to an artefact, a durable record the agent cannot quietly rewrite.",
+      "rubric": [
+        {
+          "criterion": "Names the reported failures: one-shotting, running out of context mid-feature, declaring the job done",
+          "points": 2
+        },
+        {
+          "criterion": "Maps the pass-or-fail feature list to verification and victory declaration",
+          "points": 2
+        },
+        {
+          "criterion": "Maps one feature at a time to the planner split and one-shotting",
+          "points": 2
+        },
+        {
+          "criterion": "Maps commits and the progress file to state and the handoff for a full window",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the JSON choice with the article's reason",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 5 reads Anthropic's article (Young, 26 November 2025) against the taxonomy: three rules, each closing a named mode with a named component, and none of them a model change.",
+      "hints": [
+        "Start from what went wrong in the first attempts, then take the rules one at a time.",
+        "For the JSON detail, ask what a model does to a prose file it is allowed to edit."
+      ],
+      "connects": [
+        "hrn-011",
+        "hrn-012",
+        "hrn-008"
+      ]
+    },
+    {
+      "id": "hrn-005-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "triage",
+        "build-order",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team's coding agent shows three problems: it sometimes reports done with tests failing, some runs burn their whole budget repeating one failing command until the cap of 40 stops them, and it keeps using the wrong formatting across runs. There is no tracing yet, and the team can build one thing this sprint and one next sprint. Decide what to build and in which order, and justify the order with what each failure costs and who pays.",
+      "kind": "design",
+      "solution": "1. **Name the modes.** False done is victory declaration; the repeated failing command is a doom loop; the formatting is silent drift.\n2. **First, the loop's exits and the verification gate.** A verification gate on the final-answer exit and the no-progress exit are the cheapest fixes and the dearest failures to leave: a doom loop stopped only by a cap of 40 reads many times the tokens a window of three would, because each turn re-reads the transcript and the cost grows with the square of the run's length. Victory declaration costs a review cycle and trust, paid by the reviewer and then the user. The gate is also a precondition for measuring anything later, since an unverified run cannot say whether a change helped. Recording each run's stop reason and check verdict comes with it at almost no cost, and is the start of a trace.\n3. **Second, the ratchet.** Silent drift costs a little of every run and compounds across the repository, recoverable only by undoing each instance, so it is real but slower: a memory-file rule for the formatter, backed by a hook that formats or rejects.\n4. **What to check before the ratchet.** Read the assembled prompt: if the formatting rule was never in the window, the first fix is the memory file itself, not drift.\n5. **Why not a bigger model.** None of the three is fixed by model choice; each has a component that fixes it.",
+      "rubric": [
+        {
+          "criterion": "Names the three modes correctly",
+          "points": 2
+        },
+        {
+          "criterion": "Puts verification and the no-progress exit first, using the quadratic cost of the doom loop and the review cost of false done",
+          "points": 3
+        },
+        {
+          "criterion": "Notes that verification and recorded stop reasons are preconditions for measuring later changes or tracing",
+          "points": 1
+        },
+        {
+          "criterion": "Puts the ratchet second, with its slower, compounding cost, and checks the prompt for a missing rule first",
+          "points": 2
+        },
+        {
+          "criterion": "Rejects a bigger model as the fix for these three",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Section 8 gives the order the series' builds follow, from section 3's cost column: the exits and verification gate first, the blast-radius layers when the agent can reach something real, then context management and the ratchet. Section 7's last row is the check for a rule never written down.",
+      "hints": [
+        "Write down, for each problem, what it consumes and whether a re-run recovers it.",
+        "Ask which fix is a precondition for trusting any measurement of the others."
+      ]
+    },
+    {
+      "id": "hrn-005-q15",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "trace",
+        "archive",
+        "fingerprint"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the archive that `snippets/trace_fingerprint.py` builds, run-03 stopped as `max_iters`, not `no_progress`, yet the snippet counts it as a doom loop. Why?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The snippet counts every run that reaches the iteration cap as a doom loop, whatever its calls were.",
+          "correct": false,
+          "feedback": "The snippet never reads the cap as a signal; it scans each transcript for repeated calls with unchanged results."
+        },
+        {
+          "key": "b",
+          "text": "Its configuration had no window, but its transcript shows identical calls with unchanged results.",
+          "correct": true,
+          "feedback": "Correct. The same fingerprint over an archived transcript is a query, not an exit, so it finds the mode in runs that never had the exit."
+        },
+        {
+          "key": "c",
+          "text": "Its downstream check failed, and the snippet reads a failed check on any run as a doom loop.",
+          "correct": false,
+          "feedback": "A failed check joined to a completed stop marks victory declaration; run-03 did not stop as completed."
+        },
+        {
+          "key": "d",
+          "text": "Its reviewer finding recurs across runs, and the snippet reads that recurrence as repetition.",
+          "correct": false,
+          "feedback": "A recurring finding across runs is the silent-drift signal, counted separately."
+        }
+      ],
+      "explanation": "Run-03 comes from a configuration with no no-progress window, so the live loop ran on to the cap. The archive query applies the companion's `_signature` to the stored transcript and finds three identical `run_tests` calls whose results did not change, which is how the mode is found in finished runs.",
+      "hints": [
+        "Ask what the snippet reads from each run: its stop reason, or its transcript?",
+        "A detector can be an exit in a live loop or a query over a stored run."
+      ]
+    },
+    {
+      "id": "hrn-005-q16",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.4",
+      "est_minutes": 1,
+      "tags": [
+        "doom-loop",
+        "exits"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of the loop's four exits fixes the doom loop?",
+      "answer": {
+        "model": "The no-progress exit, exit (4).",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|isn'?t|never)\\s+(the\\s+)?(loop'?s\\s+)?(no[- ]?progress|exit\\s*\\(?4\\)?|fourth)\\b)(?=(?:\\b(?:not|unlike|rather\\s+than|instead\\s+of|than|besides|beyond|other\\s+than)\\s+(?:the\\s+|an?\\s+)?(?:iteration\\s+cap|max[_ ]iters|cap|budget|final\\s+answer|completed|exit\\s*\\(?[123]\\)?)\\b|(?!\\b(?:iteration\\s+cap|max[_ ]iters|cap|budget|final\\s+answer|completed|exit\\s*\\(?[123]\\)?)\\b)[\\s\\S])*?(\\bno[- _]?progress\\b|\\bexit\\s*\\(?4\\)?|\\bexit four\\b|\\bfourth exit\\b|\\b4th exit\\b|\\bstall detect\\w*|\\bthrash\\w* (guard|check|detect\\w*)))(?=[\\s\\S]*(\\bno[- _]?progress\\b|\\bexit\\s*\\(?4\\)?|\\bexit four\\b|\\bfourth exit\\b|\\b4th exit\\b|\\bstall detect\\w*|\\bthrash\\w* (guard|check|detect\\w*)))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "A doom loop is a missing stop condition: the loop's no-progress exit, exit (4) of post 03, stops the run when the last few turns make identical calls. The iteration cap also stops it, but only once the expensive part has been paid for.",
+      "hints": [
+        "It is the exit that watches the shape of the run, not its size."
+      ]
+    }
+  ]
+}
