@@ -1,39 +1,28 @@
 id: hrn-007
 slug: 07-skills-mcp-runtime
-title: "07 · Skills & MCP in the runtime"
-
-description: >
-  Post 06 argued for a few general tools, yet real agents still need dozens of specific
-  capabilities: parse PDFs, query a database, file a ticket. The runtime answer is not to
-  load all their schemas at once; it is progressive disclosure, keeping a large catalogue
-  of skills dormant on disk and loading a skill's tools.
-
-author: "Ajay"
+title: "07 - Skills and MCP in the runtime"
+summary: "Progressive disclosure keeps a catalogue of skills on disk and loads a skill's tools only when a task needs them; MCP moves a tool's code into another process. Appending discovered schemas, never swapping them, keeps the prompt cache."
 date: 2026-07-18
-last_modified: 2026-09-05
-
-tags: [harness-engineering, primitives, skills, mcp, progressive-disclosure]
-
-keywords:
-  - harness engineering
-  - primitives
-  - skills
-  - mcp
-  - progressive disclosure
-  - eager loading
-  - code on a filesystem
-  - indirect prompt-injection
-
-category: Core primitives
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part II - Core primitives"
-
+level: intermediate
+reading_time: 26
+tags: [harness-engineering, primitives, skills, mcp, progressive-disclosure, prompt-caching]
 hero: diagrams/01-progressive-disclosure.svg
-hero_alt: "Progressive-disclosure timeline: a skill catalogue of eight dormant skills on disk, and three turns where the task loads just the one skill it needs (pdf, then sql, then browser), keeping the window small."
-
-reading_time: 29
-toc: true
-draft: false
-canonical_url: ""
-prev: ../06-tools-bash-code/
-next: ../08-state-filesystem-git/
+prerequisites: [hrn-006]
+code: included
+outcomes:
+  - id: o1
+    text: "Describe a skill as a loadable procedure and say which of its parts load at each level of disclosure."
+  - id: o2
+    text: "Work out what an over-stuffed tool list costs per run, and use the published thresholds to decide whether a catalogue needs on-demand loading."
+  - id: o3
+    text: "Implement progressive disclosure with a skill registry that matches triggers on whole words and initialises each skill once."
+  - id: o4
+    text: "Show with token counts that appending discovered schemas keeps the cached prefix and swapping them destroys it."
+  - id: o5
+    text: "Trace an MCP tool call from model to client to server and back inside the act step, validating the result and treating failure as an observation."
+  - id: o6
+    text: "Choose a general tool, a skill or an MCP server by what each keeps out of the window and the process, and keep results out as well."
+recommended: [mcp-002, mcp-011]

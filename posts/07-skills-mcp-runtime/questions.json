@@ -1,0 +1,737 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-007",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-007-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "skills",
+        "disclosure-levels"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent has forty skills installed and has not yet been given a task. What of those skills is already in its context?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The full SKILL.md of every installed skill",
+          "correct": false,
+          "feedback": "The full SKILL.md is the second level, read only when the skill looks relevant to the current task."
+        },
+        {
+          "key": "b",
+          "text": "The name and description of every installed skill",
+          "correct": true,
+          "feedback": "Correct. The first level pre-loads each skill's name and description into the system prompt, about a line each."
+        },
+        {
+          "key": "c",
+          "text": "The tool schemas of every skill, so the model can call any of them",
+          "correct": false,
+          "feedback": "That is eager loading, the tax progressive disclosure exists to remove."
+        },
+        {
+          "key": "d",
+          "text": "Nothing; skills enter context only when a task names one",
+          "correct": false,
+          "feedback": "Something must be resident for the task to be matched against: the one-line catalogue entry of each skill."
+        }
+      ],
+      "explanation": "The Agent Skills format discloses in levels. At startup only each skill's name and description are pre-loaded; the full SKILL.md follows when the skill looks relevant, and bundled files only when the work reaches them.",
+      "hints": [
+        "Ask what the host needs in order to decide that a skill is relevant at all."
+      ]
+    },
+    {
+      "id": "hrn-007-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "skills",
+        "disclosure-levels"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A task asks the agent to fill in a finance form, and the pdf-forms skill turns out to need its field-name conventions. Put the moments at which each part of the skill enters the model's context in order, earliest first.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The skill's full SKILL.md is read, because the model judges it relevant"
+        },
+        {
+          "key": "b",
+          "text": "The skill's name and description are pre-loaded into the system prompt"
+        },
+        {
+          "key": "c",
+          "text": "REFERENCE.md is read, because the work reaches the field-name conventions"
+        }
+      ],
+      "answer": [
+        "b",
+        "a",
+        "c"
+      ],
+      "explanation": "Level 1 (name and description) is resident from startup, level 2 (the full SKILL.md) is read when the skill looks relevant, and level 3 (a bundled file named from SKILL.md) only when the work reaches it. Scripts the skill runs never enter the context at all.",
+      "hints": [
+        "One of these is resident before any task arrives.",
+        "A bundled file is named from inside SKILL.md, so it cannot come before it."
+      ]
+    },
+    {
+      "id": "hrn-007-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "tool-definitions",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness loads 18 tool schemas averaging 450 tokens each on every turn of a 25-turn run, with no prompt caching. At 3 dollars per million input tokens, how many definition tokens does the run read, and what do they cost in dollars?",
+      "answer": {
+        "parts": [
+          {
+            "label": "definition tokens read",
+            "value": 202500,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "cost",
+            "value": 0.6075,
+            "tolerance": 0.005,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "$18 \\times 450 = 8{,}100$ tokens of definitions, re-read on each of 25 turns: $8{,}100 \\times 25 = 202{,}500$ tokens; at 3 dollars per million, $202{,}500 \\times 3 / 10^6 = 0.6075$ dollars. The tolerance accepts 0.61 and 0.6075 and rejects the once-per-run figure (0.02) and 0.60.",
+      "explanation": "Every definition is re-read on every turn, so the cost is definitions times turns times the rate, the same arithmetic as the post's catalogue table.",
+      "hints": [
+        "First find the size of the tool block on one turn.",
+        "Multiply by the number of turns, then by the rate per token."
+      ]
+    },
+    {
+      "id": "hrn-007-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "prompt-cache",
+        "append",
+        "swap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A three-turn run sends requests of 1,000, 1,200 and 1,400 tokens. Bill a token reused from the cache at 0.1 of the base rate and every other token at 1.25 (a cache write). A request reuses the cache only when the previous request is an exact prefix of it. Appending a disclosed schema keeps every request a prefix of the next; swapping it into the tool block on turn 2 breaks the prefix on turn 2 only. The swapping run's bill is how many times the appending run's bill? Give two decimal places.",
+      "answer": {
+        "value": 1.58,
+        "tolerance": 0.005,
+        "unit": "times"
+      },
+      "precision_note": "Append: $1{,}000 \\times 1.25 + (1{,}000 \\times 0.1 + 200 \\times 1.25) + (1{,}200 \\times 0.1 + 200 \\times 1.25) = 1{,}250 + 350 + 370 = 1{,}970$. Swap: $1{,}250 + 1{,}200 \\times 1.25 + 370 = 3{,}120$. Ratio $3{,}120 / 1{,}970 = 1.5838$. Billing writes at 1.0 instead gives 1.56, and comparing tokens sent gives 1.00; both fall outside the tolerance. The rule is the one `snippets/prefix_cache.py` applies.",
+      "explanation": "Swapping sends the same tokens but turns the whole of turn 2 into a cache write, because the change to the tool block invalidates everything after it; appending keeps the earlier tokens as cheap reads.",
+      "hints": [
+        "Work out each turn's reused tokens under each strategy first.",
+        "On the swapping run, turn 2 reuses nothing; turn 3 reuses all of turn 2."
+      ]
+    },
+    {
+      "id": "hrn-007-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 1,
+      "tags": [
+        "prompt-cache",
+        "append"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness discovers mid-run that the task needs a skill whose schemas were deferred. To keep the prompt cache, what should it do with those schemas?",
+      "answer": {
+        "model": "Append them to the conversation, never swap them into the tool block.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|never|don'?t|do not|shouldn'?t|should not)\\s+(just\\s+)?(append|add)\\w*)(?!(?:(?!\\b(?:not|never|no|don'?t|do not|doesn'?t|does not|instead of|rather than|than|without|unlike|isn'?t|is not)\\b)[\\s\\S])*?\\b(swap\\w*|replac\\w*|rewrit\\w*|rebuild\\w*|regenerat\\w*|recomput\\w*|insert\\w* (them |it )?(into|in) the tool))(?![\\s\\S]*\\b(append\\w*|add\\w*|put\\w*)\\s+(them\\s+|it\\s+|the\\s+schemas?\\s+)?(to|into|in|onto)\\s+(the\\s+)?(tools?\\b|system\\b))(?=[\\s\\S]*(\\bappend\\w*|\\badd\\w*\\s+(them\\s+|it\\s+|the\\s+schemas?\\s+)?(to|at|onto)\\s+(the\\s+)?(end|conversation|messages|history|transcript)|\\bat the end of the (conversation|messages|history|request)))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Appending leaves the tool block, the front of the cached prefix, byte for byte unchanged, so every earlier token stays reusable; swapping the schemas into the tool block invalidates the whole cache. This is how deferred loading works in the vendor implementation.",
+      "hints": [
+        "The cache matches the front of the request; where must new material go?"
+      ]
+    },
+    {
+      "id": "hrn-007-q06",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "prompt-cache",
+        "un-disclose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In a long run the pdf skill's schemas were disclosed on turn 2 and the PDF work finished on turn 3. A reviewer proposes removing those schemas from the request from turn 4 on, to keep the window small. What does that change do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It saves the schemas' tokens on every later turn and costs nothing else at all",
+          "correct": false,
+          "feedback": "It does save their tokens, but removing them changes everything after their position, so the next request is no longer an extension of the last one."
+        },
+        {
+          "key": "b",
+          "text": "A cache miss on turn 4: removing the schemas is a swap under another name",
+          "correct": true,
+          "feedback": "Correct. The earlier request is no longer a prefix of the new one, so the cache is rebuilt, and one extra schema costs far less than that."
+        },
+        {
+          "key": "c",
+          "text": "It is harmless as long as the tool block itself is not touched",
+          "correct": false,
+          "feedback": "The schemas were appended to the history, so removing them edits the cached prefix just as editing the tool block would."
+        },
+        {
+          "key": "d",
+          "text": "It only costs something if the model later needs the pdf skill again in this run",
+          "correct": false,
+          "feedback": "The cost is paid on the very next request, whether or not the skill is ever used again."
+        }
+      ],
+      "explanation": "Once disclosed, a skill stays disclosed for the rest of the run. Un-disclosing it edits the prefix, which is a swap under another name, and a cache miss costs more than one schema left in place.",
+      "hints": [
+        "Compare the turn 4 request with the turn 3 request token by token from the front.",
+        "Where in the request did the appended schemas sit?"
+      ]
+    },
+    {
+      "id": "hrn-007-q07",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 10,
+      "tags": [
+        "skill-registry",
+        "triggers",
+        "disclosure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`disclose` should return the schemas of the skills a task newly triggers, to append to the conversation. As written it matches triggers as substrings and discloses a skill again every time a task mentions it. Fix it so that a trigger fires only as a whole word of the task, in any case, and each skill is set up and disclosed once per run.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import re\n\n\ndef disclose(skills, loaded, task):\n    \"\"\"Schemas of skills the task newly triggers, to append to the conversation.\n\n    skills: list of dicts {\"name\", \"triggers\", \"tools\", \"setup\"}; loaded: set of names already disclosed.\n    A skill fires when one of its triggers is a whole word of the task (any case); a fired skill's setup()\n    runs once, its name joins `loaded`, and its tools are returned once, in catalogue order.\n    \"\"\"\n    new = []\n    for skill in skills:\n        if any(t in task.lower() for t in skill[\"triggers\"]):\n            skill[\"setup\"]()\n            loaded.add(skill[\"name\"])\n            new += skill[\"tools\"]\n    return new\n",
+      "solution": "import re\n\n\ndef disclose(skills, loaded, task):\n    \"\"\"Schemas of skills the task newly triggers, to append to the conversation.\n\n    skills: list of dicts {\"name\", \"triggers\", \"tools\", \"setup\"}; loaded: set of names already disclosed.\n    A skill fires when one of its triggers is a whole word of the task (any case); a fired skill's setup()\n    runs once, its name joins `loaded`, and its tools are returned once, in catalogue order.\n    \"\"\"\n    words = set(re.findall(r\"[a-z0-9_]+\", task.lower()))\n    new = []\n    for skill in skills:\n        if skill[\"name\"] not in loaded and any(t in words for t in skill[\"triggers\"]):\n            skill[\"setup\"]()\n            loaded.add(skill[\"name\"])\n            new += skill[\"tools\"]\n    return new\n",
+      "tests": "calls = []\ndef mk(name, triggers, tools):\n    return {\"name\": name, \"triggers\": triggers, \"tools\": tools, \"setup\": lambda: calls.append(name)}\n\nskills = [mk(\"pdf\", [\"pdf\", \"invoice\"], [\"pdf_extract\", \"pdf_fill\"]),\n          mk(\"git\", [\"git\", \"commit\"], [\"git_log\"]),\n          mk(\"sql\", [\"sql\", \"database\"], [\"sql_query\"])]\nloaded = set()\n\n# 1. whole words only: no git on \"digital\" or \"legitimate\", no pdf on \"pdfx\"\nassert disclose(skills, loaded, \"Check that the digital signature is legitimate.\") == []\nassert disclose(skills, loaded, \"Convert the pdfx export.\") == []\nassert loaded == set() and calls == []\n\n# 2. a whole word in any case, inside punctuation, fires once\nassert disclose(skills, loaded, \"Extract the totals from the scanned PDF.\") == [\"pdf_extract\", \"pdf_fill\"]\nassert loaded == {\"pdf\"} and calls == [\"pdf\"]\n\n# 3. a second matching task discloses nothing new and does not set up again\nassert disclose(skills, loaded, \"Now read page 2 of the PDF invoice.\") == []\nassert calls == [\"pdf\"]\n\n# 4. two skills on one task, in catalogue order; already-loaded ones are skipped\nassert disclose(skills, loaded, \"Query the database, then git commit the pdf.\") == [\"git_log\", \"sql_query\"]\nassert loaded == {\"pdf\", \"git\", \"sql\"} and calls == [\"pdf\", \"git\", \"sql\"]\nassert disclose(skills, set(), \"\") == []\n\n# 5. a trigger inside a file name fires; tools come back in catalogue order, not sorted\norder = [mk(\"sql\", [\"sql\"], [\"sql_schema\", \"sql_query\"]), mk(\"pdf\", [\"pdf\"], [\"pdf_fill\", \"pdf_extract\"])]\nassert disclose(order, set(), \"Load invoice-march.pdf into sql.\") == [\"sql_schema\", \"sql_query\", \"pdf_fill\", \"pdf_extract\"]\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The starter has both bugs the registry's listing guards against: a substring match fires a `git` trigger on \"digital\" and a `pdf` trigger on \"pdfx\", and without the `loaded` check `setup()` runs and the schemas are disclosed again on every matching turn. The fix splits the task into lower-case words and skips skills already in `loaded`.",
+      "hints": [
+        "Turn the task into a set of words before comparing triggers.",
+        "A skill already in `loaded` contributes nothing new.",
+        "Splitting on spaces alone leaves \"invoice-march.pdf\" as one word; split on anything that is not a letter, digit or underscore."
+      ]
+    },
+    {
+      "id": "hrn-007-q08",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o6"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "mcp",
+        "process-boundary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team moves a capability out of a local tool and behind an MCP server, hoping to shrink the model's context. What does the process boundary actually keep out of the harness's process?",
+      "answer": {
+        "model": "The tool's code and its dependencies: the implementation runs in the server, while its schemas are still advertised to the model.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|never|doesn'?t|does not|nothing)\\b\\s*(\\w+\\s+){0,3}(code|implementation|dependenc\\w*|librar\\w*))(?!(?:(?!\\b(?:not|never|no|don'?t|do not|doesn'?t|does not|instead of|rather than|than|without|unlike|isn'?t|is not|still)\\b)[\\s\\S])*?\\b((schemas?|definitions?|descriptions?|context|window|tokens?|prompts?|interface)\\b(?!\\s+(are\\s+|is\\s+)?still\\b)))(?!\\W*nothing\\b)(?![\\s\\S]*\\b(code|implementation)\\s+(still\\s+)?(runs?|executes?|lives?|stays?)\\s+(in|inside)\\s+the\\s+(harness|host)\\b)(?=[\\s\\S]*\\b(code|implementation|dependenc\\w*|librar\\w*|packages?|runtime|executes|runs? (in|on) the server|server process)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "MCP moves a tool's implementation and its dependencies into another process. It does not by itself keep the tool's schemas out of the window: most clients call tools/list and advertise every schema to the model like a local tool, so keeping them out is still progressive disclosure's job.",
+      "hints": [
+        "Separate what runs from what the model is told about."
+      ]
+    },
+    {
+      "id": "hrn-007-q09",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "mcp",
+        "failure",
+        "observation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The ticketing server behind an MCP client stops responding, and the client's request raises `TimeoutError`. What should the harness's dispatch function hand back to the loop?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nothing: re-raise the exception so the run stops cleanly",
+          "correct": false,
+          "feedback": "An exception kills the loop; the model never learns the tool is down and cannot choose another path."
+        },
+        {
+          "key": "b",
+          "text": "An error observation such as \"create_ticket unavailable: no response in 30 s\"",
+          "correct": true,
+          "feedback": "Correct. Failure is an observation the model can react to, not a crash."
+        },
+        {
+          "key": "c",
+          "text": "An empty result, so that the model is not distracted by a failure it cannot fix",
+          "correct": false,
+          "feedback": "An empty result reads as success with no output, and the model may act on a ticket that was never created."
+        },
+        {
+          "key": "d",
+          "text": "The last successful result from that server, taken from a cache the harness keeps",
+          "correct": false,
+          "feedback": "A stale result is a false observation: it describes a call that did not happen."
+        }
+      ],
+      "explanation": "A timeout, a disconnect or an error from the server surfaces as a corrigible observation in the loop, the same discipline as for a local tool; the snippet returns `{\"error\": \"create_ticket unavailable: ...\"}`.",
+      "hints": [
+        "What does the model need to know on its next turn?"
+      ]
+    },
+    {
+      "id": "hrn-007-q10",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o6"
+      ],
+      "section": "11",
+      "est_minutes": 3,
+      "tags": [
+        "skills",
+        "mcp",
+        "programmatic-tool-calling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each mechanism to what it keeps out. One entry on the right matches none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A general tool such as bash"
+        },
+        {
+          "key": "b",
+          "text": "A skill"
+        },
+        {
+          "key": "c",
+          "text": "An MCP server"
+        },
+        {
+          "key": "d",
+          "text": "Programmatic tool calling"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "Nothing: its schema is always in the window and it runs in the harness's process"
+        },
+        {
+          "key": "b",
+          "text": "Its schemas, out of the window until a task loads it"
+        },
+        {
+          "key": "c",
+          "text": "Its code and dependencies, out of the harness's process"
+        },
+        {
+          "key": "d",
+          "text": "Intermediate tool results, out of the window"
+        },
+        {
+          "key": "e",
+          "text": "Its schemas, out of the window, with no disclosure needed"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Read across the comparison table: only the skill removes schemas from the window, only the MCP server removes code from the process, and programmatic calling removes intermediate results. No mechanism keeps an MCP server's schemas out without disclosure, which is the distractor.",
+      "hints": [
+        "Keep two questions apart: what the model reads, and where the code runs."
+      ]
+    },
+    {
+      "id": "hrn-007-q11",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "thresholds",
+        "eager-loading"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these agents is better served by plain eager loading than by deferred tools, by the published thresholds?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Seven tools, every one used on nearly every request",
+          "correct": true,
+          "feedback": "Correct. Under ten tools, used on every request, a flat list is simpler and the disclosure machinery would cost more than it saves."
+        },
+        {
+          "key": "b",
+          "text": "Three MCP servers aggregating about 220 tools",
+          "correct": false,
+          "feedback": "Several servers and hundreds of tools is the case where the documentation says to assume deferral from the first day."
+        },
+        {
+          "key": "c",
+          "text": "Fourteen tools whose definitions come to 16,000 tokens",
+          "correct": false,
+          "feedback": "Both thresholds are past: ten or more tools and more than 10k tokens of definitions."
+        },
+        {
+          "key": "d",
+          "text": "A tool library that gains a few tools every month",
+          "correct": false,
+          "feedback": "A growing library is a signal to build the machinery before the cliff, not after."
+        }
+      ],
+      "explanation": "The tool search documentation advises deferring at ten or more tools, past about 10k tokens of definitions, when selection accuracy drops, when several MCP servers are aggregated, or when the library grows; standard calling fits below ten tools or when every tool is used on every request.",
+      "hints": [
+        "Check each option against the inverse rule, not only the thresholds."
+      ]
+    },
+    {
+      "id": "hrn-007-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 10,
+      "tags": [
+        "prompt-cache",
+        "context-management"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "connects": [
+        "hrn-003",
+        "hrn-009"
+      ],
+      "kind": "connect",
+      "prompt": "Post 03 shows the agent loop re-sending the whole history every turn, and post 09 classes progressive disclosure as a preventative context move. Explain why progressive disclosure earns that description only when discovered schemas are appended, connecting the re-sent prefix, the order in which a request is rendered, and what a swapped tool block costs.",
+      "solution": "Every turn of the loop re-sends the whole request, so the provider's prompt cache is what makes a growing history affordable: it reuses the longest identical front of the request at a fraction of the base rate (post 03). The request is rendered tools, then system, then messages, and a change at one level invalidates that level and everything after it. Progressive disclosure keeps schemas out of the window before any bloat forms, which is what makes it preventative (post 09). But if a newly triggered skill's schemas are swapped into the tool block, the very front of the request changes and the whole cached prefix is lost, so the move that was meant to save tokens rebuilds the cache on every turn the skill set changes; in the post's snippet that costs 2.28 times what appending costs. Appending the schemas to the conversation leaves the front untouched, so the earlier tokens stay cheap reads and the saving is real. Only then does disclosure prevent cost rather than move it.",
+      "rubric": [
+        {
+          "criterion": "States that each turn re-sends the whole request and that the cache reuses an identical prefix",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the render order tools, system, messages and that a change invalidates everything after it",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a swap changes the front, so the cache is lost on every change of skill set",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that appending leaves the prefix intact, which is what makes the move preventative",
+          "points": 2
+        }
+      ],
+      "answer_length": "one paragraph",
+      "explanation": "The condition comes from the cache, not from the window: disclosure saves window either way, but only an append keeps the re-sent prefix reusable.",
+      "hints": [
+        "Start from what is identical between two consecutive requests.",
+        "Where does the tool block sit in the rendered request?"
+      ]
+    },
+    {
+      "id": "hrn-007-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o6",
+        "o5"
+      ],
+      "section": "11",
+      "est_minutes": 15,
+      "tags": [
+        "design",
+        "mcp",
+        "skills"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "kind": "design",
+      "prompt": "A harness must reach the company ticketing system, which its owners publish as an MCP server with 40 tools, and must also fill PDF forms with a library the harness team maintains. A first design connects the server and lists all its tools, and installs the PDF code as a skill. Critique the design and propose a better one, covering what each choice keeps out of the window and the process, how many tools end up in the window, results, and what must be validated or distrusted.",
+      "solution": "The MCP server is the right home for the ticketing system: it belongs to another team, and the boundary keeps its code and dependencies out of the harness's process, so the same server works with any host. But connecting it and listing all 40 tools puts 40 schemas in the window on every turn, which is past the ten-tool threshold and inside the 30 to 50 tool cliff; MCP does not keep schemas out by itself. The fix is to defer the server's tools behind a search step or to present them as files the model opens on demand, keeping only the three to five most-used tools loaded, and to append discovered schemas rather than swap them so the prompt cache survives. The PDF capability is cohesive, reusable and occasionally needed, which suits a skill: its schemas stay out of the window until a task needs them, but its scripts run in the agent's own environment, so it must be reviewed as a dependency. Where a turn fans out across many ticket queries, programmatic calling can keep intermediate results out of the window, though tools reached through an MCP connector cannot be called that way today, which favours the filesystem presentation. Every server result is validated before the model reads it, a timeout becomes an error observation, and the server's tool descriptions are treated as untrusted text that reaches the window before any call.",
+      "rubric": [
+        {
+          "criterion": "Keeps the ticketing system behind MCP for the process boundary and portability",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies that listing all 40 tools passes the thresholds and that MCP does not keep schemas out",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes deferral or the filesystem presentation, a few tools always loaded, and appending",
+          "points": 2
+        },
+        {
+          "criterion": "Justifies the PDF skill and names its in-process trust cost",
+          "points": 2
+        },
+        {
+          "criterion": "Covers results (programmatic calling or its MCP restriction), validation, failure as observation, and untrusted descriptions",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The two rows the comparison table separates, window and process, decide the design: MCP answers the process row, disclosure answers the window row, and neither does the other's job.",
+      "hints": [
+        "Decide each capability's home by who owns it and how often it is needed.",
+        "Then count what is in the window on an ordinary turn, and ask what crosses back."
+      ]
+    },
+    {
+      "id": "hrn-007-q14",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "mcp",
+        "prompt-injection",
+        "security"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness validates the shape of every MCP result before the model reads it and treats every result as untrusted text. Which channel can still put attacker-controlled text in front of the model before any tool is called?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The tool descriptions the server returns from tools/list",
+          "correct": true,
+          "feedback": "Correct. Descriptions arrive at connect time and land in the window before any call, so they are untrusted text too."
+        },
+        {
+          "key": "b",
+          "text": "The JSON-RPC id the client puts on each request",
+          "correct": false,
+          "feedback": "The id is chosen by the client, not the server, and is not shown to the model as instructions."
+        },
+        {
+          "key": "c",
+          "text": "The transport, because stdio is unauthenticated",
+          "correct": false,
+          "feedback": "The transport carries messages; text reaches the model only through what the harness puts in the window, here the descriptions."
+        },
+        {
+          "key": "d",
+          "text": "None: result validation covers every server-supplied string",
+          "correct": false,
+          "feedback": "Validation of results starts at the first call; the descriptions came earlier, through tools/list."
+        }
+      ],
+      "explanation": "Indirect prompt injection has two halves for an MCP server: the results of calls, and the tool descriptions advertised through tools/list, which reach the window before any call is made.",
+      "hints": [
+        "List everything the server sends before the first tools/call.",
+        "Which of those does the harness show the model?"
+      ]
+    },
+    {
+      "id": "hrn-007-q15",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 4,
+      "tags": [
+        "catalogue",
+        "tokens",
+        "snippet"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "stimulus": {
+        "kind": "code",
+        "language": "text",
+        "content": "skill schemas: 13, 79 tokens each on average; catalogue lines: 8, 13 tokens each",
+        "caption": "First line printed by snippets/prefix_cache.py"
+      },
+      "prompt": "Using the averages the snippet prints, a harness has 150 installed skills with two schemas each. How many tokens per turn does keeping only the one-line catalogue resident save, compared with loading every skill's schemas eagerly?",
+      "answer": {
+        "value": 21750,
+        "tolerance": 1,
+        "unit": "tokens"
+      },
+      "precision_note": "Eager: $150 \\times 2 \\times 79 = 23{,}700$ tokens; catalogue: $150 \\times 13 = 1{,}950$; saving $23{,}700 - 1{,}950 = 21{,}750$ tokens per turn. Forgetting the two schemas per skill gives 9,900, and forgetting that the catalogue still costs something gives 23,700; both fall outside the tolerance. The averages are the snippet's illustrative counts.",
+      "explanation": "The catalogue is always paid, but at about a line per skill it costs a small fraction of the schemas it stands in for; the saving is the schemas minus the catalogue.",
+      "hints": [
+        "Work out the eager tool block first.",
+        "Subtract what the catalogue still costs."
+      ]
+    },
+    {
+      "id": "hrn-007-q16",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "skills",
+        "skill-md"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "SKILL.md has no field for trigger words. Which field of its frontmatter is the text a task is matched against?",
+      "answer": {
+        "model": "The description.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|never|isn'?t|is not)\\s+(the\\s+)?description)(?![\\s\\S]*\\bdescription\\s+(is\\s+not|isn'?t)\\b)(?!(?:(?!\\b(?:not|never|no|don'?t|do not|doesn'?t|does not|instead of|rather than|than|without|unlike|isn'?t|is not)\\b)[\\s\\S])*?\\b(name\\b|names\\b|title|triggers?\\b(?!\\s+words)|body|keywords?))(?=[\\s\\S]*\\bdescriptions?\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The description is the trigger: it is the text the task is matched against, so it is written for matching, and editing it changes when the skill fires.",
+      "hints": [
+        "There are two required frontmatter fields; one is just an identifier."
+      ]
+    },
+    {
+      "id": "hrn-007-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "skill-registry",
+        "setup"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the registry, `tools_for` calls a skill's `setup()` only when the skill's name is not yet in `self.loaded`. What goes wrong if that guard is removed?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "setup() runs again on every turn whose task matches the skill",
+          "correct": true,
+          "feedback": "Correct. An unguarded call re-initialises the skill each time its triggers appear, instead of once."
+        },
+        {
+          "key": "b",
+          "text": "The skill's tools stop reaching the model on the turns that need them",
+          "correct": false,
+          "feedback": "The tools are added whenever the skill matches, with or without the guard."
+        },
+        {
+          "key": "c",
+          "text": "A git trigger starts firing on \"legitimate\"",
+          "correct": false,
+          "feedback": "That is the substring bug, fixed by matching whole words, not by the loaded guard."
+        },
+        {
+          "key": "d",
+          "text": "The prompt cache is invalidated on the first turn that activates the skill",
+          "correct": false,
+          "feedback": "The cache depends on what the request contains, not on how often setup() runs."
+        }
+      ],
+      "explanation": "`setup()` is guarded by `self.loaded` so that a skill's lazy initialisation runs once, on first activation; without it, it runs on every turn whose text happens to match.",
+      "hints": [
+        "Ask how many times the guarded line runs over a whole run."
+      ]
+    }
+  ]
+}

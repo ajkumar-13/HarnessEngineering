@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-append-vs-swap-title" aria-describedby="hrn-02-append-vs-swap-desc">
+<title id="hrn-02-append-vs-swap-title">Swapping the tool block throws the cache away</title>
+<desc id="hrn-02-append-vs-swap-desc">A line chart of tokens reused from the prompt cache on each of six turns, for the same run built three ways. Eager loading, all 13 skill schemas in the tool block, reuses 0, then 1,427, 1,454, 1,480, 1,504 and 1,528, and is billed 2,681 token-equivalents. Swap, which rebuilds the tool block, reuses nothing on turns 1 to 5 and 506 on turn 6, billed 3,397. Append reuses 0, 405, 667, 693, 861 and 885, billed 1,489. Cache reads count 0.1 and writes 1.25 of the base rate. Illustrative counts from snippets/prefix_cache.py.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green { fill: var(--hrn-green); }
+  .f-green-ink { fill: var(--hrn-green-ink); }
+  .f-ink { fill: var(--hrn-ink); }
+  .f-red { fill: var(--hrn-red); }
+  .f-red-ink { fill: var(--hrn-red-ink); }
+  .s-green { stroke: var(--hrn-green); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-red { stroke: var(--hrn-red); }
+  .s-surface { stroke: var(--hrn-surface); }
+</style>
+<defs>
+<marker id="hrn-02-append-vs-swap-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="hrn-02-append-vs-swap-clip-1"><rect x="90" y="122" width="660" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="581">Swapping the tool block throws the cache away</text>
+<text x="40" y="76" class="t-subtitle" data-w="741">Same six-turn run, three ways; billed in token-equivalents. Illustrative counts, snippets/prefix_cache.py.</text>
+<g data-grid="skip">
+<path d="M96,428H744M96,353H744M96,278H744M96,203H744M96,128H744" class="gridline"/>
+<text x="88" y="432" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="88" y="357" text-anchor="end" class="t-tick" data-w="23">400</text>
+<text x="88" y="282" text-anchor="end" class="t-tick" data-w="23">800</text>
+<text x="88" y="207" text-anchor="end" class="t-tick" data-w="35">1,200</text>
+<text x="88" y="132" text-anchor="end" class="t-tick" data-w="35">1,600</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick" data-w="8">1</text>
+<text x="225.6" y="448" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="355.2" y="448" text-anchor="middle" class="t-tick" data-w="8">3</text>
+<text x="484.8" y="448" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<text x="614.4" y="448" text-anchor="middle" class="t-tick" data-w="8">5</text>
+<text x="744" y="448" text-anchor="middle" class="t-tick" data-w="8">6</text>
+<path d="M96,128V428H744" class="axis"/>
+<g clip-path="url(#hrn-02-append-vs-swap-clip-1)">
+<path d="M96,428 L225.6,160.44 L355.2,155.38 L484.8,150.5 L614.4,146 L744,141.5" class="s-ink w15 nofill d-proj"/>
+<circle cx="96" cy="428" r="4" class="f-ink s-surface w1"/>
+<circle cx="225.6" cy="160.44" r="4" class="f-ink s-surface w1"/>
+<circle cx="355.2" cy="155.38" r="4" class="f-ink s-surface w1"/>
+<circle cx="484.8" cy="150.5" r="4" class="f-ink s-surface w1"/>
+<circle cx="614.4" cy="146" r="4" class="f-ink s-surface w1"/>
+<circle cx="744" cy="141.5" r="4" class="f-ink s-surface w1"/>
+<path d="M96,428 L225.6,352.06 L355.2,302.94 L484.8,298.06 L614.4,266.56 L744,262.06" class="s-green w15 nofill d-proj"/>
+<path d="M96,423.2 L100.8,428 L96,432.8 L91.2,428 Z" class="f-green s-surface w1"/>
+<path d="M225.6,347.26 L230.4,352.06 L225.6,356.86 L220.8,352.06 Z" class="f-green s-surface w1"/>
+<path d="M355.2,298.14 L360,302.94 L355.2,307.74 L350.4,302.94 Z" class="f-green s-surface w1"/>
+<path d="M484.8,293.26 L489.6,298.06 L484.8,302.86 L480,298.06 Z" class="f-green s-surface w1"/>
+<path d="M614.4,261.76 L619.2,266.56 L614.4,271.36 L609.6,266.56 Z" class="f-green s-surface w1"/>
+<path d="M744,257.26 L748.8,262.06 L744,266.86 L739.2,262.06 Z" class="f-green s-surface w1"/>
+<path d="M96,428 L225.6,428 L355.2,428 L484.8,428 L614.4,428 L744,333.12" class="s-red w15 nofill d-proj"/>
+<path d="M92.4,424.4 H99.6 V431.6 H92.4 Z" class="f-red s-surface w1"/>
+<path d="M222,424.4 H229.2 V431.6 H222 Z" class="f-red s-surface w1"/>
+<path d="M351.6,424.4 H358.8 V431.6 H351.6 Z" class="f-red s-surface w1"/>
+<path d="M481.2,424.4 H488.4 V431.6 H481.2 Z" class="f-red s-surface w1"/>
+<path d="M610.8,424.4 H618 V431.6 H610.8 Z" class="f-red s-surface w1"/>
+<path d="M740.4,329.52 H747.6 V336.73 H740.4 Z" class="f-red s-surface w1"/>
+</g>
+<text x="756" y="146.5" class="t-note f-ink" data-w="124">eager: billed 2,681</text>
+<text x="756" y="267.06" class="t-note f-green-ink" data-w="136">append: billed 1,489</text>
+<text x="756" y="338.12" class="t-note f-red-ink" data-w="120">swap: billed 3,397</text>
+</g>
+<text x="96" y="116" class="t-note" data-w="199">tokens reused from the cache</text>
+<text x="420" y="472" text-anchor="middle" class="t-note" data-w="27">turn</text>
+<g data-grid="skip">
+<text x="420" y="414" text-anchor="middle" class="t-label f-red-ink" data-w="236">tool block changed: nothing reused</text>
+</g>
+<text x="40" y="504" class="t-note" data-w="584">Swap sends the fewest tokens and is billed the most: 2.28 times the cost of appending.</text>
+</svg>
