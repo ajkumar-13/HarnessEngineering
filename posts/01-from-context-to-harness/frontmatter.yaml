@@ -1,36 +1,26 @@
 id: hrn-001
 slug: 01-from-context-to-harness
-title: "01 · From context to harness — the third era"
-
-description: >
-  Applied large language model (LLM) work has moved through three eras. First the
-  bottleneck was phrasing (prompt engineering); then it was information (context
-  engineering); by 2026 it is autonomy and control: the machine you build around the model
-  so it can run on its own.
-
-author: "Ajay"
+title: "01 - From context to harness: the third era"
+summary: "Applied LLM work moved from phrasing to information to autonomy and control. The harness is everything around the model that lets it run on its own, and context engineering is one component inside it."
 date: 2026-07-06
-last_modified: 2026-09-05
-
-tags: [harness-engineering, foundations]
-
-keywords:
-  - harness engineering
-  - foundations
-  - prompt engineering
-  - context engineering
-  - ratchet principle
-  - agent loop
-
-category: Foundations
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part I - Foundations"
-
+level: beginner
+reading_time: 24
+tags: [harness-engineering, foundations, context-engineering, prompt-engineering, ai-agents, agent-loop]
 hero: diagrams/01-three-eras.svg
-hero_alt: "A timeline from 2022 to 2026 across three eras (prompt, context, and harness engineering), each working on a larger surface than the last: a single message, then the whole window, then the whole machine."
-
-reading_time: 28
-toc: true
-draft: false
-canonical_url: ""
-next: ../02-anatomy-of-a-harness/
+prerequisites: []
+code: none
+outcomes:
+  - id: o1
+    text: "State `Agent = Model + Harness`, and place prompt, context and harness engineering on one timeline with the bottleneck of each era."
+  - id: o2
+    text: "Explain why context engineering is one component inside the harness, using the seam between one model call and the loop that makes it."
+  - id: o3
+    text: "Use model, scaffold, harness and orchestration precisely, and assign a product, a component or a failure to the right one."
+  - id: o4
+    text: "Explain why the same model can succeed or fail on one task depending on its harness, in results and in tokens."
+  - id: o5
+    text: "Say where the harness ends: what belongs to the model, what belongs to orchestration, and where the sources disagree."
+recommended: [ctx-001, ctx-026]

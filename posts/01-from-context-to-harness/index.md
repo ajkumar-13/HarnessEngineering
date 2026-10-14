@@ -1,257 +1,288 @@
-# 01 · From context to harness — the third era
+# 01 - From context to harness: the third era
 
-> **TL;DR.** Applied large language model (LLM) work has moved through three eras. First the bottleneck was *phrasing* (prompt engineering); then it was *information* (context engineering); by 2026 it is *autonomy and control*: the machine you build around the model so it can run on its own. That machine is the **harness**, and its founding equation is `Agent = Model + Harness`. This post explains what a harness is, why context engineering is a component *inside* it, how the field's vocabulary fits together, and why a growing body of evidence says the harness is a bigger lever than the model.
+> **TL;DR.** Applied large language model (LLM) work has moved through three eras: first the bottleneck was phrasing (prompt engineering), then information (context engineering), and by 2026 it is autonomy and control. The machine built around the model so that it can run on its own is the **harness**, and the line that names it is `Agent = Model + Harness`. This post pins down the vocabulary (model, scaffold, harness, orchestration), shows why context engineering is one component inside the harness, takes a first look at the evidence that the harness is a bigger lever than the model, and says where the harness ends.
 >
-> **After reading this you will be able to:**
-> - State, in one sentence, what a harness is and how it differs from a prompt and a context.
-> - Place any agent problem in the right layer: model, scaffold, harness, or orchestration.
-> - Explain why the same model can succeed or fail on the same task depending on its harness.
+> **Prerequisites:** none. This is the first post of the series.
+> **Safe to skip?** Skip it if the reader can already state `Agent = Model + Harness`, tell a scaffold from a harness and a harness from an orchestrator, and say why context engineering sits inside the harness rather than beside it.
+>
+> **After reading, you will be able to:**
+>
+> - State `Agent = Model + Harness`, and place prompt, context and harness engineering on one timeline with the bottleneck of each era.
+> - Explain why context engineering is one component inside the harness, using the seam between one model call and the loop that makes it.
+> - Use model, scaffold, harness and orchestration precisely, and assign a product, a component or a failure to the right one.
+> - Explain why the same model can succeed or fail on one task depending on its harness, in results and in tokens.
+> - Say where the harness ends: what belongs to the model, what belongs to orchestration, and where the sources disagree.
 
-![A timeline from 2022 to 2026 across three eras (prompt, context, and harness engineering), each working on a larger surface than the last: a single message, then the whole window, then the whole machine, with the unit of work growing from a message, to a window, to a whole run. Beneath the panels the surface is drawn to scale, and a dated axis records when each name landed, from Anthropic's "Building Effective Agents" in December 2024 through Karpathy in June 2025 to Trivedy on 10 March 2026 and Osmani that April.](diagrams/01-three-eras.svg)
-*Three eras, three bottlenecks. The surface the engineer works on grows from a message, to a window, to the entire machine around the model.*
+![A timeline from 2022 to 2026 with three eras under the axis: prompt engineering in 2022 to 2023, bottleneck phrasing, unit a message; context engineering in 2024 to 2025, information, a window; harness engineering in 2026, autonomy and control, a run. Above it, flags for December 2024, June 2025 and 10 March 2026.](diagrams/01-three-eras.svg)
+
+*Each era kept the work of the one before and widened the surface the engineer works on: a message, then a window, then a whole run.*
 
 ---
 
-## 1. The name changed again
+## 1. The question: why did the name change again?
 
-In 2022 the work was **prompt engineering**: you typed one message and reworded it until the answer improved. By 2024 that name no longer fitted the work, because most of what the model read was not the user's sentence but tools, memory, retrieved chunks, and history that an engineer had assembled. The field settled on a new name in mid-2025: **context engineering**, the discipline of assembling that whole window well. Andrej Karpathy popularised the phrase in June 2025, and Anthropic published "Effective context engineering for AI agents" that September (Karpathy, 2025; Anthropic, 2025). The companion *Context Engineering* (CE) series, Post 01, tells that story in full; this series treats it as background.
+In 2022 the work was **prompt engineering**: a user typed one message, and the engineer reworded it until the answer improved. By 2024 that name no longer fitted the work, because most of what the model read on a call was not the user's sentence but tools, memory, retrieved chunks and history that an engineer had assembled. The field settled on a new name in mid-2025: **context engineering**, the discipline of assembling that whole window well. Andrej Karpathy popularised the phrase in a post on X in June 2025, and Anthropic Engineering published "Effective context engineering for AI agents" in September 2025 (Karpathy, 2025; Anthropic, 2025). The sibling series, `context-engineering`, tells that story in full from `ctx-001`; this series treats it as background.
 
-By 2026 the name has moved again, for the same reason it moved the first time: the surface got bigger. Models stopped being things you call once and started being things that *run*, taking dozens of turns, calling tools, editing files, and working for minutes or hours without a human in the loop. The moment a model runs in a loop, a new and larger surface appears around it: the code that decides what tool to execute, what to do when the tool errors, when to check the work, when to stop, and what the model is never allowed to do. That surface has a name. Everything around the model that is not the model is the **harness**, and engineering it is **harness engineering** (Osmani, 2026; OpenAI, 2026).
+By 2026 the name moved again, for the same reason: the surface grew. Models stopped being called once and started to *run*: dozens of turns, tool calls and file edits, minutes or hours of work with no person in the loop. Once a model runs in a loop, a larger surface appears around it: the code that decides which tool to execute, what to do when the tool fails, when to check the work, when to stop, and what the model may never do. Everything around the model that is not the model is the **harness**, and designing it is **harness engineering**.
 
-The clearest one-line statement of the shift comes from LangChain's Viv Trivedy, who named the discipline in March 2026: "If you're not the model, you're the harness" (Trivedy, 2026). Model providers adopted the same framing within the year. Anthropic's Claude Agent software development kit (SDK) is presented as "the agent harness that powers Claude Code" (Anthropic, 2025–26), and OpenAI titled its own account of the practice "Harness engineering: leveraging Codex in an agent-first world" (OpenAI, 2026).
+Faros AI's guide to harness engineering (published 22 May 2026) gives the three eras their dates and their bottlenecks: prompt engineering in 2022 to 2023, when the bottleneck was phrasing; context engineering in 2024 to 2025, when it was information; harness engineering in 2026, when it is autonomy and control (Faros AI, 2026). The figure at the top draws the three on one axis, with three dated articles that shaped the vocabulary.
 
-The three eras are cumulative rather than sequential replacements. Wording still matters; it is now a few lines inside a system prompt. Window assembly still matters; it is now one component of a running machine. What changes at each step is the *unit of work*: a message, then a window, then a whole run.
+The eras are cumulative, not replacements. Wording still matters; it is now a few lines inside a system prompt. Window assembly still matters; it is now one component of a running machine. What changes at each step is the *unit of work*: a message, then a window, then a whole run.
 
 ---
 
 ## 2. If you're not the model, you're the harness
 
-The founding equation of the discipline is deliberately blunt (Trivedy, 2026; popularised by Osmani, 2026):
+The founding line of the discipline is deliberately blunt. Viv Trivedy's "The Anatomy of an Agent Harness" (LangChain blog, 10 March 2026) opens with the equation `Agent = Model + Harness` and the sentence "If you're not the model, you're the harness." A harness, in the same article, is "every piece of code, configuration, and execution logic that isn't the model itself" (Trivedy, 2026).
 
-![The equation Agent = Model + Harness as three boxes: Agent equals Model, which supplies reasoning, plus Harness, which holds the loop, tools, state, verification, hooks and sandbox, eleven components in all. Below, three panels give the measured case for the harness term: 52.8% to 66.5% on Terminal-Bench 2.0's 89 tasks with one model held fixed, seven listed changes none of which touched the model, and a production beta of about a million lines across about 1,500 merged pull requests.](diagrams/03-equation.svg)
-*`Agent = Model + Harness`. The model is one term in the sum, and often not the one with the most headroom left.*
+The **model** supplies the reasoning. The **harness** supplies everything that turns reasoning into reliable action: the loop that drives the model, the tools it acts through, the state it keeps on disk, the verification that checks its work, the hooks that enforce rules in code, the permissions and the sandbox that bound what it can touch, and the observability that lets an engineer see and repair all of it. [Post 02](../02-anatomy-of-a-harness/index.md) names the components one by one. There are eleven: the loop at the centre; four that feed the model (tools, state, context management, memory); four that govern it (verification, hooks, permissions, observability); and two that work at a larger scale than one run (orchestration, long-horizon patterns).
 
-The **model** supplies reasoning. The **harness** supplies everything that turns reasoning into reliable action: the loop that drives the model, the tools it acts through, the filesystem it keeps state on, the verification that checks its work, the hooks that enforce rules deterministically, the sandbox that bounds the damage it can do, and the observability that lets you see and repair all of it. Post 02 names these components one by one. There are eleven, grouped by what they do to the model: the agent loop sits at the centre, four *feed* it, four *govern* it, and two (orchestration and long-horizon patterns) operate at a larger scale than a single run.
+Addy Osmani's "Agent Harness Engineering" (19 April 2026) made the equation widely known, credits Trivedy with it, and states the claim behind it: "A decent model with a great harness beats a great model with a bad harness" (Osmani, 2026). Section 5 takes a first look at the evidence for that claim.
 
-The reason the equation matters is a claim that would have sounded strange in the prompt era and is now widely repeated: "a decent model with a great harness beats a great model with a bad harness" (Osmani, 2026). §5 gives the evidence.
+This is not an argument that models do not matter; it is about where the marginal engineering effort now pays off. In the prompt era that was usually a better prompt; for anything agentic in 2026, this series argues, it is usually a better harness.
 
-This is not an argument that models don't matter. It is an argument about *where the marginal engineering effort now pays off*. In 2023, the highest-leverage change you could make to an LLM feature was usually a better prompt. In 2026, for anything agentic, the highest-leverage change is usually a better harness.
-
-**Who named it, and when.** The vocabulary is young enough that its provenance is still traceable to individual articles published within about eighteen months of each other, and two of those articles supply the lines this series repeats most.
+**Who said what, and when.** The vocabulary is young enough to trace to individual articles, all published within about eighteen months.
 
 | When | Who | What they contributed |
 |---|---|---|
-| December 2024 | Anthropic Engineering, "Building Effective Agents" | The model-plus-loop framing, and the workflow-versus-agent distinction §4 uses. |
-| 2025–26 | Anthropic | Shipped the idea as a product: the Claude Agent SDK, "the agent harness that powers Claude Code". |
-| 10 March 2026 | Viv Trivedy, LangChain, "The Anatomy of an Agent Harness" | Named the discipline: `Agent = Model + Harness`, "If you're not the model, you're the harness", and the first component list. |
-| April 2026 | Addy Osmani, "Agent Harness Engineering" | Popularised the equation, credited Trivedy for it, and added the ratchet principle and the co-training flywheel. |
-| 2026 | OpenAI, "Harness engineering: leveraging Codex in an agent-first world" | Made it a provider-level discipline, with a production case study behind it. |
-| 2026 | Hugging Face, agent glossary | Pinned the vocabulary §4 uses: model, scaffold, harness, agent, orchestration. |
-| 2026 | Faros AI, "Harness Engineering" | The three-era framing this post opens with, and the leaderboard result in §5. |
+| 19 December 2024 | Anthropic Engineering, "Building effective agents" | Agents as "LLMs using tools based on environmental feedback in a loop", the workflow-versus-agent distinction of section 4, and stopping conditions "such as a maximum number of iterations". |
+| June 2025 | Andrej Karpathy, on X | Popularised "context engineering", the era before this one. |
+| 11 February 2026 | Ryan Lopopolo, OpenAI, "Harness engineering: leveraging Codex in an agent-first world" | The term used by a model provider, with a production case study behind it. |
+| 17 February 2026 | Viv Trivedy, LangChain, "Improving Deep Agents with harness engineering" | The same-model, harness-only result of section 5. |
+| 10 March 2026 | Viv Trivedy, LangChain, "The Anatomy of an Agent Harness" | `Agent = Model + Harness`, "If you're not the model, you're the harness", and a component list derived from the behaviour an agent needs. |
+| 19 April 2026 | Addy Osmani, "Agent Harness Engineering" | Popularised the equation, credited Trivedy with it, and named the ratchet: every mistake becomes a rule. |
+| 22 May 2026 | Faros AI, guide to harness engineering | The three-era framing, with a date range and a bottleneck for each era. |
+| 25 May 2026 | Hugging Face, "Harness, Scaffold, and the AI Agent Terms Worth Getting Right" | The vocabulary of section 4: model, scaffold, harness, orchestration. |
 
-The phrasing varies between them; the substance does not. Each is pointing at the same shift, which is that the engineering deciding whether an agent works has moved outside the model.
+Model providers adopted the framing as well. Anthropic's Agent SDK documentation (consulted October 2026) says the software development kit (SDK) gives "the same tools, agent loop, and context management that power Claude Code", and OpenAI put the word in the title of its own account (Anthropic, Claude Agent SDK documentation; OpenAI, 2026). Osmani credits Trivedy with coining the term; it was already in print in February 2026, in OpenAI's account of 11 February and LangChain's write-up of 17 February. The phrasing varies; the substance does not: the engineering that decides whether an agent works has moved outside the model.
 
 ---
 
 ## 3. Context engineering is a component inside the harness
 
-Readers arriving from the *Context Engineering* series reasonably ask whether this is context engineering under a new name. It is not, and the relationship is precise.
+A reader arriving from the sibling series may reasonably ask whether this is context engineering under a new name. It is not, and the relationship is precise.
 
-**Context engineering designs what the model sees on a single call.** Harness engineering designs the *machine that decides what calls to make, in what order, with what tools, and when to stop.* Context engineering is one of the harness's jobs (a large and important one), but it sits alongside the loop, the tools, the verification, and the guardrails. Formally: context engineering is a component *inside* harness engineering (Faros AI, 2026; Hugging Face, 2026).
+**Context engineering designs what the model sees on a single call.** Harness engineering designs the *machine that decides which calls to make, in what order, with what tools, and when to stop.* Assembling the window is one of the harness's jobs, a large one, which post 02 names context management; it sits beside the loop, the tools, verification and the rest. LangChain's write-up of 17 February puts the relationship in one line: "Part of harness engineering is building a good delivery mechanism for context engineering" (Trivedy, 2026). Context engineering is a component *inside* harness engineering.
 
-![Four concentric rings (model, scaffold, harness, orchestration), each band labelled with its share of the seven symptoms in this post's diagnostic table: none on the model, one on the scaffold, five on the harness, one on orchestration. Beside them, four cards give what each layer owns, the complaint that lands there, and the component that answers it, and a panel maps each discipline to the rings it governs: context engineering the inner two, harness engineering the third, gesturing at the fourth.](diagrams/02-nested-rings.svg)
-*The layers nest. Context engineering governs the inner rings: what the model sees. Harness engineering governs the machine that drives it. Orchestration governs how several such agents combine.*
-
-The seam is easiest to feel in code. Here is the context-engineering unit of work: one call, one answer, with every decision made about what went into a single object.
+The seam is easiest to see in code. `snippets/harness_loop.py` runs both units of work offline, against a scripted model that answers in the shape a provider application programming interface (API) does, so it needs no key and no network. The context-engineering unit of work is one request object and one answer:
 
 ```python
-# The whole job is this object: which layers, in which order, at what cost.
-resp = client.messages.create(
-    model=MODEL,
-    system=SYSTEM_PROMPT,                    # the scaffold
-    tools=TOOL_SCHEMAS,                      # what it is allowed to reach for
-    messages=[*memory, *retrieved, {"role": "user", "content": task}],
-)
-answer = resp.content
+def one_call(model, task, memory=(), retrieved=()):
+    # The whole job is this object: which layers, in which order, at what cost.
+    request = {
+        "system": SYSTEM,          # scaffold: the system prompt
+        "tools": TOOLS,            # scaffold: what the model may reach for
+        "messages": [*memory, *retrieved, {"role": "user", "content": task}],
+    }
+    return model.create(**request)
 ```
 
-Here is the harness unit of work: the same call, now inside a machine that decides how many times to make it and when to give up.
+The harness unit of work is the same call inside a machine that decides how many times to make it and when to give up:
 
 ```python
-messages = [{"role": "user", "content": task}]
-for step in range(1, max_iters + 1):              # exit (2): the hard cap
-    resp = client.messages.create(model=MODEL, system=SYSTEM_PROMPT,
-                                  tools=TOOL_SCHEMAS, messages=messages)
-    messages.append({"role": "assistant", "content": resp.content})
-    if not tool_calls(resp):                      # exit (1): a final answer
-        break
-    if tokens_used >= token_budget:               # exit (3): the cost ceiling
-        break
-    if repeating(recent_signatures):              # exit (4): no progress
-        break
-    messages.append({"role": "user", "content": run_tools(resp)})
+def run_loop(model, task, max_iters=12, token_budget=None, window=None):
+    messages = [{"role": "user", "content": task}]
+    read = written = 0
+    recent = []
+    for turn in range(1, max_iters + 1):                     # exit (2): the iteration cap
+        resp = model.create(system=SYSTEM, tools=TOOLS, messages=messages)
+        messages.append({"role": "assistant", "content": resp["content"]})
+        read += resp["usage"]["input"]
+        written += resp["usage"]["output"]
+        if resp["stop_reason"] == "end_turn":                # exit (1): a final answer
+            return {"exit": "completed", "turn": turn, "read": read, "written": written}
+        if token_budget and read + written >= token_budget:  # exit (3): the budget
+            return {"exit": "budget", "turn": turn, "read": read, "written": written}
+        recent = (recent + [resp["tool_calls"]])[-(window or 1):]
+        if window and len(recent) == window and recent.count(recent[0]) == window:
+            return {"exit": "no_progress", "turn": turn, "read": read, "written": written}  # (4)
+        messages.append({"role": "user", "content": run_tools(resp["tool_calls"])})
+    return {"exit": "max_iters", "turn": max_iters, "read": read, "written": written}
 ```
 
-Everything in the second block that is not the `create` call is harness. The iteration bound, the four exits, the dispatch of whichever tool the model asked for, and the decision to append the result rather than start a fresh conversation are all engineering that lives outside the model and outside the window. Post 03 builds this properly, and the runnable version is [`code/03-agent-loop/`](../../code/03-agent-loop/): a 77-line `loop.py` driven by a scripted offline model, so `python -m pytest -q` runs its seven tests with no application programming interface (API) key. Its four exits are named where the loop can see them, which is the shape every later post refers back to:
+Everything in the second block that is not the `create` call is harness: the four exits, (1) final answer, (2) iteration cap, (3) budget and (4) no progress, spelled `completed`, `max_iters`, `budget` and `no_progress` in code; the dispatch of whichever tool the model asked for; and the decision to append the result rather than start a fresh conversation. All of it lives outside the model and outside the window. The scripted model reads a file, runs the tests, and then asks for the same failing edit on every turn. Running `uv run python posts/01-from-context-to-harness/snippets/harness_loop.py` from the series root prints:
 
-```python
-class StopReason(str, Enum):
-    COMPLETED = "completed"      # (1) the model returned a final answer
-    MAX_ITERS = "max_iters"      # (2) hit the hard iteration cap
-    BUDGET = "budget"            # (3) ran out of token budget
-    NO_PROGRESS = "no_progress"  # (4) the same action repeated with no change
+```text
+one call: one request, one answer: 'Done.'
+loop, model answers on turn 4: completed on turn 4, 24,800 tokens
+loop, doom loop, cap only: max_iters on turn 12, 132,000 tokens
+loop, doom loop, no-progress window of 3: no_progress on turn 5, 34,000 tokens
 ```
 
-A concrete way to feel the same seam in prose: compaction. Deciding *what* to keep when a context window fills (which facts survive a summary) is a context-engineering decision, taught in the CE series. Deciding *that the running loop should pause, summarise, offload the transcript to disk, and resume* is a harness decision, taught here in Post 09. The two meet at the same event and answer different questions.
+The same stuck model costs 132,000 tokens when only the cap can stop it and 34,000 when the loop notices that nothing is changing; section 6 explains the gap. [Post 03](../03-the-agent-loop/index.md) owns the four exits and builds the loop properly, and its companion [`code/03-agent-loop/`](../../code/03-agent-loop/) is a 77-line `loop.py` whose seven tests run with no API key.
 
-Most topics the two series share split along that line. The table below is the map between them: where a CE post finishes with the window, the harness post named beside it picks the subject up at the runtime.
+Compaction shows the same seam in prose. Deciding *what* to keep when a window fills (which facts survive a summary) is a context-engineering decision, taught in `ctx-012`. Deciding *that the running loop should pause, summarise, offload the transcript to disk and resume* is a harness decision, taught here in post 09. The two meet at the same event and answer different questions.
 
-| Topic | Context Engineering asks | Harness Engineering asks |
+Most topics the two series share split along that line. Where a post of the sibling series finishes with the window, the post of this series named beside it picks the subject up at the runtime.
+
+| Topic | Context engineering asks | Harness engineering asks |
 |---|---|---|
-| Model Context Protocol (MCP) | What does a tool's schema cost in the window? (CE Post 15) | How does the runtime discover and dispatch the call? (Post 07) |
-| Memory | Which content is episodic, semantic, procedural? (CE Post 16) | What machinery carries state across sessions? (Post 10) |
-| Sub-agents | Is isolation the right context strategy? (CE Post 13) | Which topology, and who merges the work? (Posts 16, 17) |
-| Evaluation | Was this output good? (CE Post 20) | Was this *trajectory* good, and did the harness change help? (Post 22) |
-| Hooks | Previewed as part of the agentic workflow (CE Post 26) | Deterministic enforcement at lifecycle points (Post 13) |
+| Model Context Protocol (MCP) | What does a tool's schema cost in the window? (`ctx-015`) | How does the runtime discover and dispatch the call? (post 07) |
+| Memory | Which content is episodic, semantic, procedural? (`ctx-016`) | What machinery carries memory across sessions? (post 10) |
+| Sub-agents | Is isolation the right context strategy? (`ctx-013`) | Which topology, and who merges the work? (posts 16, 17) |
+| Evaluation | Was this output good? (`ctx-020`) | Was this *trajectory* good, and did the harness change help? (post 22) |
+| Hooks | Previewed as part of the agentic workflow (`ctx-026`) | Deterministic enforcement at lifecycle points (post 13) |
 
-Because the two series interlock, this one treats the CE material as background. Where a token-level detail is assumed, it is linked rather than repeated: how attention reads a long window is CE Post 03, what prompt caching is and what it saves is CE Post 05, and how a reranker reorders retrieved chunks is CE Post 09, with the cross-encoder detail in CE Post 11.
+Token-level detail is linked rather than repeated: attention over a long window is `ctx-003`, prompt caching `ctx-005`, and reranking `ctx-009` and `ctx-011`.
 
 ---
 
 ## 4. The vocabulary, pinned down
 
-The field's terms are used loosely in casual writing; this series uses them precisely (Hugging Face, 2026; Anthropic, 2024):
+The field's terms are used loosely in casual writing; this series uses them precisely, as the Hugging Face glossary and Anthropic's "Building effective agents" draw them (Hugging Face, 2026; Anthropic, 2024), and as the [notation guide](../../notation_guide.md) fixes them for every post:
 
 - **Model.** The neural network. On its own it only *responds*: text in, text out.
 - **Scaffold.** The behaviour-defining layer wrapped around the model: the system prompt, the tool descriptions, how the model's output is parsed, and what it remembers from step to step. The scaffold shapes *what the model sees and how its words are interpreted.*
-- **Harness.** The execution layer: it calls the model, handles the tool calls the model asks for, decides when to stop, catches errors, and enforces guardrails. The harness is *the runtime that drives the model through repeated cycles.*
-- **Workflow.** A system in which the steps are laid out in advance by code: the path is fixed, and the model fills in the blanks at each stop along it (Anthropic, 2024).
+- **Harness.** The execution layer: it calls the model, executes the tool calls the model asks for, decides when to stop, catches errors and enforces guardrails. The harness is *the runtime that drives the model through repeated cycles.* Osmani's list of examples is the familiar one: "Claude Code, Cursor, Codex, Aider, Cline: these are all harnesses" (Osmani, 2026).
+- **Workflow.** A system in which the steps are laid out in advance by code: the path is fixed, and the model fills in the blanks at each stop along it.
 - **Agent.** A model plus the scaffold and harness around it, choosing its own path instead of following one laid out for it: the whole thing that can *act*, not just respond.
-- **Orchestration.** A layer *above* the harness that coordinates several agents as units. The boundary is clean: a harness drives one model through its loop; an orchestrator manages many agents. Multi-agent systems (Part IV) are an orchestration concern.
-- **Context engineering.** The discipline of deciding what the model sees on one call. The prior series.
+- **Orchestration.** A layer *above* the harness that coordinates several agents as units. A harness drives one model through its loop; an orchestrator manages many agents. Multi-agent systems (Part IV) are an orchestration concern, which is why post 02 counts orchestration as the one component that lives in the ring above the harness.
+- **Context engineering.** The discipline of deciding what the model sees on one call. The sibling series.
 - **Harness engineering.** The discipline of designing the machine that decides which calls to make. This series.
 
-The workflow-versus-agent line is the one worth pausing on, because it decides whether you need any of this at all. A workflow needs almost no harness: if the steps are known, write them down as code, and the model becomes a component inside a pipeline rather than the thing driving it. An agent needs the full component set, because it is choosing its own path and something has to bound, check, and stop it (Anthropic, 2024). Reach for an agent when the steps genuinely cannot be enumerated in advance. A good number of production "agents" are workflows that would be cheaper, faster, and far more predictable if they admitted it.
+The four layers nest, and the figure below draws them as rings: each one wraps the one inside it and depends on it.
 
-Keeping the layers apart is not pedantry. "My agent is flaky" is not a diagnosis, and naming the layer names the fix. Most complaints map onto one layer cleanly:
+![Four concentric rings: model at the centre, then scaffold, harness and orchestration. A table beside them gives what each ring holds and who engineers it: the scaffold belongs to context engineering, the harness to harness engineering, orchestration to Part IV.](diagrams/02-nested-rings.svg)
 
-| What you would actually say | Layer | Component to change | Taught in |
-|---|---|---|---|
-| "It says it is done, but it isn't." | Harness | Verification | Post 11 |
-| "It gets sloppy as the session runs long." | Harness | Context management | Post 09 |
-| "It makes the same edit over and over." | Harness | Loop exit (4), no-progress detection | Post 03 |
-| "It ignores our conventions every time." | Harness | Memory plus a hook: the ratchet | Post 10 |
-| "It retrieved the wrong file." | Scaffold | Context assembly | Context Engineering, Post 09 |
-| "It ran a destructive command." | Harness | Deny-list hook plus a sandbox | Posts 13, 14 |
-| "My two agents overwrote each other." | Orchestration | Shared-repo coordination | Post 17 |
+*Context engineering works on the scaffold ring; harness engineering on the runtime around it; orchestration on how several such agents combine.*
 
-That table is the compressed form of the series, and a one-page version of it ships in the repository's cheatsheet. Post 05 turns the same material into a catalogue of six named failure modes, which is the form most useful when reading a trace.
+The workflow-versus-agent line is worth pausing on, because it decides whether most of this series is needed at all. A workflow needs almost no harness: the known steps are written as code, and the model is a component inside a pipeline rather than the thing driving it. An agent needs the full component set, because it chooses its own path and something has to bound it, check it and stop it. Anthropic's article puts it as "predictability and consistency for well-defined tasks" against "flexibility and model-driven decision-making" (Anthropic, 2024). An agent is the answer when the steps cannot be enumerated in advance; when they can, a workflow is cheaper, faster and more predictable, whatever it is called.
+
+Keeping the layers apart is not pedantry. "My agent is flaky" is not a diagnosis, and naming the layer names the fix. Most complaints map onto one layer cleanly, and [post 05](../05-agent-failure-modes/index.md) names the failure modes behind the harness rows:
+
+| What the team says | Failure mode (post 05) | Layer | Component to change | Taught in |
+|---|---|---|---|---|
+| "It says it is done, but it isn't." | victory declaration | harness | verification | post 11 |
+| "It gets sloppy as the session runs long." | context anxiety | harness | context management | post 09 |
+| "It makes the same edit over and over." | doom loop | harness | loop: the no-progress exit | post 03 |
+| "It ignores our conventions every time." | silent drift | harness | memory and hooks: the ratchet | post 10 |
+| "It retrieved the wrong file." | none | scaffold | context assembly | `ctx-009` |
+| "It ran a destructive command." | destructive action | harness | hooks and permissions | posts 13, 14 |
+| "My two agents overwrote each other." | none | orchestration | shared-repository coordination | post 17 |
+
+The table is the compressed form of the series, and the [cheatsheet](../../CHEATSHEET.md) carries its failure-mode form on one page.
 
 **When is it actually a model problem?** An argument that says "check the harness first" is only honest if it also says when to stop checking. Three questions, in order:
 
-1. **Is it a scaffold problem?** If the information the task needs is not in the window at all, or sits where the model will under-attend to it, no loop design rescues it. That is context engineering, and the CE series is the treatment.
-2. **Is it a harness problem?** If the information is there, the individual steps look sound when you read them one by one, and the run still fails (it stops too early, repeats itself, declares done without checking, or drifts off the project's conventions) then the fault is in the machine around the model. This is the large middle case, and it is yours to fix today without waiting for anything.
-3. **Is it a model problem?** Only when the right information is demonstrably in the window, in a sensible position, the loop verified the work, and the model *still* cannot do the task. Then a stronger model is exactly the right move.
+1. **Is it a scaffold problem?** If the information the task needs is not in the window at all, or sits where the model will under-attend to it, no loop design rescues it. That is context engineering, and the sibling series is the treatment.
+2. **Is it a harness problem?** If the information is there, the individual steps look sound when read one by one, and the run still fails (it stops too early, repeats itself, declares done without checking, or drifts off the project's conventions), the fault is in the machine around the model. This is the large middle case, and it can be fixed today without waiting for a new model.
+3. **Is it a model problem?** Only when the right information is demonstrably in the window, in a sensible position, the loop has verified the work, and the model *still* cannot do the task. Then a stronger model is exactly the right move.
 
-The third case is rarer than it feels from inside a failing run, which is what the evidence in §5 is about.
+This series holds that the third case is rarer than it feels from inside a failing run; section 5 is the first look at why.
 
 ---
 
-## 5. The evidence: the harness is a real lever
+## 5. A first look at the evidence
 
-The strongest claim of the field, that the harness can matter more than the model, is not merely rhetorical; it is what practitioners report when they measure. (Post 04 makes this case in full: [Why the harness beats the model](../04-harness-beats-model/index.md).)
+The strongest claim of the field is that the harness can matter more than the model. Post 04 grades the evidence for it as **firm** (the same model on the same benchmark, before and after a harness change), **controlled** (a comparison of scaffolds with the model and the tasks held fixed) or **reported** (a claim quoted at one remove, whose model, benchmark or base cannot be checked), and a reported multiple is never promoted to a measured one. This section previews the evidence with those grades.
 
-**The same model moves up a leaderboard on harness changes alone.** In February 2026 the LangChain team took its coding agent, `deepagents-cli`, from 52.8% to 66.5% on Terminal-Bench 2.0, a gain of 13.7 points that carried it from roughly the top 30 of the leaderboard into the top 5, with the underlying model (`gpt-5.2-codex`) held fixed throughout (Trivedy, LangChain, 2026; reported at one remove in Faros AI, 2026). Terminal-Bench 2.0 is 89 human-verified tasks, each run in its own container against a written oracle solution, scored on whether tests over the final container state pass, and deliberately calibrated so that frontier models score under 50% (Terminal-Bench, Stanford and the Laude Institute, 2025). Across 89 tasks, 52.8% is about 47 resolved and 66.5% is about 59: twelve tasks that the same model, on the same benchmark, could not finish before and could finish after. The score is the load-bearing number here; the rank is the illustration, because rank also moves with how crowded the leaderboard is.
+**The same model moved up a leaderboard on harness changes alone (firm).** In "Improving Deep Agents with harness engineering" (17 February 2026), Trivedy reports that LangChain took its coding agent, `deepagents-cli`, from 52.8% to 66.5% on Terminal-Bench 2.0, a gain of 13.7 points, with the model held fixed at `gpt-5.2-codex`: in leaderboard terms, from just outside the top 30 into the top 5 (Trivedy, 2026). Terminal-Bench 2.0, released on 7 November 2025 by Stanford University and the Laude Institute (launch write-up by Snorkel AI), has 89 human-verified tasks, each run in its own container, and was calibrated to keep frontier models under about a 50% resolve rate (Terminal-Bench, 2025). On 89 tasks, a 52.8% resolve rate is the equivalent of about 47 tasks and 66.5% of about 59, roughly twelve more (this series' arithmetic: 0.528 × 89 = 47.0 and 0.665 × 89 = 59.2; a rate averaged over repeated trials need not be a whole number of tasks). The score is the number that carries the argument; the rank is an illustration, because a rank also moves with how crowded the leaderboard is.
 
-![A leaderboard-rank axis showing one model at about rank 30 in a default harness and about rank 5 in a tuned harness, moving about 25 places with the model unchanged; a box below states Agent = Model + Harness.](../04-harness-beats-model/diagrams/01-harness-gap.svg)
-*The same result on a rank axis: one model, two harnesses, about 25 leaderboard places apart. A fixed model cannot move that far on a fixed benchmark unless the harness is the lever.*
+![Two hollow cited marks on a Terminal-Bench 2.0 resolve-rate axis for one model, gpt-5.2-codex: the default harness at 52.8%, about 47 of 89 tasks, and the tuned harness at 66.5%, about 59, a firm gain of 13.7 points.](diagrams/03-same-model-gain.svg)
 
-**The changes were plumbing around a fixed model.** The write-up lists seven of them and Post 04 tabulates them all; three carry most of the story, and each maps onto a component this post has already introduced. First, a system prompt pushing the agent towards self-verification, backed by a pre-completion checklist that intercepts it before it exits and makes it run a verification pass against the task specification: that is verification, and it is the fix for declaring victory early. Second, tools and context injection that map the working directory and discover the available tooling at start-up, so the agent understands the environment it is standing in: that is context management. Third, middleware hooks that count repeated per-file edits and feed the count back so the agent reconsiders a broken approach: that is no-progress detection, loop exit (4), and the fix for doom loops. No model change, 13.7 points.
+*Only the harness changed between the two marks; the model, the benchmark and the 89 tasks did not.*
 
-**The same effect appears in production, not only on benchmarks.** OpenAI reports an internal team that shipped a production beta of roughly a million lines of code with no line written by hand: every line generated by Codex agents, across about 1,500 merged pull requests over five months, by a team that began with three engineers and grew to seven (OpenAI, 2026). The human work was designing the environment those agents ran in.
+**The changes were plumbing around a fixed model.** The write-up turns three knobs, the system prompt, the tools and the middleware (LangChain's term for hooks around model and tool calls), and sets how much reasoning the model spends at each stage; post 04 tabulates all seven changes. Three carry most of the story, and each maps onto a component named in section 2. First, a system prompt that pushes the agent to test its own work, backed by a `PreCompletionChecklistMiddleware` that intercepts the agent before it exits and reminds it to run a verification pass against the task specification: verification, the fix for declaring victory early. Second, a `LocalContextMiddleware` that maps the working directory and finds the installed tools at start-up, so the agent knows the environment it is standing in: context management. Third, a `LoopDetectionMiddleware` that counts edits to each file and, after a set number, adds a note telling the agent to reconsider its approach: no-progress detection, the fix for doom loops. No model change, 13.7 points.
 
-**The larger reported multiples are softer.** Secondary write-ups summarising research comparisons put the same-model spread across harnesses at around 6× (MindStudio, 2026). Treat that as reported rather than measured. The direction is unanimous wherever the comparison is run; the exact multiple is not a constant to quote; and the right response to any such figure is to measure your own harness (Post 22).
+**What the work looks like in production.** OpenAI's "Harness engineering" account describes an internal beta built over five months with no manually written code: on the order of a million lines, roughly 1,500 pull requests opened and merged, by a team that began with three engineers and has grown to seven (OpenAI, 2026; InfoQ, 2026, reports the five months and the million lines). The human work was designing the environment the agents ran in. It is a provider's account of its own project, with no model held fixed and no comparison, so it shows what harness work looks like rather than how large the lever is, and it carries no grade on that scale.
 
-**Most failures are legible, not mysterious.** The "skill issue" reframe (popularised by HumanLayer, via Osmani, 2026) holds that the majority of agent failures are *configuration* problems, not model-weight problems: a missing convention, an un-enforced rule, a step that was never verified. That is an optimistic claim, because it means most failures are fixable in the harness, by you, today.
+**The larger multiples are softer (reported).** MindStudio's "What Is Harness Engineering?" (8 May 2026) reports that the same model can differ by up to six times in performance across harness designs, and attributes the figure to Stanford and Tsinghua research without linking the comparison (MindStudio, 2026). A reader cannot check the model, the benchmark or the base of that multiple, so it is reported: the direction agrees with the firm result, and the multiple is not a constant to quote. The right response to any such figure is to measure one's own harness ([post 22](../22-evaluating-harnesses/index.md)).
 
-**Models and harnesses co-train.** There is a flywheel behind all of this. Useful patterns discovered in harnesses get standardised into products; models are then trained against those patterns and get better at using them; the next harness exploits the improvement (Osmani, 2026). It is why a frontier model can feel noticeably more capable inside its native harness than when dropped into a generic one: the two were shaped together. A shorter version of the same flywheel runs inside a single team, under the name Osmani gives it: the **ratchet principle**, where every mistake becomes a rule, so that a failure seen once is converted into a durable constraint and cannot recur. Post 10 is the mechanism.
+**Most failures are configuration (reported).** HumanLayer's "skill issue" framing, as Osmani reports it, holds that most agent failures come down to configuration rather than model weights (Osmani, 2026). If it holds, most failures are fixable in the harness.
 
-The practical takeaway is not "ignore the model." It is: *before you reach for a bigger model, check whether the gap you are seeing is a harness gap.* Very often it is.
+**Models and harnesses are trained together.** Osmani describes a loop he credits to Trivedy: a useful pattern found in a harness is standardised into the product, used when the next models are trained, and the next model gets better at it, which is why a model can feel more capable inside its native harness (Osmani, 2026). A shorter version runs inside one team, under Osmani's name for it: the **ratchet**, in which every mistake becomes a rule (post 10).
+
+The practical rule is not "ignore the model". It is to check whether a gap is a harness gap before reaching for a bigger model.
 
 ---
 
 ## 6. What a harness gap costs, in tokens
 
-The leaderboard numbers say the harness moves quality. The arithmetic of a single bad run says it also moves the bill, and it moves it faster than intuition suggests, because a loop re-reads its whole transcript on every turn.
+The harness moves quality; the arithmetic of one bad run shows it also moves the bill, faster than intuition suggests, because a loop re-reads its whole transcript on every turn.
 
-Take a loop whose stable prefix (system prompt plus tool schemas) is 4,000 tokens, where each completed turn appends about 1,200 tokens to the transcript (the assistant message plus the tool result) and the model writes about 400 tokens. Turn *n* therefore reads roughly 4,000 + 1,200(*n* − 1) tokens. Now suppose the agent starts thrashing on turn 3: it makes the same failing edit, reads the same failing test, and tries again.
+Take a loop whose stable prefix (the system prompt plus the tool schemas) is 4,000 tokens, where each completed turn appends about 1,200 tokens to the transcript (the assistant message plus the tool result) and the model writes about 400 tokens: illustrative sizes, not measurements. Turn $n$ therefore reads $4{,}000 + 1{,}200(n - 1)$ tokens. This is the scripted model of section 3: from turn 3 on it makes the same failing edit and tries again. `snippets/exit_cost.py` runs the loop of section 3 against it with one exit enabled at a time, and `uv run python posts/01-from-context-to-harness/snippets/exit_cost.py` prints:
 
-| Which exit fires | Turn it fires on | Tokens read | Tokens written | Total |
-|---|---|---|---|---|
-| (2) hard iteration cap of 12, and nothing else | 12 | 127,200 | 4,800 | 132,000 |
-| (3) token budget of 40,000 | 6 | 42,000 | 2,400 | 44,400 |
-| (4) no-progress detection, window of 3 | 5 | 32,000 | 2,000 | 34,000 |
+```text
+exit enabled                                 fires  turn      read  written     total
+iteration cap of 12, nothing else        max_iters    12   127,200    4,800   132,000
+token budget of 40,000                      budget     6    42,000    2,400    44,400
+no progress, window of 3               no_progress     5    32,000    2,000    34,000
+iteration cap of 24, nothing else        max_iters    24   427,200    9,600   436,800
+cap of 12 / no progress: 3.88 times
+cap of 24 / cap of 12:   3.31 times
+```
 
-The cap alone is the expensive option, and not by a small margin: it spends roughly four times what no-progress detection spends, for exactly the same zero progress. The reason is that per-turn cost grows with the transcript, so the cost of a doom loop is quadratic in its length rather than linear. Doubling the iteration cap from 12 to 24 does not double the waste; on these figures it more than triples it, to about 437,000 tokens.
+The cap alone is the expensive option, and not by a small margin: it spends 3.88 times what no-progress detection spends, for exactly the same zero progress. The reason is that the cost of each turn grows with the transcript, so the cost of a doom loop is quadratic in its length rather than linear. Doubling the iteration cap from 12 to 24 does not double the waste; on these sizes it multiplies it by 3.31, to 436,800 tokens. The chart below plots the running total turn by turn.
 
-Note also *which* exit is cheapest. The budget ceiling is a blunt instrument: it stops the run once the run has become expensive, which is a statement about size. No-progress detection stops the run once the run has become pointless, which is a statement about shape, and shape is knowable earlier. That ordering is why Post 03 treats the four exits as layered rather than interchangeable, and it is the cheapest available argument for building the fourth one. (Post 23 works the same arithmetic in money, prices one run three ways with prompt caching taken into account, and argues that the number to watch is cost per *successful* run.)
+![A dashed illustrative curve of cumulative tokens against turn for the scripted doom loop, rising from 4,400 on turn 1 to 132,000 on turn 12, with marks where each exit stops it: no progress on turn 5 at 34,000, the budget on turn 6 at 44,400, the cap on turn 12.](diagrams/04-exit-cost.svg)
+
+*The curve bends upward because every turn re-reads all the turns before it; the earlier an exit fires, the less of the curve the run pays for.*
+
+Note also *which* exit is cheapest. The budget stops a run once it has become expensive, a statement about size. No-progress detection stops it once it has become pointless, a statement about shape, and shape is knowable earlier. That is why post 03 treats the four exits as layered rather than interchangeable. [Post 23](../23-economics-haas/index.md) works the same arithmetic in money, with prompt caching, and argues that the number to watch is cost per *successful* run.
 
 ---
 
 ## 7. Where the harness ends
 
-A definition that covers everything explains nothing, so it is worth saying what this series holds *outside* the harness.
+A definition that covers everything explains nothing, so this series also says what it holds *outside* the harness.
 
-**The model is outside it.** Weights, post-training, and the choice between two frontier models are real levers, and none of them is harness engineering. Model choice returns in Post 04 as a decision you make *after* ruling out a harness gap, and in Post 20 as a choice the SDK you pick can tie you to.
+**The model is outside it.** Weights, post-training and the choice between two frontier models are real levers, and none of them is harness engineering. Model choice returns in post 04 as a decision made *after* ruling out a harness gap, and in post 20 as a choice that an SDK can tie a team to.
 
-**Orchestration is above it.** A harness drives one model through one loop. The moment several agents are coordinated as units, with work split between them and results merged, that is orchestration, and Part IV is where it lives. Solving the single-agent harness first is not an arbitrary ordering: a multi-agent system built on an unreliable single-agent harness multiplies the unreliability by the number of agents.
+**Orchestration is above it.** A harness drives one model through one loop. Once several agents are coordinated as units, with work split between them and results merged, that is orchestration, and Part IV is where it lives. Solving the single-agent harness first is not an arbitrary ordering: a multi-agent system built on an unreliable single-agent harness carries that unreliability into every agent it runs.
 
-**The environment is a boundary case, and sources genuinely differ.** OpenAI's account counts the repository layout, the continuous integration (CI) configuration, linters and formatters, package-manager setup, and the project instruction file as part of the harness, on the grounds that all of them shape what the agent can reliably do (OpenAI, 2026). This series scopes the harness to the runtime (the loop and the components around it) and treats the repository and its tooling as *inputs* the harness feeds to the model, covered in Posts 08 and 10. Both readings agree on the substance, which is that the work sits outside the model. Where the wider reading matters, it is flagged rather than quietly adopted.
+**The environment is a boundary case, and the sources genuinely differ.** Trivedy's definition is wide: every piece of code, configuration and execution logic that is not the model. OpenAI's account puts much of its engineering into the repository itself (its structure, the continuous integration (CI) configuration, formatting rules, custom linters and the `AGENTS.md` file that tells the agents how to work) and calls it scaffolding. This series scopes the harness to the runtime, the loop and the components around it, and treats the repository and its tooling as *inputs* the harness feeds to the model (posts 08 and 10). Both readings agree that the work sits outside the model; where the wider reading matters, a post flags it.
 
 ---
 
 ## 8. What this series covers
 
-This series is **framework-agnostic**, exactly like its companion. Examples are plain Python and the direct provider and reference agent SDKs; frameworks (LangGraph and peers) appear only when they materially change the shape of a solution, and never as the protagonist. Post 20 surveys the landscape neutrally.
+This series is **framework-agnostic**, like its sibling. Examples are plain Python over the official provider SDKs; a framework (LangGraph and its peers) appears only in post 20, to compare shapes, and is never the protagonist. The 26 posts fall into five parts:
 
-The series goes deep on:
+- **Part I, Foundations (posts 01 to 05):** this post, the eleven components, the agent loop and its four exits, the evidence, and the six failure modes (victory declaration, context anxiety, one-shotting, doom loop, silent drift, destructive action).
+- **Part II, Core primitives (posts 06 to 10):** tools, skills and MCP, state on disk and in git, context management inside the loop, and the ratchet.
+- **Part III, Control and reliability (posts 11 to 15):** verification, the planner, generator and evaluator split, hooks, permissions and sandboxes, and the human in the loop.
+- **Part IV, Scale and orchestration (posts 16 to 20):** multi-agent topologies, parallel agents on a shared repository, long-horizon execution, loop engineering, and the SDK landscape.
+- **Part V, Production and builds (posts 21 to 26):** observability, evaluation, economics, and three builds: a minimal harness (post 24), the same harness with hooks, a sandbox, an approval gate and a sub-agent (post 25), and a long-running coding-agent capstone (post 26).
 
-- The **agent loop**: reason→act→observe, and the stop conditions where most bugs actually live (Post 03).
-- **Diagnosis and learning**: the evidence behind the harness-beats-model claim, the six named agent failure modes and the component each maps to, and the ratchet that turns every mistake into a durable rule (Posts 04, 05, 10).
-- **Tools, code execution, skills, and the Model Context Protocol (MCP)** as the agent's action surface at runtime (Posts 06–07).
-- **State and context management inside a running loop**: the filesystem, git, compaction, offloading, and resets (Posts 08–09).
-- **Verification and control**: test loops, planner/generator/evaluator splits, hooks as deterministic enforcement, sandboxes, and human-in-the-loop (Posts 11–15).
-- **Scale**: multi-agent orchestration, parallel agents on a shared repo, long-horizon and multi-context execution, and loop engineering (Posts 16–19).
-- **Production**: observability, harness evaluation, economics, and three build-from-scratch walkthroughs ending in a capstone coding agent (Posts 21–26).
+By the end of Part I a reader can name the eleven components, write the minimal reason-act-observe loop with its four exits, grade the evidence that the harness is a bigger lever than the model, and diagnose the six failure modes from a trace. Parts II to V go deep on each piece. It is a tutorial, not a survey of every SDK or framework.
 
-It will *not* be a survey of every SDK or every agent framework. There are surveys; this is a tutorial. By the end of Part I you will have the vocabulary, the component map, and a failure-mode checklist; Parts II–V are depth on each piece.
+---
+
+## 9. What can go wrong?
+
+These are the mistakes that applying this post's ideas actually produces.
+
+- **A bigger model for a harness gap.** The loop never verifies its work, so the team upgrades the model. The symptom is the same unfinished task, declared done more fluently, at a higher price per call.
+- **Editing the scaffold for a harness fault.** The team adds "stop when the work is done" to the system prompt of an agent that repeats the same edit. The doom loop continues, because nothing in the loop checks whether anything changed.
+- **The cap as the only exit.** Every stuck run costs the full cap; section 6 puts it at 3.88 times what no-progress detection spends on the same run.
+- **An agent where a workflow would do.** The steps are known, but the team builds a loop that chooses them, and gets runs that are slower, costlier and less predictable than a fixed pipeline.
+- **A reported multiple quoted as a measurement.** "Harnesses make models six times better" lands in a design review, and nobody can say six times what, on which benchmark.
+- **Going multi-agent before the single harness is reliable.** Two agents that each lack a no-progress exit overwrite each other's files, and the failures multiply.
 
 ---
 
 ## Common pitfalls
 
-- **Assuming a bigger model will fix an agent that runs badly.** If the loop never verifies its work, a stronger model just declares victory more fluently. Rule out the scaffold and the harness first, in that order (§4, §5).
-- **Treating "harness engineering" as a rebrand of "context engineering".** Context is one component inside the harness, not a synonym for it (§3).
-- **Confusing the scaffold with the harness.** Editing the system prompt (scaffold) will not fix a missing stop condition (harness). Name the layer, then fix it (§4).
-- **Building an agent where a workflow would do.** If the steps are known in advance, code them. An agent is the answer to "the path cannot be enumerated", and it costs you a full harness (§4).
-- **Confusing a harness with an orchestrator.** Coordinating many agents is a different, higher problem than driving one model well. Solve the single-agent harness before you go multi-agent (§7).
-- **Quoting the reported ~6× model gap as a hard fact.** It reaches you through secondary sources; cite it as reported, and prefer your own measurements (§5, and Post 22).
-- **Relying on the iteration cap as the only loop exit.** It is the most expensive way to stop a doom loop, by roughly a factor of four on the arithmetic in §6.
+1. **Treating "harness engineering" as a rebrand of "context engineering".** Context management is one component inside the harness, not a synonym for it.
+2. **Confusing the scaffold with the harness.** Editing the system prompt (scaffold) will not fix a missing stop condition (harness); name the layer, then fix it.
+3. **Confusing a harness with an orchestrator.** Coordinating many agents is a different, higher problem than driving one model well, and it comes after the single-agent harness works.
+4. **Reading the leaderboard rank instead of the score.** The rank moves with how crowded the leaderboard is; the 13.7-point score delta on a fixed 89-task benchmark is the number that carries the argument.
+5. **Forgetting that each era kept the one before.** The prompt and the window still matter inside a harness; harness engineering adds a runtime around them rather than replacing them.
 
 ---
 
 ## Further reading
 
-- Viv Trivedy, "The Anatomy of an Agent Harness" (LangChain, 10 March 2026): the origin of `Agent = Model + Harness` and of the line §2 is named after, plus the first component list.
-- Viv Trivedy, "Improving Deep Agents with harness engineering" (LangChain, 17 February 2026): the primary account of the 52.8% to 66.5% Terminal-Bench 2.0 result, and the seven harness changes behind it.
-- Addy Osmani, "Agent Harness Engineering" (April 2026): the equation popularised, the ratchet principle, the co-training flywheel.
-- OpenAI, "Harness engineering: leveraging Codex in an agent-first world" (2026): the production case study in §5, and the wider reading of "harness" discussed in §7.
-- Anthropic Engineering, "Building Effective Agents" (December 2024): the model-plus-loop framing and the workflow-versus-agent distinction used in §4.
-- Anthropic, "Claude Agent SDK" / "Claude Code" documentation (2025–26): "the agent harness that powers Claude Code."
-- Faros AI, "Harness Engineering: Making AI Coding Agents Work in 2026": the three-era framing and the leaderboard movement, reported at one remove.
-- Hugging Face, "Harness, Scaffold, and the AI Agent Terms Worth Getting Right" (2026): the vocabulary in §4.
-- Terminal-Bench 2.0, Stanford University and the Laude Institute (released 7 November 2025; launch write-up by Snorkel AI): 89 containerised, human-verified tasks; the benchmark under §5's headline result.
-- MindStudio, "What Is Harness Engineering?" (2026): the reported same-model performance spread.
+- Viv Trivedy, "The Anatomy of an Agent Harness" (LangChain blog, 10 March 2026). The origin of `Agent = Model + Harness`, of the line section 2 is named after, and of the definition of a harness quoted there.
+- Viv Trivedy, "Improving Deep Agents with harness engineering" (LangChain blog, 17 February 2026). The primary account of the 52.8% to 66.5% Terminal-Bench 2.0 result and the harness changes behind it.
+- Addy Osmani, "Agent Harness Engineering" (19 April 2026). The equation popularised, the ratchet, the model and harness training loop, and the "skill issue" framing reported from HumanLayer.
+- Ryan Lopopolo, OpenAI, "Harness engineering: leveraging Codex in an agent-first world" (11 February 2026), with InfoQ's report of 21 February 2026. The production account of section 5 and the wider reading of section 7.
+- Anthropic Engineering, "Building effective agents" (19 December 2024). Agents as tools in a loop with stopping conditions, and the workflow-versus-agent distinction of section 4.
+- Anthropic, Claude Agent SDK documentation (consulted October 2026). The SDK as the tools, agent loop and context management of Claude Code, as a library.
+- Faros AI, guide to harness engineering (22 May 2026). The three eras with their dates and bottlenecks.
+- Sergio Paniego and Aritra Roy Gosthipaty, "Harness, Scaffold, and the AI Agent Terms Worth Getting Right" (Hugging Face blog, 25 May 2026). The vocabulary of section 4.
+- Terminal-Bench 2.0, Stanford University and the Laude Institute (released 7 November 2025; launch write-up by Snorkel AI). The 89-task benchmark under section 5's result.
+- MindStudio, "What Is Harness Engineering?" (8 May 2026). The reported same-model spread of up to six times.
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
@@ -259,10 +290,5 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Post 02 — The anatomy of a harness](../02-anatomy-of-a-harness/index.md)**: the eleven components every harness is built from, and the map the rest of the series fills in.
-- **[Post 03 — The agent loop](../03-the-agent-loop/index.md)**: if you would rather start with the machinery: reason→act→observe and the four ways a loop should stop.
-- **[Post 04 — Why the harness beats the model](../04-harness-beats-model/index.md)**: the evidence sketched in §5, argued in full.
-- **[Post 05 — Agent failure modes](../05-agent-failure-modes/index.md)**: the six named ways agents fail and the component that fixes each; the diagnostic table in §4, expanded.
-- **[The cheatsheet](../../CHEATSHEET.md)** and **[the glossary](../../GLOSSARY.md)**: the one-page version of §4's symptom table, the eleven components, and the which-discipline decision tree, plus every term the series uses. The glossary extends the CE one rather than repeating it.
-- **Context Engineering, Post 26, "The modern agentic workflow"**: the preview of this material from the context side. This series is that post expanded into a full treatment.
-- **Context Engineering, Post 01, "Why context engineering"**: the prior era, if you are arriving without it.
+- **[Post 02 - The anatomy of a harness](../02-anatomy-of-a-harness/index.md):** the eleven components every harness is built from, and the map the rest of the series fills in.
+- **[Post 04 - Why the harness beats the model: the evidence](../04-harness-beats-model/index.md):** the evidence of section 5, ranked firm, controlled and reported and argued in full.

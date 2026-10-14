@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-04-exit-cost-title" aria-describedby="hrn-04-exit-cost-desc">
+<title id="hrn-04-exit-cost-title">The later the exit fires, the more the stuck run costs</title>
+<desc id="hrn-04-exit-cost-desc">A line chart of cumulative tokens, read plus written, against turn for one scripted doom loop with illustrative sizes. The curve is dashed and bends upward from 4,400 tokens on turn 1 to 132,000 on turn 12. Three gate-coloured diamonds mark where each exit stops the run: no progress, window of 3, on turn 5 at 34,000 tokens; the 40,000-token budget on turn 6 at 44,400; the iteration cap of 12 on turn 12 at 132,000. A dotted line marks the 40,000-token budget. Values computed by the post's snippets.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink-muted { fill: var(--hrn-ink-muted); }
+  .f-purple { fill: var(--hrn-purple); }
+  .f-purple-ink { fill: var(--hrn-purple-ink); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+  .s-surface { stroke: var(--hrn-surface); }
+</style>
+<defs>
+<marker id="hrn-04-exit-cost-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="hrn-04-exit-cost-clip-1"><rect x="90" y="122" width="716" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="633">The later the exit fires, the more the stuck run costs</text>
+<text x="40" y="76" class="t-subtitle" data-w="719">One scripted doom loop, illustrative sizes. Computed by snippets/harness_loop.py and exit_cost.py.</text>
+<g data-grid="skip">
+<path d="M96,428H800M96,342.29H800M96,256.57H800M96,170.86H800" class="gridline"/>
+<text x="88" y="432" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="88" y="346.29" text-anchor="end" class="t-tick" data-w="42">40,000</text>
+<text x="88" y="260.57" text-anchor="end" class="t-tick" data-w="42">80,000</text>
+<text x="88" y="174.86" text-anchor="end" class="t-tick" data-w="50">120,000</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="213.33" y="448" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="330.67" y="448" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<text x="448" y="448" text-anchor="middle" class="t-tick" data-w="8">6</text>
+<text x="565.33" y="448" text-anchor="middle" class="t-tick" data-w="8">8</text>
+<text x="682.67" y="448" text-anchor="middle" class="t-tick" data-w="16">10</text>
+<text x="800" y="448" text-anchor="middle" class="t-tick" data-w="16">12</text>
+<path d="M96,128V428H800" class="axis"/>
+<path d="M96,342.29H800" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#hrn-04-exit-cost-clip-1)">
+<path d="M154.67,418.57 L213.33,406.57 L272,392 L330.67,374.86 L389.33,355.14 L448,332.86 L506.67,308 L565.33,280.57 L624,250.57 L682.67,218 L741.33,182.86 L800,145.14" class="s-ink w15 nofill d-proj"/>
+</g>
+<text x="104" y="336.29" class="t-note f-ink-muted" data-w="48">budget</text>
+</g>
+<text x="96" y="116" class="t-note" data-w="138">tokens, running total</text>
+<text x="448" y="472" text-anchor="middle" class="t-note" data-w="27">turn</text>
+<g data-grid="skip">
+<path d="M389.33,349.14 L395.33,355.14 L389.33,361.14 L383.33,355.14 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="379.33" y="329.14" text-anchor="end" class="t-value f-purple-ink" data-w="141">no progress: 34,000</text>
+</g>
+<g data-grid="skip">
+<path d="M448,326.86 L454,332.86 L448,338.86 L442,332.86 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="462" y="356.86" class="t-value f-purple-ink" data-w="106">budget: 44,400</text>
+</g>
+<g data-grid="skip">
+<path d="M800,139.14 L806,145.14 L800,151.14 L794,145.14 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="786" y="150.14" text-anchor="end" class="t-value f-purple-ink" data-w="129">cap of 12: 132,000</text>
+</g>
+<path d="M40,500 H64" class="s-ink w15 nofill d-proj"/>
+<text x="72" y="504" class="t-label" data-w="104">illustrative total</text>
+<path d="M216,494 L222,500 L216,506 L210,500 Z" class="f-purple s-surface w1"/>
+<text x="240" y="504" class="t-label" data-w="78">an exit fires</text>
+</svg>

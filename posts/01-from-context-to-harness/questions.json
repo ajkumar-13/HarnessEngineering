@@ -1,0 +1,804 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-001",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "hrn-001-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "eras",
+        "bottleneck"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the three-era framing of applied LLM work, what was the bottleneck of the context-engineering era, 2024 to 2025?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Phrasing: how the one message to the model was worded.",
+          "correct": false,
+          "feedback": "Phrasing was the bottleneck of the prompt-engineering era, 2022 to 2023, when the surface was a single message."
+        },
+        {
+          "key": "b",
+          "text": "Information: what reached the model's window on each call.",
+          "correct": true,
+          "feedback": "Correct. Once tools, retrieval and memory filled the window, what the model was given mattered more than how the request was worded."
+        },
+        {
+          "key": "c",
+          "text": "Autonomy and control: how a model running on its own is checked and stopped.",
+          "correct": false,
+          "feedback": "That is the bottleneck of the harness-engineering era, 2026, when models started to run in loops without a person watching each step."
+        },
+        {
+          "key": "d",
+          "text": "Model capability: what the weights could do on hard tasks.",
+          "correct": false,
+          "feedback": "None of the three eras is defined by the weights; each is defined by what the engineer works on around the model."
+        }
+      ],
+      "explanation": "Section 1 gives Faros AI's dates and bottlenecks: phrasing for prompt engineering (2022 to 2023), information for context engineering (2024 to 2025), autonomy and control for harness engineering (2026).",
+      "hints": [
+        "Ask what the engineer was assembling in that era, not how the request was worded."
+      ]
+    },
+    {
+      "id": "hrn-001-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "timeline",
+        "provenance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put these publications in the order they appeared.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Anthropic Engineering, \"Building effective agents\""
+        },
+        {
+          "key": "b",
+          "text": "Andrej Karpathy's post on X popularising \"context engineering\""
+        },
+        {
+          "key": "c",
+          "text": "LangChain, \"Improving Deep Agents with harness engineering\""
+        },
+        {
+          "key": "d",
+          "text": "Viv Trivedy, \"The Anatomy of an Agent Harness\", with `Agent = Model + Harness`"
+        },
+        {
+          "key": "e",
+          "text": "Addy Osmani, \"Agent Harness Engineering\""
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 2's table dates them: Building effective agents on 19 December 2024, Karpathy in June 2025, the LangChain result on 17 February 2026, the Anatomy article on 10 March 2026, and Osmani on 19 April 2026. The harness-only result came three weeks before the equation that named the discipline.",
+      "hints": [
+        "One of them is from 2024 and one from 2025; the other three are all from early 2026.",
+        "Of the three from 2026, the benchmark write-up came first and the article that popularised the equation came last."
+      ]
+    },
+    {
+      "id": "hrn-001-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "equation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Write the equation that names the discipline, with the agent on the left-hand side.",
+      "answer": {
+        "model": "Agent = Model + Harness",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(wrong|incorrect|false|mistaken)\\b)(?![\\s\\S]*\\bnot\\s+[`\\\"']?agents?\\s*(=|equals\\b|is\\b))[\\s\\S]*\\bagents?\\s*(=|equals|is)\\s*(the\\s+|a\\s+)?model\\s*(\\+|plus|and)\\s*(the\\s+|a\\s+)?harness\\b(?!\\s*(\\+|plus)\\s*\\w)(?!\\s+and\\s+(an?\\s+|the\\s+)?(orchestration|orchestrator|prompts?|context|scaffold|scaffolding|memory|tools?)\\b)",
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(wrong|incorrect|false|mistaken)\\b)(?![\\s\\S]*\\bnot\\s+[`\\\"']?agents?\\s*(=|equals\\b|is\\b))[\\s\\S]*\\bagents?\\s*(=|equals|is)\\s*(the\\s+|a\\s+)?harness\\s*(\\+|plus|and)\\s*(the\\s+|a\\s+)?model\\b(?!\\s*(\\+|plus)\\s*\\w)(?!\\s+and\\s+(an?\\s+|the\\s+)?(orchestration|orchestrator|prompts?|context|scaffold|scaffolding|memory|tools?)\\b)"
+        ]
+      },
+      "explanation": "Section 2 quotes Trivedy's article (LangChain blog, 10 March 2026), which opens with `Agent = Model + Harness`: the model supplies the reasoning and the harness is everything else.",
+      "hints": [
+        "One term is the neural network; the other is everything around it."
+      ]
+    },
+    {
+      "id": "hrn-001-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "bridge",
+        "context-engineering"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In one sentence, state how context engineering relates to harness engineering: the bridge from the sibling series to this one.",
+      "answer": {
+        "model": "Context engineering decides what the model sees on one call, and it is one component inside harness engineering, which designs the machine that decides which calls to make and when to stop.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\bharness( engineering)?\\s+(is|sits|lives|belongs)\\b[^.;]{0,20}\\b(inside|within|part of|a component of|a subset of)\\b[^.;]{0,20}\\bcontext)(?![\\s\\S]*\\b(is|are)\\s+(just |simply |merely |really |basically )?(a rebrand|a new name|the same thing|a synonym|identical|interchangeable))(?![\\s\\S]*(?<!not )(?<!n't )\\breplac(es|ed|ing)\\b)(?![\\s\\S]*(?<!not )\\b(outside|separate from|independent of)\\s+(the\\s+)?harness)(?![\\s\\S]*\\bcontext( engineering| management)?\\s+(contains|includes|encompasses|wraps|subsumes)\\b)(?![\\s\\S]*\\bcontext( engineering| management)?\\s+(is\\s+not|isn't|is\\s+never|does\\s+not\\s+(sit|live|belong)|doesn't\\s+(sit|live|belong))\\s+(just\\s+|really\\s+)?(an?\\s+|one\\s+)?(component|part|piece|subset|element|inside|within|in)\\b)[\\s\\S]*(context( engineering| management)?\\b[^.;]{0,70}\\b(is|sits|lives|belongs|becomes|forms|remains|counts)\\b[^.;]{0,30}\\b(component|part|piece|subset|element|job|sub-?discipline|inside|within)\\b[^.;]{0,40}\\bharness|harness( engineering)?\\b[^.;]{0,40}\\b(contains|includes|encompasses|wraps|subsumes|has)\\b[^.;]{0,40}\\bcontext|\\bharness[\\s\\S]{0,200}\\bcontext( engineering| management)?\\b[^.;]{0,70}\\b(is|sits|lives|belongs)\\b[^.;]{0,30}\\b(component|part|piece|subset|element)\\s+(inside|within|of|in)\\s+it\\b|(?=[\\s\\S]*\\bharness)\\bcontext( engineering| management)?\\b[^.]{0,120}[;:,]\\s*it\\s+(is|sits|lives|belongs)\\b[^.;]{0,30}\\b(component|part|piece|subset|element|inside|within)\\b[^.;]{0,40}\\b(harness|it)\\b)"
+        ]
+      },
+      "explanation": "Section 3: context engineering designs what the model sees on a single call; harness engineering designs the machine that decides which calls to make, in what order, with what tools and when to stop. Assembling the window is one of the harness's jobs, the component post 02 calls context management.",
+      "hints": [
+        "One discipline works on a single call; the other on the machine that makes the calls.",
+        "Say which one contains the other."
+      ]
+    },
+    {
+      "id": "hrn-001-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "compaction",
+        "seam"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A long session's window is about to fill. Which of these decisions belongs to harness engineering rather than to context engineering?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Which facts from the earlier turns must survive when the transcript is summarised into a short note.",
+          "correct": false,
+          "feedback": "Choosing what a summary keeps is a decision about what the model will see on the next call: context engineering, taught in the sibling series."
+        },
+        {
+          "key": "b",
+          "text": "That the running loop pauses, summarises, offloads the transcript to disk and resumes.",
+          "correct": true,
+          "feedback": "Correct. Deciding that the run itself pauses and resumes is a decision about the machine that makes the calls: a harness decision, taught in post 09."
+        },
+        {
+          "key": "c",
+          "text": "In what order the retrieved chunks are placed in the next request.",
+          "correct": false,
+          "feedback": "Ordering the contents of one request is window assembly, a context-engineering decision about a single call."
+        },
+        {
+          "key": "d",
+          "text": "How many tokens each tool schema costs in the window.",
+          "correct": false,
+          "feedback": "The token cost of a schema is a property of one call's window; the sibling series treats it from the token side."
+        }
+      ],
+      "explanation": "Section 3 uses compaction to show the seam: what to keep is context engineering; that the running loop should pause, summarise, offload and resume is harness engineering. The two meet at the same event and answer different questions.",
+      "hints": [
+        "Ask whether the decision is about one call's contents or about what the running loop does next."
+      ]
+    },
+    {
+      "id": "hrn-001-q06",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "vocabulary",
+        "classification"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Assign each named thing to the term that describes it. One term on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`gpt-5.2-codex`, the model LangChain held fixed in its benchmark runs"
+        },
+        {
+          "key": "b",
+          "text": "The system prompt and the tool descriptions an agent reads on every call"
+        },
+        {
+          "key": "c",
+          "text": "Claude Code, driving a model through tool calls until the task stops"
+        },
+        {
+          "key": "d",
+          "text": "A coordinator that splits one feature across three agents and merges their branches"
+        },
+        {
+          "key": "e",
+          "text": "The Claude Agent SDK, which supplies an agent loop, tools and context management as a library"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "model"
+        },
+        {
+          "key": "b",
+          "text": "scaffold"
+        },
+        {
+          "key": "c",
+          "text": "harness"
+        },
+        {
+          "key": "d",
+          "text": "orchestration"
+        },
+        {
+          "key": "e",
+          "text": "workflow"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d",
+        "e": "c"
+      },
+      "explanation": "Section 4: the model is the network itself; the scaffold is what shapes what the model sees (system prompt, tool descriptions, parsing, step-to-step memory); a harness is the runtime that calls the model, executes its tool calls and decides when to stop, as Claude Code and the Agent SDK do; orchestration coordinates several agents as units. Nothing listed has its steps fixed in advance, so none is a workflow.",
+      "hints": [
+        "Two of the five are the same kind of thing.",
+        "Ask of each one whether it runs the loop, shapes what the model reads, coordinates several agents, or is the model itself."
+      ]
+    },
+    {
+      "id": "hrn-001-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "diagnosis",
+        "layers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these complaints point at the harness, rather than at the scaffold, the model or orchestration? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "\"It says it is done, but the tests are still failing.\"",
+          "correct": true,
+          "feedback": "Correct. Declaring victory without checking is a missing verification step: a harness component (post 11)."
+        },
+        {
+          "key": "b",
+          "text": "\"It retrieved the wrong file for the question.\"",
+          "correct": false,
+          "feedback": "What reached the window is window assembly, a scaffold problem that the sibling series treats (`ctx-009`)."
+        },
+        {
+          "key": "c",
+          "text": "\"It makes the same edit over and over.\"",
+          "correct": true,
+          "feedback": "Correct. A doom loop is fixed by the loop's no-progress exit, which is harness (post 03)."
+        },
+        {
+          "key": "d",
+          "text": "\"Our two agents overwrote each other's changes.\"",
+          "correct": false,
+          "feedback": "Two agents colliding is a coordination problem one layer up: orchestration (post 17)."
+        },
+        {
+          "key": "e",
+          "text": "\"It ran a destructive command.\"",
+          "correct": true,
+          "feedback": "Correct. Blocking a class of commands and bounding what any command can reach are hooks and permissions, both harness components (posts 13 and 14)."
+        }
+      ],
+      "explanation": "Section 4's table maps complaints to layers: victory declaration, doom loops and destructive actions are harness problems with a harness component as the fix; a wrong retrieval is the scaffold; agents overwriting each other is orchestration.",
+      "hints": [
+        "For each complaint, ask whether the fix is in the machine that runs one agent.",
+        "One complaint is about what the model was given; one is about more than one agent."
+      ]
+    },
+    {
+      "id": "hrn-001-q08",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "3",
+      "est_minutes": 10,
+      "tags": [
+        "loop",
+        "no-progress",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`no_progress(calls, window)` is the check behind exit (4): it should return `True` only when the last `window` tool calls are identical. With `window=3`, the version below stops the post's stuck run a turn early, and it would stop a healthy run that happens to repeat one call. Fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def no_progress(calls, window=3):\n    \"\"\"True when the last `window` tool calls are all identical: exit (4), no progress.\n\n    calls is the list of tool-call signatures so far, oldest first, e.g. (\"edit_file\", \"app.py\").\n    \"\"\"\n    return len(calls) >= 2 and calls[-1] == calls[-2]\n",
+      "solution": "def no_progress(calls, window=3):\n    \"\"\"True when the last `window` tool calls are all identical: exit (4), no progress.\n\n    calls is the list of tool-call signatures so far, oldest first, e.g. (\"edit_file\", \"app.py\").\n    \"\"\"\n    if len(calls) < window:\n        return False\n    last = calls[-window:]\n    return all(call == last[0] for call in last)\n",
+      "tests": "r = (\"read_file\", \"app.py\")\nt = (\"run_tests\", \"\")\ne = (\"edit_file\", \"app.py: the same patch again\")\n\n# 1. the stuck run of the post: read, test, then the same edit; window 3 fires on turn 5, not before\nassert no_progress([r, t, e], 3) is False\nassert no_progress([r, t, e, e], 3) is False\nassert no_progress([r, t, e, e, e], 3) is True\n\n# 2. only the latest calls count: a repeat earlier in the run, or a new call at the end, is progress\nassert no_progress([e, e, e, t], 3) is False\nassert no_progress([e, r, e, e], 3) is False\n\n# 3. too few calls to judge, and other windows\nassert no_progress([], 3) is False\nassert no_progress([e], 3) is False\nassert no_progress([e, e], 3) is False\nassert no_progress([e, e], 2) is True\nassert no_progress([r, e, e, e, e], 5) is False\nassert no_progress([e, e, e, e, e], 5) is True\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The starter compares only the last two calls and ignores `window`, so it fires on the first repeat. Exit (4) fires when the last `window` calls are all the same: in the post's stuck run that is turn 5 with a window of 3, which is where `snippets/harness_loop.py` stops.",
+      "hints": [
+        "Use the `window` argument: the check must look at exactly the last `window` calls.",
+        "Return False when there are fewer than `window` calls, then compare each of the last `window` calls with the first of them."
+      ]
+    },
+    {
+      "id": "hrn-001-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "terminal-bench",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Terminal-Bench 2.0 has 89 tasks. The harness change raised the resolve rate from 52.8% to 66.5% with the model fixed. How many tasks' worth of resolve rate is that gain? Give the answer to one decimal place.",
+      "answer": {
+        "value": 12.2,
+        "tolerance": 0.05,
+        "unit": "tasks"
+      },
+      "precision_note": "(66.5 - 52.8) / 100 x 89 = 0.137 x 89 = 12.193, which rounds to 12.2. Reporting the 13.7 points as tasks, or rounding each rate to whole tasks first (59 - 47 = 12), falls outside the tolerance.",
+      "explanation": "The gain is $13.7$ percentage points of 89 tasks: $0.137 \\times 89 = 12.19$, about twelve tasks, as section 5 states. A rate averaged over repeated trials need not be a whole number of tasks, so the one-decimal value is the honest one.",
+      "hints": [
+        "Turn the gain in percentage points into a fraction of the task count.",
+        "Multiply 0.137 by 89."
+      ]
+    },
+    {
+      "id": "hrn-001-q10",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "no-progress",
+        "tokens",
+        "snippet"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the post's scripted doom loop, the same failing edit starts on turn 3. Turn $n$ reads $4{,}000 + 1{,}200(n - 1)$ tokens and writes 400 (illustrative sizes). If the no-progress window is widened from 3 to 5, on which turn does exit (4) fire, and how many tokens, read plus written, has the run used by then?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "r = run_loop(ScriptedModel(), \"Fix the failing test in app.py.\", max_iters=1_000, window=5)\nprint(r[\"exit\"], r[\"turn\"], r[\"read\"] + r[\"written\"])",
+        "caption": "A call to snippets/harness_loop.py that answers the question."
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "turn on which exit (4) fires",
+            "value": 7,
+            "tolerance": 0,
+            "unit": "turn"
+          },
+          {
+            "label": "tokens used, read plus written",
+            "value": 56000,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "The identical edits are on turns 3, 4, 5, ..., so five in a row first happens on turn 7. Read = 7 x 4,000 + 1,200 x (0 + 1 + ... + 6) = 28,000 + 25,200 = 53,200; written = 7 x 400 = 2,800; total 56,000. snippets/harness_loop.py's run_loop(window=5) prints no_progress 7 56000. Firing on turn 5 (window 3) gives 34,000.",
+      "explanation": "With the stuck edit starting on turn 3, a window of 5 sees five identical calls on turn 7. The run has then read $\\sum_{n=1}^{7} (4{,}000 + 1{,}200(n-1)) = 53{,}200$ tokens and written $2{,}800$, a total of $56{,}000$: wider windows are safer against false positives but pay for more of the curve.",
+      "hints": [
+        "Count which turn holds the fifth identical edit when the first is on turn 3.",
+        "Sum the per-turn reads for turns 1 to 7, then add 400 written per turn."
+      ]
+    },
+    {
+      "id": "hrn-001-q11",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "iteration-cap",
+        "tokens",
+        "quadratic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Same stuck run and illustrative sizes as the post: turn $n$ reads $4{,}000 + 1{,}200(n - 1)$ tokens and writes 400. A team raises the iteration cap from 12 to 18 and relies on it alone. How many tokens, read plus written, does one stuck run now cost, and how many times the 34,000 tokens that no-progress detection with a window of 3 would have spent? Give the ratio to two decimals.",
+      "answer": {
+        "parts": [
+          {
+            "label": "tokens used with a cap of 18",
+            "value": 262800,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          },
+          {
+            "label": "ratio to the no-progress run",
+            "value": 7.73,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Read = 18 x 4,000 + 1,200 x (17 x 18 / 2) = 72,000 + 183,600 = 255,600; written = 18 x 400 = 7,200; total 262,800 (run_loop(max_iters=18) prints the same). 262,800 / 34,000 = 7.729. Scaling the cap-12 total linearly (132,000 x 18 / 12 = 198,000) is the nearest wrong method.",
+      "explanation": "Each turn re-reads the growing transcript, so the total is quadratic in the number of turns: $18 \\times 4{,}000 + 1{,}200 \\times 153 + 18 \\times 400 = 262{,}800$ tokens, about $7.73$ times the no-progress run. Raising the cap by half roughly doubles the waste, which is section 6's point.",
+      "hints": [
+        "Write the total as the sum of the per-turn reads plus 400 written per turn.",
+        "The sum of (n - 1) for n = 1 to 18 is 17 x 18 / 2."
+      ]
+    },
+    {
+      "id": "hrn-001-q12",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "budget",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Same stuck run as the post, with only a token budget of 60,000 enabled. The loop adds each turn's read and written tokens and stops when the running total reaches the budget. On which turn does exit (3) fire, and by how many tokens has the run then overshot the budget?",
+      "answer": {
+        "parts": [
+          {
+            "label": "turn on which exit (3) fires",
+            "value": 8,
+            "tolerance": 0,
+            "unit": "turn"
+          },
+          {
+            "label": "tokens over the budget",
+            "value": 8800,
+            "tolerance": 0.5,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "Running totals (read plus 400 written per turn): 4,400; 10,000; 16,800; 24,800; 34,000; 44,400; 56,000; 68,800. The first at or above 60,000 is turn 8, 68,800 - 60,000 = 8,800 over. run_loop(token_budget=60_000) prints budget on turn 8 with 68,800 tokens. Stopping on turn 7 (56,000) is the nearest wrong answer.",
+      "explanation": "The budget is checked after a turn has been paid for, so the run always overshoots by part of a turn: the total after turn 7 is $56{,}000$, under the budget, and after turn 8 it is $68{,}800$, so exit (3) fires on turn 8, $8{,}800$ tokens over. A budget states a size; it cannot see that the run stopped making progress on turn 5.",
+      "hints": [
+        "Turn n costs 4,000 + 1,200(n - 1) read plus 400 written; keep a running total.",
+        "The check runs after each turn, so the turn that crosses 60,000 is still paid in full."
+      ]
+    },
+    {
+      "id": "hrn-001-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "bridge",
+        "compaction",
+        "context-engineering"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Without quoting the post, write the one-sentence bridge from the Context Engineering series to this one. Then use one event, a window that is about to fill during a long run, to show where the context-engineering decision ends and the harness decision begins, and name the post of this series that takes the harness side.",
+      "kind": "connect",
+      "solution": "1. **The bridge.** Context engineering decides what the model sees on one call; harness engineering designs the machine that decides which calls to make, in what order, with what tools and when to stop, and context engineering is one component inside it (context management, in post 02's map).\n2. **The context side of the event.** When the window is about to fill, choosing which facts survive a summary, what is dropped, and what the next call's window will hold is a decision about one call's contents: context engineering.\n3. **The harness side.** Deciding that the running loop pauses at this point, summarises, offloads the full transcript to disk so nothing is lost, and resumes with the summary is a decision about the run: harness engineering. Post 09 (context management inside the loop) owns it.\n4. **Why the split matters.** The same event needs both: a good summary inside a loop that never compacts is never used, and a loop that compacts on schedule with a bad summary loses the facts the task needed.",
+      "rubric": [
+        {
+          "criterion": "The bridge states that context engineering is a component inside harness engineering, not a rename or a rival",
+          "points": 2
+        },
+        {
+          "criterion": "Places what a summary keeps on the context side, as a decision about one call",
+          "points": 2
+        },
+        {
+          "criterion": "Places pause, summarise, offload and resume on the harness side, as a decision about the run, and names post 09",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why the event needs both decisions",
+          "points": 1
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 3 states the relationship and uses compaction as its example of the seam; post 02 names the component (context management) and post 09 builds the harness side of compaction.",
+      "hints": [
+        "Start from what each discipline designs: one call, or the machine that makes the calls.",
+        "For the event, separate what to keep from when and how the running loop does it."
+      ],
+      "connects": [
+        "hrn-002",
+        "hrn-009"
+      ]
+    },
+    {
+      "id": "hrn-001-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "boundary",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A vendor's page says: \"Our harness covers everything: the model choice, the multi-agent coordinator, and your repository layout and CI configuration.\" Critique the claim using this post's account of where the harness ends. Say what this series holds outside the harness, and where the sources genuinely disagree.",
+      "kind": "critique",
+      "solution": "1. **The model is outside the harness.** Weights, post-training and the choice between frontier models are real levers, but they are not harness engineering. Model choice belongs after a harness gap has been ruled out (post 04); a harness that claims the model choice is mixing the two terms of `Agent = Model + Harness`.\n2. **Orchestration is above the harness.** A harness drives one model through one loop; a coordinator that splits work across agents and merges results is orchestration, Part IV of the series. Calling it part of one harness hides the order of work: the single-agent harness has to be reliable first, because the coordinator inherits its failures.\n3. **The repository is the genuine boundary case.** Trivedy's definition (everything that is not the model) is wide enough to include configuration, and OpenAI's account puts much of its engineering into the repository, its structure, CI configuration, linters and `AGENTS.md`, and calls it scaffolding. This series scopes the harness to the runtime and treats the repository as inputs the harness feeds to the model (posts 08 and 10).\n4. **Verdict.** Two of the three claims are wrong on this series' terms, and the third is a defensible wide reading that should be flagged as such rather than adopted silently.",
+      "rubric": [
+        {
+          "criterion": "Places model choice outside the harness, with the reason",
+          "points": 2
+        },
+        {
+          "criterion": "Places the multi-agent coordinator above the harness as orchestration",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the repository and CI as the boundary case and names the two readings (wide, as Trivedy and OpenAI; runtime-scoped, as this series)",
+          "points": 2
+        },
+        {
+          "criterion": "Reaches a verdict that separates the wrong claims from the defensible one",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7 sets the three boundaries: the model is outside the harness, orchestration is above it, and the environment is a boundary case on which the sources differ.",
+      "hints": [
+        "Take the three claims one at a time against section 7.",
+        "Only one of the three is a matter on which the sources disagree."
+      ]
+    },
+    {
+      "id": "hrn-001-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "evidence-grades",
+        "terminal-bench"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A slide reads: \"Harness changes moved a coding agent about 25 places up the Terminal-Bench 2.0 leaderboard, and harnesses make models up to 6x better.\" Which statement about these claims is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Both claims are firm, because each one compares the same underlying model under different harnesses on a public benchmark that anyone can rerun.",
+          "correct": false,
+          "feedback": "Only a same-model, same-benchmark before and after is firm. The six-times figure comes at one remove with no model, benchmark or base stated, so it is reported."
+        },
+        {
+          "key": "b",
+          "text": "The firm number is the 13.7-point score gain with the model fixed; the rank only illustrates it, and the six-times figure is reported.",
+          "correct": true,
+          "feedback": "Correct. The score delta on a fixed 89-task benchmark carries the argument; a rank also moves with how crowded the leaderboard is, and the multiple cannot be checked."
+        },
+        {
+          "key": "c",
+          "text": "The six-times figure is controlled, because the article attributes it to scaffold research at Stanford and Tsinghua universities.",
+          "correct": false,
+          "feedback": "Controlled means a published comparison with the model and tasks held fixed. An attribution without a link to the comparison is reported, whoever it names."
+        },
+        {
+          "key": "d",
+          "text": "The rank move is the firmer number, because a rank is independent of the benchmark's difficulty.",
+          "correct": false,
+          "feedback": "A rank depends on every other entry on the leaderboard; the score on a fixed task set does not, which is why the score is the firmer number."
+        }
+      ],
+      "explanation": "Section 5 grades the LangChain result firm on its score (52.8% to 66.5%, 13.7 points, model fixed), treats the rank as an illustration, and grades MindStudio's up-to-six-times spread reported because its model, benchmark and base cannot be checked.",
+      "hints": [
+        "Ask, for each number, whether the model, the benchmark and the base are all stated.",
+        "A rank depends on everyone else on the leaderboard."
+      ]
+    },
+    {
+      "id": "hrn-001-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "boundary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these does this series hold outside the harness?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The iteration cap that ends a run after a fixed number of turns.",
+          "correct": false,
+          "feedback": "The cap is exit (2) of the loop, the core of the harness."
+        },
+        {
+          "key": "b",
+          "text": "The choice between two frontier models for the same agent.",
+          "correct": true,
+          "feedback": "Correct. Model choice is a real lever, but it belongs to the model term of `Agent = Model + Harness`, and post 04 places it after a harness gap is ruled out."
+        },
+        {
+          "key": "c",
+          "text": "A hook that blocks `rm -rf` before the command runs.",
+          "correct": false,
+          "feedback": "Hooks are one of the four components that govern the loop: inside the harness."
+        },
+        {
+          "key": "d",
+          "text": "The code that executes whichever tool the model asked for.",
+          "correct": false,
+          "feedback": "Dispatching tool calls is the harness's own job: it is what turns the model's request into an action."
+        }
+      ],
+      "explanation": "Section 7: weights, post-training and the choice between models are levers outside the harness; the loop's exits, its hooks and its tool dispatch are all harness.",
+      "hints": [
+        "Three of the four are code that runs around the model on every turn."
+      ]
+    },
+    {
+      "id": "hrn-001-q17",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3",
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "vocabulary",
+        "orchestration"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness drives one model through its loop. What is the layer above it called, the one that coordinates several agents as units?",
+      "answer": {
+        "model": "Orchestration.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|isn't|is not)\\s+(an?\\s+|the\\s+)?orchestrat)(?!\\s*(it\\s+is\\s+|it's\\s+)?(called\\s+)?(the\\s+|a\\s+|an\\s+)?(harness|scaffold|scaffolding|model|workflow|agent)\\b)(?![\\s\\S]*\\b(harness|scaffold|model|workflow)\\s*,\\s*(harness|scaffold|orchestration|model|workflow)\\b)[\\s\\S]*\\borchestrat(ion|or|ors|ing)\\b"
+        ]
+      },
+      "explanation": "Section 4 defines orchestration as the layer above the harness: a harness drives one model through its loop, an orchestrator manages many agents as units, and Part IV of the series is where it lives.",
+      "hints": [
+        "It is the outermost of the four rings."
+      ]
+    },
+    {
+      "id": "hrn-001-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "diagnosis",
+        "model-problem"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team's coding agent fails a refactoring task. The logged request shows the relevant files and the project's conventions in the window, near the end. Read one by one, each step looks reasonable, but the run ends after 30 turns at the iteration cap, having edited the same function eleven times; the loop has no verification step. The team proposes switching to a larger model. Using this post's three questions, decide which layer the failure is in, what to change first, and what result would justify the larger model.",
+      "stimulus": {
+        "kind": "data",
+        "content": "Window: relevant files and conventions present, near the end of the request.\nSteps: individually reasonable.\nRun: 30 turns, stopped by the iteration cap; the same function edited 11 times.\nLoop: exits (1) and (2) only; no verification step.",
+        "caption": "An illustrative failing run."
+      },
+      "kind": "explain",
+      "solution": "1. **Is it a scaffold problem?** No, on the evidence: the request shows the needed files and conventions in the window, in a sensible position near the end. Nothing suggests missing or buried information.\n2. **Is it a harness problem?** Yes. The steps look sound one by one, yet the run repeats the same edit eleven times and stops only at the cap: a doom loop that a no-progress exit (4) would have ended early, and with no verification step the loop could not have checked a result even if it reached one. Both are harness components (the loop's exits, post 03; verification, post 11).\n3. **What to change first.** Add no-progress detection and a verification gate on the final answer, rerun the same task with the same model, and read the trace.\n4. **When the larger model is justified.** Only if, with the information in the window, the loop verifying the work, and the doom loop cut off, the same model still cannot do the task; then the failure is a model problem and a stronger model is the right move. Switching first would most likely pay more per turn for the same eleven edits.",
+      "rubric": [
+        {
+          "criterion": "Rules out the scaffold from the logged request",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the harness failures: the doom loop with no no-progress exit, and no verification",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes the harness changes first, with the model held fixed",
+          "points": 2
+        },
+        {
+          "criterion": "States the condition under which the larger model is justified",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4 orders the questions: scaffold first, then harness, and only then the model, when the right information is in the window, the loop verified the work and the model still fails. Section 6 shows why a doom loop stopped only by the cap is the expensive case.",
+      "hints": [
+        "Take the three questions in order, using what the log shows.",
+        "Ask which exit could have stopped the run early, and what the loop never checked."
+      ]
+    }
+  ]
+}

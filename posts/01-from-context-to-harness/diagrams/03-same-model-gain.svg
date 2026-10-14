@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-03-same-model-gain-title" aria-describedby="hrn-03-same-model-gain-desc">
+<title id="hrn-03-same-model-gain-title">Only the harness changed, and the score rose 13.7 points</title>
+<desc id="hrn-03-same-model-gain-desc">Two rows on a resolve-rate axis from 40 to 80% on Terminal-Bench 2.0, for one model, gpt-5.2-codex. Both values are hollow cited marks. The default harness scores 52.8%, about 47 of 89 tasks, just outside the top 30; the tuned harness scores 66.5%, about 59 of 89 tasks, in the top 5. A dotted line carries 52.8% down to the second row, and a bracket over the first row marks the gain of 13.7 points, graded firm. The caption says every change was to the harness around the model.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink-muted { fill: var(--hrn-ink-muted); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+</style>
+<defs>
+<marker id="hrn-03-same-model-gain-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="700">Only the harness changed, and the score rose 13.7 points</text>
+<text x="40" y="76" class="t-subtitle" data-w="578">Model held fixed at gpt-5.2-codex. Cited: Trivedy, LangChain, 17 February 2026.</text>
+<g data-grid="skip">
+<path d="M200,136V408M374,136V408M548,136V408M722,136V408M896,136V408" class="gridline"/>
+<text x="200" y="428" text-anchor="middle" class="t-tick" data-w="28">40%</text>
+<text x="374" y="428" text-anchor="middle" class="t-tick" data-w="28">50%</text>
+<text x="548" y="428" text-anchor="middle" class="t-tick" data-w="28">60%</text>
+<text x="722" y="428" text-anchor="middle" class="t-tick" data-w="28">70%</text>
+<text x="896" y="428" text-anchor="middle" class="t-tick" data-w="28">80%</text>
+<path d="M200,408H896" class="axis"/>
+<circle cx="422.72" cy="204" r="5" class="nofill s-ink w15"/>
+<text x="40" y="209" class="t-label" data-w="104">default harness</text>
+<text x="432.72" y="209" class="t-value f-ink-muted" data-w="43">52.8%</text>
+<circle cx="661.1" cy="340" r="5" class="nofill s-ink w15"/>
+<text x="40" y="345" class="t-label" data-w="96">tuned harness</text>
+<text x="671.1" y="345" class="t-value f-ink-muted" data-w="43">66.5%</text>
+</g>
+<text x="548" y="452" text-anchor="middle" class="t-note" data-w="299">resolve rate on Terminal-Bench 2.0, 89 tasks</text>
+<g data-grid="skip">
+<text x="432.72" y="233" class="t-note" data-w="295">about 47 of 89 tasks, just outside the top 30</text>
+</g>
+<g data-grid="skip">
+<text x="671.1" y="369" class="t-note" data-w="205">about 59 of 89 tasks, the top 5</text>
+</g>
+<g data-grid="skip">
+<path d="M422.72,216 L422.72,408" class="s-ink-muted w1 nofill d-ref"/>
+<path d="M422.72,188 Q422.72,184 430.72,184 L533.91,184 Q541.91,184 541.91,180 Q541.91,184 549.91,184 L653.1,184 Q661.1,184 661.1,188" class="brace"/>
+<g data-grid="skip">
+<text x="541.91" y="172" text-anchor="middle" class="t-note" data-w="160">+13.7 points, cited, firm</text>
+</g>
+</g>
+<circle cx="48" cy="424" r="5" class="nofill s-ink w15"/>
+<text x="72" y="428" class="t-label" data-w="73">cited value</text>
+<text x="40" y="504" class="t-note" data-w="544">Same model, same 89 tasks: every change was to the harness around the model.</text>
+</svg>
