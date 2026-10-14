@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-life-of-a-rule-title" aria-describedby="hrn-02-life-of-a-rule-desc">
+<title id="hrn-02-life-of-a-rule-title">Most of a rule's life happens outside the teeth</title>
+<desc id="hrn-02-life-of-a-rule-desc">A timeline of six stages from left to right. 1 failure, in red: a commented-out test is merged. 2 proposed, in green: the agent stages a rule and a check. 3 accepted, in purple: a person reviews the root cause. 4 enforced, in purple: the memory line, the hook and the reviewer check. 5 watched: the hook's firing rate, counted per rule. 6 pruned: obsolete, or redundant after a model upgrade. Braces group stages 1 to 3 as earning the rule, stage 4 as the teeth, and stages 5 and 6 as watching and pruning. A green bar under stages 3 to 6 is the provenance note, issue 455 of 8 June 2026, written at review and read when pruning.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--hrn-green-ink); }
+  .f-green-soft { fill: var(--hrn-green-soft); }
+  .f-purple-ink { fill: var(--hrn-purple-ink); }
+  .f-purple-soft { fill: var(--hrn-purple-soft); }
+  .f-red-ink { fill: var(--hrn-red-ink); }
+  .f-red-soft { fill: var(--hrn-red-soft); }
+  .f-surface { fill: var(--hrn-surface); }
+  .s-green { stroke: var(--hrn-green); }
+  .s-green-line { stroke: var(--hrn-green-line); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+  .s-purple { stroke: var(--hrn-purple); }
+  .s-red { stroke: var(--hrn-red); }
+</style>
+<defs>
+<marker id="hrn-02-life-of-a-rule-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="563">Most of a rule's life happens outside the teeth</text>
+<text x="40" y="76" class="t-subtitle" data-w="679">Nothing in the loop removes a rule; a person adds it after review and removes it with evidence.</text>
+<path d="M56,152 Q56,148 64,148 L248,148 Q256,148 256,144 Q256,148 264,148 L448,148 Q456,148 456,152" class="brace"/>
+<g data-grid="skip">
+<text x="256" y="136" text-anchor="middle" class="t-note" data-w="106">earning the rule</text>
+</g>
+<path d="M488,152 Q488,148 496,148 L536,148 Q544,148 544,144 Q544,148 552,148 L592,148 Q600,148 600,152" class="brace"/>
+<g data-grid="skip">
+<text x="544" y="136" text-anchor="middle" class="t-note" data-w="61">the teeth</text>
+</g>
+<path d="M632,152 Q632,148 640,148 L760,148 Q768,148 768,144 Q768,148 776,148 L896,148 Q904,148 904,152" class="brace"/>
+<g data-grid="skip">
+<text x="768" y="136" text-anchor="middle" class="t-note" data-w="145">watching and pruning</text>
+</g>
+<path d="M40,232 L917,232" class="flow" marker-end="url(#hrn-02-life-of-a-rule-arrow)"/>
+<text x="112" y="200" text-anchor="middle" class="t-head f-red-ink" data-w="71">1  failure</text>
+<circle cx="112" cy="232" r="12" class="f-red-soft s-red w15"/>
+<text x="112" y="280" text-anchor="middle" class="t-label" data-w="120">a commented-out</text>
+<text x="112" y="304" text-anchor="middle" class="t-label" data-w="97">test is merged</text>
+<text x="256" y="200" text-anchor="middle" class="t-head f-green-ink" data-w="97">2  proposed</text>
+<circle cx="256" cy="232" r="12" class="f-green-soft s-green w15"/>
+<text x="256" y="280" text-anchor="middle" class="t-label" data-w="113">the agent stages</text>
+<text x="256" y="304" text-anchor="middle" class="t-label" data-w="122">a rule and a check</text>
+<text x="400" y="200" text-anchor="middle" class="t-head f-purple-ink" data-w="94">3  accepted</text>
+<circle cx="400" cy="232" r="12" class="f-purple-soft s-purple w15"/>
+<text x="400" y="280" text-anchor="middle" class="t-label" data-w="113">a person reviews</text>
+<text x="400" y="304" text-anchor="middle" class="t-label" data-w="97">the root cause</text>
+<text x="544" y="200" text-anchor="middle" class="t-head f-purple-ink" data-w="92">4  enforced</text>
+<circle cx="544" cy="232" r="12" class="f-purple-soft s-purple w15"/>
+<text x="544" y="280" text-anchor="middle" class="t-label" data-w="124">memory line, hook</text>
+<text x="544" y="304" text-anchor="middle" class="t-label" data-w="129">and reviewer check</text>
+<text x="688" y="200" text-anchor="middle" class="t-head" data-w="88">5  watched</text>
+<circle cx="688" cy="232" r="12" class="f-surface s-ink-muted w15"/>
+<text x="688" y="280" text-anchor="middle" class="t-label" data-w="108">the hook's firing</text>
+<text x="688" y="304" text-anchor="middle" class="t-label" data-w="103">rate, per rule id</text>
+<text x="832" y="200" text-anchor="middle" class="t-head" data-w="77">6  pruned</text>
+<circle cx="832" cy="232" r="12" class="f-surface s-ink-muted w15"/>
+<text x="832" y="280" text-anchor="middle" class="t-label" data-w="122">obsolete, or made</text>
+<text x="832" y="304" text-anchor="middle" class="t-label" data-w="102">redundant by a</text>
+<text x="832" y="328" text-anchor="middle" class="t-label" data-w="102">model upgrade</text>
+<rect x="336" y="376" width="568" height="56" rx="8" class="f-green-soft s-green-line w1"/>
+<text x="352" y="408" class="t-code" data-w="154">[#455, 2026-06-08]</text>
+<text x="528" y="408" class="t-label" data-w="390">the provenance note: written at review, read when pruning</text>
+<text x="40" y="504" class="t-note" data-w="509">Without the note, a rule can never be safely removed, so the file only grows.</text>
+</svg>

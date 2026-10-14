@@ -1,0 +1,692 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-010",
+  "next_ordinal": 16,
+  "questions": [
+    {
+      "id": "hrn-010-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "stateless-model",
+        "memory-file"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent stops making a mistake it made last week, and the model behind it is the same model. Where did the learning happen?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "In the model's weights, which the provider updates after every session the agent runs",
+          "correct": false,
+          "feedback": "The weights do not change while the agent works; the model keeps nothing between sessions."
+        },
+        {
+          "key": "b",
+          "text": "In the harness, which wrote the lesson to a file the new session reads",
+          "correct": true,
+          "feedback": "Correct. The harness writes what it learned to a memory file and reads it back at the next session's start."
+        },
+        {
+          "key": "c",
+          "text": "In the model's memory of last week's conversation",
+          "correct": false,
+          "feedback": "The model is stateless: it keeps nothing between calls, let alone between sessions."
+        },
+        {
+          "key": "d",
+          "text": "In the provider's prompt cache, which keeps last week's prefix",
+          "correct": false,
+          "feedback": "A cache entry lives for minutes and only makes a repeated prefix cheaper; it carries no lessons."
+        }
+      ],
+      "explanation": "The model is stateless and its weights are fixed while it works, so an agent that learns from experience learns in the harness: a memory file written after a failure and read at every session start.",
+      "hints": [
+        "Ask which part of the agent can change between last week and today."
+      ]
+    },
+    {
+      "id": "hrn-010-q02",
+      "type": "match",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "teeth",
+        "triage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Each failure below has been described by whether a violation can be detected deterministically and how widely the rule applies. Match each to what it earns.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Detectable; applies on every task"
+        },
+        {
+          "key": "b",
+          "text": "Detectable; applies only in the payments directory"
+        },
+        {
+          "key": "c",
+          "text": "Not detectable; applies on every task"
+        },
+        {
+          "key": "d",
+          "text": "Not detectable; applies only to some tasks"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A memory-file line and a hook"
+        },
+        {
+          "key": "b",
+          "text": "A hook only, with no memory-file line"
+        },
+        {
+          "key": "c",
+          "text": "A memory-file line and a reviewer check"
+        },
+        {
+          "key": "d",
+          "text": "A skill or document loaded on demand, no rule at all"
+        },
+        {
+          "key": "e",
+          "text": "A hook and a reviewer check, with no memory-file line"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Two questions settle it. Detectable and universal: the line prevents most violations and the hook catches the rest. Detectable but local: the hook is the documentation, so no task pays to read the line. Undetectable and universal: nothing can gate it, so a reviewer reads behind the line. Undetectable and local: advice, kept on disk and loaded when a task matches.",
+      "hints": [
+        "First ask whether anything could block a violation; then ask whether every session needs to read the rule.",
+        "A rule every session pays for has to apply to every session."
+      ]
+    },
+    {
+      "id": "hrn-010-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "followable-rule",
+        "memory-file"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these memory-file lines is written the way a followable rule should be?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Write clean, idiomatic code and keep test coverage good.",
+          "correct": false,
+          "feedback": "Neither half is specific enough to check, so no hook could catch a violation: this is advice."
+        },
+        {
+          "key": "b",
+          "text": "Don't use pip for anything in this repository, ever.",
+          "correct": false,
+          "feedback": "It says only what to avoid and leaves the agent to guess the alternative."
+        },
+        {
+          "key": "c",
+          "text": "Use `uv add` to add a dependency; the lockfile is authoritative.",
+          "correct": true,
+          "feedback": "Correct. It names what to do, holds one concept, and a check on the lockfile can detect a violation."
+        },
+        {
+          "key": "d",
+          "text": "Use uv, run the typechecker before each commit, and keep every commit atomic.",
+          "correct": false,
+          "feedback": "Three concepts in one line get partially followed, and nobody can tell which part landed."
+        }
+      ],
+      "explanation": "A followable rule says what to do, holds one concept, and is specific enough to check. The test for a line is whether a hook could be written for it.",
+      "hints": [
+        "Check each line against three tests: a destination, one concept, and checkable."
+      ]
+    },
+    {
+      "id": "hrn-010-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "wrong-rule",
+        "root-cause",
+        "review"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A test failed because of a race condition. The agent concluded that a mock was misconfigured and appended \"Reset all mocks before each test\" to the live memory file. What should the harness have done differently?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Let the rule stand, because the ratchet prunes a wrong rule on its own once it stops helping",
+          "correct": false,
+          "feedback": "Nothing inside the loop reverses a rule; a wrong rule is exactly as durable as a right one."
+        },
+        {
+          "key": "b",
+          "text": "Have the agent stage the rule for a person to accept after checking the root cause",
+          "correct": true,
+          "feedback": "Correct. A reviewed root cause, not a plausible one, is what keeps folklore out of the file."
+        },
+        {
+          "key": "c",
+          "text": "Add a hook for the rule straight away so it is enforced deterministically",
+          "correct": false,
+          "feedback": "A hook would enforce the wrong lesson more firmly; the cause was never checked."
+        },
+        {
+          "key": "d",
+          "text": "Write the rule without an issue number so it is easy to change later",
+          "correct": false,
+          "feedback": "Without provenance a rule can never be safely deleted, which is the opposite of easy to change."
+        }
+      ],
+      "explanation": "The mechanism is monotonic from the inside, so a plausible but wrong diagnosis becomes a permanent instruction that also hides the real cause. The agent proposes; a person accepts after reviewing the cause.",
+      "hints": [
+        "Ask what, inside the loop, would ever remove this rule.",
+        "Look for the option that checks the diagnosis before the rule becomes permanent."
+      ]
+    },
+    {
+      "id": "hrn-010-q05",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "companion",
+        "ratchet-class"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness creates `Ratchet(path=\"AGENTS.md\")` from the companion at the start of every session and never passes `rules=`. The file already holds the rule learned yesterday. What happens when today's session hits the same failure?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`learn()` returns `False`, because the rule is already in the file",
+          "correct": false,
+          "feedback": "`learn()` checks only the in-memory list, which starts empty; it never reads the file."
+        },
+        {
+          "key": "b",
+          "text": "The rule is not in its context, the mistake recurs, and `learn()` writes the line to the file again",
+          "correct": true,
+          "feedback": "Correct. The class mirrors writes to its file but never reads it back, so the harness must load the rules itself."
+        },
+        {
+          "key": "c",
+          "text": "The rule is in the generator's context from the very start, so the first attempt of the task passes",
+          "correct": false,
+          "feedback": "Only `rules=` puts rules into `as_context()`; the path is used for writing alone."
+        },
+        {
+          "key": "d",
+          "text": "The constructor raises an error because the file already exists",
+          "correct": false,
+          "feedback": "The file is opened only to append, inside `learn()`; nothing checks it at construction."
+        }
+      ],
+      "explanation": "`Ratchet.learn()` de-duplicates against `self.rules` and appends to `path`; nothing reads `path`. The snippet's session() loads the file into `Ratchet(rules=..., path=...)` for exactly this reason.",
+      "hints": [
+        "Read `learn()`: which list does the duplicate check look at?",
+        "Then ask what `as_context()` renders, and where its rules come from."
+      ]
+    },
+    {
+      "id": "hrn-010-q06",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "firing-rate",
+        "observability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The hook behind one rule blocks something on most runs, week after week. What does that say about the rule?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The rule is working well, so nothing needs to change",
+          "correct": false,
+          "feedback": "The hook catches violations, but the memory line is not preventing them; every run pays for the block."
+        },
+        {
+          "key": "b",
+          "text": "The memory line is not being followed, so rewrite it to be clearer",
+          "correct": true,
+          "feedback": "Correct. The rule is being enforced rather than followed, which points at the line's wording."
+        },
+        {
+          "key": "c",
+          "text": "The rule no longer applies and should be deleted",
+          "correct": false,
+          "feedback": "A hook that never fires might mean that; one that fires constantly means the situation is very much alive."
+        },
+        {
+          "key": "d",
+          "text": "The hook should be removed, because a constantly firing hook slows the agent",
+          "correct": false,
+          "feedback": "Removing the gate would let the violations through; the fix is the line the model reads."
+        }
+      ],
+      "explanation": "Both extremes of a hook's firing rate mean something. Never firing: the line works, or the situation is gone, and provenance tells which. Firing constantly: the line is not followed, so rewrite it.",
+      "hints": [
+        "Separate the two teeth: which one is failing if the hook keeps catching the mistake?"
+      ],
+      "connects": [
+        "hrn-013",
+        "hrn-021"
+      ]
+    },
+    {
+      "id": "hrn-010-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "cost",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A memory file has 60 lines at about 25 tokens a line. The model's base input rate is 3 dollars per million tokens and a cache read is billed at 0.1 times the base rate. The agent makes 200 model calls a day and every call reads the file from the cache. What does carrying the file cost over a 365-day year, in dollars?",
+      "answer": {
+        "value": 32.85,
+        "tolerance": 0.01,
+        "unit": "dollars"
+      },
+      "precision_note": "$60 \\times 25 = 1{,}500$ tokens; a cache read costs $1{,}500 \\times 0.3 / 10^6 = 0.00045$ dollars; $200 \\times 365 = 73{,}000$ calls; $73{,}000 \\times 0.00045 = 32.85$. The uncached figure (328.50), one day's cost (0.09) and the cost at 0.25 times the base rate (82.13) all fall outside the tolerance.",
+      "explanation": "The arithmetic is section 2's at another rate: tokens times the cached rate per call, times the calls in a year. The total is small, which is the section's point: the budget being spent is attention, not money.",
+      "hints": [
+        "Find the file's size in tokens, then the price of one cache read of it.",
+        "Multiply by the number of calls in a year."
+      ]
+    },
+    {
+      "id": "hrn-010-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "ratchet-demo",
+        "sessions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the snippet's four-session run, session $k$ adds one new task, every task's code is wrong until a rule about that task is in the generator's context, and one rule fixes it. Extend the run to ten sessions. How many more failed attempts does the harness without a memory file make than the harness with one?",
+      "answer": {
+        "value": 45,
+        "tolerance": 0,
+        "unit": "failed attempts"
+      },
+      "precision_note": "Without the file session $k$ fails once per task, $k$ times, so ten sessions fail $1 + 2 + \\dots + 10 = 55$ times; with the file each session fails once, on its new task, 10 times. $55 - 10 = 45$. The four-session run of `ratchet_demo.py` prints 10 and 4, the same closed forms at $n = 4$. Answering 55 (the total without the file) or 46 (counting session 1 as free) is wrong.",
+      "explanation": "Without the file every session re-makes every mistake the earlier ones already paid for, so the failures grow as $n(n+1)/2$; with the file they grow as $n$.",
+      "hints": [
+        "Write down the failed attempts per session for each harness, as the snippet's table does.",
+        "Sum each column over ten sessions."
+      ]
+    },
+    {
+      "id": "hrn-010-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "rule-vs-advice",
+        "hooks"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A proposed memory-file line reads \"Write good tests.\" What would have to be possible for a line like this to count as a rule rather than advice?",
+      "answer": {
+        "model": "It would have to be possible to write a hook for it: something that deterministically detects or blocks a violation.",
+        "accept": [
+          "^(?![\\s\\S]*(?<!\\bif )(?<!\\botherwise )\\b(not|nothing|never|none|cannot|can'?t|couldn'?t|wouldn'?t|won'?t|needn'?t|doesn'?t|isn'?t|no|without)\\b(?!\\s+(just|only|merely|simply)\\b)[^.;,:\\n]{0,40}?\\b(hooks?|checks?|checkable|detect\\w*|catch\\w*|enforc\\w*|block\\w*|flag\\w*|written|possible|need\\w*)\\b)(?![\\s\\S]*\\b(pointless|unnecessary|impossible)\\b)(?![\\s\\S]*\\bno\\s*[,.;!])(?![\\s\\S]*\\b(maybe|perhaps|possibly|i think|i guess|not sure|might be)\\b)(?=(?:\\S+\\s+){1,}\\S)(?=[\\s\\S]*\\b(hooks?|deterministic\\w*|pre-commit|lint\\w*|ci check|scripts?|automated? check\\w*)\\b|[\\s\\S]*\\b(detect\\w*|catch\\w*|check\\w*|enforc\\w*|verif\\w*|block\\w*|flag\\w*)\\b[\\s\\S]*\\b(violat\\w*|breach\\w*|broken|break\\w*|ignored|skipped)\\b|[\\s\\S]*\\b(violat\\w*|breach\\w*)\\b[\\s\\S]*\\b(detect\\w*|catch\\w*|check\\w*|enforc\\w*|verif\\w*|block\\w*)\\b)(?![\\s\\S]*\\b(model|agent|reviewer|human|person)\\s+(itself\\s+)?((could|can|would|will|should|must|has to|needs to)\\s+)?(checks?|verif\\w*|detects?|catch\\w*|notices?|remembers?)\\b)(?!\\s*hooks?\\s*\\.?\\s*$)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The test for a line is whether a hook could be written for it. If nothing could deterministically catch a violation, the line is advice, and advice belongs in a skill loaded on demand rather than in the file every session reads.",
+      "hints": [
+        "Imagine the line being broken. What would notice?"
+      ]
+    },
+    {
+      "id": "hrn-010-q10",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "provenance",
+        "pruning"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A memory file holds the bare line \"Always freeze the clock in tests.\" with no issue number and no date. Why can nobody safely delete it later?",
+      "answer": {
+        "model": "Nobody can tell which failure it came from, so nobody can tell whether it is still load-bearing.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|i think|i guess|not sure)\\b)(?![\\s\\S]*(?<![\\w'])(can|could)\\s+(safely\\s+)?be\\s+(safely\\s+)?(deleted|removed))(?=(?:\\S+\\s+){2,}\\S)(?=[\\s\\S]*\\b(whether|if|unknow\\w*|unclear|nobody|no one|can'?t|cannot|don'?t|doesn'?t|no idea|no way|no record|lost|impossible|unsure|without)\\b)(?=[\\s\\S]*\\b(load[- ]bearing|still|needed|necessary|relevant|failure|problem|issue|incident|bug|mistake|reason|why|purpose|for|exists|guards?|prevent\\w*|motivated|came from|origin|provenance)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Provenance, the failure a rule came from with a date or issue number, is what lets a future reader evaluate a line. Without it nobody can tell whether the rule is load-bearing, so the line is never removed with confidence and the file only grows.",
+      "hints": [
+        "Ask what a reviewer would need to know before deleting the line.",
+        "The missing issue number and date are exactly that information."
+      ]
+    },
+    {
+      "id": "hrn-010-q11",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "life-of-a-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put the life of one rule in order, from the event that starts it to the day it leaves the file.",
+      "items": [
+        {
+          "key": "a",
+          "text": "A person accepts the rule after reviewing the root cause"
+        },
+        {
+          "key": "b",
+          "text": "A pull request with a commented-out test is merged"
+        },
+        {
+          "key": "c",
+          "text": "The hook's firing rate is counted per rule id"
+        },
+        {
+          "key": "d",
+          "text": "The agent writes the proposed rule and its check to a staging file"
+        },
+        {
+          "key": "e",
+          "text": "The rule is deleted after a model upgrade makes it redundant"
+        },
+        {
+          "key": "f",
+          "text": "The memory line, the hook and the reviewer check take effect"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "a",
+        "f",
+        "c",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "A failure; the agent proposes; a person accepts a reviewed root cause; the teeth land; the hook's firing rate is watched; and the rule leaves when the evidence and a trigger such as a model upgrade say so.",
+      "hints": [
+        "Nothing can be watched before it is enforced, and nothing is enforced before it is accepted.",
+        "The agent never writes to the live file directly."
+      ]
+    },
+    {
+      "id": "hrn-010-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 10,
+      "tags": [
+        "ratchet-class",
+        "sessions",
+        "read-back"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "The companion's `Ratchet` mirrors each new rule to a file but never reads the file back, so `start_session` below forgets everything learned in earlier sessions. Fix `start_session` so that the returned ratchet starts with the file's rules, each once and in the order first written, ignores blank lines, treats a missing file as empty, and still mirrors new rules to the same path.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "class Ratchet:\n    \"\"\"The companion's Ratchet, trimmed: rules in memory, each new one mirrored to a file.\"\"\"\n    def __init__(self, rules=None, path=None):\n        self.rules = list(rules or [])\n        self.path = path\n\n    def learn(self, rule):\n        if rule in self.rules:\n            return False\n        self.rules.append(rule)\n        if self.path is not None:\n            with open(self.path, \"a\", encoding=\"utf-8\") as fh:\n                fh.write(rule + \"\\n\")\n        return True\n\n\ndef start_session(path):\n    \"\"\"Begin a session whose ratchet holds every rule already in the file at `path` (a missing\n    file holds none), each once, in the order first written, so that a rule learned in an\n    earlier session is neither forgotten nor appended again.\"\"\"\n    return Ratchet(path=path)\n",
+      "solution": "class Ratchet:\n    \"\"\"The companion's Ratchet, trimmed: rules in memory, each new one mirrored to a file.\"\"\"\n    def __init__(self, rules=None, path=None):\n        self.rules = list(rules or [])\n        self.path = path\n\n    def learn(self, rule):\n        if rule in self.rules:\n            return False\n        self.rules.append(rule)\n        if self.path is not None:\n            with open(self.path, \"a\", encoding=\"utf-8\") as fh:\n                fh.write(rule + \"\\n\")\n        return True\n\n\ndef start_session(path):\n    \"\"\"Begin a session whose ratchet holds every rule already in the file at `path` (a missing\n    file holds none), each once, in the order first written, so that a rule learned in an\n    earlier session is neither forgotten nor appended again.\"\"\"\n    rules = []\n    try:\n        with open(path, encoding=\"utf-8\") as fh:\n            for line in fh:\n                rule = line.rstrip(\"\\n\")\n                if rule.strip() and rule not in rules:\n                    rules.append(rule)\n    except FileNotFoundError:\n        pass\n    return Ratchet(rules=rules, path=path)\n",
+      "tests": "import os\nimport tempfile\n\nd = tempfile.mkdtemp()\np = os.path.join(d, \"AGENTS.md\")\n\n# 1. a first session: no file yet, so no rules; learning creates the file\nr = start_session(p)\nassert r.rules == []\nassert r.learn(\"[add] previously failed\") is True\n\n# 2. the next session reads the rule back, and the same lesson is not appended again\nr2 = start_session(p)\nassert r2.rules == [\"[add] previously failed\"]\nassert r2.learn(\"[add] previously failed\") is False\nwith open(p, encoding=\"utf-8\") as fh:\n    assert fh.read() == \"[add] previously failed\\n\"\n\n# 3. a new lesson is appended once, and order is kept\nassert r2.learn(\"[mean] previously failed\") is True\nassert start_session(p).rules == [\"[add] previously failed\", \"[mean] previously failed\"]\n\n# 4. two workers appended the same rule, and someone left a blank line\nq = os.path.join(d, \"merged.md\")\nwith open(q, \"w\", encoding=\"utf-8\") as fh:\n    fh.write(\"[b] rule\\n\\n[a] rule\\n   \\n[b] rule\\n\")\nr3 = start_session(q)\nassert r3.rules == [\"[b] rule\", \"[a] rule\"]\nassert r3.path == q\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "`learn()` de-duplicates only against the in-memory list, so a session that does not load the file both forgets its rules and appends them again. Reading the file back, dropping blank lines and duplicates while keeping order, and passing the path on keeps the ratchet turning across sessions, which is what the snippet's session() does with `Ratchet(rules=..., path=...)`.",
+      "hints": [
+        "`Ratchet` already accepts `rules=`; the work is building that list from the file.",
+        "Strip the newline from each line, skip empty ones, and skip any rule already collected."
+      ]
+    },
+    {
+      "id": "hrn-010-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "ratchet",
+        "teeth",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent ran `pip install requests` in a project managed with `uv`, and the lockfile no longer matched the environment. This is the second time it has happened. Ratchet the failure: say whether it should be promoted, write the memory-file line, describe the hook and the reviewer check, decide which of the three teeth it actually earns and why, and say how the rule enters the file.",
+      "kind": "connect",
+      "solution": "1. **Promotion.** It recurred (twice is a class), relearning it costs a broken lockfile, and it generalises to every dependency change, so it passes the three tests and moves up to the memory file.\n2. **The memory-file line.** One concept, a destination, checkable: \"Use `uv add` to add a dependency; the lockfile is authoritative. [#issue, date]\", with the issue and date as provenance.\n3. **The hook.** A pre-tool or pre-commit check that blocks a `pip install` command, or fails when the lockfile and the declared dependencies disagree (post 13).\n4. **The reviewer check.** A reviewer flags dependency changes made outside `uv` (post 12).\n5. **Which teeth.** A violation is deterministically detectable and any task may add a dependency, so the rule applies on every task and earns the memory line and the hook; the reviewer check adds little once the hook gates it, and is kept only if the hook can be bypassed.\n6. **How it lands.** The agent proposes the line and the check to a staging file; a person confirms the root cause (it was `pip`, not a corrupted cache) and moves the line into `AGENTS.md`.",
+      "rubric": [
+        {
+          "criterion": "Applies the three promotion tests and concludes it should be promoted",
+          "points": 2
+        },
+        {
+          "criterion": "Writes a line with a destination, one concept and provenance",
+          "points": 2
+        },
+        {
+          "criterion": "Describes a deterministic hook and a reviewer check for this failure",
+          "points": 2
+        },
+        {
+          "criterion": "Decides the teeth from detectability and scope, with the reason",
+          "points": 2
+        },
+        {
+          "criterion": "Routes the rule through a staging file and a reviewed root cause",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The ratchet turns one failure into up to three teeth, but the failure has to earn promotion and each tooth. A detectable, universal rule earns a line and a hook; the review step keeps a wrong diagnosis out of the permanent file.",
+      "hints": [
+        "Start with whether the lesson recurred, is expensive to relearn and generalises.",
+        "For the teeth, ask the two questions: detectable, and on every task?"
+      ],
+      "connects": [
+        "hrn-012",
+        "hrn-013"
+      ]
+    },
+    {
+      "id": "hrn-010-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "pruning",
+        "model-upgrade",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A team moves its agent to a newer model. Its memory file has grown to 90 lines over a year, every line carries an issue number and date, and each rule with a hook emits a counter tagged with the rule's id. Plan the memory-file review the upgrade triggers: which rules go, what evidence decides each, what the provenance notes are for, and when the edits should be made.",
+      "kind": "design",
+      "solution": "1. **The trigger.** A model upgrade is the one scheduled pruning event: some rules encode gaps the new model no longer has, and a workaround for a weakness it lacks is pure cost.\n2. **The four criteria.** Remove rules that no longer apply; collapse contradictions into one; demote one-offs to a skill or the scratchpad; retire rules the better model made redundant.\n3. **Evidence.** Sort the hook counters per rule id. A hook that never fires means the line works or the situation is gone; the provenance note says what the rule was for, so the team can check whether that situation still exists. A hook that fires constantly means the line is not followed and needs rewriting, not deleting.\n4. **Redundancy checks.** For a candidate rule, run the failing case from its issue against the new model with the rule removed; delete it only if the model now passes.\n5. **Timing.** Batch the edits into one reviewed change between sessions, not mid-run: the file sits in the cached prefix, so a mid-run edit invalidates the cache from that point and the next call pays the write premium on everything after it.",
+      "rubric": [
+        {
+          "criterion": "Identifies the upgrade as the scheduled pruning trigger, with the reason",
+          "points": 2
+        },
+        {
+          "criterion": "Applies the four pruning criteria",
+          "points": 2
+        },
+        {
+          "criterion": "Reads both extremes of the firing rate correctly",
+          "points": 2
+        },
+        {
+          "criterion": "Uses provenance to decide whether a rule is still load-bearing",
+          "points": 2
+        },
+        {
+          "criterion": "Batches the edits outside a run, citing the cached prefix",
+          "points": 2
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Pruning needs a trigger, criteria and evidence. The model upgrade supplies the trigger, the four criteria the decisions, the firing rates and provenance the evidence, and the cache the timing.",
+      "hints": [
+        "Start with why an upgrade, of all events, is the moment to review the file.",
+        "For each rule, ask what the hook's counter and the provenance note together say."
+      ]
+    },
+    {
+      "id": "hrn-010-q15",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "prompt-caching",
+        "mid-run-edit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Halfway through a long session, the harness appends a newly learned rule to the memory file that sits near the front of the cached prompt prefix. What does that edit cost?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nothing, because only the new line is billed at the full rate and the rest of the prefix stays cached",
+          "correct": false,
+          "feedback": "Caching matches an exact prefix; a change near the front invalidates everything after it."
+        },
+        {
+          "key": "b",
+          "text": "The next request pays the write premium instead of the read rate on everything after the edit",
+          "correct": true,
+          "feedback": "Correct. The edit breaks the prefix match, so the next request writes a new entry from that point at 1.25 times base input; later requests read it again."
+        },
+        {
+          "key": "c",
+          "text": "Every later request in the session pays full uncached input from the edit on",
+          "correct": false,
+          "feedback": "Only the next request misses: it writes the new prefix to the cache, and later requests read it."
+        },
+        {
+          "key": "d",
+          "text": "Only the next session pays, because the cache is rebuilt at session start",
+          "correct": false,
+          "feedback": "The cost is mid-run; across sessions the entry has often expired anyway."
+        }
+      ],
+      "explanation": "Prompt caching is an exact prefix match and the memory file renders near the front of the prefix. An edit mid-run invalidates the cache from that point on, which is one more reason to batch rule changes into a deliberate review.",
+      "hints": [
+        "Ask what a cache keyed on an exact prefix does when an early byte changes.",
+        "After one request writes the new prefix, what do the requests after it find in the cache?"
+      ],
+      "connects": [
+        "hrn-009",
+        "hrn-023"
+      ]
+    }
+  ]
+}
