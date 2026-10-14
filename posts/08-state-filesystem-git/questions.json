@@ -1,0 +1,702 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-008",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-008-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 1,
+      "tags": [
+        "placement",
+        "window"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Which of these belongs in the context window rather than in a file on disk?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The full 2,000-line build log from the last test run",
+          "correct": false,
+          "feedback": "The model needs at most a few lines of it, and only sometimes; it goes to a file with a pointer left behind."
+        },
+        {
+          "key": "b",
+          "text": "A one-line rule the model must honour on every turn",
+          "correct": true,
+          "feedback": "Correct. It is tiny, but it is needed this turn and every turn, which is what decides the window."
+        },
+        {
+          "key": "c",
+          "text": "The generated report the run is producing",
+          "correct": false,
+          "feedback": "An artefact lives on disk; the window holds a reference to it, not the thing itself."
+        },
+        {
+          "key": "d",
+          "text": "The whole plan for the remaining steps of the task",
+          "correct": false,
+          "feedback": "The plan lives in a file the agent rewrites and re-reads when the thread slips; the current step is what the window needs."
+        }
+      ],
+      "explanation": "Placement is decided by when state is needed, not by its size: this turn and every turn goes in the window, later or only sometimes goes on disk. A one-line rule is the smallest item here and still the only one that belongs in the window.",
+      "hints": [
+        "Ask of each item how often the model needs it, not how big it is."
+      ]
+    },
+    {
+      "id": "hrn-008-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "scratchpad",
+        "attention",
+        "manus"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An agent keeps its plan in `todo.md` and rewrites the whole file after each step instead of appending a line. What does the rewrite buy that an append does not?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It keeps the file smaller on disk, which saves storage",
+          "correct": false,
+          "feedback": "Disk is cheap; storage is not the reason. The point is where the goal sits in the window."
+        },
+        {
+          "key": "b",
+          "text": "It puts the current goal back at the end of the context, where the model attends best",
+          "correct": true,
+          "feedback": "Correct. Manus describes this as reciting objectives into the end of the context, pushing the plan into the model's recent attention span."
+        },
+        {
+          "key": "c",
+          "text": "It makes the file diffable under git, so a reviewer can follow the plan step by step",
+          "correct": false,
+          "feedback": "An appended file is just as diffable; diffability does not separate the two."
+        },
+        {
+          "key": "d",
+          "text": "It stops two agents from writing the file at the same time",
+          "correct": false,
+          "feedback": "Rewriting does nothing for concurrent writers; one file per writer does."
+        }
+      ],
+      "explanation": "Manus rewrites `todo.md` step by step so that the global plan lands at the end of a window that has since filled with tool results, which counters lost-in-the-middle behaviour (Ji, Manus, 18 July 2025).",
+      "hints": [
+        "Think about where in a long window a re-read file ends up."
+      ]
+    },
+    {
+      "id": "hrn-008-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "offloading",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A tool returns a 12,000-token test log as the result of iteration 3 of a run capped at 12 iterations. The loop re-sends the whole history on every request, so the log rides on every request after the turn it arrived in. How many input tokens does that one log add to the run if it stays in the window?",
+      "answer": {
+        "value": 108000,
+        "tolerance": 1,
+        "unit": "tokens"
+      },
+      "precision_note": "Requests 4 to 12 carry it: $12{,}000 \\times 9 = 108{,}000$, the rule `carried()` in snippets/offload_cost.py applies (re-sent on CAP - ARRIVES requests). Counting it 10 times (120,000), 12 times (144,000) or 8 times (96,000) falls outside the tolerance.",
+      "explanation": "A result produced at iteration 3 first appears in request 4 and is re-sent on every request up to the cap: 12 - 3 = 9 requests, so $12{,}000 \\times 9 = 108{,}000$ input tokens.",
+      "hints": [
+        "Find the first request that contains the log.",
+        "Count the requests from that one to the cap."
+      ]
+    },
+    {
+      "id": "hrn-008-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "offloading",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A 30,000-token log arrives as the result of iteration 5 of a run capped at 12, and is re-sent on every request after that turn. Offloading it to a file leaves a 20-token pointer in its place. At 3 dollars per million input tokens, how many dollars of input does offloading save over the run? Give two decimals.",
+      "answer": {
+        "value": 0.63,
+        "tolerance": 0.005,
+        "unit": "dollars"
+      },
+      "precision_note": "Seven requests (6 to 12) carry each: $(30{,}000 - 20) \\times 7 = 209{,}860$ tokens, times $3 / 10^6$ = 0.6296, which rounds to 0.63; the method of snippets/offload_cost.py. Counting 8 requests gives 0.72 and 12 gives 1.08, both outside the tolerance.",
+      "explanation": "The log rides on requests 6 to 12, seven of them: 210,000 tokens left in the window against 140 for the pointer. The difference, 209,860 tokens, costs about 0.63 dollars at 3 dollars per million.",
+      "hints": [
+        "The result of iteration 5 first appears in request 6.",
+        "Price the difference between what the log and the pointer each carry."
+      ]
+    },
+    {
+      "id": "hrn-008-q05",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "checkpoint",
+        "return-code"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In the post's `checkpoint()`, remove the `if r.returncode:` check. A commit then fails because an index lock is left over from a crashed process. What does `checkpoint()` return?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An empty string, because the failed commit left no new hash for rev-parse to report",
+          "correct": false,
+          "feedback": "`rev-parse HEAD` still succeeds; HEAD exists, it is simply the old commit."
+        },
+        {
+          "key": "b",
+          "text": "The hash of the previous commit, which the loop will treat as the new checkpoint",
+          "correct": true,
+          "feedback": "Correct. `rev-parse HEAD` reports whatever HEAD is, and HEAD did not move, which is the trap the run of git_checkpoint.py shows."
+        },
+        {
+          "key": "c",
+          "text": "It raises, because git refuses to answer while the lock exists",
+          "correct": false,
+          "feedback": "Reading HEAD needs no index lock; only writing does, so the read succeeds."
+        },
+        {
+          "key": "d",
+          "text": "The hash the commit would have had",
+          "correct": false,
+          "feedback": "A commit that failed has no hash; git never wrote the object."
+        }
+      ],
+      "explanation": "Without the check the function returns `rev-parse HEAD`, which answers with the last commit that did land. The loop then trusts a checkpoint that predates the work it believes it saved, and a later rollback discards that work.",
+      "hints": [
+        "Ask what HEAD points at after a commit that did not happen."
+      ]
+    },
+    {
+      "id": "hrn-008-q06",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "checkpoint",
+        "rollback"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Put the steps of one checkpoint-and-rollback cycle in the order the pattern runs them.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Commit a checkpoint and keep its hash"
+        },
+        {
+          "key": "b",
+          "text": "Reset to the kept hash and clean the step's paths"
+        },
+        {
+          "key": "c",
+          "text": "Verify the finished step: its tests pass"
+        },
+        {
+          "key": "d",
+          "text": "Attempt the risky step"
+        },
+        {
+          "key": "e",
+          "text": "The risky step's tests fail"
+        }
+      ],
+      "answer": [
+        "c",
+        "a",
+        "d",
+        "e",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "A checkpoint is taken only after a step verifies, so the hash it keeps is a good tree. The risky step runs next; when its own check fails, the rollback resets to that hash and cleans only the paths the step could touch.",
+      "hints": [
+        "A checkpoint is only worth returning to if something confirmed it first.",
+        "The rollback needs a hash, so it comes after the commit that produced one."
+      ]
+    },
+    {
+      "id": "hrn-008-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "rollback",
+        "git-clean"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A rollback runs `git reset --hard <ref>` and then `git clean -fd` with no path filter, instead of `git clean -fd -- src/ tests/`. The tree holds the four files below. Which one does the unscoped version lose that the scoped version keeps?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`src/debris.py`, an untracked file the bad step created",
+          "correct": false,
+          "feedback": "Both versions remove it: it is untracked and inside `src/`."
+        },
+        {
+          "key": "b",
+          "text": "`scratch/build.log`, an offloaded log the bad step wrote under the ignored `scratch/`",
+          "correct": false,
+          "feedback": "Both versions keep it: `git clean` leaves ignored files alone unless `-x` is given."
+        },
+        {
+          "key": "c",
+          "text": "`notes.md`, an untracked note at the top of the tree that the agent never touched",
+          "correct": true,
+          "feedback": "Correct. Only the path filter protects untracked files outside the step's directories."
+        },
+        {
+          "key": "d",
+          "text": "`src/parse.py`, a tracked file the bad step edited",
+          "correct": false,
+          "feedback": "Both versions restore it: `reset --hard` puts tracked files back whatever the clean does."
+        }
+      ],
+      "explanation": "`reset --hard` restores tracked files; `clean -fd` deletes untracked files and leaves ignored ones. Scoped to the step's paths, it removes only that step's debris; unscoped, it also deletes untracked work the agent never went near, as the run of git_checkpoint.py shows with `notes.md`.",
+      "hints": [
+        "Sort the four into tracked, untracked and ignored first.",
+        "Then ask which of the untracked ones lies outside the directories the step could touch."
+      ]
+    },
+    {
+      "id": "hrn-008-q08",
+      "type": "short",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "handoff",
+        "state-check"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A fresh session reads a handoff whose State field says `last checkpoint 3db0e43`, but `git rev-parse` shows HEAD at `050bacd`. What should the session do before it resumes the Next step?",
+      "answer": {
+        "model": "Not trust the tree as it stands: roll back to 3db0e43, the checkpoint the handoff names (or stop and report the mismatch), and only then resume.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure)\\b)(?![\\s\\S]*(?<!not )(?<!n't )(?<!never )(?<!rather than )(?<!instead of )(?<!do not )(?<!don't )\\b(resume|continue|carry on|build|keep going|proceed|work)\\w*\\s+(from|on|at|with|off)\\s+(the\\s+)?(050bacd|head|current|new|latest|bad|unverified)\\b)(?![\\s\\S]*(?<!n't )(?<!not )(?<!never )\\btrust\\w*\\s+(the\\s+)?(head|commit|050bacd|tree|current tree)\\b(?![\\s\\S]*\\b(only after|after|once)\\b))(?![\\s\\S]*\\b(roll\\w*\\s*back|rollback|reset|revert|restore|return|go(es)?\\s+back|check\\w*\\s*out)\\s+(--hard\\s+)?(to\\s+|onto\\s+)?(the\\s+)?(050bacd|head)\\b)(?![\\s\\S]*\\b(handoff|state)\\b[^.\\n]{0,30}\\b(match|say|name|read|point)\\w*\\s+(to\\s+|at\\s+)?(the\\s+)?(head|050bacd)\\b)(?![\\s\\S]*\\b(not|never|n't|no need to|without)\\s+(\\w+\\s+)?(roll\\w*\\s*back|rollback|reset|revert|restore|return\\s+to)\\b)(?=[\\s\\S]*\\b((roll\\w*\\s*back|rollback|reset|revert|restore|return\\s+to|go(es)?\\s+back|check\\w*\\s*out|discard)\\b[^.;\\n]{0,60}?\\b(3db0e43|checkpoint|verified|named|names|known[- ]good|last good|previous commit|good (commit|state|tree))|(stop|halt|report|flag|escalat\\w*|refus\\w*)\\b[^.\\n]{0,40}?\\b(mismatch\\w*|discrepanc\\w*|human|resum\\w*|continu\\w*|proceed\\w*|disagree\\w*)))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The State field exists so that the resuming session can check the handoff against the tree. A mismatch means a commit landed after the last verified checkpoint, so the session returns to the named checkpoint, as handoff.py does, or reports the mismatch, rather than building on an unverified commit.",
+      "hints": [
+        "Which of the two hashes was verified?"
+      ]
+    },
+    {
+      "id": "hrn-008-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "atomic-write",
+        "rename"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "An atomic write puts its temporary file in the same directory as the target instead of in the system temporary directory. Why?",
+      "answer": {
+        "model": "Because a rename is only atomic within one filesystem, and the system temporary directory may be on a different one, where the replace fails or turns into a non-atomic copy.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure)\\b)(?![\\s\\S]*\\bnot\\s+(because|due|about|related)\\b)(?![\\s\\S]*\\b(faster|speed|performance|permission|clutter|tidy|tidier)\\b)(?![\\s\\S]*(?<!not )(?<!n't )(?<!never )\\batomic\\w*\\s+(even\\s+)?(across|between)\\s+(\\w+\\s+)?(file\\s*systems?|filesystems?|volumes?|devices?|disks?|partitions?|mounts?|drives?)\\b)(?![\\s\\S]*\\b(across|between)\\s+(\\w+\\s+)?(file\\s*systems?|filesystems?|volumes?|devices?|disks?|partitions?|mounts?|drives?)\\s+(\\w+\\s+)?(is|are)\\s+(still\\s+|also\\s+)?atomic\\b)(?![\\s\\S]*\\b(do(es)?\\s*n[o']t|never)\\s+(need|require)\\s+(the\\s+)?(same|one|a\\s+single)\\b)(?=[\\s\\S]*\\b(same|one|single|different|another|separate|other)\\s+(file\\s*system|filesystem|volume|device|disk|partition|mount|drive)s?\\b|[\\s\\S]*\\b(across|between)\\s+(two\\s+)?(file\\s*systems|filesystems|volumes|devices|partitions|mounts|drives)\\b|[\\s\\S]*\\bcross(es|ed|ing)?[- ]?(\\w+\\s+)?(device|file\\s*system|filesystem|volume|mount|drive|partition)s?\\b|[\\s\\S]*\\bexdev\\b)(?=[\\s\\S]*\\b(atomic\\w*|rename|replace|os\\.replace|mov(e|es|ing)|copy|cross)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "`os.replace` swaps the file in one step only when source and target are on the same filesystem. A temporary directory on another volume makes the rename fail with a cross-device error, or a fallback copy that a crash can tear.",
+      "hints": [
+        "What does a rename need to have in common with its destination to be one step?"
+      ]
+    },
+    {
+      "id": "hrn-008-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "handoff",
+        "torn-write"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A harness rewrites `handoff.md` with a plain `Path.write_text`, and the process is killed half-way through the write. What does the next session find?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The old handoff, whole, because nothing was committed",
+          "correct": false,
+          "feedback": "A plain write truncates the file first, so the old content is gone before the new content arrives."
+        },
+        {
+          "key": "b",
+          "text": "The new handoff, whole, because the operating system finishes a write the process began",
+          "correct": false,
+          "feedback": "A killed process stops writing; nothing completes the rest of the text."
+        },
+        {
+          "key": "c",
+          "text": "A torn file holding part of the new text, which it may resume from as if it were true",
+          "correct": true,
+          "feedback": "Correct. The run of handoff.py leaves 30 of 60 characters after a plain write killed half-way."
+        },
+        {
+          "key": "d",
+          "text": "No file at all, because the write was interrupted",
+          "correct": false,
+          "feedback": "The file exists; it was truncated and partly rewritten, which is worse than missing."
+        }
+      ],
+      "explanation": "`write_text` truncates the file and then writes. A kill between the two leaves half a file. Writing a temporary file beside it and renaming it over the target leaves either the old file or the new one, never a torn half.",
+      "hints": [
+        "What happens to the old content at the moment the file is opened for writing?"
+      ]
+    },
+    {
+      "id": "hrn-008-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 10,
+      "tags": [
+        "atomic-write",
+        "read-back"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "`write_atomic` rewrites a handoff file with a plain write, so a kill half-way leaves a torn file, and nothing confirms that the text landed. Fix it: write the text to a temporary file in the target's own directory, swap it over the target with one `os.replace`, then read the target back and raise `OSError` if it does not hold the text.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import os\nfrom pathlib import Path\n\n\ndef write_atomic(path: Path, text: str) -> None:\n    \"\"\"Replace `path` in one step, so a reader never sees a half-written file, and confirm that it landed.\"\"\"\n    path.write_text(text, encoding=\"utf-8\")\n",
+      "solution": "import os\nfrom pathlib import Path\n\n\ndef write_atomic(path: Path, text: str) -> None:\n    \"\"\"Replace `path` in one step, so a reader never sees a half-written file, and confirm that it landed.\"\"\"\n    tmp = path.with_suffix(path.suffix + \".tmp\")\n    tmp.write_text(text, encoding=\"utf-8\")\n    os.replace(tmp, path)\n    if path.read_text(encoding=\"utf-8\") != text:\n        raise OSError(f\"{path} does not hold what was written\")\n",
+      "tests": "import os\nimport shutil\nimport tempfile\nfrom pathlib import Path\n\nd = Path(tempfile.mkdtemp())\np = d / \"handoff.md\"\np.write_text(\"old\", encoding=\"utf-8\")\nreal = os.replace\n\n# 1. the new text lands, and nothing is left beside it\nwrite_atomic(p, \"new text\")\nassert p.read_text(encoding=\"utf-8\") == \"new text\"\nassert sorted(x.name for x in d.iterdir()) == [\"handoff.md\"]\n\n# 2. the swap is one os.replace, from a file in the target's own directory\nseen = []\ndef spy(src, dst):\n    seen.append((Path(src).parent, Path(dst)))\n    return real(src, dst)\nos.replace = spy\ntry:\n    write_atomic(p, \"again\")\nfinally:\n    os.replace = real\nassert seen == [(d, p)], seen\nassert p.read_text(encoding=\"utf-8\") == \"again\"\n\n# 3. a kill between writing and replacing leaves the old file whole\nclass Killed(Exception):\n    pass\ndef die(src, dst):\n    raise Killed\nos.replace = die\ntry:\n    write_atomic(p, \"torn?\")\nexcept Killed:\n    pass\nfinally:\n    os.replace = real\nassert p.read_text(encoding=\"utf-8\") == \"again\"\nfor x in d.iterdir():\n    if x != p:\n        x.unlink()\n\n# 4. a write that did not land is reported, not inferred from the absence of an error\ndef lossy(src, dst):\n    real(src, dst)\n    Path(dst).write_text(\"chocked\", encoding=\"utf-8\")   # same length as the text, different content\nos.replace = lossy\ntry:\n    write_atomic(p, \"checked\")\n    raise AssertionError(\"a write that did not land must raise\")\nexcept OSError:\n    pass\nfinally:\n    os.replace = real\n\nshutil.rmtree(d)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The temporary file must share the target's filesystem for the rename to be one step, so it goes in the same directory. `os.replace` swaps it in whole, so a kill before the swap leaves the old file intact. Reading the target back turns \"no error was raised\" into \"the text is there\", the check the post's `write_atomic` makes.",
+      "hints": [
+        "A rename is one step only within one filesystem.",
+        "After the swap, compare what the file holds with what was meant to be written."
+      ]
+    },
+    {
+      "id": "hrn-008-q12",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "stores",
+        "access-pattern"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Match each piece of agent state to the store that suits how it is read and written. One store on the right suits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A plan the agent reads whole at the start of each session"
+        },
+        {
+          "key": "b",
+          "text": "Order records that several workers update and query by order number"
+        },
+        {
+          "key": "c",
+          "text": "Thousands of past tickets, searched for the three most like a new one"
+        },
+        {
+          "key": "d",
+          "text": "A known-good state to return to if the next edit breaks the tests"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A flat Markdown file"
+        },
+        {
+          "key": "b",
+          "text": "SQLite"
+        },
+        {
+          "key": "c",
+          "text": "An index or vector store"
+        },
+        {
+          "key": "d",
+          "text": "A git checkpoint commit"
+        },
+        {
+          "key": "e",
+          "text": "The context window"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Read whole wants a file; queried structured rows with several writers want SQLite's transactions in one file; similarity search over a large corpus wants an index; a point to return to is a commit. None of the four is needed every turn, so none belongs in the window.",
+      "hints": [
+        "Ask for each: read whole, queried by key, queried by similarity, or returned to?",
+        "The unused store holds only what is needed this turn and every turn."
+      ]
+    },
+    {
+      "id": "hrn-008-q13",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "concurrency",
+        "lost-writes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Two agents append to one shared `progress.md` and some of their lines go missing. Which changes stop the lost writes? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "Give each agent its own file, so no file has two writers",
+          "correct": true,
+          "feedback": "Correct. This series' answer to concurrency is fewer shared writers, not a bigger store."
+        },
+        {
+          "key": "b",
+          "text": "Move the records into SQLite, which serialises the writers",
+          "correct": true,
+          "feedback": "Correct. A database with transactions orders concurrent writes; it costs a dependency and the file's diffability."
+        },
+        {
+          "key": "c",
+          "text": "Have each agent rewrite the whole file atomically with a temporary file and a rename",
+          "correct": false,
+          "feedback": "The rename stops a torn file, not a lost update: two agents that each read, change and replace the file still overwrite each other."
+        },
+        {
+          "key": "d",
+          "text": "Move the log into the context window of a single orchestrating agent",
+          "correct": false,
+          "feedback": "The window is volatile and paid for every call; it trades lost writes for lost state at the first reset."
+        }
+      ],
+      "explanation": "Lost writes come from two writers on one file. Giving each writer its own file removes the contention; a transactional store serialises it. An atomic rename protects one writer from a crash, not two writers from each other.",
+      "hints": [
+        "Separate what protects a file from a crash and what protects it from a second writer.",
+        "One working fix removes the second writer; another puts the writers in order."
+      ]
+    },
+    {
+      "id": "hrn-008-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "handoff",
+        "git",
+        "reset"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "A long task spans many context windows, with a reset between each. Explain how the handoff file and git checkpoints work together so that a fresh session neither loses the thread nor builds on a broken tree. Cover what each of the four fields does, when the handoff is written, how it is written, and what the fresh session checks first.",
+      "kind": "explain",
+      "solution": "1. **The fields.** Spec is the goal and does not change; Done records what is verified, with a count; Next is an executable instruction a fresh window can act on without history; State is checkable: branch, last checkpoint hash, test count.\n2. **When.** At the checkpoint, before the risky step, so it is a plan rather than an after-the-fact summary, and it survives a session that dies mid-step.\n3. **How.** Rewritten, never appended, through a temporary file in the same directory and an atomic rename, then read back, so a kill leaves the old file whole and a failed write is reported.\n4. **The check.** The fresh session compares State with the tree: if HEAD is not the named checkpoint, a commit landed without verification, so it rolls back to the checkpoint (or reports the mismatch) before resuming at Next.\n5. **The division of labour.** Git holds the work and makes it reversible; the handoff holds the intent and the pointer into git; the window is disposable, which is what a reset (post 09) and a Ralph loop (post 18) rely on.",
+      "rubric": [
+        {
+          "criterion": "States what each of Spec, Done, Next and State is for, with Next executable and State checkable",
+          "points": 2
+        },
+        {
+          "criterion": "Places the write at the checkpoint, before the risky step, and says why",
+          "points": 1
+        },
+        {
+          "criterion": "Describes the atomic rewrite: temporary file beside the target, rename, read back, never appended",
+          "points": 2
+        },
+        {
+          "criterion": "Has the fresh session compare State with HEAD and roll back or report on a mismatch",
+          "points": 2
+        },
+        {
+          "criterion": "Says what git holds and what the handoff holds, and that the window is disposable",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The run of handoff.py is this whole answer in miniature: the State field catches session 1's unverified commit, the rollback returns to the named checkpoint, and Next puts the fresh session on step 3.",
+      "hints": [
+        "Start from what a fresh window knows: nothing but the file and the tree.",
+        "Ask what could make the file and the tree disagree."
+      ],
+      "connects": [
+        "hrn-009",
+        "hrn-018"
+      ]
+    },
+    {
+      "id": "hrn-008-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "placement",
+        "critique",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "Critique this harness. It pastes every test log (about 20,000 tokens each, arriving at iterations 2, 5 and 8 of runs capped at 12) into the transcript; keeps the plan only in the conversation; appends a line to `notes.md` after every step and injects the whole file each turn; and edits a working directory that is not under git. Name each placement mistake, the fix, and what the logs cost in input tokens over one run before and after the fix, with a pointer of 20 tokens.",
+      "kind": "critique",
+      "solution": "1. **Logs in the transcript.** State in the window that belongs on disk: write each to `scratch/` and return a pointer. Cost: a log from iteration $k$ rides on $12 - k$ requests, so $20{,}000 \\times (10 + 7 + 4) = 420{,}000$ tokens; with pointers $20 \\times 21 = 420$, a thousandfold less, and the logs stay a `grep` away.\n2. **Plan only in the conversation.** It dies at the first reset and drifts in a filling window: keep `plan.md` on disk and rewrite it each step.\n3. **An append-only `notes.md` injected every turn.** The window problem relocated to disk, read whole every turn and growing: rewrite or compact it, and inject only what is needed every turn.\n4. **No git.** Durable but not reversible: checkpoint after each verified step, with the return code checked, filtered staging and a scoped clean, and keep `scratch/` in `.gitignore`.\n5. **The rule behind all four.** Placement follows when state is needed, then how it is read; size is only a proxy.",
+      "rubric": [
+        {
+          "criterion": "Identifies the logs as window state that belongs on disk and fixes it with a file and a restorable pointer",
+          "points": 2
+        },
+        {
+          "criterion": "Computes 420,000 tokens before and 420 after, counting 10, 7 and 4 requests",
+          "points": 3
+        },
+        {
+          "criterion": "Moves the plan to a rewritten file on disk",
+          "points": 1
+        },
+        {
+          "criterion": "Treats the ever-growing notes.md as the window problem on disk and compacts or rewrites it",
+          "points": 1
+        },
+        {
+          "criterion": "Adds git checkpoints with the three safeguards and an ignored scratch directory",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Every mistake is a placement mistake: state kept where it costs every turn, or where it cannot be returned to. The token arithmetic is the method of snippets/offload_cost.py applied to three logs.",
+      "hints": [
+        "Each log is re-sent on every request after the turn it arrived in.",
+        "For each of the four practices, ask: needed every turn, and reversible?"
+      ]
+    },
+    {
+      "id": "hrn-008-q16",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "offloading",
+        "snippet"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-14",
+      "prompt": "In `posts/08-state-filesystem-git/snippets/offload_cost.py`, set `ARRIVES = 6` and run it from the series root. What does the `carried` column show for the log left in the window?",
+      "answer": {
+        "value": 150000,
+        "tolerance": 1,
+        "unit": "tokens"
+      },
+      "precision_note": "carried() returns size * (CAP - ARRIVES) = 25,000 * (12 - 6) = 150,000; confirmed by running the edited snippet. 175,000 (counting 7 requests) and 25,000 * 12 = 300,000 fall outside.",
+      "explanation": "The log is still about 25,000 tokens; arriving at iteration 6 of 12, it rides on requests 7 to 12, six of them, so the run carries 150,000 tokens of it.",
+      "hints": [
+        "The log's size does not change; only the number of requests that carry it does."
+      ]
+    }
+  ]
+}

@@ -1,41 +1,26 @@
 id: hrn-008
 slug: 08-state-filesystem-git
-title: "08 · State & the filesystem — durable memory and git as state"
-
-description: >
-  The model is stateless, and the window it reads each turn is volatile, expensive, and
-  small relative to the work: smaller in practice than the number on the box, because
-  accuracy falls well before the nominal limit. The filesystem is the opposite (effectively
-  unbounded, durable, and cheap), which makes it the harness's natural extension of memory:
-  a place to write plans, offload big tool outputs, and pass work between steps.
-
-author: "Ajay"
+title: "08 - State and the filesystem: durable memory and git as state"
+summary: "The window is volatile, expensive and small relative to the work, so a harness keeps its state on disk, makes it reversible with git, and carries it across a context reset in one handoff file written atomically."
 date: 2026-07-20
-last_modified: 2026-09-05
-
-tags: [harness-engineering, primitives, state, filesystem, git]
-
-keywords:
-  - harness engineering
-  - primitives
-  - state
-  - filesystem
-  - git
-  - handoff file
-  - inter-step bus
-  - handoff artefact
-  - context reset
-
-category: Core primitives
-series: Harness Engineering
+updated: 2026-10-14
+status: complete
 part: "Part II - Core primitives"
-
+level: intermediate
+reading_time: 24
+tags: [harness-engineering, primitives, state, filesystem, git, handoff-file]
 hero: diagrams/01-filesystem-durable-state.svg
-hero_alt: "The context window on the left (small, volatile, expensive) and a durable store on the right holding a filesystem and a git commit ladder, connected by write/read and commit/revert arrows."
-
-reading_time: 27
-toc: true
-draft: false
-canonical_url: ""
-prev: ../07-skills-mcp-runtime/
-next: ../09-context-management-loop/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Decide whether a piece of state belongs in the window or on disk by when it is needed, and use the filesystem as scratchpad and inter-step bus."
+  - id: o2
+    text: "Work out what offloading one tool result saves a run, from its size, the turn it arrives and the iteration cap."
+  - id: o3
+    text: "Checkpoint after each verified step and roll back a bad one under git, with the commit's return code checked, staging filtered and the clean scoped."
+  - id: o4
+    text: "Write a handoff file that a fresh session can check and resume from, replace it atomically, and confirm that the write landed."
+  - id: o5
+    text: "Choose between a flat file, SQLite and an index from the access pattern, the number of writers, partial-write safety and review."
+recommended: [hrn-006]
