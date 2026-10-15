@@ -1,42 +1,26 @@
 id: hrn-011
 slug: 11-verification-loops
-title: "11 · Verification loops — tests, self-critique, fail-fast"
-
-description: >
-  Autonomy is only as safe as the checking around it. A verification loop checks each step
-  against ground truth (tests, a schema, an independent judge) so a small error surfaces
-  immediately instead of compounding into a wasted run.
-
-author: "Ajay"
+title: "11 - Verification loops: tests, self-critique, fail-fast"
+summary: "A verification loop checks each step against ground truth so that an error surfaces at the step that made it, and a gate on the final-answer exit turns the model believing it is done into the work being done."
 date: 2026-07-28
-last_modified: 2026-09-05
-
-tags: [harness-engineering, control, verification, testing, reliability]
-
-keywords:
-  - harness engineering
-  - control
-  - verification
-  - testing
-  - reliability
-  - verification loop
-  - victory declaration
-  - per step
-  - executable and objective
-  - objective ground truth
-  - a separate evaluator
-  - objective truth
-
-category: Control and reliability
-series: Harness Engineering
+updated: 2026-10-15
+status: complete
 part: "Part III - Control and reliability"
-
+level: intermediate
+reading_time: 22
+tags: [harness-engineering, control-and-reliability, verification, testing, self-critique, fail-fast]
 hero: diagrams/01-verification-gate.svg
-hero_alt: "The agent loop feeding a candidate final answer into a verification gate; on pass the run is done, on fail the failure report is injected back into the loop."
-
-reading_time: 26
-toc: true
-draft: false
-canonical_url: ""
-prev: ../10-continual-learning-ratchet/
-next: ../12-planner-generator-evaluator/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Gate the loop's final-answer exit on ground truth, choosing the cheapest verifier that covers the risk."
+  - id: o2
+    text: "Explain why self-critique skews positive, and why it can be a first pass but never the only gate."
+  - id: o3
+    text: "Feed a failing check back into the loop so that success is silent and failure is verbose, with a cap and a no-progress exit on the retries."
+  - id: o4
+    text: "Price an unverified run against a gate on every step, and decide where a gate belongs, including before an action that cannot be undone."
+  - id: o5
+    text: "Handle a flaky or gameable verifier, and score a task on verifier's rule to say which gate it admits."
+recommended: [hrn-006, ctx-020]

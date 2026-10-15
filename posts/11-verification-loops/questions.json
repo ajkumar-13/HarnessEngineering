@@ -1,0 +1,663 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-011",
+  "next_ordinal": 16,
+  "questions": [
+    {
+      "id": "hrn-011-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "victory-declaration",
+        "exit-1"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent loop stops because the model returned a final answer with no tool call and a terminal stop reason. With no other check in place, what does that stop establish?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "That the model believes the task is finished",
+          "correct": true,
+          "feedback": "Correct. Exit (1) records the model's own judgement that it is done; nothing has checked the work."
+        },
+        {
+          "key": "b",
+          "text": "That the tests the task needs have passed",
+          "correct": false,
+          "feedback": "Nothing ran the tests. A final answer can claim green tests that were never run, which is victory declaration."
+        },
+        {
+          "key": "c",
+          "text": "That the work is correct, because the model would otherwise have called another tool",
+          "correct": false,
+          "feedback": "A model can stop calling tools while the work is still wrong; stopping is a claim, not evidence."
+        },
+        {
+          "key": "d",
+          "text": "That the iteration cap was reached",
+          "correct": false,
+          "feedback": "The cap is exit (2), a different exit; this run stopped on a final answer."
+        }
+      ],
+      "explanation": "A final answer means only that the model thinks it is finished. Turning that belief into a fact needs a gate on exit (1) that checks the work against something outside the model.",
+      "hints": [
+        "Ask who decided that the run was over."
+      ]
+    },
+    {
+      "id": "hrn-011-q02",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "verifier-ladder",
+        "schema"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "One step of an agent's run writes a JSON configuration file that a service loads at start-up. The risk being guarded is a missing required key or a value of the wrong type. Which check should gate this step?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Validate the file against the service's schema",
+          "correct": true,
+          "feedback": "Correct. Shape is exactly what a schema proves, deterministically and at near-zero cost."
+        },
+        {
+          "key": "b",
+          "text": "Ask an independent judge model whether the configuration looks complete",
+          "correct": false,
+          "feedback": "A judge costs a model call and can be wrong; a mechanical check covers this risk."
+        },
+        {
+          "key": "c",
+          "text": "Start the whole service with its full test suite after every step",
+          "correct": false,
+          "feedback": "That would catch it, but at far more cost and time than the risk needs; it belongs at a checkpoint."
+        },
+        {
+          "key": "d",
+          "text": "Have the agent re-read its own file and confirm it is complete",
+          "correct": false,
+          "feedback": "Self-critique skews positive and is not ground truth; it can be a first pass, never the gate."
+        }
+      ],
+      "explanation": "The rule is the cheapest deterministic check that covers the risk. A missing key or a wrong type is a shape error, and schema validation proves shape without a model call.",
+      "hints": [
+        "Name what kind of error is feared: shape or meaning?",
+        "Which verifier on the ladder proves shape and nothing more?"
+      ]
+    },
+    {
+      "id": "hrn-011-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "self-critique",
+        "intrinsic-feedback"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Studies of self-correction found that prompting a model to review and revise its own reasoning, with no external signal, did not improve its answers and sometimes made them worse. Which reading of that finding fits the evidence?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Self-correction works with a reliable external signal, such as executed tests, not on opinion alone",
+          "correct": true,
+          "feedback": "Correct. The surveyed successes rely on external feedback; intrinsic self-critique does not supply ground truth."
+        },
+        {
+          "key": "b",
+          "text": "Self-critique is useless in every setting, so a harness should never run it, not even as a first pass",
+          "correct": false,
+          "feedback": "It can catch things as a cheap first pass; what it cannot be is the only gate."
+        },
+        {
+          "key": "c",
+          "text": "The models were too small, and a large enough model grading its own work would count as ground truth",
+          "correct": false,
+          "feedback": "The results include strong models, and a model's opinion of its own work is still an opinion that skews positive."
+        },
+        {
+          "key": "d",
+          "text": "Revision always degrades an answer, so a loop should accept its first candidate",
+          "correct": false,
+          "feedback": "The companion's own run converges by revising against test reports: revision with a real signal works."
+        }
+      ],
+      "explanation": "Huang et al. found intrinsic self-correction does not improve reasoning; Kamoi et al. find self-correction works where reliable external feedback exists. The useful split is not revise against do not revise, but opinion against ground truth.",
+      "hints": [
+        "What was missing from the setting in which self-correction failed?"
+      ]
+    },
+    {
+      "id": "hrn-011-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "self-critique",
+        "positive-skew"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Before letting the loop exit, a harness asks the same model, in the same context, whether its work is correct, and exits if it says yes. Why is that a weak gate? Answer in one or two sentences.",
+      "answer": {
+        "model": "A model judging its own work skews positive: it recognises and favours its own output and is trained towards agreeable answers, and with no external signal its yes is an opinion that can be wrong in its own favour.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?=(?:\\S+\\s+){2,}\\S)(?!\\s*[\\w-]+(?:\\s*,\\s*[\\w-]+)+\\s*\\.?\\s*$)(?![\\s\\S]*\\b(too harsh|harsh|too strict|too critical|skews? negative\\w*|negative bias|pessimis\\w*|rejects? (correct|good|working)\\w*)\\b)(?![\\s\\S]*\\b(not|isn'?t|never|no longer|rarely|seldom|won'?t|wouldn'?t|doesn'?t|does not|cannot|can'?t)\\s+(\\w+\\s+)?(biased|lenient|optimistic|favou?r\\w*|skew\\w*|sycophantic|positive|says? yes|agree\\w*|approv\\w*|prais\\w*)\\b)(?=[\\s\\S]*\\b(skew\\w*|bias\\w*|favou?r\\w*|lenien\\w*|optimis\\w*|sycophan\\w*|self-preference|overconfiden\\w*|agreeabl\\w*|(?:trained|tuned|inclined|tends?|likely|eager|wants?) (?:towards? |to )?agree\\w*|agrees? with (?:itself|its own)\\w*|approv\\w*|prais\\w*|says? yes|leans? towards? yes|rubber.stamp\\w*|marking its own|grading its own|grades its own|judging its own|own homework)\\b|[\\s\\S]*\\b(no|without|lacks?|lacking)\\s+(an\\s+|any\\s+)?(external|outside|independent)\\s+(signal|feedback|check|ground truth|evidence|verdict)|[\\s\\S]*\\bwithout ground truth\\b)(?![\\s\\S]*\\b(judge|evaluator|reviewer|grader)s?\\s+(would|will|might|could)\\s+agree)(?![\\s\\S]*\\b(slow|latency|costs? a model call|expensive|context is too long)\\b)[\\s\\S]*\\S[\\s\\S]*$"
+        ]
+      },
+      "explanation": "Self-assessment skews positive: evaluators favour their own generations, and assistants trained on human feedback lean towards agreeable answers. With no ground truth outside the model, the gate's verdict is the author's opinion of its own work.",
+      "hints": [
+        "Who wrote the work, and who is grading it?"
+      ]
+    },
+    {
+      "id": "hrn-011-q05",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "same-report-exit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the companion's demo, the first two candidates both fail with the report `is_prime(1,) == True, expected False`, although the second changed the code, and the third candidate passes. A correction loop adds exit (4): stop unverified once the last `window` reports are identical. What happens with `window=2`, and with `window=3`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "With 2 it stops unverified after 2 attempts; with 3 it passes on attempt 3",
+          "correct": true,
+          "feedback": "Correct. Two identical reports fire a window of 2 one attempt before the passing candidate; a window of 3 never sees three."
+        },
+        {
+          "key": "b",
+          "text": "Both windows let the run reach attempt 3 and pass",
+          "correct": false,
+          "feedback": "A window of 2 fires as soon as two identical reports arrive, which happens at attempt 2."
+        },
+        {
+          "key": "c",
+          "text": "Both stop after 2 attempts, since the report repeated",
+          "correct": false,
+          "feedback": "A window of 3 needs three identical reports in a row; the run passes at attempt 3 first."
+        },
+        {
+          "key": "d",
+          "text": "With 2 the run continues to the cap of 5 attempts, because the code changed between attempts",
+          "correct": false,
+          "feedback": "The rule compares reports, not code, so a changed candidate with the same report still counts as a repeat."
+        }
+      ],
+      "explanation": "The report is a coarse fingerprint: the same failure can follow a real change of code. The post's snippet prints the companion run verified after 3 attempts with a window of 3 and unverified after 2 with a window of 2.",
+      "hints": [
+        "Count the identical reports before the passing attempt.",
+        "The rule looks at reports only."
+      ]
+    },
+    {
+      "id": "hrn-011-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "economics",
+        "forfeit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A twelve-iteration run sends 6,000 input tokens on its first request and 3,100 more on each later one, so iteration k sends 6,000 + 3,100 (k - 1). An error enters at iteration 3 and, with no gate, is caught only at the end; every iteration from 3 to 12 is forfeit. How many input tokens are forfeit?",
+      "answer": {
+        "value": 261500,
+        "tolerance": 500,
+        "unit": "tokens"
+      },
+      "precision_note": "Iterations 3 to 12 send 12,200 to 40,100, ten terms: $10 \\times (12{,}200 + 40{,}100) / 2 = 261{,}500$, or the run's 276,600 minus 6,000 and 9,100. Iterations 2 to 12 (270,600) and 4 to 12 (249,300) both fall outside the tolerance.",
+      "explanation": "The forfeit iterations are the late, expensive ones: ten of twelve iterations are 95% of the input tokens, because each turn re-reads the growing history.",
+      "hints": [
+        "Write out the tokens of iterations 3 and 12.",
+        "The ten iterations form an arithmetic series: count times the mean of the first and last."
+      ]
+    },
+    {
+      "id": "hrn-011-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "economics",
+        "judge"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "On a run of 276,600 input tokens, an independent judge reads a 15,000-token candidate on each call. The judge is placed at 4 checkpoints rather than on all 12 steps. By what percentage of the run's input tokens do the judge calls increase the total? Give a percentage to one decimal place.",
+      "answer": {
+        "value": 21.7,
+        "tolerance": 0.1,
+        "unit": "%"
+      },
+      "precision_note": "$4 \\times 15{,}000 = 60{,}000$; $60{,}000 / 276{,}600 = 0.2169$, or 21.7%. A judge on all 12 steps gives 65.1%, and a 12,000-token candidate at 4 checkpoints gives 17.4%.",
+      "explanation": "The judge is the one verifier on the ladder with a token price, so its placement is an arithmetic choice: every call adds its reading to the run, which is why it sits at checkpoints rather than on every step.",
+      "hints": [
+        "Multiply the calls by the tokens each reads.",
+        "Divide by the run's total and express as a percentage."
+      ]
+    },
+    {
+      "id": "hrn-011-q08",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "no-progress",
+        "correction-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "`correct` is a correction loop that should stop unverified as soon as the last `window` failure reports are identical (exit (4), no progress), and otherwise retry up to `max_attempts`. As written it stops on the first repeated report, whatever `window` is, so it abandons runs that would have passed. Fix it so that the `window` parameter decides, without changing the return value `(verified, attempts)`.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "from collections import namedtuple\n\nVerdict = namedtuple(\"Verdict\", \"ok report\")\n\n\ndef correct(generate, verify, max_attempts=5, window=3):\n    \"\"\"Run a correction loop and return (verified, attempts).\n\n    generate(feedback) proposes a candidate from the last failure report (None at first);\n    verify(candidate) returns a Verdict. Stop verified on the first pass. Stop unverified\n    after max_attempts, or as soon as the last `window` reports are all the same: exit (4),\n    no progress.\"\"\"\n    feedback = None\n    for attempt in range(1, max_attempts + 1):\n        verdict = verify(generate(feedback))\n        if verdict.ok:\n            return True, attempt\n        if verdict.report == feedback:          # the same failure twice running\n            return False, attempt\n        feedback = verdict.report\n    return False, max_attempts\n",
+      "solution": "from collections import namedtuple\n\nVerdict = namedtuple(\"Verdict\", \"ok report\")\n\n\ndef correct(generate, verify, max_attempts=5, window=3):\n    \"\"\"Run a correction loop and return (verified, attempts).\n\n    generate(feedback) proposes a candidate from the last failure report (None at first);\n    verify(candidate) returns a Verdict. Stop verified on the first pass. Stop unverified\n    after max_attempts, or as soon as the last `window` reports are all the same: exit (4),\n    no progress.\"\"\"\n    feedback = None\n    reports = []\n    for attempt in range(1, max_attempts + 1):\n        verdict = verify(generate(feedback))\n        if verdict.ok:\n            return True, attempt\n        reports.append(verdict.report)\n        if len(reports) >= window and len(set(reports[-window:])) == 1:\n            return False, attempt\n        feedback = verdict.report\n    return False, max_attempts\n",
+      "tests": "def scripted(reports):\n    \"\"\"A model and a verifier: the k-th verdict is reports[k], None meaning a pass.\"\"\"\n    seen = []\n    verdicts = iter(reports)\n\n    def generate(feedback):\n        seen.append(feedback)\n        return len(seen)\n\n    def verify(candidate):\n        r = next(verdicts)\n        return Verdict(r is None, \"\" if r is None else r)\n    return generate, verify, seen\n\n\n# 1. the same report twice, then a pass: a window of 3 lets the run reach green\ng, v, seen = scripted([\"A\", \"A\", None])\nassert correct(g, v) == (True, 3)\nassert seen == [None, \"A\", \"A\"]\n\n# 2. a model that never changes its answer stops after 3 identical reports, not 5\ng, v, _ = scripted([\"A\"] * 5)\nassert correct(g, v) == (False, 3)\n\n# 3. alternating failures are not \"the same report window times running\"\ng, v, _ = scripted([\"A\", \"B\", \"A\", \"B\", \"A\", \"B\", None])\nassert correct(g, v, max_attempts=7) == (True, 7)\n\n# 4. only the last `window` reports count\ng, v, _ = scripted([\"A\", \"B\", \"B\", \"B\", None])\nassert correct(g, v) == (False, 4)\n\n# 5. the window is a parameter\ng, v, _ = scripted([\"A\", \"A\", None])\nassert correct(g, v, window=2) == (False, 2)\n\n# 6. the cap still fires first when it is smaller than the window\ng, v, _ = scripted([\"A\"] * 10)\nassert correct(g, v, max_attempts=2) == (False, 2)\n\n# 7. a first-attempt pass is silent\ng, v, seen = scripted([None])\nassert correct(g, v) == (True, 1) and seen == [None]\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The fix keeps every failure report and stops only when the last `window` of them are all the same. Comparing with the previous report alone is a window of 2, which stops the companion's own demo one attempt before its passing candidate; counting repeats anywhere in the run, or looking at every report since the start, stops at the wrong time.",
+      "hints": [
+        "Keep the reports, not only the last one.",
+        "Look only at the last `window` reports, and only once there are that many."
+      ]
+    },
+    {
+      "id": "hrn-011-q09",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "correction-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Put one attempt of a correction loop with a no-progress exit in the order it runs.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Check the candidate against the test cases"
+        },
+        {
+          "key": "b",
+          "text": "If the loop has not stopped, hand the failure report back as the feedback for the next attempt"
+        },
+        {
+          "key": "c",
+          "text": "Propose a candidate from the last failure report"
+        },
+        {
+          "key": "d",
+          "text": "Return the candidate as verified if the check passed"
+        },
+        {
+          "key": "e",
+          "text": "Record the report and stop if the last few are identical"
+        }
+      ],
+      "answer": [
+        "c",
+        "a",
+        "d",
+        "e",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Generate, verify, return on a pass, then on a failure record the report and test the no-progress window before the report becomes the next attempt's feedback. Success is silent because the pass returns before any report is kept.",
+      "hints": [
+        "Nothing can be checked before it is proposed.",
+        "The feedback is set last, ready for the next proposal."
+      ]
+    },
+    {
+      "id": "hrn-011-q10",
+      "type": "match",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "gate-placement",
+        "reversibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Match each action an agent is about to take, or has just taken, to where its check belongs.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A refactor of a module in a repository under git"
+        },
+        {
+          "key": "b",
+          "text": "A force-push to the main branch, which a rule forbids in every case"
+        },
+        {
+          "key": "c",
+          "text": "An email offering a refund to a customer"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A verification gate in the loop, after the step"
+        },
+        {
+          "key": "b",
+          "text": "A blocking pre-tool hook, before the call"
+        },
+        {
+          "key": "c",
+          "text": "A human approval gate, before the call"
+        },
+        {
+          "key": "d",
+          "text": "The model's own review, after the step"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c"
+      },
+      "explanation": "A reversible step is checked after it, since a failure costs one rollback. An irreversible action that a rule can decide mechanically is blocked before it by a pre-tool hook. An irreversible action that needs judgement goes to a human first. Self-review is never the gate.",
+      "hints": [
+        "First ask whether the action can be undone.",
+        "Then ask whether a fixed rule can decide it."
+      ]
+    },
+    {
+      "id": "hrn-011-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "flaky-test"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent's history shows: a test fails, the agent edits a function the test covers, the test passes, and the run ends verified. A person rerunning the original code finds the test passes about nine times in ten with no change at all. What should the harness do first?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Take the test out of the agent-facing gate until it is fixed",
+          "correct": true,
+          "feedback": "Correct. A non-deterministic test hands the model convincing false reports; quarantine it before anyone gets round to fixing it."
+        },
+        {
+          "key": "b",
+          "text": "Nothing: the agent's edit made the test pass, so the loop worked",
+          "correct": false,
+          "feedback": "The original code was not broken; the agent repaired working code on a false report, and the history only looks healthy."
+        },
+        {
+          "key": "c",
+          "text": "Raise `max_attempts` so the agent has more chances to make the test pass",
+          "correct": false,
+          "feedback": "More attempts give a flaky test more chances to send the model after code that is not broken."
+        },
+        {
+          "key": "d",
+          "text": "Ask the model to judge whether each failure is real before acting on it",
+          "correct": false,
+          "feedback": "That trades a flawed fact for an opinion; the agent has no prior about which tests lie."
+        }
+      ],
+      "explanation": "A flaky test fails correct work and the model dutifully repairs it, leaving every artefact of a healthy correction loop behind. Because the harness feeds every report straight back, a flaky test is an active hazard to an agent; it leaves the gate first.",
+      "hints": [
+        "Was the original code actually broken?",
+        "Which part of the gate produced a false signal?"
+      ]
+    },
+    {
+      "id": "hrn-011-q12",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "gaming",
+        "test-files"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "After a long run of failures, an agent's suite goes green in one attempt. The diff shows that the agent deleted an assertion in `tests/test_parser.py` rather than fixing the parser. What harness rule was missing? Answer in one sentence.",
+      "answer": {
+        "model": "The verifier must not be writable by the thing it verifies: test files are denied to the agent's write tools by a pre-tool rule, or the test files are diffed and any change fails the run.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?=(?:\\S+\\s+){3,}\\S)(?!(?![\\s\\S]*\\b(instead of|rather than|not enough|isn'?t enough|a request|than (asking|telling|trusting|prompting|instructing|reminding)))[\\s\\S]*\\b(ask|asks|asking|tell|telling|instruct\\w*|prompt\\w*|remind\\w*|trust)\\b[\\s\\S]*\\b(model|agent|it)\\b)(?![\\s\\S]*\\b(not|never|shouldn'?t|mustn'?t|needn'?t|no need to)\\s+(be\\s+)?(block\\w*|den(y|ied|ies)|prevent\\w*|stop\\w*|forbid\\w*|lock\\w*|protect\\w*|restrict\\w*)\\b)(?![\\s\\S]*\\b(let|allow|allowing|permit\\w*)\\s+(the\\s+)?(agent|model|it)\\s+(to\\s+)?(edit|write|change|modify))(?=[\\s\\S]*\\b(test\\w*|suite|verifier|gate|assertion\\w*|checks?)\\b)(?=[\\s\\S]*\\b(not\\s+(be\\s+)?(writable|editable)|not\\s+(be\\s+)?(able\\s+to\\s+)?(edit|write|change|modify|touch)|unable\\s+to\\s+(edit|write|change|modify|touch)|unwritable|read-only|read only|deny\\w*|denied|denies|block\\w*|forbid\\w*|prevent\\w*|lock\\w*|protect\\w*|cannot\\s+(edit|write|change|modify|touch)|can'?t\\s+(edit|write|change|modify|touch)|must\\s+not\\s+(edit|write|change|modify|touch)|never\\s+(be\\s+)?(able\\s+to\\s+)?(edit|write|change|modify|touch)|no\\s+write|without\\s+write|out(side)? (of )?(its|the agent'?s) (write )?reach|diff\\w*|compar\\w*|hidden|held[- ]out|never sees?|can'?t see|cannot see)\\b)[\\s\\S]*\\S[\\s\\S]*$"
+        ]
+      },
+      "explanation": "An agent that can edit the gate does not have a gate. The defences are mechanical: deny writes to the test files, diff them as part of the verdict, and keep held-out tests the agent never sees. Asking the model not to edit them is a request, not a rule.",
+      "hints": [
+        "Who was able to change the thing that judged the work?",
+        "The fix is enforced by the harness, not asked of the model."
+      ]
+    },
+    {
+      "id": "hrn-011-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "gate-placement",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent maintains a service's database: it edits migration scripts in a git repository, runs the unit tests, and finally applies a migration to the production database. Design its verification: what gates its final-answer exit, what runs after each step and at checkpoints, and what has to happen before the production migration, with the reason for each placement.",
+      "kind": "design",
+      "solution": "1. **Exit (1).** The loop may not stop on a final answer: a gate runs the migration tests and the unit suite, and only a pass ends the run verified; a spent cap ends it flagged unverified.\n2. **Each step.** After every edit, the cheapest deterministic checks that cover the risk: a schema or lint check on the migration file, and the unit tests touching the changed files, in seconds. Failures are fed back verbosely.\n3. **Checkpoints.** Before each commit, the full suite and a dry run of the migration against a copy of the database; commit only verified steps, so a bad step rolls back.\n4. **The production migration.** It cannot be undone, so no after-the-fact check helps. A blocking pre-tool hook refuses it unless a backup exists and the dry run passed (post 13), and a human approves it (post 15), since whether to run it now is judgement.\n5. **Integrity.** The test files are out of the agent's write reach, and a held-out test set runs at the gate.",
+      "rubric": [
+        {
+          "criterion": "Gates exit (1) on tests rather than the model's word, and handles a spent cap as unverified",
+          "points": 2
+        },
+        {
+          "criterion": "Puts cheap deterministic checks on every step and dearer ones at checkpoints",
+          "points": 2
+        },
+        {
+          "criterion": "Moves the check in front of the irreversible migration: a blocking hook and a human approval",
+          "points": 3
+        },
+        {
+          "criterion": "Keeps the verifier out of the agent's write reach",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the reason for each placement in terms of reversibility and cost",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Reversible steps are checked after they run and rolled back on failure; the irreversible one is checked before it, by a hook where a rule decides and by a person where judgement does.",
+      "hints": [
+        "Sort the actions by whether they can be undone.",
+        "For the step that cannot be undone, ask what could decide mechanically and what needs a person."
+      ],
+      "connects": [
+        "hrn-013",
+        "hrn-015",
+        "hrn-008"
+      ]
+    },
+    {
+      "id": "hrn-011-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "verifiers-rule",
+        "judge"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team wants an agent to write incident summaries from logs and chat transcripts, unattended, with a verification gate. Score the task on the five properties of verifier's rule, say which gate it can have today, and propose how to build ground truth that would let more of the check be mechanical.",
+      "kind": "critique",
+      "solution": "1. **Objective truth: no.** Faithfulness and emphasis are judgements; several summaries are defensible.\n2. **Fast: partly.** A reader takes seconds per summary, a judge one call.\n3. **Scalable: only through a judge.** Humans do not scale to every summary.\n4. **Low noise: moderate.** Rubric scores vary between graders and runs.\n5. **Continuous reward: a rubric score, noisy.**\n\n**Gate today.** An independent judge against a rubric, sampled against human labels to measure how often it agrees with people; self-critique only as a first pass. The judge's verdict is an opinion, so the run is reported as judged, not verified.\n\n**Building ground truth.** Make parts mechanical: require the summary to fill a schema (timeline, impact, root cause, actions) checked by a validator; check that every timestamp and service name in the summary appears in the logs; keep a fixture set of past incidents with accepted summaries as golden files for the judge's calibration. Do not promote the judge to a role it cannot hold.",
+      "rubric": [
+        {
+          "criterion": "Scores all five properties with a reason for each",
+          "points": 3
+        },
+        {
+          "criterion": "Chooses an independent judge sampled against human labels, not self-critique",
+          "points": 2
+        },
+        {
+          "criterion": "States that a judged summary is an opinion, not a verified fact",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes concrete mechanical ground truth: a schema, fact checks against the source, golden files",
+          "points": 3
+        },
+        {
+          "criterion": "Avoids presenting the judge as ground truth",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Verifier's rule predicts how good a gate a task can have. A summary scores poorly, so the honest response is a calibrated judge plus whatever ground truth can be built around it, rather than pretending the judge is a test.",
+      "hints": [
+        "Take the properties one at a time: objective, fast, scalable, low noise, continuous.",
+        "Which parts of a summary could a program check against the logs?"
+      ]
+    },
+    {
+      "id": "hrn-011-q15",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "lab",
+        "test-coverage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the lab snippet, step 1 asks for `is_prime` and steps 2 to 4 build on it, each step gated by its own test cases. Suppose the case `is_prime(1) == False` is deleted from step 1's cases and nothing else changes. What happens on the gated run?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Step 1 passes with the bug, and step 2 then fails every attempt, since the bug lies upstream of it",
+          "correct": true,
+          "feedback": "Correct. The gate is only as good as its cases: the bug slips through step 1 and surfaces one step later, where retrying `primes_below` cannot fix it."
+        },
+        {
+          "key": "b",
+          "text": "Step 1 still retries to green, because the gate knows `is_prime(1)` should be False",
+          "correct": false,
+          "feedback": "The gate knows only its cases; with the case deleted, the first candidate passes them all."
+        },
+        {
+          "key": "c",
+          "text": "Every step passes, since the remaining cases of each step are satisfied",
+          "correct": false,
+          "feedback": "`primes_below(10)` then returns `[0, 1, 2, 3, 5, 7]`, which fails its own case."
+        },
+        {
+          "key": "d",
+          "text": "The run stops at step 1 on exit (4), no progress, because the same report comes back on each attempt",
+          "correct": false,
+          "feedback": "With the case deleted, step 1 produces no failure report at all."
+        }
+      ],
+      "explanation": "A verifier checks what its cases cover, not everything. Remove the case that catches the bug and the error passes the gate where it entered; fail-fast then fires one step later, on code that is not itself wrong, so retrying it buys nothing.",
+      "hints": [
+        "Which step can the deleted case no longer fail?",
+        "Which function's output does `primes_below` depend on?"
+      ]
+    }
+  ]
+}
