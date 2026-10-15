@@ -1,0 +1,756 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-015",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-015-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "autonomy-spectrum",
+        "reversibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A coding agent's harness lets each action take its own stop on the autonomy spectrum. Which of these actions belongs at the autonomous stop?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Deploying the build to production",
+          "correct": false,
+          "feedback": "No rollback undoes a deploy to production, so a human decides before it runs."
+        },
+        {
+          "key": "b",
+          "text": "Running the project's test suite",
+          "correct": true,
+          "feedback": "Correct. Running tests changes nothing a checkpoint cannot restore, so the agent can take it alone."
+        },
+        {
+          "key": "c",
+          "text": "Opening a pull request on the shared repository",
+          "correct": false,
+          "feedback": "Technically reversible, but other people see it before it can be undone, so it earns a gate on visibility."
+        },
+        {
+          "key": "d",
+          "text": "Sending an email to a customer",
+          "correct": false,
+          "feedback": "An external email cannot be recalled by any rollback, so it is gated as irreversible."
+        }
+      ],
+      "explanation": "The stop is chosen per action: what a checkpoint can undo and nobody else sees first runs autonomously, and only the irreversible or the visible waits for a person. Running tests is the only reversible, invisible action here.",
+      "hints": [
+        "Ask of each action whether a rollback could undo it, and who would see it before then."
+      ]
+    },
+    {
+      "id": "hrn-015-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "visibility",
+        "pull-request"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Closing a pull request undoes it in a few seconds. Why does the post still gate opening one?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Because a pull request cannot be reverted once it is open",
+          "correct": false,
+          "feedback": "It can be closed; on reversibility alone it would run unattended."
+        },
+        {
+          "key": "b",
+          "text": "Because other people see it, and it enters their queues, before anyone can undo it",
+          "correct": true,
+          "feedback": "Correct. Visibility is a separate axis from reversibility, and this action fails it."
+        },
+        {
+          "key": "c",
+          "text": "Because the model may write a misleading pull request description",
+          "correct": false,
+          "feedback": "That is a reason to render requests from real arguments, not the reason this action earns a gate."
+        },
+        {
+          "key": "d",
+          "text": "Because every git command that touches a remote must be approved",
+          "correct": false,
+          "feedback": "The post gates two specific actions, a push and opening a pull request, not every remote git command, and a gate list built on such a blanket rule fires far too often."
+        }
+      ],
+      "explanation": "Two properties earn a gate and they are different axes: reversibility (a checkpoint cannot undo it) and visibility (others see it first). A pull request is reversible but visible, which is why Anthropic's own checkpoint recipe puts ask rules on `git push` and `gh pr create`.",
+      "hints": [
+        "There are two axes; which one does a pull request fail?"
+      ]
+    },
+    {
+      "id": "hrn-015-q03",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "gate-placement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Match each call to what the harness should do with it. One treatment on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Delete rows from the production database"
+        },
+        {
+          "key": "b",
+          "text": "Open a pull request on a shared repository"
+        },
+        {
+          "key": "c",
+          "text": "Edit a file in the agent's own working tree"
+        },
+        {
+          "key": "d",
+          "text": "A command a deny rule already matches"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "Gate it: it cannot be undone"
+        },
+        {
+          "key": "b",
+          "text": "Gate it: other people see it first"
+        },
+        {
+          "key": "c",
+          "text": "Let it run: a checkpoint undoes it"
+        },
+        {
+          "key": "d",
+          "text": "Refuse it before any person is asked"
+        },
+        {
+          "key": "e",
+          "text": "Ask once when the agent starts, then never again"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Irreversible and visible actions earn a gate for different reasons; reversible ones run alone because a rollback is the safety net; and a call a deterministic rule refuses must never reach a person, because the gate runs after every deterministic check. Approving a whole agent once at start-up is choosing one stop per agent, the mistake the post warns against.",
+      "hints": [
+        "Two of them are gated, for different reasons.",
+        "Where does the human gate sit relative to deny rules?"
+      ]
+    },
+    {
+      "id": "hrn-015-q04",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "policy",
+        "companion"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the companion `code/25-harness-plus/`, a `write_file` tool is registered with `sensitive=False`, and the run is given `ApprovalGate(decide=always_deny)`. The model calls `write_file`. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The decider denies it and the call never runs",
+          "correct": false,
+          "feedback": "The decider is only consulted for a call the policy gates; this one is never gated."
+        },
+        {
+          "key": "b",
+          "text": "The call runs, because `needs_approval` returns the tool's `sensitive` flag, which is False",
+          "correct": true,
+          "feedback": "Correct. The policy never passes the call to the decider, so `always_deny` is never asked; the companion's own test checks exactly this."
+        },
+        {
+          "key": "c",
+          "text": "The run stops with an error because the gate and the tool disagree",
+          "correct": false,
+          "feedback": "Nothing raises; a gate that is not consulted has nothing to disagree about."
+        },
+        {
+          "key": "d",
+          "text": "The call runs, but the run records it in `Result.denied`",
+          "correct": false,
+          "feedback": "`Result.denied` holds only calls the decider refused, and this one was never put to the decider."
+        }
+      ],
+      "explanation": "The companion's policy is `needs_approval(tool_name, sensitive, args)` returning `sensitive` unchanged, so gating is opt-in per tool. An unmarked tool is never put to the decider, whatever the decider would have said; that is also why a tool added later is unguarded until someone marks it.",
+      "hints": [
+        "Which half of the gate runs first, and what does it read?"
+      ]
+    },
+    {
+      "id": "hrn-015-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "policy",
+        "decider",
+        "testing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Why does keeping the approval policy separate from the decider make an approval gate testable without a person in the loop?",
+      "answer": {
+        "model": "Because the policy is ordinary code a test can assert against, and the decider is a seam: a test replaces the human with a stub such as always_approve or always_deny and runs the whole flow with no prompt.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think)\\b)(?![\\s\\S]*\\b(can ?not|can't|cannot|unable to|impossible to|no way to|never|no need to|need not|needn't)\\s+(\\w+\\s+){0,3}(stub|replace|substitute|swap|fake|mock|pass)\\w*)(?![\\s\\S]*\\b(human|person|reviewer|people)\\s+(is|are)\\s+(easy\\s+to\\s+|easily\\s+)?testable)(?![\\s\\S]*\\b(tests?|testing)\\s+(is|are)\\s+(impossible|not possible|unnecessary)\\b)(?![\\s\\S]*\\b(decider|policy)\\s+is\\s+(the\\s+same\\s+as\\s+)?the\\s+(policy|decider)\\b)(?=(?:\\S+\\s+){5})(?=[\\s\\S]*\\b(stub\\w*|fake\\w*|mock\\w*|replac\\w*|substitut\\w*|swap\\w*|stand[- ]in|always_deny|always_approve|auto-?(approve|deny)\\w*|plain (function|callable)|callable|pass(es|ed|ing)? (in )?a function)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "A human cannot be put under test, but a decider that is a plain callable can be swapped for an auto-approve or auto-deny function, which is how the companion's approval tests run offline; the policy, meanwhile, is deterministic code with assertable outputs.",
+      "hints": [
+        "What is the type of the decider in the companion?"
+      ]
+    },
+    {
+      "id": "hrn-015-q06",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "timeout",
+        "asynchronous-approval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "`decide_after_wait` is the waiting half of an asynchronous decider: the request has gone to a reviewer, and the answer arrives on `reply` as an `(approved, answered_id)` pair. As written it waits forever and accepts any reply. Fix it: wait at most `timeout` seconds; treat a reply addressed to another request as a refusal; and when nobody answers in time, deny a tool in `IRREVERSIBLE` and let any other tool proceed.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import queue\n\nIRREVERSIBLE = {\"deploy\", \"send_email\"}\n\n\ndef decide_after_wait(tool, reply, request_id, timeout):\n    \"\"\"Wait at most `timeout` seconds on `reply`, a queue.Queue of (approved, answered_id) pairs, and return\n    the verdict. A reply to another request is not consent. With no reply in time, deny an irreversible tool\n    and let any other tool proceed.\"\"\"\n    approved, answered_id = reply.get()\n    return approved\n",
+      "solution": "import queue\n\nIRREVERSIBLE = {\"deploy\", \"send_email\"}\n\n\ndef decide_after_wait(tool, reply, request_id, timeout):\n    \"\"\"Wait at most `timeout` seconds on `reply`, a queue.Queue of (approved, answered_id) pairs, and return\n    the verdict. A reply to another request is not consent. With no reply in time, deny an irreversible tool\n    and let any other tool proceed.\"\"\"\n    try:\n        approved, answered_id = reply.get(timeout=timeout)\n    except queue.Empty:\n        return tool not in IRREVERSIBLE\n    return approved and answered_id == request_id\n",
+      "tests": "import queue\nimport threading\nimport time\n\n\ndef call(tool, items, request_id, timeout, late=None):\n    \"\"\"Run decide_after_wait in a thread so that a decider that never returns fails instead of hanging.\"\"\"\n    q = queue.Queue()\n    for item in items:\n        q.put(item)\n    if late is not None:\n        threading.Timer(late[0], q.put, args=(late[1],)).start()\n    box = {}\n    t = threading.Thread(target=lambda: box.setdefault(\"v\", decide_after_wait(tool, q, request_id, timeout)),\n                         daemon=True)\n    started = time.monotonic()\n    t.start()\n    t.join(2.0)\n    assert not t.is_alive(), f\"{tool}: the decider never returned; it must give up after the timeout\"\n    return box[\"v\"], time.monotonic() - started\n\n# 1. an answer to this request is the verdict, either way\nassert call(\"write_file\", [(True, 7)], 7, 0.2)[0] is True\nassert call(\"write_file\", [(False, 7)], 7, 0.2)[0] is False\nassert call(\"deploy\", [(True, 7)], 7, 0.2)[0] is True\n\n# 2. a reply to another request is not consent\nassert call(\"deploy\", [(True, 3)], 7, 0.2)[0] is False\nassert call(\"write_file\", [(True, 3)], 7, 0.2)[0] is False, \"a reply to another request is a refusal, even for a reversible tool\"\n\n# 3. nobody answers: deny the irreversible, let the reversible proceed, and do not wait much past the timeout\nv, took = call(\"deploy\", [], 7, 0.1)\nassert v is False and took < 1.0, (v, took)\nv, took = call(\"write_file\", [], 7, 0.1)\nassert v is True and took < 1.0, (v, took)\nassert call(\"send_email\", [], 7, 0.1)[0] is False\n\n# 4. an answer that arrives after the timeout does not count\nassert call(\"send_email\", [], 7, 0.05, late=(0.4, (True, 7)))[0] is False\ntime.sleep(0.5)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "`queue.Queue.get(timeout=...)` raises `queue.Empty` when nothing arrives, which is where the no-answer policy belongs: deny what a checkpoint cannot undo, proceed with the rest. Checking the request id stops a late reply to an expired request from counting as consent to the next one, the bug of a shared reply channel.",
+      "hints": [
+        "`queue.Queue.get` takes a timeout and raises an exception when it expires.",
+        "Decide the expiry case from the tool, and compare the answered id with this request's id."
+      ]
+    },
+    {
+      "id": "hrn-015-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "gate-budget",
+        "fatigue"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An illustrative agent run makes 40 writes, and a gate at tool granularity asks about every write. A reviewer spends 12 seconds reading each request and oversees 6 such runs in one session. How many minutes of reading does the session cost?",
+      "answer": {
+        "value": 48,
+        "tolerance": 0.5,
+        "unit": "minutes"
+      },
+      "precision_note": "$40 \\times 6 = 240$ requests, $240 \\times 12 = 2{,}880$ seconds, $2{,}880 / 60 = 48$ minutes; the arithmetic of snippets/gate_budget.py with these inputs. One run alone (8 minutes) or the seconds (2,880) fall outside the tolerance.",
+      "explanation": "Every write in every run is a request: 240 requests at 12 seconds each is 2,880 seconds, 48 minutes of one person's attention for one session.",
+      "hints": [
+        "Count the requests in the whole session first.",
+        "Convert seconds to minutes at the end."
+      ]
+    },
+    {
+      "id": "hrn-015-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "fatigue",
+        "decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Anthropic's study measured the lower human block rate after 50 or more prior prompts in a session. An illustrative session holds 240 approval requests. What percentage of them arrive after 50 or more prior prompts? Give one decimal.",
+      "answer": {
+        "value": 79.2,
+        "tolerance": 0.3,
+        "unit": "%"
+      },
+      "precision_note": "Prompts 51 to 240 have 50 or more before them: $190 / 240 = 79.17\\%$, the rule `max(0, total - DECAY_AFTER)` in snippets/gate_budget.py. Counting from prompt 50 (191, 79.58%) or from prompt 52 (189, 78.75%) falls outside the tolerance.",
+      "explanation": "Prompt 51 is the first with 50 prompts before it, so $240 - 50 = 190$ of the 240 requests sit past the point where the measured block rate had fallen to about 5%: about 79.2% of the session.",
+      "hints": [
+        "Which numbered prompt is the first with 50 prompts before it?",
+        "Divide the count from that prompt to the last by the total."
+      ]
+    },
+    {
+      "id": "hrn-015-q09",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "cited-numbers",
+        "overlap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In Anthropic's study, each of 1,053 testers met one planted dangerous command. The testers caught 143 of them and the classifier blocked 937. Head to head, the classifier blocked 800 commands a human approved, and humans blocked 6 the classifier allowed. How many of the planted commands did both the testers and the classifier stop?",
+      "answer": {
+        "value": 137,
+        "tolerance": 0,
+        "unit": "commands"
+      },
+      "precision_note": "Both: $143 - 6 = 137$, and the classifier's side agrees, $937 - 800 = 137$. Subtracting from the total ($1{,}053 - 937 = 116$) or taking the bare difference ($937 - 143 = 794$) answers a different question.",
+      "explanation": "The 143 human catches split into 6 the classifier missed and 137 it also blocked; the 937 classifier blocks split into 800 the humans missed and the same 137. Two independent routes agree, which is how the cited numbers can be checked against each other.",
+      "hints": [
+        "Split the humans' 143 catches by what the classifier did with each.",
+        "Check the result from the classifier's side."
+      ]
+    },
+    {
+      "id": "hrn-015-q10",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "evaluation-order",
+        "agent-sdk"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Put the Claude Agent SDK's permission checks in the order a tool call meets them.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Allow rules"
+        },
+        {
+          "key": "b",
+          "text": "Hooks"
+        },
+        {
+          "key": "c",
+          "text": "The `canUseTool` callback that asks a person"
+        },
+        {
+          "key": "d",
+          "text": "Deny rules"
+        },
+        {
+          "key": "e",
+          "text": "The permission mode"
+        },
+        {
+          "key": "f",
+          "text": "Ask rules"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "f",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Hooks, then deny rules, ask rules, the permission mode and allow rules, and only then the callback. The person comes last, so a call a rule could have settled never spends human attention.",
+      "hints": [
+        "The human is asked only when nothing deterministic has settled the call.",
+        "Refusals and forced prompts are checked before the mode and the allow rules."
+      ]
+    },
+    {
+      "id": "hrn-015-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "timeout",
+        "default"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An overnight run asks for approval to rewrite a file in its own working tree, a change a checkpoint can undo. Nobody answers before the timeout. Which default serves the run best?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Deny the call, because no answer is not consent",
+          "correct": false,
+          "feedback": "Right for the irreversible; for a reversible edit, denying every unanswered request turns an overnight run into nothing."
+        },
+        {
+          "key": "b",
+          "text": "Keep waiting until someone answers, however long that takes",
+          "correct": false,
+          "feedback": "The run holds its process, its budget and often a lock for hours; that is the documented SDK default the post warns against."
+        },
+        {
+          "key": "c",
+          "text": "Let the edit proceed and record that nobody looked",
+          "correct": true,
+          "feedback": "Correct. The checkpoint is the safety net for a reversible action, and the note keeps the decision auditable."
+        },
+        {
+          "key": "d",
+          "text": "Let the edit proceed and leave no trace that the gate was skipped",
+          "correct": false,
+          "feedback": "Proceeding may be right, but an approval that leaves no record cannot be audited, and the rubber-stamp rate stays unmeasurable."
+        }
+      ],
+      "explanation": "The no-answer default follows the call: deny what a checkpoint cannot undo, proceed with a note otherwise. The post's snippet does exactly this, running `write_file draft.md` with a note and denying `deploy staging` when neither is answered.",
+      "hints": [
+        "What makes a deny-on-timeout right for a deploy?",
+        "Does that reason hold for this edit?"
+      ]
+    },
+    {
+      "id": "hrn-015-q12",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "approve-with-changes",
+        "audit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A reviewer approves a deploy but narrows it from production to staging, using the Agent SDK's approve-with-changes answer. What does the agent see, and what follows for the harness?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A message saying the target was changed, so nothing more is needed",
+          "correct": false,
+          "feedback": "The documentation says the opposite: the agent sees the result but is not told the input changed."
+        },
+        {
+          "key": "b",
+          "text": "Only the result of the staging deploy, so the harness must log the amendment itself",
+          "correct": true,
+          "feedback": "Correct. The transcript no longer describes what happened unless the harness records the change."
+        },
+        {
+          "key": "c",
+          "text": "A refusal, after which it retries with the staging target",
+          "correct": false,
+          "feedback": "Approve with changes is an allow, not a deny; the tool runs once with the amended input."
+        },
+        {
+          "key": "d",
+          "text": "Nothing at all, because an amended call does not run",
+          "correct": false,
+          "feedback": "The amended call does run; the hazard is that the agent is not told it was amended."
+        }
+      ],
+      "explanation": "Approve with changes lets a coarse policy survive, because a reviewer can narrow a call instead of choosing between all and nothing. Its hazard is silent: the model sees the staging result as if it had asked for staging, so the amendment belongs in the log.",
+      "hints": [
+        "Which of the SDK's two return shapes carries an amended input?"
+      ]
+    },
+    {
+      "id": "hrn-015-q13",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "escalation",
+        "doom-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "The post's escalation policy asks a human on the second identical call in a row, not the third, when wired into a loop like the companion's. Why not wait for the third?",
+      "answer": {
+        "model": "Because the companion's exit (4), no progress, already ends the run at the third identical call, before the gate would see it, so a trigger set at three would never fire.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think)\\b)(?![\\s\\S]*\\bnot\\s+(because|due|related)\\b)(?![\\s\\S]*\\b(cheaper|cost|tokens|money|faster|quicker|annoy\\w*|budget|fourth|fifth|sixth)\\b)(?![\\s\\S]*\\bexit\\s*\\(?3\\b)(?=(?:\\S+\\s+){4})(?=[\\s\\S]*(\\bexit\\s*\\(?4\\)?|\\bexit four\\b|\\bno[- ]progress\\b|\\bstall\\w*|\\b(loop|run|agent)\\s+(would\\s+|will\\s+|already\\s+)?(end|stop|exit|quit|terminat)\\w*|\\b(end|stop|exit|quit|terminat)\\w*\\s+(the\\s+)?(run|loop)\\b))(?=[\\s\\S]*\\b(third|three|3|3rd|already)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The companion compares the last three tool-call signatures after each model call and stops on no progress when they match, before dispatching the third. An escalation meant as the alternative to quitting has to fire one call earlier.",
+      "hints": [
+        "What does the companion's loop do when it sees the same call three times running?",
+        "Does that happen before or after a call reaches the gate?"
+      ]
+    },
+    {
+      "id": "hrn-015-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "escalation",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A coding agent runs unattended overnight with a verification gate, a no-progress exit and a token budget. Design its escalation triggers: which run signals pull in a human, what each request asks, and what happens to each when nobody answers by morning. Say where the triggers sit relative to the loop's exits, and how a person can still steer the run before any trigger fires.",
+      "kind": "design",
+      "solution": "1. **Signals.** A weak verification result (the gate passed with low confidence, or an evaluator was unsure); the same call twice running; a permission rule that flags a call without forbidding it; spend past a threshold set below the hard budget.\n2. **What each asks.** Low confidence: \"is this good enough to build on?\" with the artefact. Repetition: what it keeps trying and what to try instead. Out of policy: the exact call, the rule it brushed, the blast radius. Budget: how much is spent and whether to continue.\n3. **No answer.** Not uniform: proceed and flag a low-confidence result if the next step is reversible; stop a repeating run, since burning budget is the failure; deny the out-of-policy call; deny and stop at the budget threshold. Fail closed only for the irreversible.\n4. **Relative to the exits.** Triggers sit before the exits they anticipate: repetition on the second identical call, because exit (4), no progress, ends the run at the third; the budget threshold below exit (3), budget; the verification signal before exit (1) is accepted.\n5. **Steering.** Independently of triggers, the loop checks an inbox before each model call and appends a person's message as the next observation, recorded in the trace as human-sent; mid-turn interruption needs a streaming connection.",
+      "rubric": [
+        {
+          "criterion": "Names at least three run signals and how the harness detects each",
+          "points": 2
+        },
+        {
+          "criterion": "Says what each request asks, tailored to the signal",
+          "points": 1
+        },
+        {
+          "criterion": "Gives a no-answer default per signal and keeps fail-closed for the irreversible",
+          "points": 2
+        },
+        {
+          "criterion": "Places the triggers before the exits they anticipate, with the repeat trigger ahead of exit (4)",
+          "points": 2
+        },
+        {
+          "criterion": "Describes steering between turns as the next observation, distinguishable in the trace",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Escalation is the policy half of the gate widened to see the run; it has to fire before the exit that would otherwise end the run, and its no-answer column is the part teams get wrong by making it uniform.",
+      "hints": [
+        "Start from the run's own exits: which signals come just before each?",
+        "For each signal, ask whether waiting until morning makes things worse or merely slower."
+      ],
+      "connects": [
+        "hrn-003",
+        "hrn-005",
+        "hrn-011"
+      ]
+    },
+    {
+      "id": "hrn-015-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "fatigue",
+        "record",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team's harness asks a person to approve every file write. Over a month its reviewers approved 97% of requests, and an incident review cannot say who approved a bad write or what they were shown. Critique the design and propose a better one, using the measured evidence on reviewer fatigue and the parts of an approval gate.",
+      "kind": "critique",
+      "solution": "1. **Diagnosis.** Gating every write is tool granularity on a tool that is mostly reversible; most requests have nothing to decide, so approval becomes habitual. Anthropic's study measured the mechanism: testers caught a planted dangerous command 13.6% of the time, and human block rates fell from about 17% early in a session to about 5% after 50 or more prior prompts. A 97% approval rate matches the vendor's own figure for Claude Code.\n2. **Narrow the policy.** Gate on reversibility and visibility; move to argument granularity (writes outside the working tree, production targets), so a session holds a few requests, all before the point where attention was measured to decay; let checkpoints cover the rest.\n3. **Let the queue drain.** Approve-and-remember answers turn a repeated question into a rule; a classifier decider can take routine calls behind the same deny rules, justified only by comparison with the human baseline.\n4. **Make each request decidable.** Render it from the executor's arguments with the diff, the reason and the blast radius, and re-check the arguments at execution.\n5. **Keep the record.** For every decision: call and arguments, why gated, who decided, the verdict, how long it waited; approvals as well as denials, so the rubber-stamp rate (latency, prompts already seen) is measurable and the incident question has an answer.",
+      "rubric": [
+        {
+          "criterion": "Identifies tool-level gating of reversible writes as the cause of habitual approval",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the cited measurements correctly, without overstating them",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes argument-level gating chosen by reversibility and visibility",
+          "points": 1
+        },
+        {
+          "criterion": "Mentions a draining mechanism (approve and remember, or a machine decider behind deny rules)",
+          "points": 1
+        },
+        {
+          "criterion": "Specifies the full decision record, approvals included, and what it makes measurable",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The failure is a budget failure, not a reviewer failure: too many requests for care to survive, and a record that keeps nothing. Fewer, well-supported requests and a five-field record fix both halves.",
+      "hints": [
+        "How many of those writes could a checkpoint have undone?",
+        "What would an incident review need to read from the record?"
+      ]
+    },
+    {
+      "id": "hrn-015-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 1,
+      "tags": [
+        "steering"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A person watching a run sends \"stop, that is the wrong module\" while the agent is working. How should the harness deliver the message?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As the next observation the agent reasons over, keeping the transcript",
+          "correct": true,
+          "feedback": "Correct. The run keeps everything it has learned, and the redirection is one message."
+        },
+        {
+          "key": "b",
+          "text": "By killing the run and starting a fresh one with the message as the task",
+          "correct": false,
+          "feedback": "That throws away everything the run learned; steering exists to avoid a restart."
+        },
+        {
+          "key": "c",
+          "text": "By editing the system prompt the run started with",
+          "correct": false,
+          "feedback": "Rewriting the start of the transcript breaks append-only history and hides who changed what."
+        },
+        {
+          "key": "d",
+          "text": "By holding it until the run finishes and attaching it to the result",
+          "correct": false,
+          "feedback": "Then it steers nothing; the point is to redirect before more work is wasted."
+        }
+      ],
+      "explanation": "A steering message lands as the next observation, not a restart; any tool call in flight completes or is cancelled explicitly; and the trace marks the message as human-sent.",
+      "hints": [
+        "What should the agent keep after the message arrives?"
+      ]
+    },
+    {
+      "id": "hrn-015-q17",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "record",
+        "companion"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the post's `async_approval.py` run, the companion's `Result.denied` holds two identical entries, `('deploy', 'denied by approver: sensitive tool call')`. What can that list not tell an auditor?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Which tool was denied",
+          "correct": false,
+          "feedback": "The tool name is the first element of each pair."
+        },
+        {
+          "key": "b",
+          "text": "Whether a reviewer said no or the request simply timed out",
+          "correct": true,
+          "feedback": "Correct. One entry is the reviewer's refusal of production, the other the timeout on staging; the list cannot tell them apart."
+        },
+        {
+          "key": "c",
+          "text": "That the two deploys never ran",
+          "correct": false,
+          "feedback": "Every entry in `Result.denied` is a call that returned its message instead of executing."
+        },
+        {
+          "key": "d",
+          "text": "That the run ended normally",
+          "correct": false,
+          "feedback": "That is in `stop_reason`, not in the denial list, and the run did end on `completed`."
+        }
+      ],
+      "explanation": "The companion records a (tool, message) pair, and the message is the gate's own reason, so who decided and how long the request waited are lost. The snippet keeps its own record with those fields, which is what a production gate needs.",
+      "hints": [
+        "What differs between the two deploys in the snippet's table?"
+      ]
+    }
+  ]
+}

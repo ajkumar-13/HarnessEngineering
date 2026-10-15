@@ -1,38 +1,26 @@
 id: hrn-015
 slug: 15-human-in-the-loop
-title: "15 · Human-in-the-loop — approvals, interventions, async feedback"
-
-description: >
-  Full autonomy is rarely the goal; the useful question is where on the autonomy spectrum
-  each action belongs. The harness decides which actions a human must approve (the
-  irreversible and the publicly visible ones), how a human can interrupt a run in flight,
-  and how feedback re-enters the loop without making the human a bottleneck.
-
-author: "Ajay"
+title: "15 - Human-in-the-loop: approvals, interventions, async feedback"
+summary: "A harness gates what a checkpoint cannot undo or others will see first, separates the policy from the decider, lets a human steer a run in flight, and makes approval asynchronous, bounded and rare."
 date: 2026-08-13
-last_modified: 2026-09-05
-
-tags: [harness-engineering, control, human-in-the-loop, approvals, oversight]
-
-keywords:
-  - harness engineering
-  - control
-  - human in the loop
-  - approvals
-  - oversight
-  - queue depth over time
-  - rubber-stamp rate
-
-category: Control and reliability
-series: Harness Engineering
+updated: 2026-10-15
+status: complete
 part: "Part III - Control and reliability"
-
+level: intermediate
+reading_time: 27
+tags: [harness-engineering, control, human-in-the-loop, approvals, oversight, reviewer-fatigue]
 hero: diagrams/01-autonomy-spectrum.svg
-hero_alt: "Four stops labelled suggest, approve, act and notify, and autonomous, arranged left to right along a single axis running from less autonomy to more autonomy, each with a one-line note on what the human does at that stop."
-
-reading_time: 30
-toc: true
-draft: false
-canonical_url: ""
-prev: ../14-permissions-sandboxes/
-next: ../16-multi-agent-orchestration/
+prerequisites: [hrn-013]
+code: included
+outcomes:
+  - id: o1
+    text: "Place each action on the autonomy spectrum by reversibility and visibility, and gate only what a checkpoint cannot undo or others see first."
+  - id: o2
+    text: "Build an approval gate whose policy and decider are separate, test it with a stubbed decider, and return a denial as an observation."
+  - id: o3
+    text: "Choose among the answers between yes and no, and decide what a gate does when nobody answers: wait, deny, proceed with a note, or defer."
+  - id: o4
+    text: "Write escalation triggers from run signals, and keep a run open to interruption and steering while it is in flight."
+  - id: o5
+    text: "Size an approval budget against measured reviewer fatigue, and keep the record that makes a rubber-stamp rate measurable."
+recommended: [hrn-011]
