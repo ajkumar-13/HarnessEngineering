@@ -1,41 +1,26 @@
 id: hrn-014
 slug: 14-permissions-sandboxes
-title: "14 · Permissions, sandboxes & security — the AI control plane"
-
-description: >
-  An autonomous agent with real tools is both an attack surface and a blast radius. A
-  deny-list hook (Post 13) stops the known-bad command; a sandbox bounds everything else,
-  so a run can only touch what you let the box touch.
-
-author: "Ajay"
+title: "14 - Permissions, sandboxes, and security: the AI control plane"
+summary: "An agent with real tools is an attack surface and a blast radius: a deny-list hook stops the known-bad command, a sandbox bounds the rest, and declared permissions and gates that record which one fired make the bound checkable."
 date: 2026-08-09
-last_modified: 2026-09-05
-
-tags: [harness-engineering, control, security, sandbox, permissions]
-
-keywords:
-  - harness engineering
-  - control
-  - security
-  - sandbox
-  - permissions
-  - deny-list hook
-  - no shell is involved
-  - indirect prompt injection
-  - lethal trifecta
-  - which layer decided
-  - control plane
-
-category: Control and reliability
-series: Harness Engineering
+updated: 2026-10-15
+status: complete
 part: "Part III - Control and reliability"
-
+level: intermediate
+reading_time: 22
+tags: [harness-engineering, control, security, sandbox, permissions, prompt-injection]
 hero: diagrams/01-sandbox-boundary.svg
-hero_alt: "A sandbox bounding the bash tool with an allow-list, a working-directory jail, no network egress, a time limit, and an ephemeral runtime, with the host system out of reach beyond the boundary."
-
-reading_time: 25
-toc: true
-draft: false
-canonical_url: ""
-prev: ../13-hooks-enforcement/
-next: ../15-human-in-the-loop/
+prerequisites: [hrn-013]
+code: included
+outcomes:
+  - id: o1
+    text: "Wrap the bash tool in an allow-list sandbox with no shell, a timeout and a jail checked on resolved paths, and say which isolation tier really enforces it."
+  - id: o2
+    text: "Declare permissions as a role table with argv-pattern rules and a default deny, and scope credentials by scope, lifetime and attribution."
+  - id: o3
+    text: "Reason about blast radius: for each tool, name its worst case, the grant that shrinks it and what the run gives up, and gate by reversibility."
+  - id: o4
+    text: "Defend a tool-using agent against indirect prompt injection in layers, counting every tool that can publish as egress."
+  - id: o5
+    text: "Make every gate emit a distinguishable outcome in the trace, and fill in the six-question threat model for a harness."
+recommended: [hrn-006, mcp-019, sec-018, sec-022, ctx-023]

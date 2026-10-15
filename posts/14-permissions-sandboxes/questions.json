@@ -1,0 +1,667 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-014",
+  "next_ordinal": 16,
+  "questions": [
+    {
+      "id": "hrn-014-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "isolation-tiers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent will run code it downloaded from a third party's repository. Which isolation tier is the right minimum?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An in-process allow-list in front of the command tool",
+          "correct": false,
+          "feedback": "That is a pre-filter: anything an allowed program reaches is still reachable, and it runs in the agent's own process."
+        },
+        {
+          "key": "b",
+          "text": "An operating-system profile such as Seatbelt or bubblewrap",
+          "correct": false,
+          "feedback": "That suits code the harness's own model wrote from its own prompt; untrusted code shares the kernel it could attack."
+        },
+        {
+          "key": "c",
+          "text": "A microVM or gVisor, behind a separate kernel",
+          "correct": true,
+          "feedback": "Correct. Untrusted code is what hosted interpreters run, and it belongs behind a kernel of its own."
+        },
+        {
+          "key": "d",
+          "text": "A container with namespaces and cgroups",
+          "correct": false,
+          "feedback": "A container shares the host kernel, so a kernel escape from untrusted code reaches the host."
+        }
+      ],
+      "explanation": "The tier table's rule of thumb: code the model wrote from the harness's own prompt needs an operating-system profile; code fetched from the network or written by a third party needs the separate kernel of a microVM or gVisor.",
+      "hints": [
+        "Ask what the code could attack if it is hostile, and which tier puts that out of reach."
+      ]
+    },
+    {
+      "id": "hrn-014-q02",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "jail",
+        "cwd"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A harness passes `cwd=workspace` to `subprocess.run` for every command and calls that the agent's jail. What does that argument actually guarantee?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "That every file the process opens is inside the workspace",
+          "correct": false,
+          "feedback": "Nothing checks the paths the process opens; an absolute path or `..` walks straight out."
+        },
+        {
+          "key": "b",
+          "text": "Only the directory the process starts in",
+          "correct": true,
+          "feedback": "Correct. `cwd=` chooses where the process starts and bounds nothing after that."
+        },
+        {
+          "key": "c",
+          "text": "That the process cannot open network connections",
+          "correct": false,
+          "feedback": "The working directory has nothing to do with the network."
+        },
+        {
+          "key": "d",
+          "text": "That child processes are confined to the workspace",
+          "correct": false,
+          "feedback": "A child inherits the starting directory and nothing more; confinement of children needs an operating-system profile."
+        }
+      ],
+      "explanation": "A boundary a process cannot step over comes from the operating system (a mount namespace, a Landlock ruleset, a Seatbelt profile); `cwd=` only sets the starting directory, which is why the post's sandbox also resolves every argument against the jail and still calls itself a pre-filter.",
+      "hints": [
+        "What happens if the command is given an absolute path?"
+      ]
+    },
+    {
+      "id": "hrn-014-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "blast-radius",
+        "reversibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent's task includes sending a status email to a customer. By the reversibility heuristic, how should the send be handled?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Let it run: an email is a small action",
+          "correct": false,
+          "feedback": "Size is not the test; once sent, only a human can deal with the consequences."
+        },
+        {
+          "key": "b",
+          "text": "Gate it behind an approval",
+          "correct": true,
+          "feedback": "Correct. Once sent, only a human can deal with it, and reversible only by a human means gate it."
+        },
+        {
+          "key": "c",
+          "text": "Never grant the capability, because an email cannot be undone at all",
+          "correct": false,
+          "feedback": "That bucket is for effects nothing can undo, such as a dropped table or a leaked secret; a sent email is in the human-only bucket."
+        },
+        {
+          "key": "d",
+          "text": "Let it run, and roll it back with git if it goes wrong",
+          "correct": false,
+          "feedback": "git undoes changes to files in the workspace, not a message that has left the system."
+        }
+      ],
+      "explanation": "The heuristic sorts effects three ways: reversible inside the run (let it run), reversible only by a human (gate it), not reversible at all (do not grant it). A sent email is the post's own example of the middle bucket.",
+      "hints": [
+        "Can any command the agent already has take the email back?"
+      ]
+    },
+    {
+      "id": "hrn-014-q04",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "permissions",
+        "default-deny"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "With the post's `ROLES` table and `BASH_RULES`, what does `decide(\"reviewer\", \"bash\", {\"command\": \"python -c \\\"print('hi')\\\"\"})` return?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`allow`, because the reviewer role allows `bash`",
+          "correct": false,
+          "feedback": "The role only decides the tool; for `bash` the argv patterns then decide the command."
+        },
+        {
+          "key": "b",
+          "text": "`ask`, because an interpreter is risky",
+          "correct": false,
+          "feedback": "No rule names `python`; nothing in the table returns `ask` for it."
+        },
+        {
+          "key": "c",
+          "text": "`deny`, from the default at the bottom",
+          "correct": true,
+          "feedback": "Correct. The role grants `bash`, no pattern matches, so the unmatched command falls to the default."
+        },
+        {
+          "key": "d",
+          "text": "It raises `KeyError` for the unknown command",
+          "correct": false,
+          "feedback": "`decide` uses `.get` throughout and returns a verdict for anything."
+        }
+      ],
+      "explanation": "The role table grants the reviewer `bash`, so the argv rules are consulted; `python -c ...` matches none of `^git (status|diff|log)`, `^git push`, `^rm`, so `decide` returns its default, `deny`. The interpreter is refused by the default, not by a rule naming it, which is the point of allowing rather than forbidding.",
+      "hints": [
+        "Follow the function: role first, then the patterns, then the last line."
+      ]
+    },
+    {
+      "id": "hrn-014-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "trace",
+        "gate-outcomes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A harness tags each tool span `blocked` when its pre-tool hook stops a call, `denied` when the approver says no, and `ok` otherwise. Its sandbox refuses inside the bash tool. What does the trace record for a command the sandbox refused?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`blocked`, because the sandbox blocked it",
+          "correct": false,
+          "feedback": "Only the hook writes `blocked`; the sandbox's refusal never reaches that code."
+        },
+        {
+          "key": "b",
+          "text": "`ok`, as for a call that ran",
+          "correct": true,
+          "feedback": "Correct. The refusal comes back as an ordinary return value, so unless the harness inspects it, it looks exactly like a call that ran."
+        },
+        {
+          "key": "c",
+          "text": "`denied`, because a gate said no",
+          "correct": false,
+          "feedback": "`denied` is written only when the approver refuses."
+        },
+        {
+          "key": "d",
+          "text": "Nothing: the span is dropped",
+          "correct": false,
+          "feedback": "The span is recorded; it just carries the wrong outcome."
+        }
+      ],
+      "explanation": "A hook runs before the tool and tags its own decision; a sandbox refuses inside the tool and returns a string. The fix is to read the observation (`refused` if it starts with `blocked:`), so the trace keeps four outcomes, as `gate_outcomes.py` prints.",
+      "hints": [
+        "Where does the sandbox run relative to the code that writes the tag?"
+      ]
+    },
+    {
+      "id": "hrn-014-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "lethal-trifecta",
+        "egress"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent reads a private customer database, summarises inbound support emails (which anyone can send), and can open pull requests on a public repository. Its sandbox already blocks all raw network egress. Which change closes the lethal trifecta? Select every one that does.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "Remove its access to the private database",
+          "correct": true,
+          "feedback": "Correct. Without private data there is nothing to leak: one leg gone."
+        },
+        {
+          "key": "b",
+          "text": "Gate pull-request creation as egress",
+          "correct": true,
+          "feedback": "Correct. The pull request is a publishing tool, so it is the communication leg the sandbox did not close."
+        },
+        {
+          "key": "c",
+          "text": "Add a classifier that flags injected instructions in the emails",
+          "correct": false,
+          "feedback": "A classifier reduces exposure but does not remove the leg; EchoLeak got past a deployed one."
+        },
+        {
+          "key": "d",
+          "text": "Tighten the sandbox's domain allow-list further",
+          "correct": false,
+          "feedback": "Raw egress is already blocked; the open channel is the agent's own write tool, which the proxy never sees."
+        }
+      ],
+      "explanation": "The trifecta is private data, untrusted content and external communication, and removing any one leg closes the path. With raw egress blocked, the remaining communication leg is the pull-request tool, the channel of the GitHub MCP flow; removing the private data also works. A filter on the untrusted leg narrows it without removing it.",
+      "hints": [
+        "List the three legs and ask which of them each change removes.",
+        "Is a pull request external communication?"
+      ]
+    },
+    {
+      "id": "hrn-014-q07",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "trace",
+        "gate-outcomes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A run makes 40 tool calls. With four distinct outcomes the trace shows 31 `ok`, 4 `blocked`, 3 `denied` and 2 `refused`. How many of the 40 calls would a tagger that only knows the hook and the approver record as `ok`?",
+      "answer": {
+        "value": 33,
+        "tolerance": 0,
+        "unit": "calls"
+      },
+      "precision_note": "`naive_tag` in snippets/gate_outcomes.py keeps `blocked` and `denied` and maps everything else to `ok`: $31 + 2 = 33$. Leaving the refusals out (31) or folding the denials in too (36) is wrong.",
+      "explanation": "The naive tagger keeps the hook's `blocked` and the approver's `denied`, and files the sandbox's two refusals under `ok` with the 31 calls that ran: 33 calls, two of which never ran.",
+      "hints": [
+        "Which of the four outcomes can the naive tagger not see?"
+      ]
+    },
+    {
+      "id": "hrn-014-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "camel",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "CaMeL solves 77% of AgentDojo tasks with provable security, against 84% for an undefended system (Debenedetti et al., March 2025, revised June 2025). On an illustrative suite of 300 tasks at those two rates, how many more tasks does the undefended system solve?",
+      "answer": {
+        "value": 21,
+        "tolerance": 0.5,
+        "unit": "tasks"
+      },
+      "precision_note": "$300 \\times (0.84 - 0.77) = 300 \\times 0.07 = 21$. Taking 7% of the defended count ($0.07 \\times 231 \\approx 16$) or a ratio ($84 / 77$) gives a different number.",
+      "explanation": "The seven-point gap is the price of the guarantee: at 300 tasks it is $252 - 231 = 21$ tasks the provable design gives up.",
+      "hints": [
+        "Work out each system's solved count first.",
+        "Subtract the defended count from the undefended one."
+      ]
+    },
+    {
+      "id": "hrn-014-q09",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 3,
+      "tags": [
+        "allow-list",
+        "interpreter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A sandbox resolves every argument of a command against its jail and refuses any that lands outside, yet with `python` on its allow-list, `python -c \"...\"` reads a file in a sibling directory. Why does the jail not stop it?",
+      "answer": {
+        "model": "Because the jail only checks the command's arguments; the interpreter runs code that builds and opens its own paths at run time, which the argument check never sees.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(jail|check|sandbox)\\b[^.]{0,30}\\b(does|do)\\s+(check|see|inspect)\\w*\\s+(what|the files?|paths?)\\s+(python|the interpreter|it|the program)\\s+(opens?|reads?))(?![\\s\\S]*\\bnot\\s+on\\s+the\\s+allow)(?![\\s\\S]*(?<!never )(?<!not )(?<!n't )(?<!only )\\b(checks?|sees?|inspects?|covers?|resolves?)\\s+(the\\s+|every\\s+|each\\s+)?(files?|paths?|what)\\s+(that\\s+)?(python|the interpreter|it|the program|the code|the script)\\s+(opens?|reads?|touches|builds?))(?=[\\s\\S]*(\\b(only|just|merely)\\b[^.;]{0,40}\\b(arguments?|args|tokens?|command[- ]line|command string|argv|strings?)\\b|\\b(arguments?|args|tokens?|argv|command[- ]line|command string|command)\\b[^.;]{0,60}\\b(not|never|n't)\\b[^.;]{0,40}\\b(what|paths?|files?|code)\\b|\\b(python|interpreter|program|code|script)\\b[^.;]{0,60}\\b(opens?|reads?|builds?|constructs?|computes?|accesses|reaches)\\b[^.;]{0,40}\\b(its own|own|at run ?time|itself|internally|inside (its|the) (own )?(code|program|interpreter))\\b|\\b(paths?|files?)\\b[^.;]{0,40}\\b(program|interpreter|code|python)\\b[^.;]{0,20}\\b(actually\\s+)?(reads?|opens?|uses?)\\b[^.;]{0,30}\\b(not|never|isn't)\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The program text is one argument and resolves inside the jail; the path the interpreter opens is computed by that program while it runs. An interpreter on an allow-list allow-lists everything it can reach, which is why the boundary has to come from the operating system.",
+      "hints": [
+        "What does the jail check: the command, or what the program does once it runs?",
+        "Where does the path the interpreter opens come from?"
+      ]
+    },
+    {
+      "id": "hrn-014-q10",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "injection",
+        "egress",
+        "github-mcp"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the GitHub MCP toxic agent flow, the agent leaked a private repository's contents without opening any raw network connection. Through what channel did the data leave?",
+      "answer": {
+        "model": "A pull request the agent opened on the public repository, using its own GitHub write tool.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|might be|could be)\\b)(?![\\s\\S]*\\b(not|never|n't|rather than|instead of)\\s+(\\w+\\s+){0,2}?(a\\s+|an\\s+|the\\s+)?(public\\s+)?(pull requests?|prs?)\\b)(?![\\s\\S]*(?<!not )(?<!n't )\\b(through|via|by|using|used|uses|use|sent|over|with|in)\\s+(a\\s+|an\\s+|the\\s+)?(curl|sockets?|image|e-?mails?|dns|webhooks?|logs?)\\b)(?![\\s\\S]*\\b(curl|sockets?|e-?mails?|dns|webhooks?|image urls?)\\b\\s*(,|\\bor\\b|\\band\\b))(?=[\\s\\S]*\\b(pull requests?|prs?|(own|its|legitimate|existing)\\s+(github\\s+)?(write|github)\\s+(tool|capability|access|permission)s?|writ\\w*\\s+(it\\s+)?to\\s+the\\s+public\\s+repo\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Each step was an ordinary call to the GitHub server's own tools: the agent read the private repository and published its contents in a pull request on the public one. The exfiltration channel was its own write capability, which is why every tool that can publish counts as egress.",
+      "hints": [
+        "The agent needed no socket: which of its own tools can make text public?"
+      ]
+    },
+    {
+      "id": "hrn-014-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 10,
+      "tags": [
+        "jail",
+        "resolve"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "`inside` decides whether a command argument stays inside the jail by comparing path strings, so `../work-private/keys.txt` and a sibling directory whose name begins with the jail's both pass. Fix it: resolve the jail and the joined path, and test whether one is really inside the other.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "from pathlib import Path\n\n\ndef inside(root: str, token: str) -> bool:\n    \"\"\"True if `token`, taken relative to `root` (or absolute), names a path inside the jail `root`.\"\"\"\n    return str(Path(root, token)).startswith(str(Path(root)))\n",
+      "solution": "from pathlib import Path\n\n\ndef inside(root: str, token: str) -> bool:\n    \"\"\"True if `token`, taken relative to `root` (or absolute), names a path inside the jail `root`.\"\"\"\n    jail = Path(root).resolve()\n    return (jail / token).resolve().is_relative_to(jail)\n",
+      "tests": "import atexit\nimport shutil\nimport tempfile\nfrom pathlib import Path\n\nbase = Path(tempfile.mkdtemp()).resolve()\natexit.register(shutil.rmtree, base, ignore_errors=True)\njail = base / \"work\"\n(jail / \"src\").mkdir(parents=True)\n(base / \"work-private\").mkdir()\nroot = str(jail)\n\n# 1. ordinary paths inside the jail, including a detour that comes back\nassert inside(root, \"README.txt\")\nassert inside(root, \"src/app.py\")\nassert inside(root, \"src/../README.txt\")\nassert inside(root, str(jail / \"src\"))\n\n# 2. paths that leave: the parent, a climb, an absolute path elsewhere\nassert not inside(root, \"..\")\nassert not inside(root, \"../work-private/keys.txt\")\nassert not inside(root, str(base))\n\n# 3. a sibling whose name starts with the jail's name is outside\nassert not inside(root, str(base / \"work-private\" / \"keys.txt\"))\nassert not inside(root, \"../work-private\")\n\n# 4. a jail given in unresolved form is resolved too\nassert inside(str(jail / \"src\" / \"..\"), \"README.txt\")\nassert not inside(str(jail / \"src\" / \"..\"), \"../work-private\")\n\nshutil.rmtree(base)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "A string prefix is not a path test: `.../work/..` starts with `.../work`, and so does `.../work-private`. Resolving both sides collapses `..` and makes absolute paths comparable, and `is_relative_to` compares path components, not characters, which is the comparison `sandbox.py` makes before it runs anything.",
+      "hints": [
+        "What does `Path(root, '..')` look like as a string?",
+        "Compare whole path components after `resolve()`, not characters."
+      ]
+    },
+    {
+      "id": "hrn-014-q12",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "gates",
+        "order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Put the steps one bash call goes through in `gate_outcomes.py` in the order they run, from the call arriving to the tag the trace keeps.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The sandbox checks and runs the command inside the tool"
+        },
+        {
+          "key": "b",
+          "text": "The deny-list hook checks the command"
+        },
+        {
+          "key": "c",
+          "text": "The outcome tag is read from what the tool returned"
+        },
+        {
+          "key": "d",
+          "text": "The permission table returns allow, ask or deny"
+        },
+        {
+          "key": "e",
+          "text": "The approver answers an ask"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "The hook runs before anything else, so a known-bad command never reaches the permission table; the table's `ask` goes to the approver; only an allowed call reaches the sandbox, which refuses inside the tool; the tag is read last from the observation, which is the only way a sandbox refusal becomes `refused` rather than `ok`.",
+      "hints": [
+        "Which check never needs the command to run at all?",
+        "The tag can only be read once something has come back."
+      ]
+    },
+    {
+      "id": "hrn-014-q13",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "blast-radius"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Match each capability to the move that bounds its blast radius. One move on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A production write credential"
+        },
+        {
+          "key": "b",
+          "text": "Push to the default branch"
+        },
+        {
+          "key": "c",
+          "text": "`send_email` to any address"
+        },
+        {
+          "key": "d",
+          "text": "Package install from the network"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A read-replica token"
+        },
+        {
+          "key": "b",
+          "text": "A git worktree on its own branch"
+        },
+        {
+          "key": "c",
+          "text": "A recipient allow-list of known contacts"
+        },
+        {
+          "key": "d",
+          "text": "A pre-built image and no egress"
+        },
+        {
+          "key": "e",
+          "text": "A longer timeout on the command tool"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Each move shrinks the worst case of its capability and names what the run gives up: no writes, a human merges, no mail to strangers, no new dependency mid-run. A longer timeout bounds none of these worst cases; if anything it widens the resource one.",
+      "hints": [
+        "For each capability, write the worst case first, then the grant that makes it impossible."
+      ]
+    },
+    {
+      "id": "hrn-014-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "threat-model"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team plans an agent that triages incoming bug reports: it reads the issue, reproduces the bug by running the project's tests in a container, comments on the issue, and can label or close it. It holds a token for the issue tracker. Fill in the six-question threat model for it, and say which answer most needs work before it ships.",
+      "kind": "design",
+      "solution": "1. **Tools.** Read issues, run the test suite in a container, comment, label, close.\n2. **Blast radius.** Running tests executes project code, possibly code an attacker put in a report's reproduction steps; commenting publishes text; closing hides real bugs.\n3. **Untrusted input.** The issue text, attachments and any code it asks to run: attacker-controlled by design.\n4. **Credentials.** The tracker token: its scope should be comment-and-label on this one project, short-lived and issued per run, not an organisation-wide token.\n5. **Irreversible actions.** A published comment, which cannot be unread once it has leaked what the agent read; a close is reversible only by a human. Both belong behind a gate or a narrow policy.\n6. **Audit.** A trace with the gate that decided each call (`blocked`, `denied`, `refused`, `ok`), so a leaked comment or a refused escape can be found.\nThe answer that most needs work is the combination of 3 and 5: untrusted issue text plus a publishing tool is two legs of the trifecta, so the comment tool counts as egress and the test run needs a tier that suits untrusted code.",
+      "rubric": [
+        {
+          "criterion": "Answers all six questions specifically for this agent",
+          "points": 3
+        },
+        {
+          "criterion": "Identifies the issue text as attacker-controlled and the comment tool as a publishing channel",
+          "points": 2
+        },
+        {
+          "criterion": "Scopes the tracker token by scope, lifetime and attribution",
+          "points": 1
+        },
+        {
+          "criterion": "Names a gate for the irreversible or publishing actions and a suitable isolation tier for running reported code",
+          "points": 1
+        },
+        {
+          "criterion": "Requires distinguishable gate outcomes in the audit",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The six questions are short so that none is skipped; the value is in the one that cannot be answered. For an agent that reads attacker-written text and can publish, that is where the lethal trifecta is closest to complete.",
+      "hints": [
+        "Start with what an attacker can write into the agent's input.",
+        "Which of its tools makes text public?"
+      ],
+      "connects": [
+        "hrn-015",
+        "hrn-021"
+      ]
+    },
+    {
+      "id": "hrn-014-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 20,
+      "tags": [
+        "defence-in-depth",
+        "permissions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An email assistant reads a user's inbox, can search their documents, and can send replies. Design its defences against indirect prompt injection in layers, and its permissions as data. For each layer say what it stops and what it cannot; then show how the design handles an email that asks the assistant to forward the user's latest contract to an outside address.",
+      "kind": "design",
+      "solution": "1. **Untrusted by default.** Email bodies are data; nothing in them is executed as an instruction on the model's say-so. It cannot stop the model from being persuaded.\n2. **Deny-list hook.** Blocks known-bad patterns (a send to a domain on a blocklist). It cannot catch a phrasing nobody named.\n3. **Sandbox, no egress.** No raw network from any code the assistant runs; it cannot see a send through the assistant's own mail tool.\n4. **Permissions as data.** A role table: read inbox allow, search documents allow, `send_email` ask, with a recipient allow-list of known contacts and a default deny for anything unmatched; a scoped, short-lived mail token issued per session.\n5. **The permission gate.** `ask` goes to the user with the exact recipient and attachment shown.\nThe forwarding email: the model may well propose the send, the hook may not match, the sandbox never sees it, but the recipient is not on the allow-list (deny) or the send is an `ask` the user refuses, so the trace records `denied`. The design treats the send tool as the egress leg of the lethal trifecta, which is the lesson of both disclosed incidents.",
+      "rubric": [
+        {
+          "criterion": "Lays out at least four layers and says for each what it stops and what it cannot",
+          "points": 3
+        },
+        {
+          "criterion": "Writes permissions as data: tools by role, a recipient rule, a default deny, and a scoped short-lived token",
+          "points": 2
+        },
+        {
+          "criterion": "Treats sending mail as egress behind the permission gate, naming the lethal trifecta",
+          "points": 2
+        },
+        {
+          "criterion": "Walks the forwarding email through the layers to a distinguishable outcome",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Private documents, attacker-written mail and a send tool are the three legs of the trifecta in one product. The layers that look for commands do not see the send; the permission data and the gate on publishing do.",
+      "hints": [
+        "Which tool is the communication leg here?",
+        "What should happen to a recipient nobody listed?"
+      ],
+      "connects": [
+        "hrn-015",
+        "hrn-013"
+      ]
+    }
+  ]
+}
