@@ -1,40 +1,25 @@
 id: hrn-012
 slug: 12-planner-generator-evaluator
-title: "12 · Planner / generator / evaluator — separating the roles"
-
-description: >
-  Post 11 showed that a model grading its own work skews positive. The structural fix is
-  to make the grader a different agent from the maker: a planner decomposes the task and
-  sets a contract, a generator builds to it, and an independent evaluator grades the
-  result against that contract.
-
-author: "Ajay"
+title: "12 - Planner, generator, evaluator: separating the roles"
+summary: "A model grading its own work skews positive, so a separate evaluator grades it against a contract agreed before the work; the split costs many times one agent, so it is kept for checks code cannot do."
 date: 2026-08-01
-last_modified: 2026-09-05
-
-tags: [harness-engineering, control, evaluation, roles, reliability]
-
-keywords:
-  - harness engineering
-  - control
-  - evaluation
-  - roles
-  - reliability
-  - sprint contract
-  - a separate agent
-  - acceptance criteria
-  - generator and the evaluator
-
-category: Control and reliability
-series: Harness Engineering
+updated: 2026-10-15
+status: complete
 part: "Part III - Control and reliability"
-
-hero: diagrams/01-pge-triangle.svg
-hero_alt: "A planner at the top hands a plan to the generator and a contract to the evaluator; the generator's work goes to the evaluator, which passes to done or sends a failure report back to the generator."
-
-reading_time: 28
-toc: true
-draft: false
-canonical_url: ""
-prev: ../11-verification-loops/
-next: ../13-hooks-enforcement/
+level: intermediate
+reading_time: 25
+tags: [harness-engineering, control, verification, roles, sprint-contract, llm-as-judge]
+hero: diagrams/01-three-roles.svg
+prerequisites: [hrn-011]
+code: included
+outcomes:
+  - id: o1
+    text: "Separate the author of a piece of work from its grader, and say what each of the three roles reads, writes and never sees."
+  - id: o2
+    text: "Write a sprint contract that fixes done before generation starts, and route each criterion to the cheapest verifier that can settle it."
+  - id: o3
+    text: "Design against the evaluator's own biases, give it tools to gather its own evidence, and enforce its read-only boundary in its tool registry."
+  - id: o4
+    text: "Explain why nothing in the pattern checks the planner, and put the missing check on the contract."
+  - id: o5
+    text: "Price three roles against one agent, and decide when a single agent with a test suite is enough."

@@ -1,0 +1,760 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-012",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-012-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "self-evaluation",
+        "positive-skew"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent writes a design document and is then asked, in the same conversation, whether the design is sound. It answers yes with confidence, although a reviewer later finds the design mediocre. What best explains the answer?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It grades work it has just argued itself into, still holding the reasoning that made it look right",
+          "correct": true,
+          "feedback": "Correct. The skew is structural: the grader shares the maker's context and its justification."
+        },
+        {
+          "key": "b",
+          "text": "The sampling temperature was set too high, so the verdict it gave was close to random",
+          "correct": false,
+          "feedback": "Randomness would not push verdicts consistently in the positive direction."
+        },
+        {
+          "key": "c",
+          "text": "The model lacked a tool to open and reread the document it had written earlier",
+          "correct": false,
+          "feedback": "The document is in its own context; reading it is not the problem."
+        },
+        {
+          "key": "d",
+          "text": "Design documents cannot be graded by any model at all, only by experienced people",
+          "correct": false,
+          "feedback": "A separate evaluator can grade judged criteria; the issue is who grades, not whether a model can."
+        }
+      ],
+      "explanation": "A model grading its own output skews positive because it has just produced the work and carries the reasoning that made it look right. Independence comes from a separate agent that never saw that reasoning.",
+      "hints": [
+        "Ask what the grader knows that an independent reader would not."
+      ]
+    },
+    {
+      "id": "hrn-012-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "independence",
+        "context"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Four ways to get a verdict on a generator's work are proposed. Which one gives a grader that is independent of the maker?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Append \"now review the work\" to the generator's conversation",
+          "correct": false,
+          "feedback": "Same context, same reasoning: that is self-critique with extra steps."
+        },
+        {
+          "key": "b",
+          "text": "Start a subagent whose history is a copy of the generator's conversation",
+          "correct": false,
+          "feedback": "A fork carries the maker's chain of thought, which is what talks a grader into a pass."
+        },
+        {
+          "key": "c",
+          "text": "Make a fresh model call given only the contract and the finished work",
+          "correct": true,
+          "feedback": "Correct. A separate context that never saw the generator's reasoning, judging against written criteria."
+        },
+        {
+          "key": "d",
+          "text": "Ask the generator to attach a confidence score to its own answer",
+          "correct": false,
+          "feedback": "A self-reported confidence comes from the same context and inherits the same skew."
+        }
+      ],
+      "explanation": "Independence is structural: a different call with its own context, given the contract and the work, and deliberately not the generator's reasoning.",
+      "hints": [
+        "Look for the option in which the grader has never seen how the work was made."
+      ]
+    },
+    {
+      "id": "hrn-012-q03",
+      "type": "match",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "roles",
+        "boundaries"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Match each role of the pattern to what it is designed never to see.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Planner"
+        },
+        {
+          "key": "b",
+          "text": "Generator"
+        },
+        {
+          "key": "c",
+          "text": "Evaluator"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "The work, which does not exist yet"
+        },
+        {
+          "key": "b",
+          "text": "The evaluator's reasoning, beyond its report"
+        },
+        {
+          "key": "c",
+          "text": "The generator's plan of attack and chain of thought"
+        },
+        {
+          "key": "d",
+          "text": "The contract it is graded against"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c"
+      },
+      "explanation": "The planner works before any artefact exists; the generator gets only the report of a failed verdict; the evaluator gets the contract and the work but never the maker's reasoning. Every role sees the contract, so the fourth option matches nothing.",
+      "hints": [
+        "Which role runs before anything is built?",
+        "The contract is shared by all three."
+      ]
+    },
+    {
+      "id": "hrn-012-q04",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "sprint-contract",
+        "negotiation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A planner drafts these criteria for a small parsing feature. Which should the evaluator refuse before the contract is frozen? Select every one it should refuse.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "The code is clean",
+          "correct": true,
+          "feedback": "Refuse: nothing observable settles it, so any verdict on it is an opinion."
+        },
+        {
+          "key": "b",
+          "text": "parse([]) returns []",
+          "correct": false,
+          "feedback": "Keep: a unit test settles it."
+        },
+        {
+          "key": "c",
+          "text": "The parser handles any format the vendor might ever ship",
+          "correct": true,
+          "feedback": "Refuse: unbounded and unmeasurable as written; no check can settle it."
+        },
+        {
+          "key": "d",
+          "text": "CHANGELOG.md gains exactly one line",
+          "correct": false,
+          "feedback": "Keep: a short script settles it."
+        }
+      ],
+      "explanation": "Negotiation pushes back on the unmeasurable, the impossible as written, and the ones that assume unscheduled work. A criterion survives when something observable can settle it.",
+      "hints": [
+        "For each line, ask what would decide whether it was met."
+      ]
+    },
+    {
+      "id": "hrn-012-q05",
+      "type": "match",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "routing",
+        "verifier-ladder"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Route each criterion of a contract to the cheapest verifier that can settle it. Each verifier is used at most once.",
+      "left": [
+        {
+          "key": "a",
+          "text": "parse([]) returns []"
+        },
+        {
+          "key": "b",
+          "text": "Every row returned has a string name and an integer amount"
+        },
+        {
+          "key": "c",
+          "text": "Every public function carries a type annotation"
+        },
+        {
+          "key": "d",
+          "text": "The error a user sees is understandable without reading the source"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A unit test"
+        },
+        {
+          "key": "b",
+          "text": "A schema check on the output"
+        },
+        {
+          "key": "c",
+          "text": "A type or annotation checker"
+        },
+        {
+          "key": "d",
+          "text": "The evaluator, as a judged criterion"
+        },
+        {
+          "key": "e",
+          "text": "A human reviewer reading every attempt"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Objective criteria go to code that costs no model call and cannot hallucinate a pass; only the criterion that needs an opinion reaches the evaluator. A person reads the contract, not every attempt.",
+      "hints": [
+        "Only one of the four needs judgement."
+      ]
+    },
+    {
+      "id": "hrn-012-q06",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "sprint",
+        "handoffs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Put one sprint of the three-role loop in order, from the first draft to the second attempt.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The generator writes a second version, guided by the named failures"
+        },
+        {
+          "key": "b",
+          "text": "The planner drafts numbered criteria"
+        },
+        {
+          "key": "c",
+          "text": "The contract is frozen and its digest recorded"
+        },
+        {
+          "key": "d",
+          "text": "The evaluator returns NEEDS_WORK naming the unmet criteria"
+        },
+        {
+          "key": "e",
+          "text": "The evaluator refuses a criterion that names nothing observable"
+        },
+        {
+          "key": "f",
+          "text": "The generator writes its first version"
+        }
+      ],
+      "answer": [
+        "b",
+        "e",
+        "c",
+        "f",
+        "d",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "The contract is agreed and frozen before any code; then each attempt is generated and graded against the same contract, and a failed verdict's report guides the next attempt.",
+      "hints": [
+        "Nothing is generated until done has been agreed.",
+        "The report of one verdict feeds the next attempt."
+      ]
+    },
+    {
+      "id": "hrn-012-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "model-calls",
+        "cap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A sprint loop plans once, then makes one generate call and one evaluate call per attempt, and allows max_revisions = 3 revisions after the first attempt. At most how many model calls can one sprint make, if every role answers in a single call?",
+      "answer": {
+        "value": 9,
+        "tolerance": 0,
+        "unit": "calls"
+      },
+      "precision_note": "Attempts are max_revisions + 1 = 4; calls are 1 + 4 + 4 = 9. Counting three attempts (7) or forgetting the planner (8) is wrong.",
+      "explanation": "The cap admits the first attempt plus three revisions, four in all, each a generate and an evaluate call, plus the one planning call.",
+      "hints": [
+        "How many attempts does a cap of three revisions allow?",
+        "Each attempt costs two calls; add the plan."
+      ]
+    },
+    {
+      "id": "hrn-012-q08",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "cost",
+        "tokens"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A run of three roles reads 967 input tokens and writes 347 output tokens in all; a single agent writing the same file reads 42 and writes 109. At 3 dollars per million input tokens and 15 dollars per million output tokens, how many times the single agent's cost is the three-role run? Give one decimal place.",
+      "answer": {
+        "value": 4.6,
+        "tolerance": 0.05,
+        "unit": "times"
+      },
+      "precision_note": "(967 x 3 + 347 x 15) / (42 x 3 + 109 x 15) = 8,106 / 1,761 = 4.60, the snippet's last line. Input only gives 23.0; total tokens give 8.7.",
+      "explanation": "Price each side at both rates and divide. Output tokens cost five times input tokens here, so a ratio of token counts alone gives the wrong multiple.",
+      "hints": [
+        "Compute each run's cost in millionths of a dollar first.",
+        "Output tokens are priced at 15, not 3."
+      ]
+    },
+    {
+      "id": "hrn-012-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "cost",
+        "published-comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In one published comparison on the same brief, a single agent cost 9 dollars and the full planner, generator, evaluator harness cost 200 dollars. How many times the single agent's cost was the harness? Give one decimal place.",
+      "answer": {
+        "value": 22.2,
+        "tolerance": 0.1,
+        "unit": "times"
+      },
+      "precision_note": "200 / 9 = 22.22. The wall-clock ratio, 360 / 20 = 18, is a different quantity.",
+      "explanation": "The multiple is the harness's cost over the single agent's. It comes from one result per design on one brief, so it is a cost observation, not a benchmark result.",
+      "hints": [
+        "Divide the larger cost by the smaller."
+      ]
+    },
+    {
+      "id": "hrn-012-q10",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "unchecked-edge",
+        "contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the planner, generator, evaluator pattern, the evaluator grades the work. What is never checked in the pattern itself, and against what should it be checked?",
+      "answer": {
+        "model": "The contract: nothing checks the criteria against the task they were written for.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not sure|maybe|perhaps|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(task|request|requirements?|brief)\\b[^.;\\n]{0,30}?\\bagainst\\s+(the\\s+)?(contract|criteria)\\b)(?![\\s\\S]*\\b(contract|criteria)\\s+(is|are)\\s+(fine|correct|complete|always|already|checked)\\b)(?![\\s\\S]*\\b(contract|criteria)\\b[^.;\\n]{0,20}?\\b(does not|doesn'?t|do not|don'?t|need not|needn'?t)\\s+need)(?![\\s\\S]*\\b(evaluator|generator)\\s+(checks|grades|compares|verifies)\\s+(the\\s+)?(contract|criteria)\\b)(?=[\\s\\S]*\\b(contract|criteria|criterion|definition of done)\\b[\\s\\S]{0,80}?\\b(against|with|to)\\s+(the\\s+|what\\s+)?(original\\s+|user'?s?\\s+)?(task|request|requirements?|brief|ask|what was asked|was asked)\\b|\\s*against\\s+(the\\s+)?(task|request|requirements?|brief)\\b[\\s\\S]*\\b(contract|criteria)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The evaluator checks the work against the contract; nothing checks the contract against the task. An incomplete contract passes every gate downstream, which is why a person reads the criteria.",
+      "hints": [
+        "The evaluator's yardstick is itself an artefact. Who measures it?"
+      ]
+    },
+    {
+      "id": "hrn-012-q11",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "registry",
+        "enforcement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An evaluator's prompt says it must never edit files, yet in one run it rewrites the file it was grading. What change makes the rule hold whatever the model decides?",
+      "answer": {
+        "model": "Take the write tools out of the evaluator's tool registry, so a write call is refused before it runs.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not sure|maybe|perhaps|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(prompt|instruction|tell|remind|ask)\\w*\\b[\\s\\S]{0,40}\\b(again|stronger|harder|louder|more|clearer|firmly)\\b)(?![\\s\\S]*\\bwithout\\s+(chang|touch|edit|modify)\\w*\\s+(the\\s+|its\\s+)?(registry|tools?|permissions?))(?=[\\s\\S]*\\b(registry|tool ?set|tools?|permissions?|allow-?list|capabilit\\w*)\\b)(?=[\\s\\S]*(\\b(no|without|remove\\w*|withh[oe]ld\\w*|strip\\w*|exclud\\w*|lacks?|omit\\w*|tak\\w* (away|out))\\b[\\s\\S]{0,40}\\b(write|edit|writing|editing)\\w*|\\bonly\\b[\\s\\S]{0,20}\\bread\\w*|\\bread\\w*\\s+(tools?\\s+)?only\\b|read[- ]only|cannot write|can'?t write|no write|\\b(write|edit)\\w*[\\s\\S]{0,30}\\b(out of|away from|removed|withheld|stripped|taken out)\\b))(?![\\s\\S]*\\b(give|add|grant)\\w*\\s+(it\\s+)?(the\\s+)?write)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "An instruction is something a model can talk itself around; a registry that holds no write tool cannot be argued with. The snippet's evaluator registry holds read_file only, and its one write call is refused.",
+      "hints": [
+        "Instructions are read by the model. What is enforced without the model's cooperation?",
+        "Think about which tools the evaluator is given at all."
+      ]
+    },
+    {
+      "id": "hrn-012-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 10,
+      "tags": [
+        "registry",
+        "permissions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In this `Tools` class a role's registry is checked only after the tool has run, so the evaluator's refused write still changes the repository. Fix `call` so that a tool outside the role's registry raises `PermissionError` naming the tool and the role before anything runs, and an allowed tool behaves as before.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "class Tools:\n    \"\"\"One role's tools: a call outside the registry must be refused before it runs.\"\"\"\n\n    def __init__(self, role, repo, allowed):\n        self.role, self.repo, self.allowed = role, repo, frozenset(allowed)\n\n    def call(self, name, *args):\n        result = getattr(self, \"_\" + name)(*args)\n        if name not in self.allowed:\n            raise PermissionError(f\"{name} is not in the {self.role}'s registry\")\n        return result\n\n    def _read_file(self, path):\n        return self.repo[path]\n\n    def _write_file(self, path, text):\n        self.repo[path] = text\n\n    def _delete_file(self, path):\n        del self.repo[path]\n",
+      "solution": "class Tools:\n    \"\"\"One role's tools: a call outside the registry must be refused before it runs.\"\"\"\n\n    def __init__(self, role, repo, allowed):\n        self.role, self.repo, self.allowed = role, repo, frozenset(allowed)\n\n    def call(self, name, *args):\n        if name not in self.allowed:\n            raise PermissionError(f\"{name} is not in the {self.role}'s registry\")\n        return getattr(self, \"_\" + name)(*args)\n\n    def _read_file(self, path):\n        return self.repo[path]\n\n    def _write_file(self, path, text):\n        self.repo[path] = text\n\n    def _delete_file(self, path):\n        del self.repo[path]\n",
+      "tests": "repo = {\"parse.py\": \"v1\"}\ngen = Tools(\"generator\", repo, {\"read_file\", \"write_file\"})\nev = Tools(\"evaluator\", repo, {\"read_file\"})\n\n# 1. the generator may write, and both roles may read\ngen.call(\"write_file\", \"parse.py\", \"v2\")\nassert ev.call(\"read_file\", \"parse.py\") == \"v2\"\n\n# 2. the evaluator's write is refused, and nothing was written\ntry:\n    ev.call(\"write_file\", \"parse.py\", \"evaluator's fix\")\n    raise AssertionError(\"the evaluator wrote\")\nexcept PermissionError as exc:\n    assert \"write_file\" in str(exc) and \"evaluator\" in str(exc)\nassert repo == {\"parse.py\": \"v2\"}\n\n# 3. any other tool outside the registry is refused too, before it runs\ntry:\n    ev.call(\"delete_file\", \"parse.py\")\n    raise AssertionError(\"the evaluator deleted\")\nexcept PermissionError:\n    pass\nassert \"parse.py\" in repo\n\n# 4. the generator cannot delete either: deletion is in nobody's registry here\ntry:\n    gen.call(\"delete_file\", \"parse.py\")\n    raise AssertionError(\"the generator deleted\")\nexcept PermissionError:\n    pass\nassert repo == {\"parse.py\": \"v2\"}\n\n# 5. a refused tool never runs at all, even if its effect could be undone afterwards\nran = []\n\n\nclass Spy(Tools):\n    def _delete_file(self, path):\n        ran.append(path)\n        super()._delete_file(path)\n\n\ntry:\n    Spy(\"evaluator\", {\"x\": \"1\"}, {\"read_file\"}).call(\"delete_file\", \"x\")\n    raise AssertionError(\"the evaluator deleted\")\nexcept PermissionError:\n    pass\nassert ran == [], \"the refused tool ran before the refusal\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "The check has to come before the dispatch: a refusal after execution only reports damage already done. Checking membership in the role's own registry, rather than refusing one known tool name, also refuses tools nobody thought to list.",
+      "hints": [
+        "Look at which line runs the tool and which line checks the registry.",
+        "Refuse anything not in the role's allowed set, not just the tool named write_file."
+      ]
+    },
+    {
+      "id": "hrn-012-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "single-agent",
+        "proportion"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Two tasks arrive. Task A: add a function that converts temperatures between Celsius and Fahrenheit, with a test suite already specified. Task B: rewrite a product's onboarding emails so that a new customer understands the first three steps. For each, write a short contract (three or four criteria), say which verifier settles each criterion, and decide between post 11's verification loop with tests and the full three roles, with the reason and what each choice leaves uncaught.",
+      "connects": [
+        "hrn-011"
+      ],
+      "kind": "design",
+      "solution": "1. **Task A contract.** Conversion of 0 C gives 32 F; 100 C gives 212 F; the round trip returns the input within 1e-9; the function is annotated. Every criterion is settled by a unit test or a type checker.\n2. **Task A choice.** All of the contract is code-checkable, so one agent inside the verification loop of post 11 is enough: one call per attempt, and no judge to pay for. It leaves uncaught anything the tests do not assert (a correct function nobody wanted).\n3. **Task B contract.** Each email names one of the three steps; every link resolves; each email is under a stated length; a new customer could follow the steps without help. The first three are settled by scripts; the last is judged.\n4. **Task B choice.** Little of what matters is code-checkable and a confusing onboarding is expensive, so a separate evaluator for the judged criterion is warranted, with scripts for the rest; whether the planner step earns its cost depends on how large the rewrite is. It leaves uncaught a requirement the contract never wrote down, so a person reads the contract.\n5. **The rule.** Ask whether each check can be written as code; write it if it can, and give a separate agent a contract only for the residue.",
+      "rubric": [
+        {
+          "criterion": "Writes observable criteria for both tasks and routes each to a verifier",
+          "points": 3
+        },
+        {
+          "criterion": "Chooses the verification loop for task A because every criterion is code-checkable",
+          "points": 2
+        },
+        {
+          "criterion": "Chooses a separate evaluator for task B's judged criterion, with tests or scripts for the rest",
+          "points": 3
+        },
+        {
+          "criterion": "States what each choice leaves uncaught",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "What decides between one agent and three is how much of the contract code can settle. Every option leaves something uncaught, so the choice is which residual risk is affordable.",
+      "hints": [
+        "Sort each contract's criteria into those code can settle and those that need judgement.",
+        "Then read the last column: what does each design fail to catch?"
+      ]
+    },
+    {
+      "id": "hrn-012-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "unchecked-edge",
+        "rubber-stamp"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team runs planner, generator and evaluator on every feature. Over a month, 97 of 100 sprints pass on the first attempt, and users keep reporting behaviour that nobody asked to be handled, such as negative amounts in an export. Diagnose what is going wrong, say which parts of the pattern are working as designed, and propose changes that would have caught the problem earlier, with what each costs.",
+      "kind": "critique",
+      "solution": "1. **Diagnosis.** A first-attempt pass rate that high says the contracts are too easy or the evaluator has become a rubber stamp, and the user reports say the contracts are incomplete: the planner never wrote a criterion for negative amounts, so no attempt was checked for it.\n2. **Working as designed.** The evaluator checks the work against the contract and the generator meets every stated criterion; PASS is honest about the contract. The hole is the edge nothing checks: the contract against the task.\n3. **Change one: a person reads the contract.** Reviewing criteria is short and is the one point where a missing requirement is cheap to add; it costs a reviewer a short read per sprint.\n4. **Change two: criteria quote the task.** A contract that quotes the request can be checked against it; one that paraphrases it has already lost information. It costs longer contracts.\n5. **Change three: test the grader.** Feed the evaluator known-bad work from a fixture set and confirm it says NEEDS_WORK; it costs a few judged calls per release and tells a rubber stamp from an excellent generator.",
+      "rubric": [
+        {
+          "criterion": "Identifies the incomplete contract as the cause, not the generator or evaluator",
+          "points": 3
+        },
+        {
+          "criterion": "Treats the high first-pass rate as a warning sign, not a success",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes a human review of the contract and criteria that quote the task",
+          "points": 3
+        },
+        {
+          "criterion": "Proposes testing the evaluator with known-bad work, with its cost",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The evaluator only ever compares work to criteria, so a missing criterion passes every gate. The fix is a check on the contract itself, and a test of the grader so a rubber stamp is noticed.",
+      "hints": [
+        "What does PASS actually certify?",
+        "Which artefact in the sprint does nobody grade?",
+        "Is 97 first-time passes good news?"
+      ]
+    },
+    {
+      "id": "hrn-012-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "llm-as-judge",
+        "self-preference"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Which statement about self-preference in model judges matches the evidence the post cites?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Zheng et al. (2023) proved that every model judge favours its own answers by about 25%",
+          "correct": false,
+          "feedback": "The 25% figure is Claude-v1's alone, and the authors did not claim to have established the bias."
+        },
+        {
+          "key": "b",
+          "text": "Zheng et al. saw it but could not establish it; Panickssery, Bowman and Feng (2024) measured it directly",
+          "correct": true,
+          "feedback": "Correct. The first paper named and observed it with a caveat; the second measured it."
+        },
+        {
+          "key": "c",
+          "text": "A separate context removes self-preference, so the same model can safely judge its own work",
+          "correct": false,
+          "feedback": "A separate context is not a separate model; self-preference is about the model, not the context."
+        },
+        {
+          "key": "d",
+          "text": "Self-preference appears only when the judge compares two answers side by side in one prompt",
+          "correct": false,
+          "feedback": "That describes position bias; self-preference concerns whose output is being graded."
+        }
+      ],
+      "explanation": "Self-preference concerns the judge's model, not its context, so a different model removes that correlation. The evidence comes in two steps: an observation with a caveat, then a direct measurement.",
+      "hints": [
+        "Separate what the first paper saw from what it concluded.",
+        "Which bias is about order rather than authorship?"
+      ]
+    },
+    {
+      "id": "hrn-012-q16",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "prompt-caching",
+        "cost-drivers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Why does splitting one agent into planner, generator and evaluator weaken the discount that prompt caching gives a long run?",
+      "connects": [
+        "hrn-023"
+      ],
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Each role has its own stable prefix, so the cached prefix is split three ways",
+          "correct": true,
+          "feedback": "Correct. Caching works within a role, not across roles."
+        },
+        {
+          "key": "b",
+          "text": "Cache reads are billed at the full input rate once more than one role is active",
+          "correct": false,
+          "feedback": "The rate does not change with the number of roles; what changes is how much prefix each call shares."
+        },
+        {
+          "key": "c",
+          "text": "The evaluator's browser and test tools switch caching off for the whole run",
+          "correct": false,
+          "feedback": "Tools change what is in a prefix, but they do not switch caching off."
+        },
+        {
+          "key": "d",
+          "text": "The planner's output is too short to reach the provider's minimum cacheable length",
+          "correct": false,
+          "feedback": "The planner's single call is not where the cost is; the repeated generate and evaluate calls are."
+        }
+      ],
+      "explanation": "A cache reuses an exact shared prefix. Three roles mean three different prefixes, so the discount that flattens one agent's re-reads applies to each role's own calls only.",
+      "hints": [
+        "A cache hit needs an identical prefix. How many distinct prefixes does the run have?",
+        "Think about what the generator's and the evaluator's prompts share."
+      ]
+    },
+    {
+      "id": "hrn-012-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "granularity",
+        "model-capability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the later, simpler version of the published three-role harness, the evaluator was moved from grading every sprint to a single pass at the end of the run. Which reading of that change is right?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A newer model did more of the build reliably alone, so per-sprint grading bought less",
+          "correct": true,
+          "feedback": "Correct. The evaluator is worth its cost where the task sits beyond what the model does reliably solo."
+        },
+        {
+          "key": "b",
+          "text": "Grading per sprint was shown to make the finished application worse",
+          "correct": false,
+          "feedback": "Nothing reported says per-sprint grading harmed quality; the trade was cost against detection."
+        },
+        {
+          "key": "c",
+          "text": "Evaluating at the end is always cheaper overall, whatever the model",
+          "correct": false,
+          "feedback": "Fewer evaluate calls, but every mistake found late costs rework on what was built on top of it."
+        },
+        {
+          "key": "d",
+          "text": "The sprint contract had made the evaluator unnecessary by the later version",
+          "correct": false,
+          "feedback": "A contract says what done means; something still has to check the work against it."
+        }
+      ],
+      "explanation": "Granularity trades earlier detection, paid in evaluate calls, against rework on everything built on a late-found mistake; a more capable model moves that balance.",
+      "hints": [
+        "What changed between the two versions of the harness besides the evaluator?",
+        "Who pays when a mistake is found late?"
+      ]
+    }
+  ]
+}
