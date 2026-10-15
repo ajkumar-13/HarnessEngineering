@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-block-vs-report-title" aria-describedby="hrn-02-block-vs-report-desc">
+<title id="hrn-02-block-vs-report-title">A block lands before the act; a report lands after it</title>
+<desc id="hrn-02-block-vs-report-desc">Two runs from snippets/block_vs_report.py, turns left to right, with a dashed line marking the act. Top, pre-tool: the model proposes rm -rf workspace; the purple pre-tool hook blocks it, recursive delete of the workspace; the executor, drawn dashed, is never called, 0 calls; marker.txt still exists. Bottom, post-edit: the model proposes an edit to calc.py; nothing stands in front of it; act writes calc.py and it stays; the post-edit hook runs the tests and reports AssertionError: add(2, 2) != 4.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--hrn-blue-soft); }
+  .f-green-soft { fill: var(--hrn-green-soft); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .f-purple-soft { fill: var(--hrn-purple-soft); }
+  .f-red-ink { fill: var(--hrn-red-ink); }
+  .s-blue-line { stroke: var(--hrn-blue-line); }
+  .s-green-line { stroke: var(--hrn-green-line); }
+  .s-orange { stroke: var(--hrn-orange); }
+  .s-orange-line { stroke: var(--hrn-orange-line); }
+  .s-purple-line { stroke: var(--hrn-purple-line); }
+  .s-rule { stroke: var(--hrn-rule); }
+</style>
+<defs>
+<marker id="hrn-02-block-vs-report-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="615">A block lands before the act; a report lands after it</text>
+<text x="40" y="76" class="t-subtitle" data-w="609">Computed by running snippets/block_vs_report.py with the hooks of code/13-hooks.</text>
+<path d="M512,120 L512,448" class="s-rule w1 nofill d-proj"/>
+<text x="520" y="132" class="t-note" data-w="47">the act</text>
+<text x="40" y="188" class="t-label b" data-w="57">pre-tool</text>
+<rect x="128" y="152" width="176" height="84" rx="8" class="f-blue-soft s-blue-line w1"/>
+<text x="144" y="184" class="t-head" data-w="131">model proposes</text>
+<text x="144" y="216" class="t-code" data-w="137">rm -rf workspace</text>
+<rect x="328" y="152" width="160" height="84" rx="8" class="f-purple-soft s-purple-line w1"/>
+<text x="344" y="184" class="t-head" data-w="110">pre-tool hook</text>
+<text x="344" y="216" class="t-label f-red-ink b" data-w="56">blocked</text>
+<rect x="528" y="152" width="176" height="84" rx="8" class="w15 nofill s-orange d-proj" data-fit="skip"/>
+<text x="544" y="184" class="t-head" data-w="72">executor</text>
+<text x="544" y="216" class="t-note" data-w="47">calls: 0</text>
+<rect x="728" y="152" width="176" height="84" rx="8" class="f-green-soft s-green-line w1"/>
+<text x="744" y="184" class="t-head" data-w="84">marker.txt</text>
+<text x="744" y="216" class="t-label" data-w="66">still exists</text>
+<path d="M304,192 L325,192" class="flow" marker-end="url(#hrn-02-block-vs-report-arrow)"/>
+<text x="128" y="264" class="t-note" data-w="286">blocked: recursive delete of the workspace</text>
+<text x="40" y="348" class="t-label b" data-w="66">post-edit</text>
+<rect x="128" y="312" width="176" height="84" rx="8" class="f-blue-soft s-blue-line w1"/>
+<text x="144" y="344" class="t-head" data-w="131">model proposes</text>
+<text x="144" y="376" class="t-label" data-w="76">edit calc.py</text>
+<path d="M304,352 L525,352" class="flow" marker-end="url(#hrn-02-block-vs-report-arrow)"/>
+<text x="416" y="340" text-anchor="middle" class="t-note" data-w="103">nothing in front</text>
+<rect x="528" y="312" width="176" height="108" rx="8" class="f-orange-soft s-orange-line w1"/>
+<text x="544" y="344" class="t-head" data-w="26">act</text>
+<text x="544" y="376" class="t-label" data-w="97">calc.py written</text>
+<text x="544" y="400" class="t-label" data-w="78">and it stays</text>
+<rect x="728" y="312" width="176" height="108" rx="8" class="card"/>
+<text x="744" y="344" class="t-head" data-w="120">post-edit hook</text>
+<text x="744" y="376" class="t-label" data-w="92">runs the tests</text>
+<text x="744" y="400" class="t-label" data-w="48">reports</text>
+<path d="M704,352 L725,352" class="flow" marker-end="url(#hrn-02-block-vs-report-arrow)"/>
+<text x="904" y="448" text-anchor="end" class="t-note f-red-ink" data-w="196">AssertionError: add(2, 2) != 4</text>
+<text x="40" y="504" class="t-note" data-w="622">Only the hook in front of the act can keep it from happening; the one after can only say it did.</text>
+</svg>

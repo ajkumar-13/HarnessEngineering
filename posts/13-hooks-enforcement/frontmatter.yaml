@@ -1,38 +1,26 @@
 id: hrn-013
 slug: 13-hooks-enforcement
-title: "13 · Hooks & deterministic enforcement — guardrails as code"
-
-description: >
-  Verification and evaluation still run through the model's cooperation. Some rules are
-  too important for that: they must hold every time, whatever the model decides.
-
-author: "Ajay"
+title: "13 - Hooks and deterministic enforcement: guardrails as code"
+summary: "A hook is deterministic code at a fixed lifecycle point that enforces a rule whatever the model decides. Only the two points in front of an action can block it; the other two supply or report."
 date: 2026-08-05
-last_modified: 2026-09-05
-
-tags: [harness-engineering, control, hooks, enforcement, safety]
-
-keywords:
-  - harness engineering
-  - control
-  - hooks
-  - enforcement
-  - safety
-  - cannot undo the edit
-  - the first block wins
-  - collect every problem
-  - do not over-hook
-
-category: Control and reliability
-series: Harness Engineering
+updated: 2026-10-15
+status: complete
 part: "Part III - Control and reliability"
-
+level: intermediate
+reading_time: 22
+tags: [harness-engineering, control-and-reliability, hooks, deny-list, exit-codes, ratchet]
 hero: diagrams/01-hook-lifecycle.svg
-hero_alt: "The loop on the left with four coloured bars marking where hooks attach, and on the right the four points with what each can do: session-start supplies but cannot block, pre-tool can block the call, post-edit reports only, and pre-commit can block the commit."
-
-reading_time: 26
-toc: true
-draft: false
-canonical_url: ""
-prev: ../12-planner-generator-evaluator/
-next: ../14-permissions-sandboxes/
+prerequisites: [hrn-011]
+code: included
+outcomes:
+  - id: o1
+    text: "Name the four hook lifecycle points, session start, pre-tool, post-edit and pre-commit, say which two can block, and place the stop gate beside them."
+  - id: o2
+    text: "Write a pre-tool gate and a post-edit report hook with their signatures and the exit-code contract, so that a block reaches the model with its reason."
+  - id: o3
+    text: "Decide which rules to enforce with a hook and which to leave to verification, and explain why the hook is the enforcement tooth of the ratchet."
+  - id: o4
+    text: "Keep a hook fast and quiet: scope it with a matcher, keep a deny-list in-process, and fail closed on safety."
+  - id: o5
+    text: "Give a hook a named, single-use, logged escape hatch, and test it with near misses in both directions."
+recommended: [hrn-010]

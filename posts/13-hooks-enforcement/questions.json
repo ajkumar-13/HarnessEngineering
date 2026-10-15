@@ -1,0 +1,661 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-013",
+  "next_ordinal": 16,
+  "questions": [
+    {
+      "id": "hrn-013-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "lifecycle",
+        "blocking"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Of the four hook lifecycle points, session start, pre-tool, post-edit and pre-commit, which two can stop something from happening?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Pre-tool and pre-commit",
+          "correct": true,
+          "feedback": "Correct. Both run before the action they guard: a tool call, and a commit."
+        },
+        {
+          "key": "b",
+          "text": "Session start and pre-tool",
+          "correct": false,
+          "feedback": "Session start supplies rules and context; it has no action in front of it to refuse."
+        },
+        {
+          "key": "c",
+          "text": "Post-edit and pre-commit",
+          "correct": false,
+          "feedback": "Post-edit runs after the write has happened, so it can only report the problem."
+        },
+        {
+          "key": "d",
+          "text": "Pre-tool and post-edit",
+          "correct": false,
+          "feedback": "Both see edits, but post-edit sees them afterwards; only pre-tool can refuse one."
+        }
+      ],
+      "explanation": "Only a hook that runs in front of an action can stop it: pre-tool refuses a tool call inside the loop, and pre-commit refuses a commit one layer below the agent. Session start supplies context and post-edit reports after the write.",
+      "hints": [
+        "Ask of each point whether the thing it guards has already happened when it runs."
+      ]
+    },
+    {
+      "id": "hrn-013-q02",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "exit-codes",
+        "claude-code"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A `PreToolUse` policy hook in Claude Code writes `blocked: force-push` to standard error and exits with code 1, printing nothing on standard output. What happens to the tool call?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is blocked, and the model reads the reason as its next observation",
+          "correct": false,
+          "feedback": "That is exit 2. On `PreToolUse`, exit 1 with no valid JSON is not read as a block."
+        },
+        {
+          "key": "b",
+          "text": "It runs; the person sees a hook error notice, and the model sees nothing",
+          "correct": true,
+          "feedback": "Correct. Exit 1 with no valid JSON is a non-blocking error, so the call goes ahead and the reason reaches only the transcript."
+        },
+        {
+          "key": "c",
+          "text": "It runs, and the hook's standard error is appended to the model's context",
+          "correct": false,
+          "feedback": "Standard error reaches the model on exit 2 (blocking on PreToolUse, reporting on PostToolUse), not on exit 1."
+        },
+        {
+          "key": "d",
+          "text": "The session stops until a person approves the call",
+          "correct": false,
+          "feedback": "That is the ask decision, returned as JSON with exit 0; an exit code of 1 asks nobody."
+        }
+      ],
+      "explanation": "On `PreToolUse`, without valid JSON on standard output, any exit other than 0 or 2 is a non-blocking error: the action goes ahead, the person sees a hook error notice, and the model is told nothing. A policy hook exits 2, or sets onFailure to block.",
+      "hints": [
+        "Exit code 1 is the conventional failure code. Is it the code Claude Code reads as a block?",
+        "Separate what the person sees in the transcript from what reaches the model."
+      ]
+    },
+    {
+      "id": "hrn-013-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "what-to-enforce",
+        "judgement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Which of these rules is a good candidate for a deterministic hook rather than for verification or an evaluator?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The new module's design is easy to extend",
+          "correct": false,
+          "feedback": "Whether a design is extensible needs a judgement about this case; that is evaluation, not a pattern."
+        },
+        {
+          "key": "b",
+          "text": "Never run `git push --force` against main",
+          "correct": true,
+          "feedback": "Correct. A violation is a command a pattern can match before it runs, and the right response never varies."
+        },
+        {
+          "key": "c",
+          "text": "Test names describe the behaviour they check",
+          "correct": false,
+          "feedback": "A name's fitness is a judgement; a hook could only check its form, which is not the rule."
+        },
+        {
+          "key": "d",
+          "text": "The final summary matches what the user asked for",
+          "correct": false,
+          "feedback": "Fidelity to a request needs reading both; that is verification or evaluation."
+        }
+      ],
+      "explanation": "A hook suits a rule whose correct response is always identical and whose violation a cheap check can detect, such as a pattern on a command. Rules about design quality, naming or fidelity to a request need a judgement about the case at hand.",
+      "hints": [
+        "Could a few lines of code detect every violation, with no judgement about the case?"
+      ]
+    },
+    {
+      "id": "hrn-013-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "near-miss",
+        "deny-list",
+        "testing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A deny-list blocks force-pushes with the pattern `git\\s+push\\s+--force`. Which commands does it get wrong? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "`git push --force-with-lease origin main`",
+          "correct": true,
+          "feedback": "Wrong verdict: it is blocked, a false positive, because the pattern matches the prefix `--force`."
+        },
+        {
+          "key": "b",
+          "text": "`git push -f origin main`",
+          "correct": true,
+          "feedback": "Wrong verdict: the same act spelled with the short flag runs."
+        },
+        {
+          "key": "c",
+          "text": "`git push origin main --force`",
+          "correct": true,
+          "feedback": "Wrong verdict: the flag comes after the branch, so the pattern never sees it next to `push`."
+        },
+        {
+          "key": "d",
+          "text": "`git push --force origin main`",
+          "correct": false,
+          "feedback": "This one is blocked, which is right; it is the case the pattern was written for."
+        },
+        {
+          "key": "e",
+          "text": "`git status`",
+          "correct": false,
+          "feedback": "Allowed, which is right, but it is not a near miss: it was never close to the pattern."
+        }
+      ],
+      "explanation": "The pattern matches the text right after `push`, so it misses `-f` and a trailing `--force`, and it matches the prefix of `--force-with-lease`, blocking the safe idiom. `git push --force origin main` is blocked correctly, and `git status` is allowed correctly but tests nothing, because it is nowhere near the rule.",
+      "hints": [
+        "Try each command against the pattern by hand, then ask whether the verdict is what a correct guard would give.",
+        "There are mistakes in both directions."
+      ]
+    },
+    {
+      "id": "hrn-013-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "latency",
+        "in-process"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "With illustrative figures, a pre-tool hook written as a script costs 40 ms to spawn on every tool call. How many seconds of spawn overhead does a run of 350 tool calls pay before any check does any work?",
+      "answer": {
+        "value": 14,
+        "tolerance": 0.05,
+        "unit": "seconds"
+      },
+      "precision_note": "$350 \\times 40 / 1{,}000 = 14$, the arithmetic of section 6 at these figures. 14,000 (milliseconds), 1.4 and 8.75 fall outside the tolerance.",
+      "explanation": "The hook runs once per tool call, so the overhead is $350 \\times 40 = 14{,}000$ ms, which is 14 seconds. An in-process compiled pattern pays none of it.",
+      "hints": [
+        "How many times does a pre-tool hook run in a run of 350 tool calls?",
+        "Convert the total from milliseconds to seconds."
+      ]
+    },
+    {
+      "id": "hrn-013-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "post-edit",
+        "scoping",
+        "latency"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A post-edit hook runs the full test suite, 6 seconds, after each of 45 edits. The team scopes the post-edit hook to a fast subset that takes 1.5 seconds and runs the full suite once, at pre-commit, at the end of the run. With these illustrative figures, how many seconds of test time does the change save?",
+      "answer": {
+        "value": 196.5,
+        "tolerance": 0.5,
+        "unit": "seconds"
+      },
+      "precision_note": "$45 \\times 6 - (45 \\times 1.5 + 6) = 196.5$. Forgetting the one full run at pre-commit gives 202.5, and the per-edit saving alone gives 4.5; both fall outside the tolerance.",
+      "explanation": "Before: $45 \\times 6 = 270$ seconds. After: $45 \\times 1.5 + 6 = 73.5$ seconds, the fast subset on every edit plus one full run at pre-commit. The saving is $270 - 73.5 = 196.5$ seconds.",
+      "hints": [
+        "Work out the test time before and after the change separately.",
+        "The full suite still runs once after the change."
+      ]
+    },
+    {
+      "id": "hrn-013-q07",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "post-edit",
+        "blocking"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team writes its rule \"never overwrite the lockfile\" as a post-edit hook on the editing tools. Why can that hook never stop the lockfile being overwritten?",
+      "answer": {
+        "model": "Because a post-edit hook runs after the write has already happened, so it can only report the overwrite; preventing it needs a pre-tool hook.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|it depends|depends)\\b)(?=(?:\\S+\\s+){3,}\\S)(?![\\s\\S]*(?<!not )(?<!n't )(?<!never )\\b(runs?|fires?|happens?|executes?|is called|triggers?|comes?)\\s+before\\s+(the\\s+)?(edit|write|change|file|overwrite|tool)\\b)(?=[\\s\\S]*\\b(after|already|too late|once)\\b[^.;\\n]{0,40}\\b(writ\\w*|wrote|written|edit\\w*|overwr\\w*|lockfile|file|tool|change\\w*|happen\\w*|done|damage|disk|landed|ran|occurred)\\b|[\\s\\S]*\\b(writ\\w*|wrote|written|edit\\w*|overwr\\w*|lockfile|file|tool|change\\w*|happen\\w*|done|damage|disk|landed|ran|occurred)\\b[^.;\\n]{0,40}\\balready\\b)(?=[\\s\\S]*\\b(is|was|were|has|have|had|been|runs?|ran|fires?|fired|happens?|happened|executes?|executed|occurs?|comes?|lands?|landed|sees?|can|only|already)\\b)[\\s\\S]{15,}$"
+        ]
+      },
+      "explanation": "A post-edit hook is a post-tool hook: it runs after the tool has written the file, so the overwrite has already happened and the hook can only report it. Preventing it needs a pre-tool hook matched to Edit|Write that checks the target path before the write.",
+      "hints": [
+        "When does a post-edit hook run, relative to the write?"
+      ]
+    },
+    {
+      "id": "hrn-013-q08",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "fail-closed",
+        "safety"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A pre-tool deny-list hook raises an exception while parsing a malformed command, so it returns no decision. Should the harness let the command run or refuse it, and why?",
+      "answer": {
+        "model": "Refuse it (fail closed), because a wrongly run destructive command costs far more than a false block.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|it depends|depends)\\b)(?=(?:\\S+\\s+){5,}\\S)(?![\\s\\S]*(?:^|[.;:!?\\n]\\s*)(let|allow|permit|run|execute)\\s+(it|the command|the call)\\b(?!\\s+(run\\s+)?or\\b))(?![\\s\\S]*\\b(?:should|must|would|could|can|i'?d|just|so|then|otherwise|harness|(?<!than )to)\\s+(just\\s+)?(let|allow|permit|run|execute)\\s+(it|the command|the call)\\b(?!\\s+(run\\s+)?or\\b))(?![\\s\\S]*(?:^|[.;:!?\\n]\\s*|\\bshould\\s+|\\bmust\\s+|\\bharness\\s+)fails?[\\s-]+open)(?![\\s\\S]*\\b(should|must|can|would|could)\\s+(just\\s+)?(proceed|go ahead|carry on|continue)\\b)(?![\\s\\S]*\\b(not|never|n't|no need to)\\s+(be\\s+)?(block|refus|deny|reject|stop)\\w*)(?=[\\s\\S]*\\b(block|refuse|deny|reject|stop|fail[\\s-]*closed?|fail[\\s-]*safe|(do not|don't|not|never) (run|allow|let|execute))\\w*)(?=[\\s\\S]*\\b(cost|costs|costly|expensive|cheap|cheaper|damage|destructive|irreversible|dangerous|harm|safer|safety|risk|worse|dwarf|undone|undo|asymmetr)\\w*)[\\s\\S]*$"
+        ]
+      },
+      "explanation": "Fail closed: refuse it. The costs are asymmetric: a false block costs a turn, while a destructive command run by mistake may not be undoable. In Claude Code a hook that crashes is a non-blocking error by default, so a policy hook sets onFailure to block.",
+      "hints": [
+        "Compare the cost of a wrong block with the cost of a wrong run.",
+        "Which default does a safety control want when it cannot decide?"
+      ]
+    },
+    {
+      "id": "hrn-013-q09",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "gated-call",
+        "composition"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Put the steps of one gated call in the companion's hook registry in order, for a command that the second of two pre-tool hooks blocks.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The model proposes a bash command"
+        },
+        {
+          "key": "b",
+          "text": "The first pre-tool hook allows it"
+        },
+        {
+          "key": "c",
+          "text": "The second pre-tool hook returns a block with a reason"
+        },
+        {
+          "key": "d",
+          "text": "gated_call returns the reason without calling execute"
+        },
+        {
+          "key": "e",
+          "text": "The reason reaches the model as its next observation"
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "gated_call asks check_tool for a decision; check_tool runs the pre-tool hooks in order and returns the first block it meets, without asking any hook after it; gated_call then returns the reason without calling execute, and the reason becomes the model's next observation.",
+      "hints": [
+        "The model's proposal comes first and the observation comes last.",
+        "A blocked call never reaches execute."
+      ]
+    },
+    {
+      "id": "hrn-013-q10",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "lifecycle"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "Match each hook lifecycle point to what it can do. One description on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Session start"
+        },
+        {
+          "key": "b",
+          "text": "Pre-tool"
+        },
+        {
+          "key": "c",
+          "text": "Post-edit"
+        },
+        {
+          "key": "d",
+          "text": "Pre-commit"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "Adds rules and context before the loop begins"
+        },
+        {
+          "key": "b",
+          "text": "Refuses a tool call inside the loop"
+        },
+        {
+          "key": "c",
+          "text": "Reports a problem after the write"
+        },
+        {
+          "key": "d",
+          "text": "Refuses a commit, one layer below the agent"
+        },
+        {
+          "key": "e",
+          "text": "Undoes the last edit when the tests fail"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Session start supplies context before the loop begins; pre-tool can refuse a tool call inside the loop; post-edit runs after the write and reports; pre-commit is git's own hook, which refuses a commit one layer below the agent. No hook undoes an edit that has already been written.",
+      "hints": [
+        "Ask whether each point runs before or after the thing it watches.",
+        "The unused description claims a power no hook has."
+      ]
+    },
+    {
+      "id": "hrn-013-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "deny-list",
+        "near-miss",
+        "regex"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "`blocks_force_push` is a pre-tool check that uses the companion's force-push pattern, and it fails its near-miss tests. Fix it so that it returns True for any `git push` that forces, with `--force` anywhere after `push` or a short `-f` flag, alone or combined as in `-fu`, and False for `--force-with-lease` (with or without `--force-if-includes`), for a push that does not force, and for every command that is not a push.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import re\n\nFORCE_PUSH = re.compile(r\"git\\s+push\\s+--force\")\n\n\ndef blocks_force_push(command: str) -> bool:\n    \"\"\"True when the pre-tool hook must block this command as a force-push.\"\"\"\n    return FORCE_PUSH.search(command) is not None\n",
+      "solution": "import re\n\nFORCE_PUSH = re.compile(r\"\\bgit\\s+push\\b.*(--force(?![\\w-])|\\s-[a-zA-Z]*f[a-zA-Z]*\\b)\")\n\n\ndef blocks_force_push(command: str) -> bool:\n    \"\"\"True when the pre-tool hook must block this command as a force-push.\"\"\"\n    return FORCE_PUSH.search(command) is not None\n",
+      "tests": "remotes = [\"origin\", \"upstream\"]\nbranches = [\"main\", \"dev\", \"release/2.0\"]\nfor r in remotes:\n    for b in branches:\n        for cmd in (f\"git push --force {r} {b}\", f\"git push {r} {b} --force\", f\"git push -f {r} {b}\",\n                    f\"git push -fu {r} {b}\", f\"git push --force-with-lease --force {r} {b}\"):\n            assert blocks_force_push(cmd), f\"should block: {cmd}\"\n        for cmd in (f\"git push --force-with-lease {r} {b}\", f\"git push {r} {b}\", f\"git push -u {r} {b}\",\n                    f\"git push --follow-tags {r} {b}\", f\"git pull --force {r} {b}\", f\"git fetch -f {r}\",\n                    f\"git push --force-with-lease --force-if-includes {r} {b}\"):\n            assert not blocks_force_push(cmd), f\"should run: {cmd}\"\nassert not blocks_force_push(\"git status\")\nassert not blocks_force_push(\"ls -f\")\n",
+      "explanation": "The shipped pattern only matches `--force` directly after `push`, so it misses `-f`, combined short flags and a trailing `--force`, and it matches the prefix of `--force-with-lease`. A fix scans the whole push command for `--force` as a whole flag, not the start of `--force-with-lease` or `--force-if-includes`, or for a short-flag cluster containing f; a tokenising check with shlex works as well.",
+      "hints": [
+        "Write down the near misses in both directions first: which safe commands does the old pattern block, and which forced pushes does it miss?",
+        "A negative lookahead can keep `--force` from matching the start of a longer flag such as `--force-with-lease`.",
+        "A short-flag cluster starts with a single dash and may hold several letters."
+      ]
+    },
+    {
+      "id": "hrn-013-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "ratchet",
+        "enforcement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "An agent opens a pull request that comments out a failing test, and it is merged by accident. Explain how the team turns this into a rule the harness enforces: what each of the ratchet's three teeth does, why the memory-file line alone is not enough, what makes this failure hookable, and at which lifecycle point the hook belongs.",
+      "connects": [
+        "hrn-010",
+        "hrn-005"
+      ],
+      "kind": "explain",
+      "solution": "1. **The teeth.** A memory-file line (\"never comment out tests; delete them or fix them\") so the model reads the rule; a hook so it is enforced; a reviewer check (a reviewer sub-agent flagging commented-out tests as a blocker) so what slips is caught. A mistake has to defeat all three to recur (post 10).\n2. **Why the line is not enough.** A rule in the memory file is a request: the model can read it and still not follow it, the silent-drift failure mode of post 05. Nothing marks the run where it was ignored.\n3. **Why it is hookable.** A violation is deterministically detectable: Osmani's pre-commit hook greps the diff for `.skip(` and `xit(`. A rule that needed a judgement about test quality would earn only a reviewer check.\n4. **Where it attaches.** Pre-commit, where the diff exists and the commit can be refused; because a git hook can be skipped with `--no-verify`, that flag goes on the pre-tool deny-list and a required server-side check backs it.\n5. **The result.** The hook converts a line in a team agreement into a property of the harness, so the same mistake fails on the next run whatever the model decides.",
+      "rubric": [
+        {
+          "criterion": "Names the three teeth, memory-file line, hook and reviewer check, and what each does",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a memory line alone is a request that can drift, linked to silent drift",
+          "points": 2
+        },
+        {
+          "criterion": "Says the failure is hookable because a violation is a deterministic pattern in the diff",
+          "points": 2
+        },
+        {
+          "criterion": "Places the hook at pre-commit, where the diff exists and the commit can be refused",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The ratchet turns the failure into three constraints, and the hook is the one that holds when the model does not cooperate. The rule is hookable because a violation is a pattern in the diff, which a pre-commit grep finds every time.",
+      "hints": [
+        "Start from the three teeth, then ask which of them works even when the model ignores the rule.",
+        "What would a check need to find in the diff?"
+      ]
+    },
+    {
+      "id": "hrn-013-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "enforcement-ladder",
+        "git-hooks",
+        "bypass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "A team wants the rule \"nothing reaches main unless the tests are green\" to hold against an agent that has a shell. Design the enforcement from a prompt rule down to the server: name each rung, what it blocks, how an agent could get past it, and what closes that gap. Say which rung is the one that cannot be skipped from the client, and what the sandbox adds beyond all of them.",
+      "connects": [
+        "hrn-014",
+        "hrn-011"
+      ],
+      "kind": "design",
+      "solution": "1. **Prompt rule.** \"Run the tests before pushing\" in the memory file: a request, which the model can forget or be talked out of.\n2. **Pre-tool hook.** A deny-list on the shell tool refuses `git push` to main, and refuses `--no-verify` and `git commit -n`; it can be bypassed only by editing the harness, so its configuration is outside what the agent may write (an Edit|Write pre-tool check covers the editing tools; the shell needs the sandbox of post 14).\n3. **Stop gate.** A blocking Stop hook runs the tests and refuses exit (1), final answer, while they are red, paired with an iteration cap and a budget so a test that never passes cannot hold the run forever.\n4. **Git hooks.** A pre-commit or pre-push hook runs the fast suite; git documents that `--no-verify` bypasses it (`-n` on `git commit`), which is why rung 2 refuses those flags.\n5. **Server side.** Branch protection with required status checks rejects a push to main whose checks are not green; no client-side flag reaches it, so it is the rung that cannot be skipped.\n6. **The sandbox (post 14).** The deny-list matches spellings; a sandbox with no credentials for main, or no network beyond the remote, bounds what any command can do when a spelling slips past.",
+      "rubric": [
+        {
+          "criterion": "Orders the rungs: prompt rule, pre-tool hook, git hook, server-side check",
+          "points": 2
+        },
+        {
+          "criterion": "Names the git bypass (--no-verify, -n on git commit) and refuses it at pre-tool",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies server-side required checks as the rung no client flag can skip",
+          "points": 2
+        },
+        {
+          "criterion": "Says, for the prompt rule and the pre-tool hook, how an agent gets past each and what closes the gap",
+          "points": 1
+        },
+        {
+          "criterion": "Says what the sandbox adds: bounding commands the deny-list did not anticipate",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Each rung catches what the one above cannot, and the bypass of each local rung is a flag or an edit that the rung above it has to refuse. Only a server-side check is out of reach of the client.",
+      "hints": [
+        "List the rungs from the weakest, and for each one ask what the agent would type to get past it.",
+        "Which flags skip git's own hooks, and where can a harness refuse them?"
+      ]
+    },
+    {
+      "id": "hrn-013-q14",
+      "type": "mcq",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "deny-list",
+        "lab"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the lab run, `rm -rf workspace` sent through the companion's shipped deny-list runs and deletes the marker file; with one added rule it is blocked. Why did the shipped list let it through?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Its rm pattern only blocks a broad path, /, ~ or *, and a named directory is none of them",
+          "correct": true,
+          "feedback": "Correct. The rule was written for broad paths, so a delete of `workspace` was never on the list."
+        },
+        {
+          "key": "b",
+          "text": "The patterns are case-insensitive, so lower-case rm is skipped",
+          "correct": false,
+          "feedback": "Case-insensitive matching widens a pattern; it never makes lower case slip through."
+        },
+        {
+          "key": "c",
+          "text": "The first hook allowed it, and later hooks are never asked",
+          "correct": false,
+          "feedback": "First block wins stops at a block, not at an allow; every hook is asked until one blocks."
+        },
+        {
+          "key": "d",
+          "text": "The executor runs commands before the hooks see them",
+          "correct": false,
+          "feedback": "gated_call runs check_tool first; the added rule shows a block keeps the executor from being called."
+        }
+      ],
+      "explanation": "The shipped pattern is `rm\\s+-rf\\s+(/|~|\\*)`: it blocks a recursive delete only when the path is /, ~ or *. A named directory matches none of them, which is the deny-list's limit: it stops exactly what its author wrote down.",
+      "hints": [
+        "Read the shipped rm pattern and what it requires after the flags."
+      ]
+    },
+    {
+      "id": "hrn-013-q15",
+      "type": "short",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "override",
+        "escape-hatch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-15",
+      "prompt": "In the override snippet, a token for the force-push rule lets `git push --force origin main` through once, and the same command is blocked straight after. What makes the second call fail?",
+      "answer": {
+        "model": "The token is single-use: the first call popped (spent) it, so there is no token left for the second.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|i think|i guess|not sure|it depends|depends)\\b)(?=(?:\\S+\\s+){3,}\\S)(?![\\s\\S]*\\b(not|isn't|wasn't|never|n't|nothing|no token)\\s+(\\w+\\s+)?(spent|used|consumed|single|one-time|popped|removed|gone)\\b)(?![\\s\\S]*\\bstill\\s+(there|valid|available|left|present)\\b)(?=[\\s\\S]*\\b(spent|spends|spend|used up|uses up|consumed|consumes|popped|pops|removed|removes|gone|single[- ]use|one[- ]time|only once|works once|once used|used once|no (token|override) (is )?left|none left|finds none|already used|used it|used the)\\b)[\\s\\S]*$"
+        ]
+      },
+      "explanation": "The override is single-use: with_override pops the token for the rule that blocked the call, so the first call spends it and the second finds no token and stays blocked. Nobody can leave the guard off by forgetting to revoke an override.",
+      "hints": [
+        "Look at what with_override does to the token dictionary when it lets a call through.",
+        "After the first call, what is left in the dictionary for the force-push rule?"
+      ]
+    }
+  ]
+}
