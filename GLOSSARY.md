@@ -98,7 +98,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Harness-as-a-Service (HaaS).** A shift from LLM APIs that return completions to APIs that return a runtime, with the loop, tools, context management, and hooks built in. Also *harness API* (Osmani, 2026). See [Post 23](posts/23-economics-haas/index.md).
 
-**Hook.** A deterministic script run at a lifecycle point (pre-tool, post-edit, pre-commit, session-start) to enforce a rule the model cannot be trusted to follow on its own. *Hooks* are the seventh of the *eleven components*, one of the four that govern the loop, and the enforcement half of the *ratchet*. See [Post 13](posts/13-hooks-enforcement/index.md).
+**Hook.** A deterministic script run at a lifecycle point (session start, pre-tool, post-edit, pre-commit) to enforce a rule the model cannot be trusted to follow on its own. *Hooks* are the seventh of the *eleven components*, one of the four that govern the loop, and the enforcement tooth of the *ratchet*. See [Post 13](posts/13-hooks-enforcement/index.md).
 
 **Hook lifecycle.** The set of points at which hooks fire, plus the blocking asymmetry across them: only a hook that runs before an action can prevent it, and one that runs after can only report, with the report re-entering the loop as an observation. See [Post 13](posts/13-hooks-enforcement/index.md).
 
@@ -174,7 +174,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Permissions.** The eighth of the *eleven components*, one of the four that govern the loop: the declarative rules, the sandbox and the approvals that bound what a run can touch, so that a mistake, or a prompt injection reaching a tool, is contained. Which actions a human must approve is a policy on this component. See [Post 14](posts/14-permissions-sandboxes/index.md) and [Post 15](posts/15-human-in-the-loop/index.md).
 
-**Planner, generator, evaluator.** A pattern that splits planning, doing, and grading across separate agents, because an independent evaluator does not skew positive the way self-grading does. Osmani (2026) calls it "GANs for prose", after the generator and discriminator of a generative adversarial network. See [Post 12](posts/12-planner-generator-evaluator/index.md).
+**Planner, generator, evaluator.** A pattern that splits planning, doing, and grading across separate agents, because a standalone evaluator can be tuned to be sceptical far more easily than a model grading its own work. Rajasekaran (Anthropic, 2026) designed it after the generator and discriminator of a generative adversarial network; Osmani (2026) calls it "GANs for prose". See [Post 12](posts/12-planner-generator-evaluator/index.md).
 
 **Prebuilt harness.** A vendor's or framework's ready-made runtime that ships the loop, tools and guardrails. Faster to adopt, and its abstractions are its opinions. See [Post 02](posts/02-anatomy-of-a-harness/index.md) and [Post 20](posts/20-sdk-landscape/index.md).
 
@@ -206,7 +206,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Run.** One complete execution of a harness from task to stop condition, and the unit observability is organised around. Most agent failure modes are visible only as shapes across a run, not as facts about a single turn. See [Post 21](posts/21-observability-traces/index.md).
 
-**Sandbox.** An isolated execution environment (allow-listed commands, network isolation, ephemeral runtime) that bounds what an agent's tools can touch. Part of the *permissions* component. See [Post 14](posts/14-permissions-sandboxes/index.md).
+**Sandbox.** An isolated execution environment (an allow-list, a path boundary, network isolation, a resource limit, an ephemeral runtime) that bounds what an agent's tools can touch. Part of the *permissions* component. See [Post 14](posts/14-permissions-sandboxes/index.md).
 
 **Scaffold.** The behaviour-defining layer around the model: system prompt, tool descriptions, how responses are parsed, what is remembered across steps. Distinct from the *harness*, which is the execution mechanism around it. See [Post 01](posts/01-from-context-to-harness/index.md).
 
@@ -230,7 +230,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **State.** Component 03, one of the *eleven components* and of the four that feed the loop: what the agent keeps on disk rather than in the window (intermediate results, plans, a handoff file), with git adding versioning and rollback. The window is small and expensive; the filesystem is large and cheap. See [Post 08](posts/08-state-filesystem-git/index.md).
 
-**Steering.** Injecting a human message into a running agent so that it lands as the next observation rather than restarting the run. A property of the loop's input mode, not a feature added above the loop. See [Post 15](posts/15-human-in-the-loop/index.md).
+**Steering.** Injecting a human message into a running agent so that it lands as the next observation rather than restarting the run. Between turns any loop the harness drives can take one; interrupting mid-turn needs a streaming connection. See [Post 15](posts/15-human-in-the-loop/index.md).
 
 **Stop condition.** Any rule that ends a loop; the four a production loop carries are the *loop exits* (final answer, iteration cap, budget, no progress). This series argues that many agent failures are stop-condition faults rather than reasoning faults; the claim rests on which failures have been named, not on a measurement. See [Post 03](posts/03-the-agent-loop/index.md).
 
@@ -250,7 +250,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Tool.** A single action the model can invoke through the loop (run bash, edit a file, call an API), described to it by a schema. *Tools* are the second of the *eleven components*, one of the four that feed the loop; a small set of general-purpose tools, above all bash and code execution, tends to beat a large set of narrow ones. See [Post 06](posts/06-tools-bash-code/index.md).
 
-**Tool poisoning.** An injection planted in a tool's description rather than in its output, read by the model and usually invisible to the user (OWASP, 2025). It includes the "rug pull", where a server changes a description after the tool was approved. See [Post 14](posts/14-permissions-sandboxes/index.md).
+**Tool poisoning.** An injection planted in a tool's description rather than in its output, read by the model and usually invisible to the user (Invariant Labs, 2025; OWASP MCP03, 2025). Invariant Labs also names the "rug pull", where a server changes a description after the tool was approved. See [Post 14](posts/14-permissions-sandboxes/index.md).
 
 **Tool-call signature.** Tool name plus normalised arguments: the fingerprint whose repetition across consecutive turns is the classic *doom loop*. Comparing signatures alone cannot tell a poll whose result changes from a retry whose result does not; the companion's detector compares signatures only, and comparing the results as well separates the two. See [Post 05](posts/05-agent-failure-modes/index.md).
 
@@ -272,9 +272,9 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Verification gate.** The check on the loop's exit that a candidate answer must pass before the run counts as done, which turns *victory declaration* from a judgement call into a fact about the repository. See [Post 11](posts/11-verification-loops/index.md).
 
-**Verification loop.** A per-step check (tests, self-critique) that surfaces errors immediately so they do not compound, feeding each failure back into the loop as the next observation. See [Post 11](posts/11-verification-loops/index.md).
+**Verification loop.** A per-step check against ground truth (tests, a schema, a compiler) that surfaces errors immediately so they do not compound, feeding each failure back into the loop as the next observation. See [Post 11](posts/11-verification-loops/index.md).
 
-**Verifier ladder.** The ordered set of checks available to a verification loop, from compiler and tests through schema validation to an independent judge and finally self-critique. Strength and cost do not track each other monotonically. See [Post 11](posts/11-verification-loops/index.md).
+**Verifier ladder.** The checks available to a verification loop, from cheapest to dearest: schema validation, a compiler or type checker, a test suite, an independent judge, and the model's own self-critique. The line that matters falls between the test suite and the judge: above it a failure is a fact, below it a verdict is an opinion. See [Post 11](posts/11-verification-loops/index.md).
 
 **Victory declaration.** One of the six *failure modes*, and the first: the agent announces the task complete when it is not (tests still red, the feature half-built). The canonical reason to add a *verification gate*. See [Post 05](posts/05-agent-failure-modes/index.md).
 

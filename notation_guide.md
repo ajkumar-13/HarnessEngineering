@@ -132,7 +132,7 @@ Another series is named by its key and its posts by id in code font, never by a 
 |---|---|---|---|
 | Context Engineering | `context-engineering` | `ctx-001` to `ctx-030` | by id: prompt caching and the economics of one call (`ctx-005`), context rot and the context failure modes (`ctx-006`), write, select, compress and isolate (`ctx-007` to `ctx-013`) |
 | Model Context Protocol | `mcp` | `mcp-001` to `mcp-024` | by id: the architecture (`mcp-002`), the host's tool loop and permissions (`mcp-011`), security the protocol does not stop (`mcp-019`) |
-| AI Security | `ai-security` | `sec-NNN` | in prose only, until that series locks its ids |
+| AI Security | `ai-security` | `sec-001` to `sec-032` | by id: prompt injection (`sec-018`), confused deputies (`sec-021`), sandboxing and capability-based design (`sec-022`) |
 
 ## 10. Figure roles
 

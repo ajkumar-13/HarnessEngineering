@@ -45,8 +45,8 @@ def solve(
     the first attempt) and returns a candidate. ``verify(candidate)`` returns a
     :class:`VerifyResult`. Success is silent (the candidate is returned as soon
     as a check passes); failure is verbose (its report is fed back into
-    ``generate``). The ``max_attempts`` cap is the no-progress stop condition
-    (Post 03, exit 4) applied to correction: a fix-it loop with no cap is a
+    ``generate``). The ``max_attempts`` cap is the iteration cap (post 03,
+    exit (2)) applied to correction: a fix-it loop with no cap is a
     doom loop.
 
     The returned :class:`Solution` carries ``verified``; a caller that must not
