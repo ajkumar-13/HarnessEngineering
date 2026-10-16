@@ -1,0 +1,763 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-022",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "hrn-022-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "trajectory-eval",
+        "outcome-eval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team changes the loop's stop condition and wants to know whether the change helped. Which evaluation answers that?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An output eval that scores the final message of one run with a rubric",
+          "correct": false,
+          "feedback": "The final message misses the recovery, the loops and the stop: the very behaviour a stop condition changes."
+        },
+        {
+          "key": "b",
+          "text": "A paired A/B of both configurations on the fixed internal task set, scored by an objective grader",
+          "correct": true,
+          "feedback": "Correct. A harness component is measured on whole runs, the same tasks under both configurations, with the model held fixed."
+        },
+        {
+          "key": "c",
+          "text": "The agent's position on a public leaderboard before and after the change",
+          "correct": false,
+          "feedback": "A leaderboard rank moves with the crowd around it and mixes model and harness; it is calibration, not a controlled comparison."
+        },
+        {
+          "key": "d",
+          "text": "A model judge reading the transcripts and rating how sensible each stop looked",
+          "correct": false,
+          "feedback": "A judge reading the transcript grades the words, not the world; the outcome eval grades whether the task resolved."
+        }
+      ],
+      "explanation": "A stop condition is a harness component, so the unit is one run and the question is whether the task resolved. The right instrument is a paired A/B on the frozen internal set: the same tasks under both configurations, the model held fixed, graded by inspecting the workspace.",
+      "hints": [
+        "Ask what unit a stop condition changes: one answer, or one run."
+      ]
+    },
+    {
+      "id": "hrn-022-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "pass-at-k",
+        "pass-hat-k"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A vendor quotes `pass@8 = 90%` for a coding agent. A team will deploy it so that each user request gets exactly one run, with no retry and nothing to pick a winner. Which number describes what a user will get on a single request?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`pass@8`, because it was measured on the same tasks",
+          "correct": false,
+          "feedback": "`pass@8` credits a task if any of eight attempts worked; one run with no picker cannot collect that luck."
+        },
+        {
+          "key": "b",
+          "text": "`pass@1`, the chance a single trial resolves the task",
+          "correct": true,
+          "feedback": "Correct. One run per request is a single trial; `pass@1` is the member of the family that matches it."
+        },
+        {
+          "key": "c",
+          "text": "`pass^8`, because it is the strictest",
+          "correct": false,
+          "feedback": "`pass^8` asks whether all eight runs work: the right number for a user who meets the agent repeatedly, not for one request."
+        },
+        {
+          "key": "d",
+          "text": "Any of them, since they are computed from the same trials",
+          "correct": false,
+          "feedback": "Same trials, different questions: on the post's ten-task example they read 55%, 90% and 20%."
+        }
+      ],
+      "explanation": "The three metrics answer different questions from the same trial matrix. A one-shot deployment is described by `pass@1`, with `pass^k` beside it when the same user returns; `pass@k` belongs only where something really retries and picks the winner.",
+      "hints": [
+        "Match the metric's question to the deployment: how many tries does the user get, and who picks?"
+      ]
+    },
+    {
+      "id": "hrn-022-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "grader-validation",
+        "empty-agent"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A new task joins the internal set. Run against it, an agent that does nothing at all is scored as resolved. What does that show?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The task is easy, and belongs in the smoke subset",
+          "correct": false,
+          "feedback": "Easy means an agent resolves it with little work; this task is resolved with none, so the grader is not checking the work."
+        },
+        {
+          "key": "b",
+          "text": "The grader checks something the agent never had to do, so the task cannot measure the agent",
+          "correct": true,
+          "feedback": "Correct. An empty run must score zero; a pass means the fixture or the prompt already satisfies the grader."
+        },
+        {
+          "key": "c",
+          "text": "The grader is flaky and should be run twice",
+          "correct": false,
+          "feedback": "Flakiness is a grader disagreeing with itself on an unchanged workspace; this one may pass every time."
+        },
+        {
+          "key": "d",
+          "text": "The harness has a bug that resolves tasks without acting",
+          "correct": false,
+          "feedback": "The empty run involves no harness at all; the defect is in the task's grader or fixture."
+        }
+      ],
+      "explanation": "The empty-agent baseline exists to catch graders that pass without the work: a test already green, an assertion on a file the fixture ships, a grep for a word the prompt contains. Such a task resolves under every configuration and dilutes every lift on the set until it is fixed.",
+      "hints": [
+        "Ask what the grader saw when nothing was done.",
+        "Compare with the oracle check, which catches the opposite defect."
+      ]
+    },
+    {
+      "id": "hrn-022-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "callable",
+        "paired-interval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An A/B on 60 tasks at three seeds measures harness B 6.7 points above A, with a paired 95% interval from -2.1 to +15.5 points. What is the right verdict?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "B is better: the measured lift is positive",
+          "correct": false,
+          "feedback": "The lift is an estimate; an interval that includes zero means the set cannot rule out no difference."
+        },
+        {
+          "key": "b",
+          "text": "B is no better than A: the interval includes zero",
+          "correct": false,
+          "feedback": "An interval that holds zero does not show the arms equal; it also holds lifts of fifteen points. Absence of a call is not a call of absence."
+        },
+        {
+          "key": "c",
+          "text": "Not callable: this set cannot tell whether B is better, and a larger set is needed to decide",
+          "correct": true,
+          "feedback": "Correct. The interval crosses zero, so the result is not callable either way; sizing the set for the lift that matters is the next step."
+        },
+        {
+          "key": "d",
+          "text": "A is better, because the interval reaches below zero",
+          "correct": false,
+          "feedback": "Most of the interval lies above zero; nothing here favours A, and nothing settles the question."
+        }
+      ],
+      "explanation": "A result is callable when its interval excludes zero. This one runs from -2.1 to +15.5 points, so the verdict is not callable: the experiment cannot distinguish a real lift from none. In the post's run the true lift was 5.4 points, and 60 tasks call it only about a quarter of the time.",
+      "hints": [
+        "Ask what values the interval still allows."
+      ]
+    },
+    {
+      "id": "hrn-022-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "11",
+      "est_minutes": 3,
+      "tags": [
+        "held-out",
+        "overfit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "During a post-mortem an engineer reads three held-out tasks to understand why the harness failed them, then fixes the harness. The held-out score rises next round. What should the team do with those three tasks?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Keep them: the fix was genuine, so the higher score is real",
+          "correct": false,
+          "feedback": "Reading a held-out task is optimisation against it, whether or not the fix was genuine; the score on those tasks no longer measures generalisation."
+        },
+        {
+          "key": "b",
+          "text": "Move them to the development split and rotate fresh held-out tasks in",
+          "correct": true,
+          "feedback": "Correct. A held-out task is spent once it is read; rotate a fresh batch in and expect the held-out line to step down."
+        },
+        {
+          "key": "c",
+          "text": "Delete them from the set entirely, since they are contaminated",
+          "correct": false,
+          "feedback": "They are still useful tasks for tuning; deleting them loses the regression guard they now provide on the development split."
+        },
+        {
+          "key": "d",
+          "text": "Weight them lower in the held-out average",
+          "correct": false,
+          "feedback": "Down-weighting keeps tuned tasks in the split that is meant to be untouched; the contamination remains, only smaller."
+        }
+      ],
+      "explanation": "The held-out split defends against tuning to the tasks only while nobody looks at them. A task read in a post-mortem is spent: it moves to the development split, where it still guards against regression, and fresh tasks replace it so the held-out line keeps measuring generalisation.",
+      "hints": [
+        "Ask whether the engineer's reading was optimisation.",
+        "The task is not useless, only no longer unseen."
+      ]
+    },
+    {
+      "id": "hrn-022-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "swe-bench",
+        "grading-contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Under SWE-bench's grading contract, when does an instance count as resolved?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "When the patch applies cleanly and the issue text is addressed in the diff",
+          "correct": false,
+          "feedback": "Applying and addressing the issue in prose is not graded; SWE-bench runs tests."
+        },
+        {
+          "key": "b",
+          "text": "When every FAIL_TO_PASS test now passes",
+          "correct": false,
+          "feedback": "That is half the contract: the fix. The other half checks the patch broke nothing."
+        },
+        {
+          "key": "c",
+          "text": "When every FAIL_TO_PASS test now passes and every PASS_TO_PASS test still passes",
+          "correct": true,
+          "feedback": "Correct. The verdict grades the fix and the absence of collateral damage together."
+        },
+        {
+          "key": "d",
+          "text": "When a model judge rates the patch as correct against the merged fix",
+          "correct": false,
+          "feedback": "No judge is involved; the benchmark is graded by running the repository's tests."
+        }
+      ],
+      "explanation": "An instance resolves when the tests the merged fix had to turn green now pass and the tests that passed before still pass. The two halves together are the benchmark's built-in answer to a change that fixes some things and breaks others.",
+      "hints": [
+        "There are two sets of tests, with two different jobs."
+      ]
+    },
+    {
+      "id": "hrn-022-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 5,
+      "tags": [
+        "pass-hat-k",
+        "pass-at-k",
+        "estimator"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Four tasks are each run five times ($n = 5$); they succeed 5, 4, 2 and 0 times. Using the unbiased estimators that count all five trials, compute `pass@2` and `pass^2`, each averaged over the four tasks.",
+      "answer": {
+        "parts": [
+          {
+            "label": "pass@2",
+            "value": 0.675,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "pass^2",
+            "value": 0.425,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "pass@2 averages $1 - \\binom{5-c}{2}/\\binom{5}{2}$: 1, 1, 0.7, 0, mean 0.675. pass^2 averages $\\binom{c}{2}/\\binom{5}{2}$: 1, 0.6, 0.1, 0, mean 0.425 (snippets/pass_family.py's formulas). The pooled shortcut $0.55^2 = 0.3025$ falls outside the tolerance.",
+      "explanation": "With $\\binom{5}{2} = 10$ ways to pick two trials: the task with two successes has $\\binom{3}{2} = 3$ pairs of failures, so pass@2 is 0.7 for it, and one pair of successes, so pass^2 is 0.1. Averaging per task, not squaring the pooled pass@1 of 0.55, is what the tau-bench definition asks.",
+      "hints": [
+        "Work one task at a time, counting pairs of trials out of $\\binom{5}{2}$.",
+        "For pass@2 count the pairs with no success and subtract; for pass^2 count the pairs that are both successes."
+      ]
+    },
+    {
+      "id": "hrn-022-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "sign-test",
+        "discordant-pairs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Harnesses A and B run once each on the same 60 tasks. B alone resolves 9 tasks, A alone resolves 3, and the other 48 tie. Give the lift of B over A in points, and the two-sided sign-test p-value on the discordant tasks.",
+      "answer": {
+        "parts": [
+          {
+            "label": "lift",
+            "value": 10.0,
+            "tolerance": 0.05,
+            "unit": "points"
+          },
+          {
+            "label": "p-value",
+            "value": 0.146,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Lift $(9 - 3)/60 = 10$ points. Sign test on 12 discordant tasks: $2 \\times (1 + 12 + 66 + 220)/2^{12} = 598/4096 = 0.146$, the sign_test function of snippets/ab_runner.py. The one-sided value 0.073 falls outside the tolerance.",
+      "explanation": "Ties carry no direction and drop out, leaving 12 discordant tasks. Under the null each is a fair coin; a split at least as uneven as 9 to 3 in either direction has probability 0.146, so a ten-point lift on this set is not callable.",
+      "hints": [
+        "The lift is the net of the discordant tasks over all 60.",
+        "Sum the binomial probabilities of 0 to 3 heads in 12 tosses, then double."
+      ]
+    },
+    {
+      "id": "hrn-022-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "sweep-cost",
+        "sizing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team plans a nightly sweep of 80 tasks at four seeds under two harness configurations. Each run re-reads 276,600 input tokens at 3 dollars per million input tokens (input side only). How many runs is one sweep, and what is its input spend in dollars?",
+      "answer": {
+        "parts": [
+          {
+            "label": "runs",
+            "value": 640,
+            "tolerance": 0,
+            "unit": "runs"
+          },
+          {
+            "label": "spend",
+            "value": 531.07,
+            "tolerance": 0.7,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "$80 \\times 4 \\times 2 = 640$ runs; $640 \\times 276{,}600 \\times 3 / 10^6 = 531.07$ dollars, or 531.20 with the per-run price rounded to 0.83 first; both are inside the tolerance (snippets/sweep_plan.py's arithmetic). One configuration's spend, 265.54, is not.",
+      "explanation": "Runs multiply across tasks, seeds and configurations, and the spend follows from the per-run price, $276{,}600 \\times 3 / 10^6 \\approx 0.83$ dollars. The arithmetic is what turns an eval plan into a line item somebody can approve.",
+      "hints": [
+        "Multiply tasks, seeds and configurations.",
+        "Price one run first: tokens times the rate per million."
+      ]
+    },
+    {
+      "id": "hrn-022-q10",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "unpaired",
+        "interval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Two harness configurations are run on 100 *different* tasks each, one run per task, and both resolve about 50%. Treating the two samples as independent, what is the half-width of the 95% interval on the difference of the two rates, in points?",
+      "answer": {
+        "value": 13.9,
+        "tolerance": 0.2,
+        "unit": "points"
+      },
+      "precision_note": "$1.96 \\times \\sqrt{0.25/100 + 0.25/100} = 1.96 \\times 0.0707 = 0.1386$, so 13.9 points; the post's 50-task case, $1.96 \\times \\sqrt{2 \\times 0.25/50}$, is 19.6 (snippets/ab_runner.py). Forgetting the second arm gives 9.8, outside the tolerance.",
+      "explanation": "The variance of a difference of independent rates is the sum of their variances. At 50% each run contributes 0.25, so the standard error of the difference is $\\sqrt{2 \\times 0.25 / 100} \\approx 0.071$ and the interval is about plus or minus 14 points: more than twice the true 5.4-point lift of the post's run, which is why the comparison is paired on the same tasks.",
+      "hints": [
+        "Add the variances of the two independent rates.",
+        "Each rate near 50% on 100 runs has variance $0.25/100$."
+      ]
+    },
+    {
+      "id": "hrn-022-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 5,
+      "tags": [
+        "production-funnel",
+        "cost-per-merged-pr"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In one week a harness makes 100 runs; 60 are accepted without rework and 5 of those are later reverted. Model spend is 1.00 dollar a run. Human time is priced at 120 dollars an hour: 15 minutes to review each accepted result, 5 to triage each rejected one, and 45 to redo each reverted one. What are the dollars per merged pull request?",
+      "answer": {
+        "value": 50.0,
+        "tolerance": 0.05,
+        "unit": "dollars"
+      },
+      "precision_note": "Minutes $60 \\times 15 + 40 \\times 5 + 5 \\times 45 = 1{,}325$, so $1{,}325 / 60 \\times 120 = 2{,}650$ dollars of human time; plus 100 of model spend is 2,750 over $60 - 5 = 55$ merged: 50.00 (snippets/funnel.py's ledger). Dividing by 60 accepted gives 45.83, outside the tolerance.",
+      "explanation": "The denominator is the work that actually shipped, accepted minus reverted. The human time dominates the bill: review and rework cost 26 times the model spend here, which is why a harness that triples model spend can still be judged on the ledger rather than on the token bill alone.",
+      "hints": [
+        "Add the three kinds of human minutes, then price them.",
+        "Divide by what shipped, not by what was accepted."
+      ]
+    },
+    {
+      "id": "hrn-022-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "oracle",
+        "grader-validation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Before a task is trusted, its known-good reference solution is applied and graded, and the grader fails it. In one sentence, what does that say about the task?",
+      "answer": {
+        "model": "The task (its grader or fixture) is broken rather than hard: every run against it is a false negative that would be blamed on the harness.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|might|could be|may be|not sure|i think|i guess|unclear)\\b)(?![\\s\\S]*\\b(not|isn't|is not|never|n't)\\s+(necessarily\\s+)?(broken|wrong|flawed|faulty|buggy|defective|incorrect|invalid)\\b)(?![\\s\\S]*\\b(agent|harness|model)\\s+(is|was)\\s+(broken|wrong|at fault|to blame)\\b)(?![\\s\\S]*\\b(task|grader|test|tests|check|fixture)\\s+(is|are|was|looks|seems)\\s+(fine|ok|okay|sound|valid|correct|right)\\b)(?![\\s\\S]*\\b(nothing|none)\\s+(of\\s+it\\s+)?(is|was)\\s+(broken|wrong|flawed|faulty|buggy|defective|incorrect)\\b)(?![\\s\\S]*\\b(reference|oracle|known-good|solution)\\b[^.;,:]{0,30}\\b(wrong|broken|faulty|incorrect|buggy|flawed|bad)\\b)(?=[\\s\\S]*\\b(grader|task|test|tests|check|instance|spec|specification|fixture)\\b)(?=[\\s\\S]*\\b(broken|wrong|flawed|faulty|buggy|bug|defective|incorrect|invalid|mis-?specified|misspecified|error|bad)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The oracle must score one on every task. A grader that rejects the known-good solution is wrong, not demanding, and every agent run on it fails for reasons the harness cannot fix; SWE-bench applies the same check to its own instances before they join the set.",
+      "hints": [
+        "The reference solution is correct by construction."
+      ]
+    },
+    {
+      "id": "hrn-022-q13",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "paired-difference",
+        "variance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Two configurations are run on the same tasks, and the comparison takes B minus A task by task before averaging. In one sentence, why does that give a narrower interval than comparing the two overall rates as independent samples?",
+      "answer": {
+        "model": "Differencing within each task cancels the task-difficulty variance, how easy or hard each task is, which dominates the spread of two independent rates.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|might|could be|may be|not sure|i think|i guess|unclear)\\b)(?![\\s\\S]*\\b(not|n't|never|doesn't|does not|cannot|can't)\\s+(remove|cancel|eliminate|subtract|take out|strip)s?\\b)(?![\\s\\S]*\\b(adds?|adding|increases?|introduces?)\\s+(the\\s+)?(task|difficulty|between)\\b)(?=[\\s\\S]*\\b(remov|cancel|eliminat|subtract|take[sn]? out|took out|strip|differenc|net(s|ted)? out|factor(s|ed)? out|controls? for|holds? .{0,20}constant|same task)\\w*)(?=[\\s\\S]*\\b(difficult\\w*|hardness|easy|hard|between[- ]task|task[- ]to[- ]task|across tasks|from task to task|task[- ]level|per[- ]task|task variance|task variation|which tasks?)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Tasks differ far more in difficulty than one configuration differs from another. Taking B minus A on the same task removes that between-task spread, leaving only the variation the change itself causes; the post's run shows the standard error falling from 5.3 points (runs as independent) to 4.4 (paired by task), and Miller recommends the paired standard error wherever practicable.",
+      "hints": [
+        "What do two runs of the same task share, whichever configuration made them?"
+      ]
+    },
+    {
+      "id": "hrn-022-q14",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 25,
+      "tags": [
+        "internal-eval",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team runs a coding agent that answers pull-request review comments. It has no evals. Design its internal eval harness: where the tasks come from, how they are graded, how the graders are trusted, how the runs are scheduled and sized, and how the team guards against tuning to its own set.",
+      "kind": "design",
+      "solution": "1. **Tasks.** Freeze a versioned set from the team's own history: review comments the agent handled, and every trace where it failed, each turned into a task with its repository state at the comment's commit. Cover each failure mode the traces showed. Grow the set by adding, never by editing a task in place.\n2. **Graders on the world.** Grade the workspace, not the transcript: the repository's tests pass, the requested change is present, nothing else changed (a PASS_TO_PASS half). A model judge only for genuinely subjective comments, independent of the agent.\n3. **Trust the graders first.** For every task: the empty run scores zero, the reference solution scores one, and two grades of an unchanged workspace agree; score a sample of hand-labelled candidate answers to measure false passes and false fails. Give every grader a wall-clock and resource budget.\n4. **Repeatable runs.** A clean worktree or container per run, several seeds per task, the model version pinned.\n5. **Size and schedule.** Choose the smallest lift worth detecting, size the set from the spread of per-task differences, and price the sweep: a smoke subset on every harness diff, the full set nightly and on every model upgrade, a held-out split at release.\n6. **Guard against overfit.** Split development and held-out, report both, plot the gap, and retire a held-out task once anyone reads it; rank the production funnel (first-pass success, defect escape, dollars per merged PR) above the internal set, and the internal set above any public benchmark.",
+      "rubric": [
+        {
+          "criterion": "Tasks come from the team's own history and failures, frozen and versioned, grown only by adding",
+          "points": 2
+        },
+        {
+          "criterion": "Graders inspect the world, not the transcript, with a judge only where unavoidable and independent",
+          "points": 2
+        },
+        {
+          "criterion": "Graders are validated by an empty run, an oracle, a re-grade and hand-labelled examples",
+          "points": 3
+        },
+        {
+          "criterion": "Runs are isolated, repeated across seeds, model pinned; the set is sized from the lift to detect and the sweep is priced and scheduled by cadence",
+          "points": 2
+        },
+        {
+          "criterion": "A held-out split with retirement on inspection, and production metrics ranked above the internal set",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "A trustworthy internal harness has four ingredients: a fixed set, objective graders, repeatable execution, and graders validated before use. Sizing and cadence turn it into a plan someone can pay for, and a held-out split plus the production funnel keep it honest.",
+      "hints": [
+        "Walk through the life of one task: where it comes from, how it is graded, and how the grader is trusted.",
+        "Then think about many tasks over many weeks: cost, cadence, and what happens when the team learns the set."
+      ]
+    },
+    {
+      "id": "hrn-022-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 5,
+      "outcomes": [
+        "o4",
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 25,
+      "tags": [
+        "harness-ab",
+        "evidence-grades",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A design review hears two claims. First: \"Our A/B of the graph harness against the SDK loop on twenty tasks at five seeds measured +1.0 points, so the graph harness is no better; we stay put.\" Second: \"Terminal-Bench 2.0 proves the harness beats the model, since one agent went from 52.8% to 66.5%.\" Critique both claims, and say what evidence would settle the first.",
+      "kind": "critique",
+      "connects": [
+        "hrn-020",
+        "hrn-004"
+      ],
+      "solution": "1. **The first claim reads 'not callable' as 'no difference'.** Twenty tasks at five seeds gave a paired interval of about -8.3 to +10.3 points in post 20's run; an interval that wide holds a six-point lift as easily as none. The right verdict is that the experiment cannot tell, and in that run the true lift, known from the stand-ins, was +6.2 points.\n2. **What would settle it.** Size the set before running: from the spread of per-task differences, the number of tasks that detects the smallest lift worth migrating for four times in five (post 20's spread asked for about 83 tasks for a 6.2-point lift); run both harnesses on those tasks with the model and seeds fixed; validate the graders first; report the paired lift, its interval and the discordant counts, and weigh the cost per resolved task beside it.\n3. **The second claim overreaches.** The Terminal-Bench result is firm evidence of something narrower: one agent's harness changes lifted resolved-rate by 13.7 points with the model fixed at gpt-5.2-codex, about 47 to 59 of 89 tasks. It shows that the harness is a large lever for that model on that benchmark, not that harnesses beat models in general; post 04 grades it firm for exactly that claim and notes that seven changes tuned on one benchmark can overfit it.\n4. **Common thread.** Both claims skip the step this post insists on: a number is only as strong as its design. A paired, sized, validated A/B is what turns the first into a decision; the grade (firm, controlled, reported) is what keeps the second from being promoted.",
+      "rubric": [
+        {
+          "criterion": "Identifies that an interval crossing zero means not callable, not equal, citing the width of the twenty-task interval",
+          "points": 3
+        },
+        {
+          "criterion": "Proposes sizing the set from the per-task spread and the lift worth detecting, with model and seeds fixed and graders validated",
+          "points": 3
+        },
+        {
+          "criterion": "States what the Terminal-Bench result does show (firm, same model, 13.7 points on 89 tasks) and what it does not generalise to",
+          "points": 3
+        },
+        {
+          "criterion": "Mentions cost per resolved task or overfit to the benchmark as part of the verdict",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Both claims confuse a number with a conclusion. The first treats an underpowered A/B as a negative result; the second promotes a firm but narrow result to a general law. Post 20's twenty-task run and post 04's grades are the evidence for each critique.",
+      "hints": [
+        "For the first claim, ask what values a twenty-task interval still allows.",
+        "For the second, recall what was held fixed in the Terminal-Bench result and how post 04 grades it."
+      ]
+    },
+    {
+      "id": "hrn-022-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "pass-family",
+        "estimator"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Implement `pass_at_k` and `pass_hat_k`. Each takes `counts`, the number of successes of each task in `n` trials, and returns the metric averaged over tasks, using the unbiased estimators that count all `n` trials: at least one of `k` trials succeeds for `pass_at_k`, all `k` succeed for `pass_hat_k`.",
+      "kind": "implement",
+      "language": "python",
+      "starter": "from math import comb\n\n\ndef pass_at_k(counts, n, k):\n    \"\"\"counts[t]: successes of task t in n trials. Chance at least one of k trials succeeds, averaged.\"\"\"\n    raise NotImplementedError\n\n\ndef pass_hat_k(counts, n, k):\n    \"\"\"counts[t]: successes of task t in n trials. Chance all k trials succeed, averaged.\"\"\"\n    raise NotImplementedError\n",
+      "solution": "from math import comb\n\n\ndef pass_at_k(counts, n, k):\n    \"\"\"counts[t]: successes of task t in n trials. Chance at least one of k trials succeeds, averaged.\"\"\"\n    return sum(1 - comb(n - c, k) / comb(n, k) for c in counts) / len(counts)\n\n\ndef pass_hat_k(counts, n, k):\n    \"\"\"counts[t]: successes of task t in n trials. Chance all k trials succeed, averaged.\"\"\"\n    return sum(comb(c, k) / comb(n, k) for c in counts) / len(counts)\n",
+      "tests": "from math import isclose\ncounts = [8, 8, 7, 6, 5, 4, 3, 2, 1, 0]\nassert isclose(pass_at_k(counts, 8, 1), 0.55) and isclose(pass_hat_k(counts, 8, 1), 0.55)\nassert isclose(pass_at_k(counts, 8, 2), 0.7), pass_at_k(counts, 8, 2)\nassert isclose(pass_hat_k(counts, 8, 2), 0.4), pass_hat_k(counts, 8, 2)\nassert isclose(pass_at_k(counts, 8, 8), 0.9) and isclose(pass_hat_k(counts, 8, 8), 0.2)\n# per task, not pooled: two tasks, one always passes, one never does\nassert isclose(pass_hat_k([4, 0], 4, 3), 0.5), \"pooling pass@1 and raising it to k gives 0.125\"\nassert isclose(pass_at_k([4, 0], 4, 3), 0.5)\n# unbiased: all n trials count, not only the first k (order of successes is not given)\nassert isclose(pass_hat_k([3], 5, 2), 0.3), pass_hat_k([3], 5, 2)\nassert isclose(pass_at_k([1], 5, 2), 0.4), pass_at_k([1], 5, 2)\n# never above 1, and pass^k never above pass@k\nfor k in range(1, 9):\n    assert pass_hat_k(counts, 8, k) <= pass_at_k(counts, 8, k) <= 1.0\nprint(\"all pass-family checks pass\")\n",
+      "entry": "python solution_and_tests.py",
+      "explanation": "With $c$ successes in $n$ trials, the chance a random set of $k$ trials holds no success is $\\binom{n-c}{k}/\\binom{n}{k}$, so pass@k is one minus that; the chance all $k$ are successes is $\\binom{c}{k}/\\binom{n}{k}$. Averaging per task, never raising a pooled rate to a power, is what makes pass^k a reliability measure across tasks of different difficulty.",
+      "hints": [
+        "Count subsets of $k$ trials out of $n$ with `math.comb`.",
+        "pass@k: one minus the share of subsets with no success; pass^k: the share of subsets with only successes."
+      ]
+    },
+    {
+      "id": "hrn-022-q17",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "sign-test",
+        "discordant-pairs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`sign_test(a, b)` takes each harness's resolved count per task and should return the two-sided sign-test p-value on the discordant tasks: ties dropped, the smaller side's tail under a fair coin, doubled and capped at 1, and 1.0 when no task is discordant. As written it is wrong. Fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "from math import comb\n\n\ndef sign_test(a, b):\n    \"\"\"a and b: resolved counts per task for harness A and harness B.\n    Return the two-sided sign-test p-value on the discordant tasks.\"\"\"\n    wins_a = sum(x > y for x, y in zip(a, b))\n    n = len(a)\n    k = wins_a\n    return sum(comb(n, i) for i in range(k + 1)) / 2 ** n\n",
+      "solution": "from math import comb\n\n\ndef sign_test(a, b):\n    \"\"\"a and b: resolved counts per task for harness A and harness B.\n    Return the two-sided sign-test p-value on the discordant tasks.\"\"\"\n    wins_a = sum(x > y for x, y in zip(a, b))\n    wins_b = sum(y > x for x, y in zip(a, b))\n    n, k = wins_a + wins_b, min(wins_a, wins_b)\n    if n == 0:\n        return 1.0\n    return min(1.0, 2 * sum(comb(n, i) for i in range(k + 1)) / 2 ** n)\n",
+      "tests": "from math import isclose\n# 60 tasks, one seed: B alone resolves 8, A alone 4, the other 48 tie\na = [1] * 4 + [0] * 8 + [1] * 20 + [0] * 28\nb = [0] * 4 + [1] * 8 + [1] * 20 + [0] * 28\nassert isclose(sign_test(a, b), 0.3876953125), sign_test(a, b)\nassert isclose(sign_test(b, a), 0.3876953125), \"the test is two-sided: swapping the arms changes nothing\"\n# split 10 to 2 on the same twelve discordant tasks\na2 = [1] * 2 + [0] * 10 + [1] * 20 + [0] * 28\nb2 = [0] * 2 + [1] * 10 + [1] * 20 + [0] * 28\nassert isclose(sign_test(a2, b2), 0.03857421875), sign_test(a2, b2)\n# counts out of three seeds: 23 tasks favour B, 12 favour A, 25 tie\na3 = [0] * 23 + [2] * 12 + [1] * 25\nb3 = [1] * 23 + [1] * 12 + [1] * 25\nassert isclose(sign_test(a3, b3), 0.0895, abs_tol=5e-4), sign_test(a3, b3)\n# an even split can never be significant, and the p-value is a probability\na4 = [1, 0, 1, 0, 1, 1]\nb4 = [0, 1, 0, 1, 1, 1]\nassert sign_test(a4, b4) == 1.0, sign_test(a4, b4)\n# all ties: no evidence either way\nassert sign_test([1, 0, 2], [1, 0, 2]) == 1.0\nprint(\"all sign-test checks pass\")\n",
+      "entry": "python solution_and_tests.py",
+      "explanation": "Ties say nothing about which harness is better, so the test runs on the discordant tasks only. A two-sided test doubles the smaller tail, which makes it symmetric in the arms, and the cap keeps an even split at exactly 1. On 8 against 4 the fixed function returns 0.388; on 10 against 2, 0.039.",
+      "hints": [
+        "Three things are wrong: what `n` counts, which side `k` takes, and whether the tail is doubled.",
+        "Count both kinds of win, set `n` to their sum and `k` to the smaller, then double and cap."
+      ]
+    },
+    {
+      "id": "hrn-022-q18",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o5"
+      ],
+      "section": "1",
+      "est_minutes": 3,
+      "tags": [
+        "which-eval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each change to the evaluation that should answer for it. One evaluation on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The wording of the system prompt"
+        },
+        {
+          "key": "b",
+          "text": "The verification gate of the loop"
+        },
+        {
+          "key": "c",
+          "text": "A new version of the model behind the harness"
+        },
+        {
+          "key": "d",
+          "text": "Nothing changed: the harness is serving live traffic"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "An output eval scoring one completion per prompt"
+        },
+        {
+          "key": "b",
+          "text": "A paired A/B of both configurations on the internal set"
+        },
+        {
+          "key": "c",
+          "text": "The frozen internal set run as a regression gate"
+        },
+        {
+          "key": "d",
+          "text": "The production funnel of first pass, escape and dollars per merged PR"
+        },
+        {
+          "key": "e",
+          "text": "The agent's rank on a public leaderboard"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Prompt wording is tuned with an output eval; a harness component is settled by a paired A/B; a model upgrade is an A/B with the roles swapped, so the frozen set gates it; live traffic is read through the funnel. A leaderboard rank is calibration against the field, never the instrument for a team's own decision.",
+      "hints": [
+        "Ask, for each change, what unit it affects and how fast the answer must come back."
+      ]
+    }
+  ]
+}

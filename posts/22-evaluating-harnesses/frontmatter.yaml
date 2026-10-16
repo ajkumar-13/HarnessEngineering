@@ -1,43 +1,26 @@
 id: hrn-022
 slug: 22-evaluating-harnesses
-title: "22 · Evaluating harnesses — Terminal-Bench, SWE-bench, harness A/B"
-
-description: >
-  Harness quality is not measured on single outputs; it is measured on whole trajectories
-  and their outcomes. The question is not "was that a good answer" but "did the run
-  resolve the task", scored across a fixed set of real jobs and repeated often enough to
-  see the spread.
-
-author: "Ajay"
+title: "22 - Evaluating harnesses: Terminal-Bench, SWE-bench, harness A/B"
+summary: "A harness is measured on whole runs scored by objective graders on a fixed task set, its graders validated first, and a change settled by an A/B with the model held fixed and a paired interval that says whether the lift is callable."
 date: 2026-09-16
-last_modified: 2026-09-05
-
-tags: [harness-engineering, production, evaluation, benchmarks, swe-bench, terminal-bench, statistics]
-
-keywords:
-  - harness engineering
-  - production
-  - evaluation
-  - benchmarks
-  - swe bench
-  - terminal bench
-  - statistics
-  - output eval
-  - trajectory eval
-  - outcome eval
-  - empty agent
-  - wall-clock and resource budget
-
-category: Production and builds
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part V - Production and builds"
-
+level: advanced
+reading_time: 29
+tags: [harness-engineering, production, evaluation, benchmarks, harness-ab, statistics, swe-bench, terminal-bench]
 hero: diagrams/01-output-vs-trajectory.svg
-hero_alt: "Two panels side by side. On the left, an output eval scores one completion from one prompt on a numeric scale. On the right, a trajectory and outcome eval runs a whole multi-step agent run and asks whether the task resolved, such as tests passing or a pull request merging."
-
-reading_time: 34
-toc: true
-draft: false
-canonical_url: ""
-prev: ../21-observability-traces/
-next: ../23-economics-haas/
+prerequisites: [hrn-011]
+code: included
+outcomes:
+  - id: o1
+    text: "Distinguish output evals from trajectory and outcome evals, and pick the eval and its unit from what changed."
+  - id: o2
+    text: "Read a benchmark score by its grading contract and its metric, choosing between `pass@1`, `pass@k` and `pass^k` for a deployment."
+  - id: o3
+    text: "Build an internal eval set of fixed tasks and validate its graders with an empty run, an oracle and a re-grade before trusting them."
+  - id: o4
+    text: "A/B a harness change with the model held fixed, compute the paired difference and its interval, and say whether the result is callable."
+  - id: o5
+    text: "Size and schedule an eval sweep, and rank production funnel metrics above internal evals and benchmarks to guard against overfit."
+recommended: [hrn-004, hrn-021, ctx-020]
