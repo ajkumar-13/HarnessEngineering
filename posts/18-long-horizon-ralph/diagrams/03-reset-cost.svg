@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-03-reset-cost-title" aria-describedby="hrn-03-reset-cost-desc">
+<title id="hrn-03-reset-cost-title">A cold re-entry pays a write and collects no read</title>
+<desc id="hrn-03-reset-cost-desc">Two computed bar charts of what a 12,000-token frozen prefix costs over 50 iterations at $3 per million input tokens. Left, the re-entry call of each iteration only: no cache $1.80; five-minute tier with reads under five minutes apart, warm, $0.22; five-minute tier with about eight minutes between reads, cold, $2.25, in red; one-hour tier $0.25. Right, with 20 calls inside each iteration: $36.00, $3.64, $5.67 and $3.67.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--hrn-ink); }
+  .f-ink-muted { fill: var(--hrn-ink-muted); }
+  .f-red { fill: var(--hrn-red); }
+  .f-red-ink { fill: var(--hrn-red-ink); }
+</style>
+<defs>
+<marker id="hrn-03-reset-cost-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="hrn-03-reset-cost-clip-1"><rect x="216" y="136" width="264" height="292"/></clipPath>
+<clipPath id="hrn-03-reset-cost-clip-2"><rect x="592" y="136" width="256" height="292"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="589">A cold re-entry pays a write and collects no read</text>
+<text x="40" y="76" class="t-subtitle" data-w="706">Computed by snippets/reset_cost.py at Claude Sonnet 4.6's rate (October 2026); sizes illustrative.</text>
+<text x="40" y="120" class="t-head" data-w="143">Re-entry call only</text>
+<g data-grid="skip">
+<path d="M216,136V428M321.6,136V428M427.2,136V428" class="gridline"/>
+<text x="216" y="448" text-anchor="middle" class="t-tick" data-w="16">$0</text>
+<text x="321.6" y="448" text-anchor="middle" class="t-tick" data-w="16">$1</text>
+<text x="427.2" y="448" text-anchor="middle" class="t-tick" data-w="16">$2</text>
+<g clip-path="url(#hrn-03-reset-cost-clip-1)">
+<rect x="216" y="160.5" width="190.08" height="24" class="f-ink-muted" data-fit="skip"/>
+<rect x="216" y="233.5" width="23.23" height="24" class="f-ink" data-fit="skip"/>
+<rect x="216" y="306.5" width="237.6" height="24" class="f-red" data-fit="skip"/>
+<rect x="216" y="379.5" width="26.4" height="24" class="f-ink" data-fit="skip"/>
+</g>
+<path d="M216,136V428" class="axis"/>
+<text x="40" y="177.5" class="t-label" data-w="61">no cache</text>
+<text x="414.08" y="177.5" class="t-value f-ink-muted" data-w="38">$1.80</text>
+<text x="40" y="250.5" class="t-label" data-w="147">five-minute tier, warm</text>
+<text x="247.23" y="250.5" class="t-value f-ink" data-w="38">$0.22</text>
+<text x="40" y="323.5" class="t-label" data-w="138">five-minute tier, cold</text>
+<text x="461.6" y="323.5" class="t-value f-red-ink" data-w="38">$2.25</text>
+<text x="40" y="396.5" class="t-label" data-w="88">one-hour tier</text>
+<text x="250.4" y="396.5" class="t-value f-ink" data-w="38">$0.25</text>
+</g>
+<text x="348" y="472" text-anchor="middle" class="t-note" data-w="166">dollars over 50 iterations</text>
+<text x="576" y="120" class="t-head" data-w="159">With 20 calls inside</text>
+<g data-grid="skip">
+<path d="M592,136V428M720,136V428M848,136V428" class="gridline"/>
+<text x="592" y="448" text-anchor="middle" class="t-tick" data-w="16">$0</text>
+<text x="720" y="448" text-anchor="middle" class="t-tick" data-w="23">$20</text>
+<text x="848" y="448" text-anchor="middle" class="t-tick" data-w="23">$40</text>
+<g clip-path="url(#hrn-03-reset-cost-clip-2)">
+<rect x="592" y="160.5" width="230.4" height="24" class="f-ink-muted" data-fit="skip"/>
+<rect x="592" y="233.5" width="23.3" height="24" class="f-ink" data-fit="skip"/>
+<rect x="592" y="306.5" width="36.29" height="24" class="f-red" data-fit="skip"/>
+<rect x="592" y="379.5" width="23.49" height="24" class="f-ink" data-fit="skip"/>
+</g>
+<path d="M592,136V428" class="axis"/>
+<text x="576" y="177.5" class="t-label" data-w="0"></text>
+<text x="830.4" y="177.5" class="t-value f-ink-muted" data-w="47">$36.00</text>
+<text x="576" y="250.5" class="t-label" data-w="0"></text>
+<text x="623.3" y="250.5" class="t-value f-ink" data-w="38">$3.64</text>
+<text x="576" y="323.5" class="t-label" data-w="0"></text>
+<text x="636.29" y="323.5" class="t-value f-red-ink" data-w="38">$5.67</text>
+<text x="576" y="396.5" class="t-label" data-w="0"></text>
+<text x="623.49" y="396.5" class="t-value f-ink" data-w="38">$3.67</text>
+</g>
+<text x="720" y="472" text-anchor="middle" class="t-note" data-w="166">dollars over 50 iterations</text>
+<text x="40" y="504" class="t-note" data-w="678">Cold means more than five minutes since the last read; the one-hour tier stays warm for one 2x write.</text>
+</svg>

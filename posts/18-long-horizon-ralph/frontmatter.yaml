@@ -1,42 +1,26 @@
 id: hrn-018
 slug: 18-long-horizon-ralph
-title: "18 · Long-horizon & multi-context execution — Ralph loops and context bridging"
-
-description: >
-  Some tasks are bigger than any single context window, no matter how well you manage it.
-  The answer is not a bigger window but the Ralph loop: reset to a fresh context against a
-  written spec, do one task, commit, and repeat, with all the state living on disk.
-
-author: "Ajay"
+title: "18 - Long-horizon and multi-context execution: Ralph loops and context bridging"
+summary: "Work bigger than one window runs as a Ralph loop: a fresh context per task against a spec on disk, a cached frozen prefix, and a driver whose gate and guards decide when to stop."
 date: 2026-08-25
-last_modified: 2026-09-05
-
-tags: [harness-engineering, scale, long-horizon, ralph-loop, context]
-
-keywords:
-  - harness engineering
-  - scale
-  - long horizon
-  - ralph loop
-  - context
-  - fixed cost
-  - frozen half
-  - volatile half
-  - one verifiable increment
-  - context bridge
-  - narrow write channel
-  - initialiser agent
-
-category: Scale and orchestration
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part IV - Scale and orchestration"
-
+level: advanced
+reading_time: 24
+tags: [harness-engineering, scale, long-horizon, ralph-loop, context-bridging, prompt-caching]
 hero: diagrams/01-ralph-loop.svg
-hero_alt: "The Ralph loop: a fresh context reads the spec on disk, does one task, commits, resets, and repeats, with the spec and repo persisting across iterations."
-
-reading_time: 27
-toc: true
-draft: false
-canonical_url: ""
-prev: ../17-parallel-agents-shared-repo/
-next: ../19-loop-engineering/
+prerequisites: [hrn-009]
+code: included
+outcomes:
+  - id: o1
+    text: "Recognise work that has outgrown one context window, and run a Ralph loop: fresh context, written spec, one task, commit, repeat."
+  - id: o2
+    text: "Size one iteration to one verifiable increment, and price its re-entry tax against the prompt cache's tiers and its clock."
+  - id: o3
+    text: "Bridge contexts with a read-only spec and a handoff file, and keep the definition of done out of the agent's reach."
+  - id: o4
+    text: "Enforce convergence with a gate the driver runs, and stop a loop on an iteration cap, a stale-commit count or a moved spec."
+  - id: o5
+    text: "Design a multi-context build with an initialiser and an end-to-end gate, and plan the review of the commits it leaves."
+recommended: [hrn-008, hrn-012, ctx-005]

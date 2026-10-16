@@ -1,0 +1,732 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-018",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-018-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "ralph-loop",
+        "reset"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A Ralph loop has just finished an iteration and the agent process has exited. What does the next iteration start with?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A compacted summary of the previous iteration's window",
+          "correct": false,
+          "feedback": "Compaction keeps a summary inside a continuing window; a Ralph reset starts a new process and carries no window at all."
+        },
+        {
+          "key": "b",
+          "text": "Only what is on disk: the spec, the handoff file, the pass bits and the git history",
+          "correct": true,
+          "feedback": "Correct. The disk is the memory; each fresh context re-reads it and nothing else."
+        },
+        {
+          "key": "c",
+          "text": "The previous iteration's reasoning, kept by the provider's prompt cache",
+          "correct": false,
+          "feedback": "A prompt cache stores a byte-identical prefix of the request for pricing; it does not carry reasoning from one iteration into the next."
+        },
+        {
+          "key": "d",
+          "text": "The last few turns of the previous window, so the agent can continue mid-thought",
+          "correct": false,
+          "feedback": "Carrying turns across would defeat the reset; the Ralph loop deliberately keeps no window from one iteration to the next."
+        }
+      ],
+      "explanation": "Everything that crosses the reset is on disk: the spec, the handoff file, the status of each criterion and the repository with its history. The window, and everything reasoned in it, is discarded with the process.",
+      "hints": [
+        "Ask what is left once the process that held the window has exited."
+      ]
+    },
+    {
+      "id": "hrn-018-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "long-horizon",
+        "evidence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Why does waiting for a larger context window not settle the problem of tasks bigger than one window?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "METR measured context windows doubling every seven months, which is too slow for the work",
+          "correct": false,
+          "feedback": "METR measured the length of task a model completes, not the size of its window."
+        },
+        {
+          "key": "b",
+          "text": "Jobs grow with capability: METR found the task length models finish at 50% reliability doubling about every seven months",
+          "correct": true,
+          "feedback": "Correct. The work moves as capability grows, so a larger window is soon met by a larger job; the conclusion is an argument drawn from the measurement, not the measurement itself."
+        },
+        {
+          "key": "c",
+          "text": "Compaction already solves the long-horizon problem at any length, so a larger window adds nothing",
+          "correct": false,
+          "feedback": "Anthropic reports the opposite at this length: compaction alone is not sufficient."
+        },
+        {
+          "key": "d",
+          "text": "A larger window removes context rot altogether, so resetting the context between tasks becomes unnecessary",
+          "correct": false,
+          "feedback": "A larger window only moves the point at which a filling window degrades; it does not remove the degradation."
+        }
+      ],
+      "explanation": "METR's measurement is of task length, not window size: the length of software task a frontier model completes at 50% reliability has been doubling roughly every seven months since 2019. The post's argument from it is that the jobs handed to agents grow with capability, so a bigger window meets a bigger job.",
+      "hints": [
+        "Ask what METR actually measured, and what follows from it for the size of jobs."
+      ]
+    },
+    {
+      "id": "hrn-018-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "sizing",
+        "verifiable-increment"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Slice a Ralph iteration too large and it overflows its window; slice it too small and re-orientation dominates. What should one iteration deliver, so that the commit, the gate and a reviewer all agree on what a unit of progress is?",
+      "answer": {
+        "model": "One verifiable increment: the smallest change that leaves the repository in a state the checks can say yes or no to.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think)\\b)(?![\\s\\S]*\\bnot\\s+(a\\s+|one\\s+|the\\s+)?(single\\s+)?(verifiable|testable|small))(?![\\s\\S]*\\b(as much as|biggest|largest|several|multiple)\\b)(?![\\s\\S]*(\\b(regardless|never|without|skip\\w*|ignor\\w*)\\b[\\s\\S]{0,40}\\b(tests?|checks?|gate|verif\\w*)\\b|\\bno\\s+(tests?|checks?|gate|verif\\w*)\\b))(?![\\s\\S]*\\bnot\\s*[.!]?\\s*$)(?=(?:\\S+\\s+){1})[\\s\\S]*(\\bverifiable\\s+(increment|change|step|unit)|\\bincrement\\w*\\s+(that|which)\\s+(can|could)\\s+be\\s+(verified|checked|tested)|\\b(smallest|minimal|small|single|one)\\b[\\s\\S]{0,40}?\\b(testable|verifiable|checkable)\\b|\\b(smallest|minimal|small)\\b[\\s\\S]{0,60}?\\b(change|step|increment)\\b[\\s\\S]{0,80}?\\b(tests?|checks?|gate|verif\\w*|pass|fail)\\b)"
+        ]
+      },
+      "explanation": "One verifiable increment: the smallest change that leaves the repository in a state the checks can say yes or no to. It is the boundary the commit and the gate already use, and also the unit a person can review in one sitting.",
+      "hints": [
+        "Think about what the gate needs to give a yes or a no."
+      ]
+    },
+    {
+      "id": "hrn-018-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "prompt-caching",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A Ralph loop's frozen prefix is 20,000 tokens and the loop runs 40 iterations. Input costs 3 dollars per million tokens; a five-minute cache write costs 1.25 times that and a cache read 0.1 times. Every re-entry starts within five minutes of the last read, so only the first iteration writes. Counting only the re-entry call of each iteration, what does the prefix cost over the run, in dollars?",
+      "answer": {
+        "value": 0.309,
+        "tolerance": 0.004,
+        "unit": "dollars"
+      },
+      "precision_note": "In dollars: $20{,}000 \\times 3 / 10^6 = 0.06$ for a full read; one write $0.06 \\times 1.25 = 0.075$; 39 reads $39 \\times 0.006 = 0.234$; total $0.309$, the arithmetic of snippets/reset_cost.py with these inputs. One write plus 40 reads ($0.315$) and no cache ($2.40$) fall outside the tolerance.",
+      "explanation": "One write and 39 reads: 0.075 + 39 × 0.006 = 0.309 dollars. The write premium is paid once; every later re-entry reads the warm entry at a tenth of the price.",
+      "hints": [
+        "Price one full read of the prefix first.",
+        "One iteration writes at 1.25 times; the other 39 read at 0.1 times."
+      ]
+    },
+    {
+      "id": "hrn-018-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "prompt-caching",
+        "cache-clock"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The same loop (a 20,000-token frozen prefix, 40 iterations, 3 dollars per million input tokens) now runs an end-to-end gate of about eight minutes between iterations, so every re-entry finds the five-minute entry expired. Price the prefix over the run, counting only re-entry calls, on the five-minute tier (writes 1.25 times base) and on the one-hour tier (writes 2 times base, reads 0.1 times).",
+      "answer": {
+        "parts": [
+          {
+            "label": "five-minute tier",
+            "value": 3.0,
+            "tolerance": 0.01,
+            "unit": "dollars"
+          },
+          {
+            "label": "one-hour tier",
+            "value": 0.354,
+            "tolerance": 0.005,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "In dollars: full read $0.06$; five-minute write $0.075$, one-hour write $0.12$, read $0.006$. Five-minute, cold: $40 \\times 0.075 = 3.00$. One-hour: $0.12 + 39 \\times 0.006 = 0.354$; one write plus 40 reads ($0.36$) falls outside the tolerance. Computed as snippets/reset_cost.py computes its rows.",
+      "explanation": "On the five-minute tier every re-entry writes again: 40 × 0.075 = 3.00 dollars, more than the 2.40 of no caching. The one-hour entry survives the eight-minute gaps, so it is written once at 2 times and read 39 times: 0.12 + 39 × 0.006 = 0.354 dollars.",
+      "hints": [
+        "Decide for each tier how many re-entries write and how many read.",
+        "A one-hour write is 2 times a full read of the prefix."
+      ]
+    },
+    {
+      "id": "hrn-018-q06",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "cache-clock",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Each iteration of a Ralph loop takes about twelve minutes, but within it the agent calls the model every 20 seconds or so, and the driver starts the next iteration about 30 seconds after the last call of the previous one. The frozen prefix sits first in every request. Which cache lifetime fits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The one-hour tier, because each iteration runs longer than five minutes",
+          "correct": false,
+          "feedback": "That chooses from the iteration's length. The clock restarts at every read, and reads here are seconds apart."
+        },
+        {
+          "key": "b",
+          "text": "The default five-minute tier, because no gap between reads of the prefix comes near five minutes",
+          "correct": true,
+          "feedback": "Correct. Every call refreshes the entry, so it never expires, and a five-minute write costs less than a one-hour one."
+        },
+        {
+          "key": "c",
+          "text": "No caching, because a reset starts a fresh context and so can never hit the cache",
+          "correct": false,
+          "feedback": "A fresh process can still send a byte-identical prefix; the cache matches bytes, not processes."
+        },
+        {
+          "key": "d",
+          "text": "Either tier costs the same here, because writes are priced identically",
+          "correct": false,
+          "feedback": "They are not: a five-minute write is 1.25 times base input and a one-hour write 2 times."
+        }
+      ],
+      "explanation": "The entry's lifetime runs from the start of the last request that read it, and every read refreshes it, so what matters is the longest gap between requests that share the prefix, here about 30 seconds. The default five-minute tier stays warm and is the cheaper one; the iteration's twelve-minute length is irrelevant.",
+      "hints": [
+        "Ask when the five-minute clock restarts.",
+        "Find the longest gap between two requests that share the prefix."
+      ]
+    },
+    {
+      "id": "hrn-018-q07",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "permissions",
+        "spec"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each file in this post's driver to who may write it. One answer on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "spec/feature_list.json, the criteria and their checks"
+        },
+        {
+          "key": "b",
+          "text": "spec/status.json, one pass bit per criterion"
+        },
+        {
+          "key": "c",
+          "text": "handoff.md"
+        },
+        {
+          "key": "d",
+          "text": "the source files"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A person, between runs"
+        },
+        {
+          "key": "b",
+          "text": "The driver's gate, after running every check"
+        },
+        {
+          "key": "c",
+          "text": "The loop, rewritten whole each iteration"
+        },
+        {
+          "key": "d",
+          "text": "The loop, landing as one commit per iteration"
+        },
+        {
+          "key": "e",
+          "text": "The agent, freely, whenever its work needs it"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "The spec says what done means, so only a person changes it, between runs; the pass bits are the gate's, written by the driver after it runs every check; the handoff is the loop's moving state, rewritten each iteration; the source is the loop's work, one commit per iteration. Letting the agent write anything it likes defeats the narrow channels the design depends on.",
+      "hints": [
+        "Separate what says what done means from what records how far the work has got.",
+        "Which writer is not the agent at all, yet not a person either?"
+      ]
+    },
+    {
+      "id": "hrn-018-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "spec",
+        "guards"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team copies Anthropic's design, in which the agent flips a `passes` field inside the feature list, and adds a guard that hashes the whole feature-list file before each iteration and stops the loop if the hash changes. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The guard stops the loop after the first iteration that honestly passes a criterion",
+          "correct": true,
+          "feedback": "Correct. Flipping a pass bit changes the file's bytes, so the hash moves on every honest success."
+        },
+        {
+          "key": "b",
+          "text": "The guard catches goalpost-moving and never fires on honest work",
+          "correct": false,
+          "feedback": "It catches goalpost-moving, but it cannot tell a criterion edit from a pass bit flipping in the same file."
+        },
+        {
+          "key": "c",
+          "text": "Nothing changes, because the agent only edits one field",
+          "correct": false,
+          "feedback": "A hash covers every byte; one field changed is a different hash."
+        },
+        {
+          "key": "d",
+          "text": "The loop runs until max_iters, because the hash is only compared at the end",
+          "correct": false,
+          "feedback": "The guard compares before and after every iteration, which is what makes it stop early here."
+        }
+      ],
+      "explanation": "With the pass bit inside the hashed file, every honest iteration changes the bytes, so the guard fires on the first success. Either compare the criteria with the bit removed, or move the bit out of the spec into a file only the gate writes, after which a whole-file hash is a complete check.",
+      "hints": [
+        "Ask which bytes an honest iteration changes in that file.",
+        "Where does the pass bit live in that design?"
+      ]
+    },
+    {
+      "id": "hrn-018-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "spec",
+        "status-file",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "This post's driver keeps the pass bits in a status file that only the gate writes, rather than inside the spec. Give one reason that separation matters.",
+      "answer": {
+        "model": "The agent then has no reason to write the spec at all, so the spec is read-only and a hash of its bytes catches any change to the criteria; and the spec's bytes stay identical, so it stays in the cached prefix.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think)\\b)(?![\\s\\S]*\\b(agent|it|loop)\\s+(can|may|could|is\\s+allowed\\s+to|gets\\s+to)\\s+(still\\s+)?(edit|write|rewrite|change|flip|set|decide|move)\\w*)(?![\\s\\S]*\\bagent\\s+decides)(?![\\s\\S]*\\b(irrelevant|disabled?|disables|skip\\w*|faster|easier|fewer)\\b)(?![\\s\\S]*\\b(hash|spec)\\s+changes\\s+(on\\s+)?every)(?=(?:\\S+\\s+){3})[\\s\\S]*(\\bread-?\\s?only\\b|\\bgoal-?posts?\\b|\\bown\\s+homework\\b|\\b(cannot|can't|can\\s+not|never|no\\s+longer|doesn't|does\\s+not|has\\s+no\\s+(reason|need)\\s+to|no\\s+(reason|need)\\s+to)\\s+(needs?\\s+to\\s+|have\\s+to\\s+)?(write|edit|change|touch|rewrite|modify)\\b|\\bonly\\s+the\\s+gate\\b|\\bgate,?\\s+not\\s+the\\s+agent\\b|\\bout\\s+of\\s+(the\\s+agent's\\s+)?reach\\b|\\bhash\\w*\\b[\\s\\S]{0,60}\\b(complete|catch\\w*|detect\\w*|any\\s+(edit|change)|whole|criteria|moved?)\\b|\\b(catch\\w*|detect\\w*)\\b[\\s\\S]{0,40}\\bhash\\w*|\\b(spec|prefix|bytes?|cache\\w*)\\b[\\s\\S]{0,50}\\b(stays?|remains?|identical|unchanged|byte-?identical|frozen|warm|never\\s+changes?|keeps?)\\b|\\b(keeps?|stays?|remains?)\\b[\\s\\S]{0,40}\\b(byte-?identical|identical|frozen|cached|in\\s+the\\s+cache)|\\b(would|otherwise|else|if)\\b[\\s\\S]{0,60}\\b(break\\w*|invalidat\\w*|miss\\w*)\\b[\\s\\S]{0,20}\\b(cache\\w*|prefix))"
+        ]
+      },
+      "explanation": "Two reasons, either enough: the agent no longer has any field of the spec to write, so the spec is read-only to the loop and a hash of its bytes detects any edit to what done means; and a spec whose bytes never change stays byte-identical, so it remains in the cached frozen prefix instead of breaking the cache whenever a bit flips.",
+      "hints": [
+        "What would an agent need to write in the spec if the bits lived there?",
+        "Think about the prompt cache as well as the guard."
+      ]
+    },
+    {
+      "id": "hrn-018-q10",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "guards",
+        "driver"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`stop_reason` replays a Ralph driver's decisions over a history of finished iterations. It has three bugs: a moved spec must stop the loop even when the gate passes in the same iteration; the stale count must reset whenever an iteration makes a commit, so it counts rounds without a commit in a row; and `max_iters` must stop the loop on the last allowed iteration. Fix it, keeping the driver's order: the spec check, then the gate, then the stale count, then the cap.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def stop_reason(history, *, max_iters=50, stale_cap=3):\n    \"\"\"history holds one dict per finished iteration, in order, with keys spec_moved (bool),\n    new_commits (int) and all_pass (bool). Return (iteration, reason) for the first iteration\n    after which the driver stops, reason one of \"spec_moved\", \"completed\", \"no_progress\" or\n    \"max_iters\"; return None if the loop would go on.\"\"\"\n    stale = 0\n    for i, it in enumerate(history, start=1):\n        if it[\"all_pass\"]:\n            return i, \"completed\"\n        if it[\"spec_moved\"]:\n            return i, \"spec_moved\"\n        if it[\"new_commits\"] == 0:\n            stale += 1\n        if stale >= stale_cap:\n            return i, \"no_progress\"\n        if i > max_iters:\n            return i, \"max_iters\"\n    return None\n",
+      "solution": "def stop_reason(history, *, max_iters=50, stale_cap=3):\n    \"\"\"history holds one dict per finished iteration, in order, with keys spec_moved (bool),\n    new_commits (int) and all_pass (bool). Return (iteration, reason) for the first iteration\n    after which the driver stops, reason one of \"spec_moved\", \"completed\", \"no_progress\" or\n    \"max_iters\"; return None if the loop would go on.\"\"\"\n    stale = 0\n    for i, it in enumerate(history, start=1):\n        if it[\"spec_moved\"]:\n            return i, \"spec_moved\"\n        if it[\"all_pass\"]:\n            return i, \"completed\"\n        stale = 0 if it[\"new_commits\"] else stale + 1\n        if stale >= stale_cap:\n            return i, \"no_progress\"\n        if i >= max_iters:\n            return i, \"max_iters\"\n    return None\n",
+      "tests": "def it(commits=1, moved=False, done=False):\n    return {\"spec_moved\": moved, \"new_commits\": commits, \"all_pass\": done}\n\n\n# a moved spec stops the loop even when the gate, run on the moved spec, would pass\nassert stop_reason([it(), it(moved=True, done=True)]) == (2, \"spec_moved\")\n# the gate decides convergence\nassert stop_reason([it(), it(), it(done=True)]) == (3, \"completed\")\n# three rounds in a row without a commit\nassert stop_reason([it(), it(0), it(0), it(0)]) == (4, \"no_progress\")\n# a commit resets the count: 0, 0, 1, 0, 0 never reaches three in a row\nassert stop_reason([it(0), it(0), it(), it(0), it(0)]) is None\nassert stop_reason([it(0), it(0), it(), it(0), it(0), it(0)]) == (6, \"no_progress\")\n# two commits in one iteration are still progress\nassert stop_reason([it(0), it(0), it(2), it(0), it(0)]) is None\n# the cap fires on the last allowed iteration, not one later\nassert stop_reason([it(), it(), it(), it()], max_iters=3) == (3, \"max_iters\")\nassert stop_reason([it(), it()], max_iters=3) is None\n# the gate comes before the stale count: converging on a round without a commit is completion\nassert stop_reason([it(), it(0), it(0), it(0, done=True)]) == (4, \"completed\")\n# the stale check comes before the cap when both fire together\nassert stop_reason([it(0), it(0), it(0)], max_iters=3) == (3, \"no_progress\")\nassert stop_reason([it(0)], stale_cap=1) == (1, \"no_progress\")\nprint(\"all tests passed\")\n",
+      "explanation": "The spec check runs first, because a gate run on a moved spec proves nothing; the stale counter is reset by any commit, so exit (4) means three rounds without one in a row; and the cap is inclusive, so `max_iters=3` stops after iteration 3.",
+      "hints": [
+        "Compare the order of the checks with the order the driver uses.",
+        "What should happen to the stale counter when an iteration does commit?",
+        "With max_iters=3, the loop must not see a fourth iteration."
+      ]
+    },
+    {
+      "id": "hrn-018-q11",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4",
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "driver",
+        "ralph-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put one iteration of this post's Ralph driver in order.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Hash the spec and count the commits"
+        },
+        {
+          "key": "b",
+          "text": "Start the agent as a new process"
+        },
+        {
+          "key": "c",
+          "text": "Compare the spec's hash with the one taken before"
+        },
+        {
+          "key": "d",
+          "text": "Run every criterion's check and write the pass bits"
+        },
+        {
+          "key": "e",
+          "text": "Stop with exit (1) if every check passed"
+        },
+        {
+          "key": "f",
+          "text": "Update the stale counter from the new commits and stop at the stale cap"
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "partial_credit": true,
+      "explanation": "The driver takes its baseline (the spec's hash and the commit count), starts the agent as a fresh process, checks the spec before trusting anything, runs the gate, and only then decides: converged if every check passed, otherwise update the stale counter and stop at the cap. Checking the spec before the gate is what keeps a moved spec from passing its own checks.",
+      "hints": [
+        "The baseline has to be taken before the agent can change anything.",
+        "Nothing the gate says can be trusted until the spec is known not to have moved."
+      ]
+    },
+    {
+      "id": "hrn-018-q12",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "guards"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A Ralph driver with a stale cap of 3 records new commits per iteration of 1, 1, 0, 0, 1, 0, 0, 0, 1, and its gate never passes every check. After which iteration does it stop?",
+      "answer": {
+        "value": 8,
+        "tolerance": 0,
+        "unit": "iteration"
+      },
+      "precision_note": "Counter after each iteration: 0, 0, 1, 2, 0, 1, 2, 3; the stop is at iteration 8, as stale_cap=3 in snippets/ralph_driver.py's ralph() computes it. Counting zeros without the reset gives 6, outside the tolerance.",
+      "explanation": "The stale counter counts rounds without a commit in a row and resets on any commit: iterations 3 and 4 reach 2, iteration 5 resets it, and iterations 6, 7 and 8 reach 3, so the driver stops after iteration 8 on exit (4), no progress.",
+      "hints": [
+        "Reset the counter whenever an iteration commits."
+      ]
+    },
+    {
+      "id": "hrn-018-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 20,
+      "tags": [
+        "design",
+        "initialiser",
+        "end-to-end-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team wants an agent to build an internal booking application of about 80 user-visible features overnight, unattended, across many context windows. Design the run: what happens before the loop starts, the spec's format and who may write what, what one iteration does, what the gate checks and how, how the driver stops, and what a reviewer receives in the morning.",
+      "kind": "design",
+      "solution": "1. **Before the loop.** An initialiser session runs once: it expands the brief into a machine-readable spec of about 80 criteria, each with a check, all failing; writes a start-up script that brings the application up; writes the first handoff; and makes the first commit. Decomposing here, not inside the loop, keeps the re-entry tax small.\n2. **Spec and permissions.** The spec is JSON, human-owned and read-only to the loop; the pass bits live in a status file only the gate writes; the handoff is the loop's, rewritten whole each iteration and read back; source lands as one commit per iteration; tests may be added but not edited or deleted (a pre-commit hook rejects a diff that removes an assertion).\n3. **One iteration.** A fresh process reads the spec (frozen prefix, first), then status, handoff and a bounded git log; starts the application and runs a basic end-to-end smoke check; picks the first failing criterion; builds only that; commits; rewrites the handoff.\n4. **The gate.** Run by the driver, not reported by the agent: each criterion's check drives the application through its interface the way a user would (browser automation), because unit tests and direct requests can pass on a feature that does not work end to end.\n5. **Stopping.** Exit (1) when every check passes; exit (2) at an iteration cap sized above 80 with headroom; exit (4) after three rounds without a commit; `spec_moved` if the spec's bytes change. The cache lifetime is chosen from the longest gap between reads, which the end-to-end gate may push past five minutes.\n6. **Morning review.** One commit per criterion, each naming it, so the reviewer walks the series in build order and stops at the first wrong commit; plus the run's stop reason and the open questions from the handoff.",
+      "rubric": [
+        {
+          "criterion": "Pays the decomposition once in an initialiser, before the loop",
+          "points": 2
+        },
+        {
+          "criterion": "Keeps the criteria human-owned and the pass bits the gate's, with an enforcement mechanism",
+          "points": 2
+        },
+        {
+          "criterion": "Makes the gate exercise features end to end, as a user would, and run by the driver",
+          "points": 2
+        },
+        {
+          "criterion": "Names the stops: gate convergence, a cap, a stale count and a moved spec",
+          "points": 2
+        },
+        {
+          "criterion": "Shapes the output as a reviewable series of one commit per criterion",
+          "points": 1
+        },
+        {
+          "criterion": "Orders the context stable first and picks the cache lifetime from the gaps between reads",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "connects": [
+        "hrn-011",
+        "hrn-008"
+      ],
+      "explanation": "A strong design pays the decomposition once, keeps the definition of done out of the agent's reach, makes the gate exercise features the way a user does, stops on a cap, a stale count and a moved spec, and shapes the output for review as a series of commits rather than one diff.",
+      "hints": [
+        "Start from what must exist on disk before the first iteration.",
+        "For each file, name its one writer.",
+        "Ask what a unit test cannot see in a user-facing application."
+      ]
+    },
+    {
+      "id": "hrn-018-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 5,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 25,
+      "tags": [
+        "context-anxiety",
+        "resets",
+        "composition"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Rajasekaran reports that Opus 4.5 largely removed context anxiety, and Anthropic's successor harness dropped the resets that had guarded against it. Does that make the Ralph loop's reset between every task obsolete for such a model? Argue a position: separate the reasons a harness resets, say which of them a better model removes and which it does not, and say how to decide for a given build, including what to measure.",
+      "kind": "critique",
+      "solution": "1. **Reasons to reset.** (a) Context anxiety: a model wrapping up early as its window fills. (b) Context rot: quality falling as stale material accumulates, a property of long inputs generally. (c) Size: a task whose whole state exceeds any window. (d) Isolation: a fresh evaluator that never saw the generator's reasoning. (e) Reviewability and recovery: one verified commit per iteration, a series a person can walk and a point the loop can roll back to.\n2. **What a better model removes.** Mostly (a), which is model-specific: a harness fits the model it runs, and Anthropic dropped the resets that guarded against it once Opus 4.5 largely stopped showing it.\n3. **What it does not.** (c) is set by the task, not the model; the METR trend suggests tasks grow with capability. (b) may shrink but is measured, not assumed. (d) and (e) are structural benefits of the architecture, independent of anxiety.\n4. **Costs on the other side.** Each reset pays the re-entry tax; with a frozen prefix and a cache lifetime chosen from the gaps between reads, the frozen half is cheap, and the volatile half is what to minimise.\n5. **Deciding.** Run both designs, one long context with compaction against the Ralph loop, on the same fixed task set with the same model and gate; compare criteria passing by the gate, regressions, tokens and dollars per passing criterion, wall-clock, and review effort; check the long-context arm for rot by quality against position in the run. Choose per build, and re-run when the model changes.",
+      "rubric": [
+        {
+          "criterion": "Separates at least three distinct reasons to reset",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies context anxiety as model-specific and the task-size reason as model-independent",
+          "points": 2
+        },
+        {
+          "criterion": "Weighs the re-entry tax and the cache against the benefits",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a controlled comparison with a fixed model, task set and gate, and names the measures",
+          "points": 2
+        },
+        {
+          "criterion": "Takes a position that follows from the analysis rather than from either source alone",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "connects": [
+        "hrn-009",
+        "hrn-012",
+        "hrn-019"
+      ],
+      "explanation": "The reset serves several purposes; a model that no longer wraps up early as the window fills removes one of them, not the others. Whether the rest are worth their cost is an empirical question for a given build, answered by running both designs on the same tasks.",
+      "hints": [
+        "List what the reset buys besides protection against early wrap-up.",
+        "Which of those depend on the model, and which on the size of the task?",
+        "What would an A/B comparison hold fixed?"
+      ]
+    },
+    {
+      "id": "hrn-018-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "end-to-end-gate",
+        "victory-declaration"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "After fifty iterations every criterion of a Ralph build passes its unit tests and every commit landed, but the first user to open the web application cannot sign up. Which change to the loop addresses the cause?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Add more unit tests per criterion before the bit can flip",
+          "correct": false,
+          "feedback": "More tests of the same kind still exercise the code, not the feature as a user meets it."
+        },
+        {
+          "key": "b",
+          "text": "Make the gate drive each feature through the application's interface, as a user would, before the bit flips",
+          "correct": true,
+          "feedback": "Correct. The failure is a gate that cannot see end-to-end behaviour; moving the gate to the user's path closes it."
+        },
+        {
+          "key": "c",
+          "text": "Have each iteration re-read its own commit and confirm in the handoff that the feature works",
+          "correct": false,
+          "feedback": "That is the agent's report again; convergence has to come from a check the driver runs, not from the agent's account."
+        },
+        {
+          "key": "d",
+          "text": "Raise max_iters so the loop has time to notice the problem",
+          "correct": false,
+          "feedback": "Nothing in the loop can notice it: every check already passes, so more iterations change nothing."
+        }
+      ],
+      "explanation": "Anthropic found its agent changing code and testing with unit tests or direct requests while missing that features did not work end to end, and that it mostly did well once told to test through browser automation as a user would. On an unwatched loop the gate has to exercise the feature the way the user will.",
+      "hints": [
+        "Ask what the gate saw and what the user saw.",
+        "Which options still rely on the agent's own account, or on checks of the same kind?"
+      ]
+    },
+    {
+      "id": "hrn-018-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "no-progress",
+        "exits"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the snippet's run where the agent cannot do `mul` and stops committing, the loop ends on exit (4), no progress. What does this driver count to decide there is no progress?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Repeated tool-call signatures in the agent's transcript",
+          "correct": false,
+          "feedback": "That is how post 03's companion detects no progress inside one loop; here the transcript is discarded with each process."
+        },
+        {
+          "key": "b",
+          "text": "Rounds in a row without a new commit",
+          "correct": true,
+          "feedback": "Correct. Three rounds with the commit count unchanged end the run."
+        },
+        {
+          "key": "c",
+          "text": "Rounds in which the handoff file's Done field did not change",
+          "correct": false,
+          "feedback": "The handoff is the agent's own account; the driver does not read it to decide anything."
+        },
+        {
+          "key": "d",
+          "text": "Rounds in which the window grew by fewer tokens than the last",
+          "correct": false,
+          "feedback": "Window size says nothing about whether work landed; each window is fresh anyway."
+        }
+      ],
+      "explanation": "In a loop that commits once per task, progress already has a record on disk: the commit count. The driver counts rounds in a row without a new commit, read from `git rev-list --count HEAD`, rather than anything in the transcript that the reset threw away.",
+      "hints": [
+        "What did the driver read from git before and after each iteration?"
+      ]
+    }
+  ]
+}
