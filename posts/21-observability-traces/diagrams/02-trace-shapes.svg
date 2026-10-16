@@ -1,0 +1,400 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-02-trace-shapes-title" aria-describedby="hrn-02-trace-shapes-desc">
+<title id="hrn-02-trace-shapes-title">Four runs, four shapes, read before any label</title>
+<desc id="hrn-02-trace-shapes-desc">Four runs of trace_loop.py drawn as strips of spans on one axis from 0 to 21 simulated seconds: blue model calls, orange tool calls, a purple gate. Run 1, healthy, alternates model and tool spans over six iterations and ends with a gate that passes, completed. Run 3, a doom loop with exit (4) off, repeats one read_file call twelve times, the repeats edged in red, with no gate, and stops at the cap, max_iters. Run 6, an ungated answer, stops after two iterations, completed, with a dashed empty slot where a gate would be. Run 4, a growing context, makes seven model calls that widen as the history grows and stops on exit (3), budget, at 107,100 input tokens against a ceiling of 100,000, the last call edged in red.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--hrn-blue); }
+  .f-blue-soft { fill: var(--hrn-blue-soft); }
+  .f-orange { fill: var(--hrn-orange); }
+  .f-orange-soft { fill: var(--hrn-orange-soft); }
+  .f-purple { fill: var(--hrn-purple); }
+  .f-purple-soft { fill: var(--hrn-purple-soft); }
+  .f-red-ink { fill: var(--hrn-red-ink); }
+  .s-blue { stroke: var(--hrn-blue); }
+  .s-grid { stroke: var(--hrn-grid); }
+  .s-ink-muted { stroke: var(--hrn-ink-muted); }
+  .s-orange { stroke: var(--hrn-orange); }
+  .s-purple { stroke: var(--hrn-purple); }
+  .s-red { stroke: var(--hrn-red); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="hrn-02-trace-shapes-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="546">Four runs, four shapes, read before any label</text>
+<text x="40" y="76" class="t-subtitle" data-w="702">Computed by trace_loop.py: simulated seconds on one axis; tokens are the series' illustrative run.</text>
+<path d="M272,112 L272,428" class="s-grid w075 nofill"/>
+<text x="272" y="448" text-anchor="middle" class="t-tick" data-w="19">0 s</text>
+<path d="M344,112 L344,428" class="s-grid w075 nofill"/>
+<text x="344" y="448" text-anchor="middle" class="t-tick" data-w="19">3 s</text>
+<path d="M416,112 L416,428" class="s-grid w075 nofill"/>
+<text x="416" y="448" text-anchor="middle" class="t-tick" data-w="19">6 s</text>
+<path d="M488,112 L488,428" class="s-grid w075 nofill"/>
+<text x="488" y="448" text-anchor="middle" class="t-tick" data-w="19">9 s</text>
+<path d="M560,112 L560,428" class="s-grid w075 nofill"/>
+<text x="560" y="448" text-anchor="middle" class="t-tick" data-w="26">12 s</text>
+<path d="M632,112 L632,428" class="s-grid w075 nofill"/>
+<text x="632" y="448" text-anchor="middle" class="t-tick" data-w="26">15 s</text>
+<path d="M704,112 L704,428" class="s-grid w075 nofill"/>
+<text x="704" y="448" text-anchor="middle" class="t-tick" data-w="26">18 s</text>
+<path d="M776,112 L776,428" class="s-grid w075 nofill"/>
+<text x="776" y="448" text-anchor="middle" class="t-tick" data-w="26">21 s</text>
+<path d="M272,428 L776,428" class="s-ink-muted w1 nofill"/>
+<text x="792" y="432" class="t-note" data-w="126">simulated seconds</text>
+<text x="40" y="144" class="t-head" data-w="60">healthy</text>
+<text x="40" y="164" class="t-note" data-w="81">run 1, gated</text>
+<g data-grid="skip">
+<rect x="272" y="136" width="20.16" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="272" y="136" width="20.16" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="292.16" y="136" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="292.16" y="136" width="2.88" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="295.04" y="136" width="23.14" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="295.04" y="136" width="23.14" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="318.18" y="136" width="4.8" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="318.18" y="136" width="4.8" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="322.98" y="136" width="26.11" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="322.98" y="136" width="26.11" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="349.09" y="136" width="4.8" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="349.09" y="136" width="4.8" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="353.89" y="136" width="29.09" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="353.89" y="136" width="29.09" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="382.98" y="136" width="187.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="382.98" y="136" width="187.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="570.18" y="136" width="32.06" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="570.18" y="136" width="32.06" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="602.24" y="136" width="36" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="602.24" y="136" width="36" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="638.24" y="136" width="35.04" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="638.24" y="136" width="35.04" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="673.28" y="136" width="28.8" height="24" class="f-purple-soft" data-fit="skip"/>
+<rect x="673.28" y="136" width="28.8" height="24" class="w1 nofill s-purple" data-fit="skip"/>
+</g>
+<text x="792" y="152" class="t-code" data-w="77">completed</text>
+<text x="40" y="224" class="t-head" data-w="87">doom loop</text>
+<text x="40" y="244" class="t-note" data-w="111">run 3, exit (4) off</text>
+<g data-grid="skip">
+<rect x="272" y="216" width="20.16" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="272" y="216" width="20.16" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="292.16" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="292.16" y="216" width="2.88" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="295.04" y="216" width="23.14" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="295.04" y="216" width="23.14" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="318.18" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="318.18" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="321.06" y="216" width="26.11" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="321.06" y="216" width="26.11" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="347.17" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="347.17" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="350.05" y="216" width="29.09" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="350.05" y="216" width="29.09" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="379.14" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="379.14" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="382.02" y="216" width="32.06" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="382.02" y="216" width="32.06" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="414.08" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="414.08" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="416.96" y="216" width="35.04" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="416.96" y="216" width="35.04" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="452" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="452" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="454.88" y="216" width="38.02" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="454.88" y="216" width="38.02" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="492.9" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="492.9" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="495.78" y="216" width="40.99" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="495.78" y="216" width="40.99" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="536.77" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="536.77" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="539.65" y="216" width="43.97" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="539.65" y="216" width="43.97" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="583.62" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="583.62" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="586.5" y="216" width="46.94" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="586.5" y="216" width="46.94" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="633.44" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="633.44" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="636.32" y="216" width="49.92" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="636.32" y="216" width="49.92" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="686.24" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="686.24" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="689.12" y="216" width="52.9" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="689.12" y="216" width="52.9" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="742.02" y="216" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="742.02" y="216" width="2.88" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<text x="792" y="232" class="t-code" data-w="77">max_iters</text>
+<text x="40" y="304" class="t-head" data-w="153">victory declaration</text>
+<text x="40" y="324" class="t-note" data-w="94">run 6, no gate</text>
+<g data-grid="skip">
+<rect x="272" y="296" width="20.16" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="272" y="296" width="20.16" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="292.16" y="296" width="2.88" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="292.16" y="296" width="2.88" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="295.04" y="296" width="23.14" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="295.04" y="296" width="23.14" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="322.18" y="296" width="28.8" height="24" class="w1 nofill s-purple d-proj" data-fit="skip"/>
+</g>
+<text x="360" y="312" class="t-note" data-w="52">no gate</text>
+<text x="792" y="312" class="t-code" data-w="77">completed</text>
+<text x="40" y="384" class="t-head" data-w="133">growing context</text>
+<text x="40" y="404" class="t-note" data-w="143">run 4, ceiling 100,000</text>
+<g data-grid="skip">
+<rect x="272" y="376" width="20.16" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="272" y="376" width="20.16" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="292.16" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="292.16" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="293.36" y="376" width="23.14" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="293.36" y="376" width="23.14" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="316.5" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="316.5" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="317.7" y="376" width="26.11" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="317.7" y="376" width="26.11" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="343.81" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="343.81" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="345.01" y="376" width="29.09" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="345.01" y="376" width="29.09" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="374.1" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="374.1" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="375.3" y="376" width="32.06" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="375.3" y="376" width="32.06" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="407.36" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="407.36" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="408.56" y="376" width="35.04" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="408.56" y="376" width="35.04" height="24" class="w1 nofill s-blue" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="443.6" y="376" width="1.2" height="24" class="f-orange-soft" data-fit="skip"/>
+<rect x="443.6" y="376" width="1.2" height="24" class="w1 nofill s-orange" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="444.8" y="376" width="38.02" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="444.8" y="376" width="38.02" height="24" class="w15 nofill s-red" data-fit="skip"/>
+</g>
+<text x="492" y="392" class="t-label f-red-ink" data-w="103">107,100 tokens</text>
+<text x="792" y="392" class="t-code" data-w="52">budget</text>
+<rect x="40" y="464" width="16" height="16" class="f-blue s-blue w1"/>
+<text x="72" y="476" class="t-label" data-w="69">model call</text>
+<rect x="168" y="464" width="16" height="16" class="f-orange s-orange w1"/>
+<text x="200" y="476" class="t-label" data-w="53">tool call</text>
+<rect x="280" y="464" width="16" height="16" class="f-purple s-purple w1"/>
+<text x="312" y="476" class="t-label" data-w="30">gate</text>
+<rect x="368" y="464" width="16" height="16" class="s-red w15 nofill"/>
+<text x="400" y="476" class="t-label" data-w="160">repeated call or overrun</text>
+<text x="40" y="504" class="t-note" data-w="568">The doom loop never converges; the victory declaration is read from what is missing.</text>
+</svg>

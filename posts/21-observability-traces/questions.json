@@ -1,0 +1,744 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-021",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-021-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "stop-reason",
+        "finally"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A harness sets `stop.reason` on the root span inside a `finally` block, defaulting it to `error` until the loop returns. The provider stops answering on the second model call, and the exception propagates out of the loop. What does the exported root span carry?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`stop.reason` is `error`, and the root span has an error status.",
+          "correct": true,
+          "feedback": "The `finally` runs whether or not the loop raised, so the default the harness set is what gets recorded, and the exception sets the span's error status."
+        },
+        {
+          "key": "b",
+          "text": "`stop.reason` is `max_iters`, because the loop never reached its final answer.",
+          "correct": false,
+          "feedback": "Exit (2) fires only when the turns run out. This run stopped on its second call because the provider raised, which is not one of the four exits."
+        },
+        {
+          "key": "c",
+          "text": "No `stop.reason` at all, because a run that raises never reaches the line that sets it.",
+          "correct": false,
+          "feedback": "That is what happens when the attribute is set on the return path. Setting it in a `finally` is exactly what keeps the crashed runs from going silent."
+        },
+        {
+          "key": "d",
+          "text": "`stop.reason` is `no_progress`, because no tool call made any progress.",
+          "correct": false,
+          "feedback": "Exit (4) compares tool-call signatures across a window of turns; a raised exception is not a repeated signature, and the loop never got to compare one."
+        }
+      ],
+      "explanation": "The stop reason is recorded in a `finally`, so a run that raised still says why it ended: `error`, the fifth value beside the four exits. A stop reason present on every run except the crashed ones is missing from exactly the runs most worth reading.",
+      "hints": [
+        "Which block runs whether or not the loop raised?"
+      ]
+    },
+    {
+      "id": "hrn-021-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "outcome-tag",
+        "sandbox"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A harness tags each tool span `blocked` when its pre-tool hook stops a call, `denied` when an approver says no, and `ok` otherwise. Its sandbox refuses a disallowed program inside the tool by returning a string that starts with `blocked:`, and raises nothing. Over a week of runs, how do the sandbox's refusals appear in the traces?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As `blocked`, since the returned string begins with that word.",
+          "correct": false,
+          "feedback": "The harness sets `blocked` only when its hook decides, before the tool runs. Nothing in this tagger reads the string the tool returned."
+        },
+        {
+          "key": "b",
+          "text": "As `ok`, indistinguishable from calls that ran.",
+          "correct": true,
+          "feedback": "Right. The refusal comes back as an ordinary return value, and a tagger that never inspects it files the call under `ok`, so the containment layer never visibly fires."
+        },
+        {
+          "key": "c",
+          "text": "As spans with an error status, since a refused call failed.",
+          "correct": false,
+          "feedback": "An error status comes from an exception, and this sandbox raises none: it returns a string, so the span ends normally."
+        },
+        {
+          "key": "d",
+          "text": "Not at all: a refused call never opens a tool span.",
+          "correct": false,
+          "feedback": "The span is opened around the dispatch before the sandbox decides, so it exists; the problem is the tag it carries, not its absence."
+        }
+      ],
+      "explanation": "A gate that refuses by return value rather than by exception needs the harness to inspect what came back, or the trace collapses `refused` into `ok`. The fix is one line after the tool returns: tag `refused` when the observation starts with the sandbox's prefix.",
+      "hints": [
+        "Where does the sandbox decide, before or inside the tool?",
+        "Which part of this tagger ever looks at the returned string?"
+      ]
+    },
+    {
+      "id": "hrn-021-q03",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "failure-modes",
+        "span-evidence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each piece of span evidence to the failure mode it signals.",
+      "left": [
+        {
+          "key": "a",
+          "text": "a `completed` run with no `verify.gate` span"
+        },
+        {
+          "key": "b",
+          "text": "identical `(tool, args)` on consecutive tool spans"
+        },
+        {
+          "key": "c",
+          "text": "one enormous tool span with near-empty siblings"
+        },
+        {
+          "key": "d",
+          "text": "the same finding recurring across many runs' traces"
+        },
+        {
+          "key": "e",
+          "text": "input tokens climbing while late answers get worse"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "victory declaration"
+        },
+        {
+          "key": "q",
+          "text": "doom loop"
+        },
+        {
+          "key": "r",
+          "text": "one-shotting"
+        },
+        {
+          "key": "s",
+          "text": "silent drift"
+        },
+        {
+          "key": "t",
+          "text": "context anxiety"
+        },
+        {
+          "key": "u",
+          "text": "a latency outlier"
+        },
+        {
+          "key": "v",
+          "text": "destructive action"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t"
+      },
+      "explanation": "Each failure mode leaves its own evidence: the missing gate span, the repeated signature, the single giant step, a recurrence across runs rather than within one, and quality falling as the window fills. A latency outlier is a cost signal rather than a failure mode, and a destructive action shows as a `blocked` or `refused` outcome.",
+      "hints": [
+        "Ask whether the evidence lives in one run or across many.",
+        "Two of the right-hand items match none of these pieces of evidence."
+      ]
+    },
+    {
+      "id": "hrn-021-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "token-series",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A trace's model-call spans show a ten-call run in which call $n$ sends $5{,}000 + 2{,}000(n - 1)$ input tokens. How many input tokens does the run bill in total, and how many times the largest single window is that?",
+      "answer": {
+        "parts": [
+          {
+            "label": "total input tokens",
+            "value": 140000,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "total divided by the largest window",
+            "value": 6.087,
+            "tolerance": 0.05,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Sum $= 10 \\times 5{,}000 + 2{,}000 \\times (0 + 1 + \\dots + 9) = 50{,}000 + 90{,}000 = 140{,}000$; the largest window is call 10, $5{,}000 + 18{,}000 = 23{,}000$; $140{,}000 / 23{,}000 = 6.087$. Pricing by the peak alone gives 23,000.",
+      "explanation": "A run re-sends its history every call, so the bill is the sum of the per-call input tokens, not the peak; on a linear climb the sum is several times the largest window, which is why the trace's token column is the raw material of a cost model.",
+      "hints": [
+        "Add the ten per-call sizes rather than taking the last one.",
+        "The increments sum to $2{,}000 \\times 45$."
+      ]
+    },
+    {
+      "id": "hrn-021-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "token-series",
+        "step-change",
+        "offloading"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the same ten-call run (call $n$ sends $5{,}000 + 2{,}000(n - 1)$ input tokens), one tool result goes into the window whole, so call 4 sends 40,000 tokens instead of its expected size, and the excess stays in the history for every later call. How many extra input tokens does the run send because of it, and what is its new total?",
+      "answer": {
+        "parts": [
+          {
+            "label": "extra input tokens",
+            "value": 203000,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "new total input tokens",
+            "value": 343000,
+            "tolerance": 0,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "Expected call 4: $5{,}000 + 6{,}000 = 11{,}000$, so the excess is $29{,}000$, re-sent on calls 4 to 10, seven calls: $7 \\times 29{,}000 = 203{,}000$; $140{,}000 + 203{,}000 = 343{,}000$. Counting only calls 5 to 10 gives 174,000.",
+      "explanation": "A step change between adjacent calls means one tool result entered the window whole, and because the history is re-sent the excess is paid on every later call; the fix is to offload the output to disk and keep its path on the span.",
+      "hints": [
+        "Find what call 4 should have sent, and the excess over it.",
+        "Count the calls, call 4 included, that carry the excess."
+      ]
+    },
+    {
+      "id": "hrn-021-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "traceparent",
+        "propagation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A parent agent passes each sub-agent process a W3C `traceparent` in an environment variable. In its traces, every sub-agent span sits under iteration 1, although the sub-agents were launched from iterations 4, 7 and 9. At what moment must the parent build the header to fix this? Answer in a sentence.",
+      "answer": {
+        "model": "At spawn time: build the traceparent from the span that is current when each child is launched, not once at start-up.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|not sure|i think|i guess|might be|could be)\\b)(?!(?:(?!(\\bspawn\\w*|\\blaunch\\w*|\\bfork\\w*|\\bcreat\\w*|\\bstart(s|ing)? (the|each|a) (child|sub-?agent|process)|\\beach child\\b|\\bper child\\b|\\bcurrent (span|iteration)\\b|\\bspan that is current\\b)|(\\bnot\\b|\\bnever\\b|\\brather than\\b|\\binstead of\\b|\\bno longer\\b|n't\\b))[\\s\\S])*?\\b(start-?up|startup|once|beginning|iteration 1|before the loop|first iteration)\\b)(?![\\s\\S]*\\b(not|never|rather than|instead of)\\s+(be\\s+)?(built\\s+|made\\s+|done\\s+)?(at\\s+|when\\s+|on\\s+|during\\s+|until\\s+)?(the\\s+)?(moment\\s+|time\\s+)?(of\\s+)?(spawn|launch|fork|creat)\\w*)(?![\\s\\S]*\\b(spawn|launch)\\w*( time)? (is|would be|was) (wrong|incorrect|too late|a mistake)\\b)(?![\\s\\S]*(\\b(does not|doesn't|do not|don't) matter\\b|\\bany ?time\\b|\\bwhenever\\b|\\beither way\\b))(?![\\s\\S]*\\bafter (the|each|a) (child|sub-?agent|process)\\w*( process)? (has |have |is |was |are )?(been )?(launch|spawn|start|creat)\\w*)(?![\\s\\S]*\\b(its|the child's) own span\\b)(?=[\\s\\S]*(\\bspawn\\w*|\\blaunch\\w*|\\bfork\\w*|\\bcreat\\w*|\\bstart(s|ing)? (the|each|a) (child|sub-?agent|process)|\\beach child\\b|\\bper child\\b|\\bcurrent (span|iteration)\\b|\\bspan that is current\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The child's parent is whatever span the header names, so a header built once and reused names the same span for every child. Built at spawn time from the current span, it names the iteration that launched each child.",
+      "hints": [
+        "The header carries one parent span id. Which span should it be for the child launched from iteration 7?"
+      ]
+    },
+    {
+      "id": "hrn-021-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "span-link",
+        "queues"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An orchestrator puts a sub-task on a work queue and its own span ends; a worker picks the task up an hour later on another machine. How should the worker's span relate to the orchestrator's?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As a child: the orchestrator sends a traceparent and the worker nests under it.",
+          "correct": false,
+          "feedback": "A parent-child edge claims the parent span contained the work, but it ended an hour before the work began; the tree would misstate the timing."
+        },
+        {
+          "key": "b",
+          "text": "As its own root, with a span link back to the span that enqueued it.",
+          "correct": true,
+          "feedback": "Right. Two trees with a stated relationship are honest about the asynchrony, and the link still lets a reader walk from one to the other."
+        },
+        {
+          "key": "c",
+          "text": "As an unrelated root trace, since the parent has already ended.",
+          "correct": false,
+          "feedback": "That loses the relationship entirely: the orchestrated run becomes two disconnected stories, the failure signature of propagation never wired."
+        },
+        {
+          "key": "d",
+          "text": "As the same span: the worker reuses the orchestrator's span id.",
+          "correct": false,
+          "feedback": "Two operations sharing one span id corrupt both; a span id identifies one timed operation, and the ended one cannot be reopened."
+        }
+      ],
+      "explanation": "When a child may outlive its parent span, a parent-child edge is wrong, because a span cannot adopt work that begins after it ended; an OpenTelemetry span link records the relationship without pretending the parent waited.",
+      "hints": [
+        "Can a span that has ended contain work that starts later?",
+        "OpenTelemetry has a relation between spans other than parent and child."
+      ]
+    },
+    {
+      "id": "hrn-021-q08",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "traceparent",
+        "w3c"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put the four fields of a W3C `traceparent` header in the order they appear in the header string.",
+      "items": [
+        {
+          "key": "a",
+          "text": "trace-flags, 2 hex digits (01 when sampled)"
+        },
+        {
+          "key": "b",
+          "text": "parent-id, 16 hex digits"
+        },
+        {
+          "key": "c",
+          "text": "version, 2 hex digits (00)"
+        },
+        {
+          "key": "d",
+          "text": "trace-id, 32 hex digits"
+        }
+      ],
+      "answer": [
+        "c",
+        "d",
+        "b",
+        "a"
+      ],
+      "explanation": "Trace Context fixes the order version, trace-id, parent-id, trace-flags, joined by hyphens, as in `00-<32 hex>-<16 hex>-01`; the child reads the trace it belongs to and the span it hangs under from the middle two.",
+      "hints": [
+        "The field that says how to parse the rest comes first.",
+        "The trace comes before the span within it."
+      ]
+    },
+    {
+      "id": "hrn-021-q09",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "replay",
+        "divergence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A recording holds a run's tool results as a list, consumed in order during a replay. A changed harness makes the same two file reads as the recording, but in the opposite order. What happens to those two reads in the replay?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The replay stops at the first read, because its signature differs from the recording.",
+          "correct": false,
+          "feedback": "That is the stop-at-divergence continuation, which compares signatures. A list consumed in order compares nothing; it hands out the next entry."
+        },
+        {
+          "key": "b",
+          "text": "Each read receives the other file's recorded content, and nothing flags it.",
+          "correct": true,
+          "feedback": "Right. Position, not the call, picks the result, so a harmless reordering feeds each read an answer to a different question, silently."
+        },
+        {
+          "key": "c",
+          "text": "Both reads replay correctly, because the harness made the same calls.",
+          "correct": false,
+          "feedback": "That is what a lookup keyed by call signature gives. Consumed by position, the same calls in another order get each other's results."
+        },
+        {
+          "key": "d",
+          "text": "Both reads fall through to live execution, because the order changed.",
+          "correct": false,
+          "feedback": "A positional list has no notion of a miss, so it never falls through; live fall-through belongs to a signature lookup with a live tool."
+        }
+      ],
+      "explanation": "A replay is faithful only up to the first call whose signature differs from the recording; a list consumed in order cannot even see that point. Keying the recording by tool name and normalised arguments replays an equivalent reordering correctly and makes a real miss visible.",
+      "hints": [
+        "What decides which recorded result a call receives?",
+        "Does the list ever compare the call with the recording?"
+      ]
+    },
+    {
+      "id": "hrn-021-q10",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "replay",
+        "outcome-eval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A recorded failing run is replayed against a fixed harness. The replay finishes, but after its third call the new trajectory differs from the recording. Why can the replay not be graded by diffing its transcript against the recorded one, and what is graded instead? One or two sentences.",
+      "answer": {
+        "model": "The harness change is expected to change the trajectory, so a diff would flag every run the fix touched; grade the outcome instead: whether the task resolved, the tests passed and the gate passed.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|not sure|i think|i guess|might be|could be)\\b)(?=\\s*\\S+\\s+\\S+\\s+\\S+\\s+\\S)(?![\\s\\S]*\\bnot\\s+(by\\s+|on\\s+)?(the\\s+)?(outcomes?|results?|end state)\\b)(?![\\s\\S]*\\b(rather than|instead of)\\s+(by\\s+|on\\s+)?(the\\s+)?(outcomes?|results?|end state)\\b)(?![\\s\\S]*(?<!instead of )(?<!rather than )(?<!not )(?<!than )\\b(grade|grading|graded|score|scoring|judge|judging|compare|comparing|check|checking|use|using)\\s+(it\\s+|the run\\s+|the replay\\s+)?((by|on|with|using|against)\\s+)?(the\\s+|a\\s+|its\\s+)?(transcripts?|diffs?|recording|trajector\\w*|calls?)\\b)(?![\\s\\S]*\\b(reproduce|match|same as|identical)\\w*\\b[^.;]*\\b(exactly|recording|recorded)\\b)(?![\\s\\S]*\\bresults? (is|are) identical\\b)(?=[\\s\\S]*\\b(outcomes?|results?|end state|final state|tests? (pass\\w*|green)|pass(es|ed)? (the|its) (tests|gate|check)|gate pass\\w*|task (resolv\\w*|succe\\w*|complet\\w*|was (done|solved|resolved))|resolv\\w*|solved|succeed\\w*)\\b)(?=[\\s\\S]*\\b(diverg\\w*|differ\\w*|chang\\w*|expected|different|new (path|trajectory|calls?)|other calls?|not the same|reorder\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Because the reason to replay is that the harness changed, divergence is the expected case, and a transcript diff measures only that the run took a new path. The pass criterion is the outcome: did the task resolve, do the tests pass, did the gate pass, which is a trajectory and outcome eval.",
+      "hints": [
+        "Why was the replay run at all?",
+        "What does a diff measure when the path is supposed to change?"
+      ]
+    },
+    {
+      "id": "hrn-021-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "replay",
+        "signature"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`replay` hands out recorded tool results by position, so a reordered but equivalent trajectory receives the wrong results. Fix it so each call is looked up by its signature, the tool name with its arguments normalised (two argument dictionaries with the same keys and values in a different order are the same call). On a call with no recorded result it appends `(None, \"diverged\")` and stops, unless a `live` tool is given, in which case it appends `(live(name, args), \"live\")` and continues.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import json\n\n\ndef replay(recording, calls, live=None):\n    \"\"\"recording: list of (name, args, result) in the recorded order.\n    calls: list of (name, args) the changed harness makes, in its order.\n    Return a list of (result, status), status \"replayed\", \"live\" or \"diverged\".\"\"\"\n    out = []\n    for k, (name, args) in enumerate(calls):\n        if k < len(recording):\n            out.append((recording[k][2], \"replayed\"))\n        elif live is not None:\n            out.append((live(name, args), \"live\"))\n        else:\n            out.append((None, \"diverged\"))\n            break\n    return out\n",
+      "solution": "import json\n\n\ndef replay(recording, calls, live=None):\n    \"\"\"recording: list of (name, args, result) in the recorded order.\n    calls: list of (name, args) the changed harness makes, in its order.\n    Return a list of (result, status), status \"replayed\", \"live\" or \"diverged\".\"\"\"\n    keyed = {json.dumps([n, a], sort_keys=True): r for n, a, r in recording}\n    out = []\n    for name, args in calls:\n        key = json.dumps([name, args], sort_keys=True)\n        if key in keyed:\n            out.append((keyed[key], \"replayed\"))\n        elif live is not None:\n            out.append((live(name, args), \"live\"))\n        else:\n            out.append((None, \"diverged\"))\n            break\n    return out\n",
+      "tests": "REC = [(\"read\", {\"path\": \"a.py\"}, \"A\"), (\"read\", {\"path\": \"b.py\"}, \"B\"), (\"test\", {}, \"1 failed\"),\n       (\"edit\", {\"path\": \"a.py\", \"line\": 2}, \"edited\")]\nLIVE = lambda name, args: f\"live {name}\"\nassert replay(REC, [(\"read\", {\"path\": \"b.py\"}), (\"read\", {\"path\": \"a.py\"})]) == [(\"B\", \"replayed\"), (\"A\", \"replayed\")]\nassert replay(REC, [(\"edit\", {\"line\": 2, \"path\": \"a.py\"})]) == [(\"edited\", \"replayed\")], \"argument order is not a different call\"\nassert replay(REC, [(\"read\", {\"path\": \"a.py\"}), (\"lint\", {}), (\"test\", {})]) == [(\"A\", \"replayed\"), (None, \"diverged\")], \"stop at the first miss\"\nassert replay(REC, [(\"lint\", {}), (\"test\", {})], LIVE) == [(\"live lint\", \"live\"), (\"1 failed\", \"replayed\")]\nassert replay(REC, [(\"read\", {\"path\": \"c.py\"})]) == [(None, \"diverged\")]\nassert replay(REC, [(\"test\", {}), (\"test\", {})]) == [(\"1 failed\", \"replayed\"), (\"1 failed\", \"replayed\")]\nassert replay([], [(\"read\", {\"path\": \"a.py\"})], LIVE) == [(\"live read\", \"live\")]\nassert replay(REC, []) == []\nprint(\"ok\")\n",
+      "entry": "python solution_and_tests.py",
+      "expected_output": "ok\n",
+      "explanation": "A recording keyed by call signature, with the arguments serialised with sorted keys, replays an equivalent reordering correctly, and a real miss either stops the replay or falls through to a live tool, so the harness under test is graded on calls that actually match.",
+      "hints": [
+        "Build a dictionary from the recording before looping over the calls.",
+        "Serialise `[name, args]` with `json.dumps(..., sort_keys=True)` for the key, both when building and when looking up."
+      ]
+    },
+    {
+      "id": "hrn-021-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "sampling",
+        "retention"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A trace store can afford full message bodies for only a small share of an agent's runs. Which policy keeps what diagnosis and trend lines need?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Decide at the root span, keeping a random tenth of all runs whole, skeleton and bodies together, and dropping the other nine tenths.",
+          "correct": false,
+          "feedback": "Head-based sampling decides before anything has happened, so it discards the interesting runs at random along with the rest."
+        },
+        {
+          "key": "b",
+          "text": "Keep every skeleton; keep bodies for runs that did not complete, hit a gate or failed their check, plus a few clean ones.",
+          "correct": true,
+          "feedback": "Right. The skeleton is small and carries the geometry and trends; the tail-based choice keeps bodies for exactly the runs worth reading."
+        },
+        {
+          "key": "c",
+          "text": "Keep every run's bodies for thirty days so any incident can be read in full, and drop all the skeletons once they are a week old.",
+          "correct": false,
+          "feedback": "It inverts the split: the bodies are the expensive, sensitive part, and the cheap skeletons are what week-on-week drift is read from."
+        },
+        {
+          "key": "d",
+          "text": "Keep whole traces only for runs whose root span says `error`, and drop all the others.",
+          "correct": false,
+          "feedback": "It misses guard exits, gate refusals and victory declarations, which end `completed` with a failing check rather than raising."
+        }
+      ],
+      "explanation": "Tail-based sampling decides after the run, when its interesting properties are known: a stop reason other than `completed`, a `blocked`, `denied` or `refused` span, a failed gate. The skeleton is never sampled away, because the geometry and the trends need only names, timings, token counts and outcomes.",
+      "hints": [
+        "When is it known whether a run is interesting?",
+        "Which part of a trace is cheap, and which is sensitive?"
+      ]
+    },
+    {
+      "id": "hrn-021-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "analysis-agent",
+        "access"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team lets an analysis agent read every failed production trace, message bodies included, and commit a change to the harness directly whenever it reports high confidence in its diagnosis. Critique the design and say what to change.",
+      "kind": "critique",
+      "solution": "**Input.** Reading full bodies gives the agent customer data and every credential the redaction missed; the trace store inherits the agent's permission boundary, so the analysis agent should read skeletons and attributes, not raw bodies.\n\n**Output.** Its answer should be constrained to a triple: the span that first diverged (by span id, so it can be checked), the owning component drawn from the eleven and no others (so it cannot answer \"improve the prompt\"), and the constraint that would have prevented it as one or more of the ratchet's teeth (memory line, hook, reviewer check).\n\n**Authority.** Its own confidence is not a gate: an agent grading its own machine skews positive, as it does grading its own output. The change should be a proposal that a person or a stricter gate approves, and the replay of the failing trace should join the regression set so the fix is checked.\n\n**At scale.** Grouping failed traces by the owning component it names gives a ranking that shows where incidents concentrate.",
+      "rubric": [
+        {
+          "criterion": "Restricts the input to skeletons and attributes, citing the access boundary and leaked credentials",
+          "points": 2
+        },
+        {
+          "criterion": "Constrains the output to span id, component from the closed list, and a ratchet tooth",
+          "points": 3
+        },
+        {
+          "criterion": "Replaces self-reported confidence with approval by a person or a stricter gate, giving the positive-skew reason",
+          "points": 3
+        },
+        {
+          "criterion": "Adds the replay of the failing trace to the regression set as the check on the fix",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "An analysis agent is useful only when its input and output are constrained and its output is a proposal: reading traces and writing proposals, never rewriting the harness it runs inside.",
+      "hints": [
+        "Separate what it reads, what it says, and what it is allowed to do.",
+        "Who checks an agent that grades its own machine?"
+      ]
+    },
+    {
+      "id": "hrn-021-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "victory-declaration",
+        "ratchet",
+        "localise"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run's root span says `completed`, and its trace holds no `verify.gate` span. A day later a user reports that the fix the run claimed does not work. Using the trace and the series' vocabulary, name the failure mode, the component that owns the fix and the fix itself, and the teeth of the ratchet that would keep it from recurring.",
+      "kind": "connect",
+      "solution": "**Failure mode.** Victory declaration (post 05): the loop took exit (1) on the model's word, and the evidence is the join of a `completed` stop with a downstream check that failed, sharpened in the trace by the absent gate span.\n\n**Owner and fix.** Verification (post 11): a gate on exit (1) that runs the task's check and decides, so the agent's report never does; with it, the run records a `verify.gate` span whose outcome is `fail`, and the harness retries or surfaces the work as unverified.\n\n**Ratchet (post 10).** A memory line (run the tests before claiming a fix is done), a hook that refuses a completion when no passing test run is recorded, and a reviewer check: the replay of this run joins the regression set and must end with the gate's outcome `pass`. Tail-sampling should also keep every `completed` run with no gate span, so the next one is caught without a user report.",
+      "rubric": [
+        {
+          "criterion": "Names victory declaration and cites the missing gate span and the failed downstream check as evidence",
+          "points": 2
+        },
+        {
+          "criterion": "Assigns the fix to verification, a gate on exit (1) that decides instead of the agent's report",
+          "points": 3
+        },
+        {
+          "criterion": "Gives all three teeth, each specific to this failure",
+          "points": 3
+        },
+        {
+          "criterion": "Turns the run into a replay fixture or a sampling rule that catches the next one",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The trace localises the failure to the verification component by an absence, the fix belongs to the gate on exit (1), and the ratchet's three teeth keep the class of mistake from recurring.",
+      "hints": [
+        "Which failure mode is diagnosed from what is missing?",
+        "The ratchet has three teeth: a line the agent reads, a deterministic gate, and an independent check."
+      ],
+      "connects": [
+        "hrn-005",
+        "hrn-010",
+        "hrn-011"
+      ]
+    },
+    {
+      "id": "hrn-021-q15",
+      "type": "code",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 8,
+      "tags": [
+        "outcome-tag",
+        "gates"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`classify` returns the outcome tag of one tool call, but a sandbox refusal comes back tagged `ok`. Fix it. The hook runs first, then the approval gate, then the tool; the sandbox refuses inside the tool by returning an observation that starts with `blocked:`. When the hook blocks or the approver denies, the tool never runs and `observation` is `None`.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def classify(hook_blocked, approved, observation):\n    \"\"\"hook_blocked: True if the pre-tool hook stopped the call.\n    approved: None when no approval was needed, else the approver's True or False.\n    observation: what the tool returned, or None if it never ran.\n    Return \"blocked\", \"denied\", \"refused\" or \"ok\".\"\"\"\n    if hook_blocked:\n        return \"blocked\"\n    if approved is False:\n        return \"denied\"\n    return \"ok\"\n",
+      "solution": "def classify(hook_blocked, approved, observation):\n    \"\"\"hook_blocked: True if the pre-tool hook stopped the call.\n    approved: None when no approval was needed, else the approver's True or False.\n    observation: what the tool returned, or None if it never ran.\n    Return \"blocked\", \"denied\", \"refused\" or \"ok\".\"\"\"\n    if hook_blocked:\n        return \"blocked\"\n    if approved is False:\n        return \"denied\"\n    if observation.startswith(\"blocked:\"):\n        return \"refused\"\n    return \"ok\"\n",
+      "tests": "assert classify(False, None, \"blocked: curl is not on the allow-list\") == \"refused\"\nassert classify(False, True, \"blocked: rm is not on the allow-list\") == \"refused\"\nassert classify(True, None, None) == \"blocked\"\nassert classify(False, False, None) == \"denied\"\nassert classify(False, None, \"3 tests blocked: 0 failed\") == \"ok\", \"only a leading prefix is a refusal\"\nassert classify(False, None, \"blocked by nothing\") == \"ok\", \"the prefix includes the colon\"\nassert classify(False, True, \"deployed\") == \"ok\"\nassert classify(False, None, \"\") == \"ok\"\nprint(\"ok\")\n",
+      "entry": "python solution_and_tests.py",
+      "expected_output": "ok\n",
+      "explanation": "A gate that refuses by return value needs the harness to inspect what came back; checking the prefix after the hook and the approval keeps each of the four outcomes distinct, in the order the layers run.",
+      "hints": [
+        "What does the sandbox's refusal look like to the harness?",
+        "Check the observation only after the hook and the approval, and only its start."
+      ]
+    },
+    {
+      "id": "hrn-021-q16",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "retention",
+        "skeleton"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run has 20 iterations. Its trace holds one root span, one span per iteration, one model-call span per iteration, one tool span in each of the first 19 iterations, and one gate span. Each span serialises to 300 bytes. The run's last window is 60,000 tokens, and its distinct message content is taken as that window at four characters a token. How many spans does the trace hold, and how many times larger than the skeleton are the bodies?",
+      "answer": {
+        "parts": [
+          {
+            "label": "spans",
+            "value": 61,
+            "tolerance": 0,
+            "unit": "spans"
+          },
+          {
+            "label": "bodies divided by skeleton",
+            "value": 13.11,
+            "tolerance": 0.06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Spans: $1 + 20 + 20 + 19 + 1 = 61$; skeleton $61 \\times 300 = 18{,}300$ bytes; bodies $60{,}000 \\times 4 = 240{,}000$ bytes; $240{,}000 / 18{,}300 = 13.11$. Counting 20 tool spans gives 62 spans and 12.90; forgetting the gate gives 60 and 13.33.",
+      "explanation": "The skeleton is small and safe to keep for a long window; the bodies are an order of magnitude larger and are what a retention policy is about, which is why the two get different windows in one store.",
+      "hints": [
+        "Count each kind of span separately.",
+        "Divide the body bytes by the skeleton bytes."
+      ]
+    },
+    {
+      "id": "hrn-021-q17",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "sampling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Why is tail-based sampling, which decides whether to keep a trace after the run ends, a better default for agent runs than head-based sampling, which decides at the root span? One sentence.",
+      "answer": {
+        "model": "Because what makes a run worth keeping, such as its stop reason, a blocked or refused call or a failed gate, is known only once the run has ended; deciding at the root discards interesting runs at random.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|not sure|i think|i guess|might be|could be)\\b)(?=\\s*\\S+\\s+\\S+\\s+\\S+\\s+\\S)(?![\\s\\S]*\\bhead[- ]?based\\b[^.;]*\\b(is|are)\\s+(better|preferable|the (right|better) default|fine)\\b)(?![\\s\\S]*\\b(at the (start|root|beginning)|up ?front|early|random\\w*)\\b[^.;]*\\b(is|are|works)\\s+(fine|better|enough|sufficient|preferable)\\b)(?![\\s\\S]*\\bhead[- ]?based\\b[^.;]*\\b(keeps|catches|captures|finds|knows)\\b[^.;]*\\b(interesting|fail\\w*|important|errors?)\\b)(?![\\s\\S]*\\btail[- ]?based\\b[^.;]*\\bdecides\\b[^.;]*\\b(at the (root|start)|before|early)\\b)(?![\\s\\S]*\\b(it'?s|it is|tail[- ]?based is)\\s+(just\\s+)?(cheaper|faster|simpler)\\b)(?=[\\s\\S]*\\b(interesting|fail\\w*|stop[ ._]?reasons?|outcomes?|errors?|blocked|refused|denied|what happened|went wrong|go(es)? wrong|worth keeping|worth reading|matters|gate|how it (ended|went))\\b)(?=[\\s\\S]*\\b(end\\w*|finish\\w*|after\\w*|complet\\w*|until|over|known|unknown|yet|blind\\w*|random\\w*|in advance|beforehand|ahead of time|too early|before (it|the run|anything))\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The interesting properties of a run, a stop reason other than `completed`, a gate refusal, a failed check, exist only at its end, so a decision made at the root keeps or drops runs blind.",
+      "hints": [
+        "When is it known whether a run went wrong?"
+      ]
+    }
+  ]
+}
