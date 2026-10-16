@@ -3,8 +3,8 @@
 The limit of asking the model nicely is that it can ignore you (Post 13). A hook
 is code, not a request. Here a pre-tool hook inspects a pending ``(tool, args)``
 call and either allows it or blocks it with a reason. The first block wins, so
-the gate is fail-closed on a match. This is the enforcement half of the ratchet
-(Post 10): a mistake seen once becomes a rule no future run can skip.
+the gate is fail-closed on a match. This is the enforcement tooth of the ratchet
+(Post 10), one of three: a mistake seen once becomes a rule no future run can skip.
 """
 from __future__ import annotations
 

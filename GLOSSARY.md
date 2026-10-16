@@ -102,7 +102,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Hook lifecycle.** The set of points at which hooks fire, plus the blocking asymmetry across them: only a hook that runs before an action can prevent it, and one that runs after can only report, with the report re-entering the loop as an observation. See [Post 13](posts/13-hooks-enforcement/index.md).
 
-**Hosted agent runtime.** A vendor service that runs the whole loop on its own machines and meters it by session time. The far end of the build-versus-rent axis, and the point at which lock-in has to be priced rather than assumed. See [Post 23](posts/23-economics-haas/index.md).
+**Hosted agent runtime.** A vendor service that runs the whole loop on its own machines and meters it by session time or by the resources it uses (Claude Managed Agents per running session-hour, Amazon Bedrock AgentCore per vCPU-hour and GB-hour), with the model's tokens billed beside it. The far end of the build-versus-rent axis, and the point at which lock-in has to be priced rather than assumed. See [Post 23](posts/23-economics-haas/index.md).
 
 **Human-in-the-loop (HITL).** A harness pattern where a human approves, interrupts, or steers the agent at defined points on the *autonomy spectrum*. See [Post 15](posts/15-human-in-the-loop/index.md).
 
@@ -116,7 +116,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Iteration cap.** The second of the four *loop exits*: a hard integer ceiling on turns, so that a loop which never reaches a final answer still terminates. A *backstop exit*, set well above the iteration count real tasks need; it bounds turns, not cost. See [Post 03](posts/03-the-agent-loop/index.md).
 
-**Jail.** A working-directory boundary a sandboxed command may not escape. A correct jail check compares resolved paths, not string prefixes: `/worksecrets` is not inside `/work` despite sharing its characters. See [Post 25](posts/25-build-harness-plus/index.md).
+**Jail.** A working-directory boundary a sandboxed command may not escape. A correct jail check compares paths, resolved or component by component, never string prefixes: `/worksecrets` is not inside `/work` despite sharing its characters. Build #2's check compares the components of absolute tokens only and is a pre-filter, not a boundary; a boundary a process cannot step over needs the operating system. See [Post 25](posts/25-build-harness-plus/index.md) and [Post 14](posts/14-permissions-sandboxes/index.md).
 
 **Layered exits.** The full set of stop conditions a production loop carries at once (final answer, iteration cap, budget, no progress), checked in an order, rather than reliance on any single one. See [Post 19](posts/19-loop-engineering/index.md).
 
@@ -260,7 +260,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Topology.** The shape of a multi-agent arrangement: single, orchestrator-worker, pipeline, or swarm. A decision about who writes and who reconciles, not about how many models are involved. See [Post 16](posts/16-multi-agent-orchestration/index.md).
 
-**Trace.** The recorded sequence of *spans* for one run, and the primary debugging surface for a harness. Four of the six agent failure modes have signatures that exist only in the sequence. See [Post 21](posts/21-observability-traces/index.md).
+**Trace.** The recorded sequence of *spans* for one run, and the primary debugging surface for a harness. Four of the six agent failure modes are shapes over a run's turns or across runs rather than facts about one call. See [Post 21](posts/21-observability-traces/index.md).
 
 **Trajectory eval.** Evaluating an agent on the path it took (steps, tool calls, outcome), not just a single final output. The eval lens harness engineering needs. See [Post 22](posts/22-evaluating-harnesses/index.md).
 

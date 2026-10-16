@@ -6,7 +6,7 @@ input against the schema, execute only if it passes, and never let a tool crash
 the loop — every outcome is returned as an observation string.
 
 The ``Workspace`` is an in-memory filesystem the agent writes to and the
-verifier reads from (Post 24, section 4). Real on-disk work and real sandboxing
+verifier reads from (post 24). Real on-disk work and real sandboxing
 of arbitrary commands are Build #2 (Posts 14, 25); here the runner is injectable
 so tests stay offline.
 """

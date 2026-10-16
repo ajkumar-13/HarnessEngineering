@@ -25,7 +25,7 @@ def main() -> None:
     model = ScriptedModel([
         tool_response("write_file", {"path": "solution.py", "content": BUGGY},
                       text="Here is a first attempt.", tokens=20),
-        text_response("Done — is_palindrome is implemented.", tokens=8),
+        text_response("Done: is_palindrome is implemented.", tokens=8),
         tool_response("write_file", {"path": "solution.py", "content": FIXED},
                       text="Fixing: compare against the reverse.", tokens=18),
         text_response("Fixed and it should pass now.", tokens=8),

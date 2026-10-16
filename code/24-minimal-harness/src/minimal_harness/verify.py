@@ -41,8 +41,8 @@ def python_function_tests(
     function it defines. A raised exception is reported, never propagated, so a
     failing candidate produces a report rather than crashing the gate.
 
-    Exec-ing model code is exactly the blast radius Build #2 sandboxes (Post 14);
-    Build #1 keeps it simple and in-process, as the Post 11 companion did.
+    Exec-ing model code in-process is a blast radius no build here contains:
+    Build #2 ships no verifier (post 25); post 14 says what would contain it.
     """
     cases = list(cases)
 

@@ -202,7 +202,7 @@ paired:   B fixed 5, B broke 3, unchanged 92
 
 The mean says two points better; the tally says eight tasks changed, three of them for the worse. To run it for real, point `run_a` and `run_b` at two configurations of [`code/24-minimal-harness/`](../../code/24-minimal-harness/), which takes every harness parameter as a keyword argument.
 
-That function is the skeleton, not the instrument. The real version repeats every task across seeds, puts the discordant counts through a significance test, and takes its graders and held-out split from [post 22](../22-evaluating-harnesses/index.md), which also shows how little a small set buys: on its illustrative 60-task example, a 6.7-point lift from 12 discordant pairs is consistent with a coin flip.
+That function is the skeleton, not the instrument. The real version repeats every task across seeds, puts the discordant counts through a significance test, and takes its graders and held-out split from [post 22](../22-evaluating-harnesses/index.md), which also shows how little a small set buys: on its illustrative one-seed, 60-task case, a 6.7-point lift from 12 discordant pairs is consistent with a coin flip.
 
 ---
 

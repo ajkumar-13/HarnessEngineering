@@ -22,11 +22,11 @@ SHELL_CONTROL = re.compile(r"[;&|<>`\n]|\$\(")
 
 
 def _within(token: str, jail: str) -> bool:
-    """True if ``token`` resolves inside ``jail``.
+    """True if ``token`` lies inside ``jail``, compared by path components.
 
     A raw ``startswith`` is not a path test: it puts ``/worksecrets`` inside a
-    ``/work`` jail because the *string* matches. Compare resolved paths instead,
-    so only real descendants pass.
+    ``/work`` jail because the *string* matches. Compare components instead, so
+    only real descendants pass. Nothing is resolved; links are not followed.
     """
     from pathlib import PurePosixPath
     t = PurePosixPath(token)
@@ -59,7 +59,7 @@ class Sandbox:
     #: ``python -c "..."`` carries no shell metacharacters, so it passes every
     #: check here while executing arbitrary code. ``python`` and ``pytest`` are
     #: therefore deliberately NOT in the default allow-list; a caller that needs
-    #: them (as ``__main__`` does, to run the test suite) must opt in explicitly
+    #: them (as ``__main__`` does, for its demo) must opt in explicitly
     #: and should pair that with an OS-level boundary, not this allow-list alone.
     jail: str = "/work"
     timeout: float = 5.0

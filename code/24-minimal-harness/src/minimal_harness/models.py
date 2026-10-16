@@ -28,7 +28,7 @@ class ModelResponse:
     ``content_blocks`` is what to append to the transcript as the assistant
     message. ``tool_uses`` is the same calls parsed out. ``is_final()`` is true
     when the model asked for no tools; that is a *candidate* final answer, which
-    the verification gate still has to approve (Post 24, section 4).
+    the verification gate still has to approve (post 24, the verification gate).
     """
     content_blocks: list[dict]
     tool_uses: list[ToolUse] = field(default_factory=list)

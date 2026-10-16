@@ -212,7 +212,7 @@ def test_jail_rejects_sibling_directories_that_share_a_prefix():
     """A raw ``startswith`` is not a path test.
 
     ``/worksecrets`` begins with the string ``/work`` but is not inside the
-    ``/work`` jail. The check must compare resolved paths, not string prefixes.
+    ``/work`` jail. The check must compare path components, not string prefixes.
     """
     sandbox = Sandbox(allow=["cat"], jail="/work")
     assert sandbox.check("cat /work/ok.txt") is None
