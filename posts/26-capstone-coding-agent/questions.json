@@ -1,0 +1,786 @@
+{
+ "standard": "2.1.0",
+ "post": "hrn-026",
+ "next_ordinal": 19,
+ "questions": [
+  {
+   "id": "hrn-026-q01",
+   "type": "mcq",
+   "track": "intuition",
+   "difficulty": 1,
+   "outcomes": [
+    "o1"
+   ],
+   "section": "1",
+   "est_minutes": 1,
+   "tags": [
+    "component-map",
+    "seams"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Which of these components of the series is a seam in the capstone companion, named but not shipped as code?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "Verification",
+     "correct": false,
+     "feedback": "Verification is shipped: `python_function_verifier` in `core.py` is the evaluator's ground truth."
+    },
+    {
+     "key": "b",
+     "text": "Hooks",
+     "correct": true,
+     "feedback": "Right. The generator makes no tool calls, so there is no call for a pre-tool hook to stand in front of; the post names where one would wire in."
+    },
+    {
+     "key": "c",
+     "text": "Long-horizon patterns",
+     "correct": false,
+     "feedback": "Shipped: `build()` in `driver.py` walks the spec task by task with a fresh context each time, the Ralph pattern."
+    },
+    {
+     "key": "d",
+     "text": "Observability",
+     "correct": false,
+     "feedback": "Shipped: `observe.py`'s `Tracer` records the whole build as one span tree."
+    }
+   ],
+   "explanation": "Seven of the eleven components are a module of `code/26-coding-agent/`; tools, hooks, permissions and orchestration are the four seams. Hooks are absent because nothing in the build makes a tool call.",
+   "hints": [
+    "Ask which components need a tool call to exist before they have anything to do."
+   ]
+  },
+  {
+   "id": "hrn-026-q02",
+   "type": "match",
+   "track": "workout",
+   "difficulty": 2,
+   "outcomes": [
+    "o1"
+   ],
+   "section": "1",
+   "est_minutes": 3,
+   "tags": [
+    "component-map",
+    "modules"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Match each module of the capstone companion to the component of the series it holds.",
+   "left": [
+    {
+     "key": "a",
+     "text": "`memory.py`"
+    },
+    {
+     "key": "b",
+     "text": "`observe.py`"
+    },
+    {
+     "key": "c",
+     "text": "`cost.py`"
+    },
+    {
+     "key": "d",
+     "text": "`core.py`"
+    }
+   ],
+   "right": [
+    {
+     "key": "p",
+     "text": "05 memory: rules learned from failures and injected into later attempts"
+    },
+    {
+     "key": "q",
+     "text": "11 observability: nested spans, the whole build as one trace tree"
+    },
+    {
+     "key": "r",
+     "text": "the loop's budget exit, exit (3)"
+    },
+    {
+     "key": "s",
+     "text": "03 state and 06 verification: the workspace and the verifier"
+    },
+    {
+     "key": "t",
+     "text": "07 hooks: a deterministic block before a tool call"
+    }
+   ],
+   "answer": {
+    "a": "p",
+    "b": "q",
+    "c": "r",
+    "d": "s"
+   },
+   "explanation": "`memory.py` is the ratchet, `observe.py` the tracer, `cost.py` the meter whose ceiling is the budget exit, and `core.py` holds the workspace and the verifier. No module holds hooks: they are a seam.",
+   "hints": [
+    "The file names say most of it; the odd one out is the component nothing in the companion implements."
+   ]
+  },
+  {
+   "id": "hrn-026-q03",
+   "type": "mcq",
+   "track": "intuition",
+   "difficulty": 2,
+   "outcomes": [
+    "o2"
+   ],
+   "section": "3",
+   "est_minutes": 2,
+   "tags": [
+    "fresh-context",
+    "ratchet"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "In the demo run, the generator writes a buggy `add` on call 1, passes `add` on call 2, then starts task `is_even` on call 3. What does the driver hand the generator on call 3?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "The task `is_even`, no failure report, and one rule",
+     "correct": true,
+     "feedback": "Right. `feedback` is reset to `None` at the top of each task, while the ratchet's rule is rendered into every later context."
+    },
+    {
+     "key": "b",
+     "text": "The task `is_even`, the failure report from `add`, and one rule",
+     "correct": false,
+     "feedback": "The report belongs to the task that produced it: `build()` sets `feedback = None` before a new task's first attempt."
+    },
+    {
+     "key": "c",
+     "text": "The task `is_even`, no failure report, and no rules",
+     "correct": false,
+     "feedback": "Rules are not dropped at a task boundary; the ratchet carries them into every later attempt and task."
+    },
+    {
+     "key": "d",
+     "text": "The transcripts of calls 1 and 2, so it can learn from them",
+     "correct": false,
+     "feedback": "Nothing else reaches the generator: its context is the task, the last report on that task, and the rendered rules."
+    }
+   ],
+   "explanation": "The capstone's context is three arguments. The failure report crosses attempts of one task and stops at the task boundary; the rules, the workspace and the cost meter cross everything.",
+   "hints": [
+    "Look at where `feedback` is set to `None` in `build()`.",
+    "Which of the three arguments does the ratchet supply?"
+   ]
+  },
+  {
+   "id": "hrn-026-q04",
+   "type": "short",
+   "track": "edge",
+   "difficulty": 3,
+   "outcomes": [
+    "o2"
+   ],
+   "section": "6",
+   "est_minutes": 3,
+   "tags": [
+    "ratchet",
+    "persistence"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "A first process runs the demo spec with `Ratchet(path=\"rules.txt\")` and learns the rule about `add`. The process restarts and constructs `Ratchet(path=\"rules.txt\")` again. Why does the restarted run make the same mistake on its first attempt?",
+   "answer": {
+    "model": "Because nothing reads the file back: a new Ratchet starts with an empty rule list, learn() only appends to the file, so the generator's first context has no rule.",
+    "accept": [
+     "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*\\b(it|ratchet|the constructor|ratchet\\(path[^)]*\\))\\s+((does|will|still)\\s+)?(read|reads|load|loads|reload|reloads|restore|restores)\\s+(the\\s+)?(file|rules)\\b(?![\\s\\S]{0,12}\\bback\\b[\\s\\S]{0,20}\\b(but|only)\\b))(?![\\s\\S]*\\bfile\\s+(is|was|gets|got|starts?|begins?|comes up)\\s+((?!not\\b)\\w+\\s+)?(deleted|removed|truncated|overwritten|cleared|empty|blank)\\b)(?![\\s\\S]*(\\b(learn\\(?\\)?|it)\\s+(does\\s*n[o']t|never|did\\s*n[o']t)|\\bnothing|\\bno one|\\bno code)\\s+(\\w+\\s+)?(write|writes|written|append|appends|save|saves|persist)\\w*)(?![\\s\\S]*\\b(generator|driver|model)\\s+(does\\s*n[o']t|did\\s*n[o']t|never|cannot|can't|ignores)\\s*(read|load|use|see)?\\w*\\s+(the\\s+)?(rules|memory|context)\\b)(?=(?:\\S+\\s+){3})(?=[\\s\\S]*(\\b(nothing|never|no(thing| code| one)?|not|n't|without)\\b[\\s\\S]{0,40}\\b(read|reads|reading|load\\w*|reload\\w*|restor\\w*)\\b|\\b(starts?|begins?|constructed|created|comes up)\\b[\\s\\S]{0,30}\\b(empty|no rules|zero rules|blank)\\b|\\b(empty|blank)\\s+(rule\\s+)?(list|rules)\\b|\\brules\\s*(list\\s*)?(is|=)\\s*(empty|\\[\\])|\\b(only|just)\\s+(appends?|writes?|mirrors?)\\b|\\bwrite-only\\b))[\\s\\S]*\\S"
+    ]
+   },
+   "explanation": "`learn()` mirrors each new rule to the file, but nothing in `memory.py` or `driver.py` ever reads it. A new `Ratchet(path=...)` starts with `rules=[]`, so the first attempt's context has no rule and the bug comes back; `snippets/spec_run.py` shows the restart also appends the same rule a second time. Only a caller that reads the file back into `Ratchet(rules=..., path=...)` restores the learning.",
+   "hints": [
+    "What does `Ratchet.__init__` put in `rules` when only a path is given?",
+    "Which method of the class ever opens the file for reading?"
+   ]
+  },
+  {
+   "id": "hrn-026-q05",
+   "type": "numeric",
+   "track": "run",
+   "difficulty": 3,
+   "outcomes": [
+    "o2"
+   ],
+   "section": "6",
+   "est_minutes": 3,
+   "tags": [
+    "ratchet",
+    "persistence"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Process A runs the demo spec with `Ratchet(path=p)` on an empty file and learns one rule, after one failed attempt on `add`. Process B then constructs `Ratchet(path=p)` on the same file and runs the same spec with the same scripted generator. How many lines does the file hold after process B?",
+   "answer": {
+    "value": 2,
+    "tolerance": 0,
+    "unit": "lines"
+   },
+   "precision_note": "Printed by part 2 of snippets/spec_run.py: 1 line after the first process, 2 (1 distinct) after the restart. `learn()` checks only the in-memory list, which B starts empty, so B appends the same rule again. Answering 1 assumes it de-duplicates against the file.",
+   "explanation": "B starts with no rules, so its first attempt on `add` fails exactly as A's did, and `learn()` finds the rule absent from its empty list and appends it to the file a second time. The file grows with every restart while the learning never comes back.",
+   "hints": [
+    "Does B's ratchet know what the file already says?",
+    "Against what does `learn()` check whether a rule is new?"
+   ]
+  },
+  {
+   "id": "hrn-026-q06",
+   "type": "mcq",
+   "track": "edge",
+   "difficulty": 3,
+   "outcomes": [
+    "o3"
+   ],
+   "section": "3",
+   "est_minutes": 2,
+   "tags": [
+    "exits",
+    "stop-reasons"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "The companion's `build()` stops with `stop_reason == \"task_failed\"`. Which of the series' four exits is that, and what is the catch?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "Exit (2), `max_iters`, counted per task, so a long spec has no run-wide iteration cap",
+     "correct": true,
+     "feedback": "Right. `max_attempts` bounds one task; a fifty-task spec at three attempts may run 150 attempts, and only the budget bounds the whole run."
+    },
+    {
+     "key": "b",
+     "text": "Exit (4), `no_progress`, because the same wrong file came back on every one of the attempts",
+     "correct": false,
+     "feedback": "The companion has no no-progress check: it fires after `max_attempts` failures whether or not the candidates changed."
+    },
+    {
+     "key": "c",
+     "text": "Exit (3), `budget`, because the failed attempts used up the spend",
+     "correct": false,
+     "feedback": "`budget` is its own stop reason, checked by `cost.over_budget()` before each attempt."
+    },
+    {
+     "key": "d",
+     "text": "Exit (1), `completed`, because `completed` and `commits` are returned intact",
+     "correct": false,
+     "feedback": "Returning the verified work makes the stop resumable; it does not make it a success. `succeeded` is `False`."
+    }
+   ],
+   "explanation": "`task_failed` fires when one task has used all its attempts: an iteration cap, scoped to the task. The run's only overall bound is the budget, and exit (4) is absent altogether.",
+   "hints": [
+    "Which counter does `max_attempts` reset, and when?",
+    "Is anything in `build()` comparing one candidate with the last?"
+   ]
+  },
+  {
+   "id": "hrn-026-q07",
+   "type": "numeric",
+   "track": "workout",
+   "difficulty": 2,
+   "outcomes": [
+    "o3"
+   ],
+   "section": "3",
+   "est_minutes": 2,
+   "tags": [
+    "exits",
+    "iteration-cap"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "A spec has 40 tasks and the driver runs with `max_attempts=4` and a budget too large ever to trip. At most how many generator calls can `build()` make before it stops?",
+   "answer": {
+    "value": 160,
+    "tolerance": 0,
+    "unit": "calls"
+   },
+   "precision_note": "tasks x max_attempts = 40 x 4 = 160, reached when every task passes on its fourth attempt (a task failing all four stops the run). Reading the cap as run-wide gives 4.",
+   "explanation": "The cap resets for every task, so the worst case is every task needing all its attempts and passing on the last one: 160 calls. That is the arithmetic behind the post's 150 attempts for fifty tasks at three.",
+   "hints": [
+    "Is `max_attempts` counted per run or per task?"
+   ]
+  },
+  {
+   "id": "hrn-026-q08",
+   "type": "code",
+   "track": "run",
+   "difficulty": 4,
+   "outcomes": [
+    "o3"
+   ],
+   "section": "3",
+   "est_minutes": 15,
+   "tags": [
+    "no-progress",
+    "exits",
+    "generator"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "The capstone has no exit (4). `no_progress_guard(generator)` wraps a capstone generator and should raise `NoProgress(task.name)` when a call returns exactly the files that the previous call for the same task name returned. The starter compares each candidate with the last candidate of any task. Fix it so the comparison is per task name and survives a generator that reuses and mutates one dictionary.",
+   "kind": "fix",
+   "language": "python",
+   "starter": "class NoProgress(Exception):\n    \"\"\"Raised when a generator hands back the same candidate twice in a row for one task.\"\"\"\n\n\ndef no_progress_guard(generator):\n    \"\"\"Wrap a capstone generator, called as generator(task, feedback, memory) and returning a dict of files.\n\n    Raise NoProgress(task.name) when a call returns exactly the files that the previous call for the same\n    task name returned; otherwise return the files unchanged.\"\"\"\n    last = None\n\n    def wrapped(task, feedback, memory):\n        nonlocal last\n        files = generator(task, feedback, memory)\n        if files == last:\n            raise NoProgress(task.name)\n        last = files\n        return files\n\n    return wrapped\n",
+   "solution": "class NoProgress(Exception):\n    \"\"\"Raised when a generator hands back the same candidate twice in a row for one task.\"\"\"\n\n\ndef no_progress_guard(generator):\n    \"\"\"Wrap a capstone generator, called as generator(task, feedback, memory) and returning a dict of files.\n\n    Raise NoProgress(task.name) when a call returns exactly the files that the previous call for the same\n    task name returned; otherwise return the files unchanged.\"\"\"\n    last = {}                                   # task name -> a copy of that task's previous candidate\n\n    def wrapped(task, feedback, memory):\n        files = generator(task, feedback, memory)\n        if task.name in last and files == last[task.name]:\n            raise NoProgress(task.name)\n        last[task.name] = dict(files)           # a copy: a generator may reuse and mutate one dict\n        return files\n\n    return wrapped\n",
+   "tests": "from dataclasses import dataclass\n\n\n@dataclass\nclass Task:\n    \"\"\"Shaped like the companion's Task: a dataclass, so unhashable; only its name identifies the task.\"\"\"\n    name: str\n    verify: object = None\n\nBUG = {\"calc.py\": \"def add(a, b):\\n    return a - b\\n\"}\nOK = {\"calc.py\": \"def add(a, b):\\n    return a + b\\n\"}\n\n\ndef scripted(outputs):\n    \"\"\"A generator that returns the next item of outputs and records what it was handed.\"\"\"\n    seen = []\n    it = iter(outputs)\n\n    def gen(task, feedback, memory):\n        seen.append((task.name, feedback, memory))\n        return next(it)\n    return gen, seen\n\n\ndef raises(fn, *args):\n    try:\n        fn(*args)\n    except NoProgress as exc:\n        return str(exc)\n    return None\n\n\n# 1. the same candidate twice in a row on one task stops the run, naming the task\ngen, _ = scripted([dict(BUG), dict(BUG)])\ng = no_progress_guard(gen)\nassert g(Task(\"add\"), None, \"\") == BUG\nassert raises(g, Task(\"add\"), \"add(2, 3) == -1, expected 5\", \"\") == \"add\", \"a repeat on one task must raise\"\n\n# 2. a changed candidate is progress, and the files come back unchanged with the arguments passed through\ngen, seen = scripted([dict(BUG), dict(OK)])\ng = no_progress_guard(gen)\ng(Task(\"add\"), None, \"\")\nassert g(Task(\"add\"), \"report\", \"rules\") == OK\nassert seen[1] == (\"add\", \"report\", \"rules\")\n\n# 3. identical files on two different tasks are not a repeat\ngen, _ = scripted([{\"a.py\": \"x = 1\\n\"}, {\"a.py\": \"x = 1\\n\"}])\ng = no_progress_guard(gen)\ng(Task(\"first\"), None, \"\")\nassert raises(g, Task(\"second\"), None, \"\") is None, \"the comparison is per task\"\n\n# 4. per task, across interleaving: add, then is_even, then add again with add's old candidate\ngen, _ = scripted([dict(BUG), {\"parity.py\": \"def is_even(n):\\n    return n % 2 == 0\\n\"}, dict(BUG)])\ng = no_progress_guard(gen)\ng(Task(\"add\"), None, \"\")\ng(Task(\"is_even\"), None, \"\")\nassert raises(g, Task(\"add\"), \"report\", \"\") == \"add\", \"the previous call for the same task decides\"\n\n# 5. a new Task object with the same name is the same task\ngen, _ = scripted([dict(OK), dict(OK)])\ng = no_progress_guard(gen)\ng(Task(\"add\"), None, \"\")\nassert raises(g, Task(\"add\"), None, \"\") == \"add\"\n\n# 6. the same file name with new content is progress\ngen, _ = scripted([{\"calc.py\": \"v1\"}, {\"calc.py\": \"v2\"}, {\"calc.py\": \"v3\"}])\ng = no_progress_guard(gen)\nassert [raises(g, Task(\"add\"), None, \"\") for _ in range(3)] == [None, None, None]\n\n# 7. a generator that reuses one dict and mutates it is still compared by content\nshared = {}\n\n\ndef reuse(task, feedback, memory):\n    shared[\"calc.py\"] = \"attempt \" + str(len(memory))\n    return shared\n\n\ng = no_progress_guard(reuse)\nassert raises(g, Task(\"add\"), None, \"\") is None\nassert raises(g, Task(\"add\"), None, \"x\") is None, \"keep a copy, not a reference to the generator's dict\"\nassert raises(g, Task(\"add\"), None, \"y\") == \"add\", \"same content as the previous call: a repeat\"\n\n# 8. only the previous call counts: an older candidate coming back after a different one is not a repeat\ngen, _ = scripted([dict(BUG), dict(OK), dict(BUG)])\ng = no_progress_guard(gen)\ng(Task(\"add\"), None, \"\")\ng(Task(\"add\"), \"report\", \"\")\nassert raises(g, Task(\"add\"), \"report\", \"\") is None, \"compare with the previous call only\"\nprint(\"all tests passed\")\n",
+   "explanation": "The guard has to remember one previous candidate per task name, so that two tasks that happen to write the same file are not mistaken for a stall, and it has to store a copy, because a dictionary compared with a reference to itself always looks unchanged. With it, the ratchet-off arm of the demo raises on its second attempt at `add` instead of spending a third.",
+   "hints": [
+    "How many previous candidates does the guard need to remember: one in total, or one per task?",
+    "What happens to a stored reference when the generator mutates the dictionary it returned last time?"
+   ]
+  },
+  {
+   "id": "hrn-026-q09",
+   "type": "mcq",
+   "track": "intuition",
+   "difficulty": 2,
+   "outcomes": [
+    "o4"
+   ],
+   "section": "7",
+   "est_minutes": 2,
+   "tags": [
+    "harness-ab",
+    "callable"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "The demo A/B holds the scripted generator fixed: with the ratchet on, 2 of 2 tasks resolve; with it off, 0 of 2; both arms spend 0.0193 dollars. What is the right reading?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "A 100-point lift that is not callable: two discordant pairs give a sign test p = 0.50",
+     "correct": true,
+     "feedback": "Right. With two discordant pairs even a clean sweep has p = 2 x (1/2)^2 = 0.50; the demo shows the mechanism, not a result."
+    },
+    {
+     "key": "b",
+     "text": "A firm result, because the model was held fixed",
+     "correct": false,
+     "feedback": "Holding the model fixed is necessary, not sufficient; two tasks cannot call a difference, and the scripted generator was built to obey the rule."
+    },
+    {
+     "key": "c",
+     "text": "Callable, because the lift is the largest possible",
+     "correct": false,
+     "feedback": "Size of lift does not substitute for the number of discordant pairs; the sign test needs six all one way to reach p < 0.05."
+    },
+    {
+     "key": "d",
+     "text": "Invalid as an A/B, because two arms that resolve different numbers of tasks should spend different amounts",
+     "correct": false,
+     "feedback": "Equal spend is a property of the meter's fixed tokens per attempt and the three attempts both arms used, not a flaw in the design."
+    }
+   ],
+   "explanation": "In post 22's vocabulary, the paired result is two discordant tasks favouring the ratchet, and a two-sided sign test cannot get below 0.50 on two pairs. The comparison is shaped correctly and far too small to call.",
+   "hints": [
+    "Count the discordant pairs, then ask the smallest p a sign test can give on that count."
+   ]
+  },
+  {
+   "id": "hrn-026-q10",
+   "type": "numeric",
+   "track": "workout",
+   "difficulty": 3,
+   "outcomes": [
+    "o4"
+   ],
+   "section": "7",
+   "est_minutes": 3,
+   "tags": [
+    "harness-ab",
+    "sign-test"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "A larger A/B with the model held fixed finds five discordant tasks, all five favouring configuration B. What is the two-sided sign-test p-value? Give four decimals.",
+   "answer": {
+    "value": 0.0625,
+    "tolerance": 0.0005,
+    "unit": "p-value"
+   },
+   "precision_note": "$2 \\times (1/2)^5 = 2/32 = 0.0625$, the `sign_test` of snippets/ab_demo.py with 0 wins against 5. The one-sided value, 0.03125, falls outside the tolerance.",
+   "explanation": "Under the null each discordant pair is a fair coin, so five the same way has probability $1/32$ per direction and $2/32 = 0.0625$ two-sided: still not callable at 0.05. Six all one way is the smallest clean sweep that is, at 0.031.",
+   "hints": [
+    "Under no difference, each discordant pair goes either way with probability one half.",
+    "Two-sided means counting a sweep in either direction."
+   ]
+  },
+  {
+   "id": "hrn-026-q11",
+   "type": "numeric",
+   "track": "workout",
+   "difficulty": 2,
+   "outcomes": [
+    "o5"
+   ],
+   "section": "8",
+   "est_minutes": 4,
+   "tags": [
+    "cost-meter",
+    "prompt-caching"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "The capstone's `CostMeter` prices fresh input at 3 dollars and output at 15 dollars per million tokens, and cached input at 0.1 times the input rate. A run makes 4 attempts, each sending 3,000 input tokens of which 2,000 are the cached prefix, and receiving 200 output tokens. What does the meter report, in dollars? Give four decimals.",
+   "answer": {
+    "value": 0.0264,
+    "tolerance": 5e-05,
+    "unit": "dollars"
+   },
+   "precision_note": "Fresh $4 \\times 1{,}000 \\times 3 = 12{,}000$, cached $8{,}000 \\times 0.3 = 2{,}400$, output $800 \\times 15 = 12{,}000$; total $26{,}400 / 10^6 = 0.0264$, as `CostMeter.cost()` computes. Uncached is 0.0480; pricing all 3,000 as fresh plus the cached read gives 0.0504.",
+   "explanation": "The meter subtracts the cached tokens from the input before pricing the rest at the full rate, then adds the cached tokens at a tenth of it. Output, 6% of the tokens here, is 45% of the money.",
+   "hints": [
+    "Split the input into fresh and cached before pricing it.",
+    "Price each of the three parts at its own rate, then add."
+   ]
+  },
+  {
+   "id": "hrn-026-q12",
+   "type": "numeric",
+   "track": "edge",
+   "difficulty": 4,
+   "outcomes": [
+    "o5"
+   ],
+   "section": "8",
+   "est_minutes": 5,
+   "tags": [
+    "prompt-caching",
+    "cache-writes"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "The same run of 4 attempts (3,000 input tokens each, a 2,000-token cached prefix, 200 output tokens) is priced honestly at the Sonnet 4.6 rates: 3 dollars input and 15 dollars output per million tokens, a five-minute cache write at 1.25 times the input rate. The attempts are each more than five minutes apart, so every attempt writes the prefix and none reads it. By what percentage does this cost more than sending everything uncached?",
+   "answer": {
+    "value": 12.5,
+    "tolerance": 0.1,
+    "unit": "%"
+   },
+   "precision_note": "Writes $4 \\times 2{,}000 \\times 3.75 = 30{,}000$, fresh $12{,}000$, output $12{,}000$: $54{,}000$ against uncached $36{,}000 + 12{,}000 = 48{,}000$; $54/48 - 1 = 12.5\\%$. The same arithmetic as the third write row of snippets/cost_table.py. One write then reads gives 30.6% less.",
+   "explanation": "An expired entry is written again on every attempt, so the 2,000 prefix tokens cost 1.25 times instead of 1 times, and the read discount never arrives. The meter, which has no write term, would report the run as the cheap case.",
+   "hints": [
+    "Each attempt pays the write premium on the prefix and full price on the rest.",
+    "Compare the total with the cost of sending all 3,000 input tokens at 3 dollars per million."
+   ]
+  },
+  {
+   "id": "hrn-026-q13",
+   "type": "short",
+   "track": "edge",
+   "difficulty": 3,
+   "outcomes": [
+    "o5"
+   ],
+   "section": "8",
+   "est_minutes": 3,
+   "tags": [
+    "prompt-caching",
+    "ralph-loop"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "A Ralph driver marks its spec prefix for caching on the five-minute tier, and each attempt takes about eight minutes. Why can caching then cost more than not caching at all?",
+   "answer": {
+    "model": "Because the cache entry expires before the next attempt reads it, so every attempt pays the 1.25 times write premium and never gets the 0.1 times read.",
+    "accept": [
+     "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*\\breads?\\s+(cost|costs|are|is|at|charged at|(is|are)\\s+(charged|billed|priced)\\s+at)\\s+(1\\.25|more|a premium|extra|the write)\\b)(?![\\s\\S]*\\b(writes?|writing)\\s+(is|are)\\s+(free|cheaper|discounted)\\b)(?![\\s\\S]*\\b(below|under|less than|short of|too (short|small)|(does not|doesn't|fails to|not) (meet|reach))\\b[\\s\\S]{0,30}\\b(1,?024|minimum)\\b)(?![\\s\\S]*(\\bnever|\\bnot|n't)\\s+(expir|lapse|time[sd]? out|evict)\\w*)(?=(?:\\S+\\s+){4})(?=[\\s\\S]*\\b(expir\\w*|lapse\\w*|evict\\w*|time[sd]? out|timeout|ttl|gone|cold|stale|miss\\w*|five[- ]minutes?|5[- ]minutes?|8 minutes|eight minutes|longer than|before (it is|it's|the next) (read|used|reused|hit))\\b)(?=[\\s\\S]*\\b(writ\\w*|re-?writ\\w*|premium|1\\.25x?|re-?cach\\w*|re-?stor\\w*|re-?creat\\w*|pay\\w* (again|twice|extra|more))\\b)[\\s\\S]*\\S"
+    ]
+   },
+   "explanation": "A cache read is charged at 0.1 times the input rate, but the prefix must first be written at 1.25 times, and a five-minute entry not read inside its lifetime expires. With eight-minute attempts every attempt writes and none reads, so the prefix costs a quarter more than sending it uncached.",
+   "hints": [
+    "How long does a five-minute entry live without a read?",
+    "What does each attempt pay for the prefix if the entry is always gone?"
+   ]
+  },
+  {
+   "id": "hrn-026-q14",
+   "type": "order",
+   "track": "workout",
+   "difficulty": 2,
+   "outcomes": [
+    "o6"
+   ],
+   "section": "11",
+   "est_minutes": 3,
+   "tags": [
+    "build-order",
+    "seams"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Put the capstone's components in the order the post says to build them, so that each step is testable before the next relies on it.",
+   "items": [
+    {
+     "key": "a",
+     "text": "The ratchet, with its file read back"
+    },
+    {
+     "key": "b",
+     "text": "The loop, with a hard iteration cap"
+    },
+    {
+     "key": "c",
+     "text": "The trace"
+    },
+    {
+     "key": "d",
+     "text": "Evaluation and A/B"
+    },
+    {
+     "key": "e",
+     "text": "The verification gate"
+    },
+    {
+     "key": "f",
+     "text": "The guards: hook, sandbox, approval"
+    },
+    {
+     "key": "g",
+     "text": "The remaining exits: budget and no progress"
+    },
+    {
+     "key": "h",
+     "text": "Durable state and the reset"
+    }
+   ],
+   "answer": [
+    "b",
+    "e",
+    "g",
+    "c",
+    "f",
+    "h",
+    "a",
+    "d"
+   ],
+   "explanation": "Terminate first, then make done mean verified, then stop for every nameable reason, then make it observable, guard it, make it resumable, let it learn, and measure last. The rule behind it: each component is observable before it is relied upon.",
+   "hints": [
+    "Which step must exist before anything else can be tested at all?",
+    "Measurement comes last because it measures everything above it."
+   ]
+  },
+  {
+   "id": "hrn-026-q15",
+   "type": "mcq",
+   "track": "intuition",
+   "difficulty": 3,
+   "outcomes": [
+    "o6"
+   ],
+   "section": "5",
+   "est_minutes": 2,
+   "tags": [
+    "seams",
+    "sandbox"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Where in the capstone's `build()` does the sandbox seam belong?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "Around `task.verify(workspace)`, where the evaluator executes model-written code",
+     "correct": true,
+     "feedback": "Right. `python_function_verifier` runs `exec` on generated source in the driver's own process; that is the execution a sandbox has to bound."
+    },
+    {
+     "key": "b",
+     "text": "Before `workspace.files.update(files)`, where the generated files land in the workspace",
+     "correct": false,
+     "feedback": "That is the pre-tool hook's place: deciding whether a write may happen. Nothing executes there."
+    },
+    {
+     "key": "c",
+     "text": "Before `commits.append(...)`, where work becomes durable",
+     "correct": false,
+     "feedback": "That is the approval gate's place, holding an irreversible commit for a person."
+    },
+    {
+     "key": "d",
+     "text": "Around `plan(spec)`, where the spec is decomposed",
+     "correct": false,
+     "feedback": "The planner runs no generated code; its missing check is a person reading the spec, not a sandbox."
+    }
+   ],
+   "explanation": "Each guard sits where its risk is: the hook before a write, the approval before a commit, and the sandbox around the only line that runs generated code, the verifier's `exec`.",
+   "hints": [
+    "Which line of `build()` causes model-written code to run?",
+    "Match each guard to the risk it bounds."
+   ]
+  },
+  {
+   "id": "hrn-026-q16",
+   "type": "mcq",
+   "track": "edge",
+   "difficulty": 4,
+   "outcomes": [
+    "o3"
+   ],
+   "section": "9",
+   "est_minutes": 3,
+   "tags": [
+    "tests",
+    "blind-spots"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "prompt": "Which of these regressions in the companion would leave all eight of its tests green?",
+   "select": "single",
+   "options": [
+    {
+     "key": "a",
+     "text": "The ratchet's rule arrives one attempt late, so `add` passes on attempt three, not two",
+     "correct": true,
+     "feedback": "Right. The ratchet test's comment says it took a second attempt, but it asserts only success and that a rule exists; with `max_attempts=3` a third attempt still passes."
+    },
+    {
+     "key": "b",
+     "text": "`learn()` stops ignoring an exact repeat of a rule",
+     "correct": false,
+     "feedback": "`test_ratchet_is_append_only_and_dedupes` asserts that learning the same rule twice returns `False` and keeps one copy."
+    },
+    {
+     "key": "c",
+     "text": "The budget check at the top of each attempt is deleted, so a run can spend past its ceiling",
+     "correct": false,
+     "feedback": "`test_budget_ceiling_stops_the_run` asserts `stop_reason == \"budget\"` on a tiny ceiling."
+    },
+    {
+     "key": "d",
+     "text": "Each commit snapshots only the files of its own task",
+     "correct": false,
+     "feedback": "`test_commits_snapshot_growing_workspace` asserts the second commit carries both files."
+    }
+   ],
+   "explanation": "A suite is blind in the shape of its assertions. The ratchet test pins that a rule is learned and the run succeeds, not how many attempts it took, so a slower ratchet passes. The same blindness lets the trace test pass with every `ok` it records inverted.",
+   "hints": [
+    "For each option, find the test that would have to fail.",
+    "Read what the ratchet test asserts, not what its comment says."
+   ]
+  },
+  {
+   "id": "hrn-026-q17",
+   "type": "long",
+   "track": "connect",
+   "difficulty": 4,
+   "outcomes": [
+    "o6"
+   ],
+   "section": "5",
+   "est_minutes": 15,
+   "tags": [
+    "seams",
+    "sandbox",
+    "verification"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "connects": [
+    "hrn-024",
+    "hrn-025",
+    "hrn-014"
+   ],
+   "prompt": "The capstone's verifier runs `exec(compile(source, path, \"exec\"), ns)` on generated source in the driver's own process. Explain why wrapping it in Build #2's `Sandbox` would not retire that risk, and describe what would, saying what each part of the replacement bounds.",
+   "kind": "critique",
+   "solution": "**Why Build #2's sandbox does not help.** Build #2's `Sandbox` is a check on the command strings of a `bash` tool: it refuses shell control characters, a first token not on its allow-list, any `..`, and absolute paths outside the jail, and it runs the command without a shell. The verifier is not a bash command; it is an in-process `exec`. To run it through the sandbox at all, the verifier would have to become a command like `python verify.py`, which means putting an interpreter on the allow-list, and the module's own note says that allow-listing an interpreter allow-lists everything it can run. The jail is also a path-token filter, not an operating-system boundary: it never sets the subprocess's working directory or environment.\n\n**What would.** Run the verifier out of process, as a separate interpreter launched by the harness, so a crash or a hostile import cannot take the driver with it; give it a timeout, so a candidate with an infinite loop cannot stall the run; and run that process inside one of post 14's isolation tiers (a container or a microVM for code the model wrote), so the filesystem, network and credentials it can reach are bounded by the operating system rather than by string checks. The harness then reads only the verdict and the report back.\n\n**Why it comes first.** The `exec` is safe only while the generator is a script whose output is a literal; the moment a model writes the source, it is the build's one remote-execution path, and no test in the suite gives it hostile input.",
+   "rubric": [
+    {
+     "criterion": "States that Build #2's Sandbox checks bash command strings, so the in-process exec never passes through it",
+     "points": 2
+    },
+    {
+     "criterion": "Notes that routing the verifier through it would need an interpreter on the allow-list, which allow-lists everything",
+     "points": 2
+    },
+    {
+     "criterion": "Proposes running the verifier out of process with a timeout",
+     "points": 2
+    },
+    {
+     "criterion": "Puts that process inside an operating-system isolation tier (container or microVM), saying what it bounds",
+     "points": 2
+    },
+    {
+     "criterion": "Explains why this seam is first: the exec is safe only while the generator is scripted",
+     "points": 1
+    }
+   ],
+   "answer_length": "half a page",
+   "explanation": "The trap is reading 'sandbox' as one thing. Build #2's is a filter on a tool's command line; the capstone's risk is code executed inside the harness itself, which needs a process boundary, a clock and an operating-system boundary.",
+   "hints": [
+    "What kind of input does Build #2's `Sandbox.check` inspect?",
+    "What would the verifier have to become to pass through it, and what does the module's note say about that?"
+   ]
+  },
+  {
+   "id": "hrn-026-q18",
+   "type": "long",
+   "track": "connect",
+   "difficulty": 5,
+   "outcomes": [
+    "o6",
+    "o2",
+    "o5"
+   ],
+   "section": "10",
+   "est_minutes": 25,
+   "tags": [
+    "deployment",
+    "design",
+    "seams"
+   ],
+   "status": "reviewed",
+   "updated": "2026-10-16",
+   "connects": [
+    "hrn-018",
+    "hrn-019",
+    "hrn-023"
+   ],
+   "prompt": "A team wants to run the capstone unattended as a service: an hourly timer starts `build()` on the repository's spec with a live model as the generator, `Ratchet(path=\"rules.txt\")` on a file in the repository, and the default `CostMeter` with a budget. Using only what the companion does today, name the four changes the service needs before its first unattended run, and for each say what goes wrong without it.",
+   "kind": "design",
+   "solution": "**1. Move the verifier out of process, under a timeout, inside an isolation tier.** Today `python_function_verifier` execs the model's source in the driver's process. With a live model, the first candidate that imports `os` and runs a command does so with the service's permissions, and no test would have noticed.\n\n**2. Read the rules file back at start, de-duplicated.** `Ratchet(path=...)` only appends; a new instance starts empty. Each hourly run would repeat every mistake earlier runs paid for, and append the same rules again, so the file grows while the learning never returns. Construct `Ratchet(rules=..., path=...)` from the file's distinct lines.\n\n**3. Make the trigger resume, not restart.** An hourly timer that calls `build()` from the top re-runs completed tasks and throws away the resumable position: `build()` returns `completed` and `commits` on a guard exit. The trigger should hand the driver the spec, the branch, the rules file and the last stop reason, and start from the first incomplete task.\n\n**4. Fix the meter before trusting the ceiling.** The meter prices every attempt as a cache read and has no write term, so on attempts more than five minutes apart it under-reports by more than the whole caching saving; and its check is spent-against-ceiling, so the crossing attempt still runs. Add the write premium and reserve an estimate for the next attempt before making it (post 19's reserve check).\n\nA strong answer may add exit (4): with a live model a repeated wrong candidate burns every attempt of a task, and a per-task check against the previous candidate stops it sooner.",
+   "rubric": [
+    {
+     "criterion": "Moves the verifier out of process with a timeout and operating-system isolation, citing the in-process exec",
+     "points": 2
+    },
+    {
+     "criterion": "Reads the rules file back at start, de-duplicated, explaining that the ratchet never reloads and that restarts duplicate lines",
+     "points": 2
+    },
+    {
+     "criterion": "Makes the hourly trigger resume from the last position rather than restart the spec",
+     "points": 2
+    },
+    {
+     "criterion": "Corrects the meter: the missing cache-write term and the ceiling that does not reserve for the next attempt",
+     "points": 2
+    },
+    {
+     "criterion": "Ties each change to an observable failure of the service without it",
+     "points": 1
+    },
+    {
+     "criterion": "Adds a no-progress exit or another defensible fifth change, justified from the companion's behaviour",
+     "points": 1
+    }
+   ],
+   "answer_length": "one page",
+   "explanation": "Each change answers a property of the companion that is harmless offline and dangerous live: execution inside the harness, a write-only memory, a restart that discards position, and a meter that cannot see the most expensive cache case.",
+   "hints": [
+    "Go module by module: which of `core.py`, `memory.py`, `driver.py` and `cost.py` assumes the generator is a script or the process never restarts?",
+    "For the meter, ask what it charges the first attempt for the cached prefix.",
+    "For the trigger, ask what `build()` returns on a guard exit and who uses it."
+   ]
+  }
+ ]
+}

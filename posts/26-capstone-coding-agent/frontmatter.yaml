@@ -1,39 +1,28 @@
 id: hrn-026
 slug: 26-capstone-coding-agent
-title: "26 · Capstone — a long-running, trusted coding-agent harness"
-
-description: >
-  This is the whole series in one machine: a coding agent that takes a spec, runs it to
-  completion across many fresh contexts, separates planning from generation from
-  evaluation, learns from each failure, meters its own cost, and records everything it
-  does.
-
-author: "Ajay"
+title: "26 - Capstone: a long-running, trusted coding-agent harness"
+summary: "The series assembled into one coding agent: a driver that runs a spec across fresh contexts with an independent evaluator, a ratchet, a cost ceiling and a trace, and names every seam it leaves open."
 date: 2026-10-14
-last_modified: 2026-09-05
-
-tags: [harness-engineering, builds, capstone, long-horizon, coding-agent]
-
-keywords:
-  - harness engineering
-  - builds
-  - capstone
-  - long horizon
-  - coding agent
-  - independent evaluator
-  - approval gate
-  - cost meter
-  - initialiser agent
-
-category: Production and builds
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part V - Production and builds"
-
+level: advanced
+reading_time: 36
+tags: [harness-engineering, production-and-builds, capstone, coding-agent, long-horizon, ratchet, harness-ab]
 hero: diagrams/01-capstone-architecture.svg
-hero_alt: "The full capstone architecture: a spec feeds a Ralph driver that runs each task through planner, generator, and independent evaluator; tool calls pass through hooks, sandbox, and approval; the workspace and ratchet persist across tasks; a tracer and cost meter run throughout; and traces feed an evaluation-and-fix improvement loop."
-
-reading_time: 43
-toc: true
-draft: false
-canonical_url: ""
-prev: ../25-build-harness-plus/
+prerequisites: [hrn-025, hrn-010, hrn-012, hrn-018]
+code: required
+outcomes:
+  - id: o1
+    text: "Run the capstone's driver on a spec across fresh contexts, and say which of the eleven components each module of the companion holds."
+  - id: o2
+    text: "Follow one failure from the verifier's report to a learned rule and the attempt that passes, and say why a restart forgets a rule the rules file still holds."
+  - id: o3
+    text: "Map the companion's three stop reasons onto the four exits, and read from its eight tests what each pins and what it leaves unseen."
+  - id: o4
+    text: "Run a harness A/B with the model held fixed, read it as resolved rate against cost, and say why a two-task set cannot be called."
+  - id: o5
+    text: "Price a run from the cost meter with and without its cached prefix, and name the cache writes the meter leaves out."
+  - id: o6
+    text: "Name every seam the capstone leaves open and where each wires into the driver, describe its deployment shape, and order the work to ship next."
+recommended: [hrn-021, hrn-022, hrn-023]
