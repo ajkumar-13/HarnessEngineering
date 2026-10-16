@@ -1,35 +1,25 @@
 id: hrn-024
 slug: 24-build-minimal-harness
-title: "24 · Build #1 — a minimal agent harness from scratch"
-
-description: >
-  A real, useful harness is about five hundred lines once you have internalised Parts I to
-  IV. This post assembles one from four primitives already covered: the agent loop, a
-  schema-validated tool registry, a verification gate, and layered stop conditions.
-
-author: "Ajay"
+title: "24 - Build #1: a minimal agent harness from scratch"
+summary: "The series' first build assembles a loop, a schema-validated tool registry, a verification gate and four layered exits into 520 lines that run offline, accept only verified work and stop for a reason they can name."
 date: 2026-09-30
-last_modified: 2026-09-05
-
-tags: [harness-engineering, builds, from-scratch, loop, verification]
-
-keywords:
-  - harness engineering
-  - builds
-  - from scratch
-  - loop
-  - verification
-
-category: Production and builds
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part V - Production and builds"
-
+level: intermediate
+reading_time: 34
+tags: [harness-engineering, production-and-builds, builds, from-scratch, verification, stop-conditions, testing]
 hero: diagrams/01-minimal-architecture.svg
-hero_alt: "A block diagram of Build #1: the loop at the centre calls the model and dispatches tool calls through a schema-validated registry to a bash and a write-file tool; a candidate final answer goes to a verification gate that either finishes the run as verified or injects a failure report back into the loop, with four layered stop conditions around it."
-
-reading_time: 39
-toc: true
-draft: false
-canonical_url: ""
-prev: ../23-economics-haas/
-next: ../25-build-harness-plus/
+prerequisites: [hrn-003, hrn-006, hrn-011, hrn-019]
+code: required
+outcomes:
+  - id: o1
+    text: "Assemble a harness from a loop, a schema-validated tool registry, a verification gate and layered exits, injecting every expensive dependency as a seam."
+  - id: o2
+    text: "Gate the final-answer exit so that a run ends completed only on verified work, and feed each rejection back as a report the model can act on."
+  - id: o3
+    text: "Place the budget and no-progress checks inside the loop, and bound the overrun of a budget that is checked after each call."
+  - id: o4
+    text: "Prove each exit fires with a scripted model, and name what an offline suite structurally cannot see."
+  - id: o5
+    text: "Take the harness live by swapping its seams, and name what a minimal build leaves out and which post adds each piece."
