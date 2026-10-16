@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hrn-04-orchestration-decision-title" aria-describedby="hrn-04-orchestration-decision-desc">
+<title id="hrn-04-orchestration-decision-title">Three gates stand between a task and a second agent</title>
+<desc id="hrn-04-orchestration-decision-desc">A task meets three purple gates in order: are the subtasks independent and parallel; is the fragmentation acceptable; does the gain cover the coordination tax. A no at any gate falls through to one agent with sub-tasks, the default. A yes at all three reaches orchestration, which carries two rules: one writer unless the claiming and worktrees of post 17 exist, and a partial-failure policy chosen before dispatch. Isolation enters orchestration from above without passing the gates, because it buys containment, not throughput.</desc>
+<style>
+  :root {
+    --hrn-bg: #FAFAF7;
+    --hrn-surface: #FFFFFF;
+    --hrn-ink: #1A1A1A;
+    --hrn-ink-muted: #5C5C5C;
+    --hrn-ink-subtle: #9A9A9A;
+    --hrn-border: #D9D9D4;
+    --hrn-primary: #5B7FBF;
+    --hrn-accent: #D98E5F;
+    --hrn-success: #5C9E78;
+    --hrn-warn: #B8895A;
+    --hrn-alert: #C66B5E;
+    --hrn-neutral-1: #EAEAE4;
+    --hrn-neutral-2: #CFCFC8;
+    --hrn-neutral-3: #8E8E88;
+    --hrn-on-fill: #FFFDF9;
+    --hrn-on-accent: #1A1A1A;
+    --hrn-grid: rgba(26, 26, 26, 0.06);
+    --hrn-rule: #8E8E88;
+    --hrn-arrow: #6E6E68;
+    --hrn-neutral-soft: #F2F2EE;
+    --hrn-blue: #0072B2;
+    --hrn-blue-ink: #005A8C;
+    --hrn-blue-soft: #E3F0F8;
+    --hrn-blue-line: #9CC6E0;
+    --hrn-orange: #C98500;
+    --hrn-orange-ink: #8A5B00;
+    --hrn-orange-soft: #FBF0D9;
+    --hrn-orange-line: #E5C27A;
+    --hrn-green: #008F68;
+    --hrn-green-ink: #006B4E;
+    --hrn-green-soft: #DFF3EC;
+    --hrn-green-line: #8FCDB8;
+    --hrn-red: #A8322A;
+    --hrn-red-ink: #8F2A23;
+    --hrn-red-soft: #F8E3E1;
+    --hrn-red-line: #DDA49F;
+    --hrn-purple: #A14D8C;
+    --hrn-purple-ink: #833E72;
+    --hrn-purple-soft: #F4E4EF;
+    --hrn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hrn-bg: #0E0F12;
+      --hrn-surface: #16181C;
+      --hrn-ink: #F2F2EE;
+      --hrn-ink-muted: #B4B4AE;
+      --hrn-ink-subtle: #6E6E68;
+      --hrn-border: #2A2D33;
+      --hrn-primary: #8BA8E0;
+      --hrn-accent: #E8B088;
+      --hrn-success: #7FBF9B;
+      --hrn-warn: #D4B58A;
+      --hrn-alert: #D88880;
+      --hrn-neutral-1: #1F2229;
+      --hrn-neutral-2: #2C3038;
+      --hrn-neutral-3: #6E6E68;
+      --hrn-on-fill: #14161A;
+      --hrn-on-accent: #1A1A1A;
+      --hrn-grid: rgba(241, 238, 232, 0.08);
+      --hrn-rule: #6A6D74;
+      --hrn-arrow: #9A9A94;
+      --hrn-neutral-soft: #1C1E23;
+      --hrn-blue: #5AA8E0;
+      --hrn-blue-ink: #7DBBE8;
+      --hrn-blue-soft: #14283A;
+      --hrn-blue-line: #2E5878;
+      --hrn-orange: #E8B040;
+      --hrn-orange-ink: #F0C060;
+      --hrn-orange-soft: #33260F;
+      --hrn-orange-line: #6E5222;
+      --hrn-green: #3CC497;
+      --hrn-green-ink: #62D1AC;
+      --hrn-green-soft: #10302A;
+      --hrn-green-line: #2A6A55;
+      --hrn-red: #E8796E;
+      --hrn-red-ink: #F09A90;
+      --hrn-red-soft: #3A1A18;
+      --hrn-red-line: #7A3A34;
+      --hrn-purple: #D58CC4;
+      --hrn-purple-ink: #E2A6D3;
+      --hrn-purple-soft: #331F2E;
+      --hrn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--hrn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--hrn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--hrn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--hrn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--hrn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--hrn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--hrn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--hrn-surface); stroke: var(--hrn-rule); stroke-width: 1; }
+  .card { fill: var(--hrn-neutral-soft); stroke: var(--hrn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--hrn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--hrn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--hrn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--hrn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--hrn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--hrn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--hrn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-purple-soft { fill: var(--hrn-purple-soft); }
+  .s-ink { stroke: var(--hrn-ink); }
+  .s-purple-line { stroke: var(--hrn-purple-line); }
+</style>
+<defs>
+<marker id="hrn-04-orchestration-decision-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="654">Three gates stand between a task and a second agent</text>
+<text x="40" y="76" class="t-subtitle" data-w="680">A no at any gate keeps the work on one agent; isolation is the one shape bought without them.</text>
+<rect x="40" y="236" width="88" height="48" rx="8" class="card"/>
+<text x="84" y="264" text-anchor="middle" class="t-label" data-w="41">a task</text>
+<rect x="160" y="224" width="168" height="72" rx="8" class="f-purple-soft s-purple-line w1"/>
+<text x="244" y="256" text-anchor="middle" class="t-label" data-w="148">subtasks independent</text>
+<text x="244" y="280" text-anchor="middle" class="t-label" data-w="87">and parallel?</text>
+<path d="M128,260 L157,260" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<path d="M244,296 L244,373" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="256" y="340" class="t-note" data-w="17">no</text>
+<rect x="360" y="224" width="168" height="72" rx="8" class="f-purple-soft s-purple-line w1"/>
+<text x="444" y="256" text-anchor="middle" class="t-label" data-w="95">fragmentation</text>
+<text x="444" y="280" text-anchor="middle" class="t-label" data-w="82">acceptable?</text>
+<path d="M328,260 L357,260" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="344" y="248" text-anchor="middle" class="t-note" data-w="23">yes</text>
+<path d="M444,296 L444,373" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="456" y="340" class="t-note" data-w="17">no</text>
+<rect x="560" y="224" width="168" height="72" rx="8" class="f-purple-soft s-purple-line w1"/>
+<text x="644" y="256" text-anchor="middle" class="t-label" data-w="103">gain covers the</text>
+<text x="644" y="280" text-anchor="middle" class="t-label" data-w="117">coordination tax?</text>
+<path d="M528,260 L557,260" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="544" y="248" text-anchor="middle" class="t-note" data-w="23">yes</text>
+<path d="M644,296 L644,373" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="656" y="340" class="t-note" data-w="17">no</text>
+<path d="M728,260 L773,260" class="flow" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<text x="752" y="248" text-anchor="middle" class="t-note" data-w="23">yes</text>
+<rect x="776" y="224" width="144" height="72" rx="8" class="card"/>
+<text x="848" y="268" text-anchor="middle" class="t-label" data-w="77">orchestrate</text>
+<text x="776" y="328" class="t-note" data-w="97">with two rules:</text>
+<text x="776" y="356" class="t-label" data-w="135">1. one writer, unless</text>
+<text x="776" y="380" class="t-label" data-w="134">post 17's machinery</text>
+<text x="776" y="412" class="t-label" data-w="138">2. failure policy fixed</text>
+<text x="776" y="436" class="t-label" data-w="105">before dispatch</text>
+<rect x="776" y="116" width="144" height="64" rx="8" class="card"/>
+<text x="848" y="144" text-anchor="middle" class="t-label" data-w="84">isolation, for</text>
+<text x="848" y="168" text-anchor="middle" class="t-label" data-w="116">containment only</text>
+<path d="M848,180 L848,221" class="flow d-proj" marker-end="url(#hrn-04-orchestration-decision-arrow)"/>
+<rect x="160" y="376" width="568" height="56" rx="8" class="card"/>
+<rect x="160" y="376" width="568" height="56" rx="8" class="emph s-ink" data-fit="skip"/>
+<text x="444" y="408" text-anchor="middle" class="t-label" data-w="249">one agent with sub-tasks: the default</text>
+<text x="40" y="504" class="t-note" data-w="570">The tax is paid on every run; the gain only on the runs whose work really was parallel.</text>
+</svg>

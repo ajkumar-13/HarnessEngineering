@@ -1,0 +1,747 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-016",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-016-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "harness-vs-orchestrator"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Which of these arrangements is orchestration rather than a single harness?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A planner, a generator and an evaluator, each with its own context, working towards one task's definition of done",
+          "correct": false,
+          "feedback": "Three roles serving one owning loop and one definition of done are still one harness, however many contexts they use."
+        },
+        {
+          "key": "b",
+          "text": "One agent that calls a second model to grade its own draft",
+          "correct": false,
+          "feedback": "An extra model call in service of one task is still a harness; the grader owns no task of its own."
+        },
+        {
+          "key": "c",
+          "text": "Several agents that each own a different task and coordinate through files in one repository",
+          "correct": true,
+          "feedback": "Correct. Agents that own their own tasks and are coordinated as units are orchestration."
+        },
+        {
+          "key": "d",
+          "text": "One agent that spawns a research helper and uses the helper's structured result",
+          "correct": false,
+          "feedback": "A sub-agent inside one harness is still the single-agent shape, because one loop owns the task."
+        }
+      ],
+      "explanation": "The line is ownership: extra model calls or helpers in service of one task are a harness, and agents that own their own tasks, coordinated one level up, are orchestration.",
+      "hints": [
+        "Ask who owns the task in each arrangement."
+      ]
+    },
+    {
+      "id": "hrn-016-q02",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "topologies",
+        "control-flow"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each topology to who writes its control flow. One description on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Single agent"
+        },
+        {
+          "key": "b",
+          "text": "Pipeline"
+        },
+        {
+          "key": "c",
+          "text": "Orchestrator-worker whose lead chooses the split"
+        },
+        {
+          "key": "d",
+          "text": "Swarm"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "The model, inside one owning loop"
+        },
+        {
+          "key": "b",
+          "text": "The engineer, fixed at design time"
+        },
+        {
+          "key": "c",
+          "text": "The engineer writes dispatch and merge; the lead model chooses the split"
+        },
+        {
+          "key": "d",
+          "text": "Nobody centrally; the shared repository coordinates"
+        },
+        {
+          "key": "e",
+          "text": "A human approver, who picks every next step"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "A single agent's model chooses each next step inside its own loop; a pipeline's order is fixed by the engineer; an orchestrator-worker with a splitting lead mixes the two, fixed dispatch and merge code around a split the model picks; a swarm has no central author at all. No topology hands every step to a human approver.",
+      "hints": [
+        "Separate the code paths someone wrote in advance from the choices made at run time.",
+        "In which shape is there no central author at all?"
+      ]
+    },
+    {
+      "id": "hrn-016-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "workflow-vs-agent",
+        "building-effective-agents"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In Anthropic's \"Building effective agents\" (December 2024), how is the orchestrator-workers pattern classified, and why?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "As an agent, because a model decides at run time how the task is split among the workers",
+          "correct": false,
+          "feedback": "The article lists orchestrator-workers among its workflows; a model choosing the split does not by itself hand over the control flow."
+        },
+        {
+          "key": "b",
+          "text": "As a workflow whose subtasks are not pre-defined but determined by the orchestrator from the input",
+          "correct": true,
+          "feedback": "Correct. The dispatch and merge are fixed code paths; what varies is the split, which the orchestrator decides per input."
+        },
+        {
+          "key": "c",
+          "text": "As the same pattern as parallelization, since both run subtasks at once",
+          "correct": false,
+          "feedback": "The article separates them: parallelization's subtasks are pre-defined, orchestrator-workers' are decided at run time."
+        },
+        {
+          "key": "d",
+          "text": "As a swarm, because the workers coordinate with one another rather than through a central model",
+          "correct": false,
+          "feedback": "In orchestrator-workers the workers report to a central model; the article has no swarm pattern."
+        }
+      ],
+      "explanation": "The article files orchestrator-workers among workflows and names its difference from parallelization: subtasks \"aren't pre-defined, but determined by the orchestrator based on the specific input\". A lead that also decides, round after round, whether to re-plan has taken over the control flow, which is the article's definition of an agent.",
+      "hints": [
+        "The article has two categories, workflows and agents, and lists five workflow patterns.",
+        "What differs between parallelization and orchestrator-workers?"
+      ]
+    },
+    {
+      "id": "hrn-016-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "implicit-decisions",
+        "flappy-bird"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In Cognition's Flappy Bird example, a clone of the game is split between two subagents, one building the background and one the bird. Even when each is also given the original task, the two pieces can come back in completely different visual styles. Why?",
+      "answer": {
+        "model": "Every action carries implicit decisions, such as an art style, that the subtasks never stated; the two subagents made those decisions independently, without seeing each other's work, so the pieces conflicted only when they were combined.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(random\\w*|chance|luck|mario)\\b)(?![\\s\\S]*\\b(mistook|misread|misunderstood|misinterpreted)\\s+(its|the|their|a|his|her)\\s+(sub-?)?task)(?![\\s\\S]*\\b(decision|choice|style)s?\\s+(was|were)\\s+(\\w+\\s+){0,1}shared\\b)(?![\\s\\S]*\\bnot\\s+(because\\s+of|due\\s+to|caused\\s+by)\\s+((any|a|the|their)\\s+)?(\\w+\\s+){0,1}(decision|choice)s?\\b)(?![\\s\\S]*\\bsame\\s+(\\w+\\s+){0,1}(decision|choice)s?\\b)(?!\\s*[\\w.-]+(\\s*,\\s*[\\w.-]+)+\\s*\\.?\\s*$)(?=(?:\\S+\\s+){4})(?![\\s\\S]*\\b(no|nothing|never|did ?n[o']t|do ?n[o']t|does ?n[o']t|were ?n[o']t|was ?n[o']t|not)\\s+(\\w+\\s+){0,2}(conflict|clash|contradict|differ|disagree|mismatch)\\w*)(?![\\s\\S]*\\b(were|was|are|is)\\s+(fully\\s+|perfectly\\s+)?(compatible|consistent)\\b)(?=[\\s\\S]*\\b(decision|decided|decide|choice|chose|choose|assum\\w*|style|convention|look|art|design)\\w*)(?=[\\s\\S]*\\b(conflict\\w*|incompatib\\w*|inconsisten\\w*|clash\\w*|mismatch\\w*|disagree\\w*|differ\\w*|contradict\\w*|did ?n[o']t (fit|match)|do ?n[o']t (fit|match)|not (fit|match)\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Sharing the task fixes a misread subtask, not the unwritten choices: each subagent made reasonable decisions about style without seeing the other's, and the incompatibility surfaced only when the pieces met. \"Actions carry implicit decisions, and conflicting decisions carry bad results.\"",
+      "hints": [
+        "What did each subagent decide that its subtask never mentioned?"
+      ]
+    },
+    {
+      "id": "hrn-016-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "one-writer",
+        "cognition-2026"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Walden Yan's April 2026 revision of \"Don't Build Multi-Agents\" narrows the single-agent default rather than retracting it. Which design does the revision permit?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A manager splits the work, children execute, the manager synthesises, and one agent writes",
+          "correct": true,
+          "feedback": "Correct. Map-reduce-and-manage with one writer is the shape the revision says works today."
+        },
+        {
+          "key": "b",
+          "text": "An unstructured swarm of agents negotiating with each other over a shared codebase",
+          "correct": false,
+          "feedback": "The revision calls the unstructured-swarm approach \"mostly a distraction\"."
+        },
+        {
+          "key": "c",
+          "text": "Several agents writing the same files in parallel, reconciled by a merge at the end",
+          "correct": false,
+          "feedback": "Parallel writers are exactly what the revision still refuses; writes stay single-threaded."
+        },
+        {
+          "key": "d",
+          "text": "Nothing beyond a single agent, because the 2025 argument against multi-agent systems stands unchanged",
+          "correct": false,
+          "feedback": "The revision was written after Cognition deployed multi-agent systems, and it narrows the rule to one writer rather than one agent."
+        }
+      ],
+      "explanation": "The revised rule is one writer always, not one agent always: additional agents may \"contribute intelligence rather than actions\", a clean-context reviewer or a stronger model consulted for a second opinion, while writes stay single-threaded.",
+      "hints": [
+        "The revision distinguishes agents that contribute intelligence from agents that act."
+      ]
+    },
+    {
+      "id": "hrn-016-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "read-fan-out",
+        "write-fan-out"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Which of these fan-outs is nearly free to parallelise?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Four agents each counting the error codes in a different log file",
+          "correct": true,
+          "feedback": "Correct. Each reads its own slice and returns an independent result; there is nothing to reconcile."
+        },
+        {
+          "key": "b",
+          "text": "Four agents each adding a feature's settings to one shared configuration file",
+          "correct": false,
+          "feedback": "Each writer makes decisions the others may contradict, so their edits must be reconciled."
+        },
+        {
+          "key": "c",
+          "text": "Four agents each refactoring a different function of one module that shares helpers",
+          "correct": false,
+          "feedback": "Writes to code that shares helpers and conventions have to agree, so this is a write fan-out."
+        },
+        {
+          "key": "d",
+          "text": "Four agents each editing a different section of one design document",
+          "correct": false,
+          "feedback": "One artefact edited by several writers needs consistent terms and decisions across sections."
+        }
+      ],
+      "explanation": "Agents that only read make no decisions that have to agree with each other: their outputs are independent by construction. Every fan-out that writes to shared material is a design problem.",
+      "hints": [
+        "Which task produces results that never have to agree with each other?"
+      ]
+    },
+    {
+      "id": "hrn-016-q07",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "write-fan-out",
+        "merge"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A write fan-out finishes and the lead's key-level merge of the workers' edits reports zero conflicts. Why is that not evidence that the workers agreed?",
+      "answer": {
+        "model": "A key-level merge only catches one key written twice with different values. Workers can encode the same decision under different keys or in different units, such as one session lifetime in seconds and another in minutes; those edits merge cleanly and still disagree in meaning.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess|might be)\\b)(?![\\s\\S]*\\b(can ?not|can't|cannot|never|could ?n[o']t)\\s+(\\w+\\s+){0,2}(disagree|contradict|conflict)\\w*)(?![\\s\\S]*\\b(there\\s+is|there's|there\\s+was|is|was)\\s+no\\s+(real\\s+|actual\\s+)?(disagreement|contradiction)\\b)(?!\\s*[\\w.-]+(\\s*,\\s*[\\w.-]+)+\\s*\\.?\\s*$)(?=(?:\\S+\\s+){4})(?![\\s\\S]*\\b(it|this|that|zero conflicts?|the merge|a clean merge)\\s+(proves|shows|means|guarantees|confirms)\\s+(that\\s+)?(they|the workers|the agents|everyone|all)\\s+(all\\s+)?agree)(?![\\s\\S]*\\b(always|definitely)\\s+agreed?\\b)(?=[\\s\\S]*\\b(different|separate|two|another|other|own|distinct|renamed)\\s+(\\w+\\s+){0,2}(keys?|names?|fields?|units?|settings?|places?|files?|entries)\\b|[\\s\\S]*\\bsame\\s+(\\w+\\s+){0,2}(decision|concept|setting|meaning|thing|value|choice|idea|quantity)\\b)(?=[\\s\\S]*\\b(meaning\\w*|means?|semantic\\w*|disagree\\w*|contradict\\w*|inconsisten\\w*|incompatib\\w*|conflict\\w*|units?|differ(s|ed)?|different\\s+(\\w+\\s+){0,2}(things?|values?|meanings?|numbers?|durations?|lifetimes?))\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "In the post's run two shared keys were written twice and the merge saw them, but the session lifetime came back as `http.session_ttl_s = 3600` and `cache.session_minutes = 30`, an hour against half an hour under different keys, which merged without complaint. The costly disagreement is the one that merges cleanly.",
+      "hints": [
+        "What exactly does a key-level merge compare?",
+        "Could one decision be written down under two different keys?"
+      ]
+    },
+    {
+      "id": "hrn-016-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "prompt-caching",
+        "coordination-tax"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A lead and four workers make six calls, and each starts with the same 2,000-token prefix of system prompt and tool schemas. The lead's first call writes the prefix to the cache at 1.25 times the input rate; the other five calls are sent after that response begins and read it at 0.1 times. How many input-rate tokens does the prefix cost across the six calls?",
+      "answer": {
+        "value": 3500,
+        "tolerance": 50,
+        "unit": "tokens"
+      },
+      "precision_note": "$2{,}000 \\times 1.25 + 5 \\times 2{,}000 \\times 0.1 = 2{,}500 + 1{,}000 = 3{,}500$, the cached-prefix term of snippets/fan_out.py (Bill.dollars). Uncached is $6 \\times 2{,}000 = 12{,}000$; billing the write at 1 times gives 3,000; six reads give 1,200.",
+      "explanation": "One write at 1.25 times and five reads at 0.1 times: 2,500 plus 1,000 is 3,500 input-rate tokens, against 12,000 if every call paid the prefix in full. Caching shrinks the repeated prefix; it does not remove it.",
+      "hints": [
+        "Count the write and the reads separately.",
+        "One call pays 1.25 times the prefix; five pay 0.1 times it."
+      ]
+    },
+    {
+      "id": "hrn-016-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "latency",
+        "slowest-worker"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An illustrative fan-out: the lead plans for 8 seconds, four workers run in parallel for 20, 25, 30 and 120 seconds, and the lead merges for 6 seconds. One agent would do the same four pieces in sequence, with no planning or merging. What speed-up does the fan-out buy over the single agent? Give the ratio to two decimal places.",
+      "answer": {
+        "value": 1.46,
+        "tolerance": 0.01,
+        "unit": "times"
+      },
+      "precision_note": "Single agent $20 + 25 + 30 + 120 = 195$ s; fan-out $8 + \\max(20, 25, 30, 120) + 6 = 134$ s; $195 / 134 = 1.455$, which rounds to 1.46 (1.45 is also accepted). Leaving out the lead's calls gives $195/120 = 1.63$; the mean worker time gives about 3.1. The latency model of snippets/fan_out.py.",
+      "explanation": "Parallelism gives the maximum, not the mean, and the lead's own calls add to it: 8 plus 120 plus 6 is 134 seconds against 195 in sequence, a speed-up of about 1.46 times from four workers.",
+      "hints": [
+        "The parallel part takes as long as its slowest worker.",
+        "Add the lead's planning and merging to that maximum."
+      ]
+    },
+    {
+      "id": "hrn-016-q10",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "prompt-caching",
+        "concurrency"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The lead's planning call and the four workers, each with the same 2,000-token prefix marked for caching, are dispatched at the same instant instead of the workers waiting for the lead's first response; the merge call goes out after every worker has returned. A cache entry only becomes available after the first response begins, a request that misses at its breakpoint pays a fresh cache write at 1.25 times the input rate, and a hit reads at 0.1 times. How many input-rate tokens does the prefix cost across the six calls?",
+      "answer": {
+        "value": 12700,
+        "tolerance": 50,
+        "unit": "tokens"
+      },
+      "precision_note": "The five simultaneous calls all miss and write: $5 \\times 2{,}000 \\times 1.25 = 12{,}500$; the merge, sent after the workers return, reads: $2{,}000 \\times 0.1 = 200$; total $12{,}700$, against $12{,}000$ with no caching and $3{,}500$ when the workers wait for the first response (Anthropic, \"Prompt caching\", consulted October 2026). Counting the merge as a write too gives 15,000.",
+      "explanation": "None of the five simultaneous calls can read an entry that does not yet exist, so all five pay the write premium, and only the merge, sent after the workers return, reads it: 12,700 input-rate tokens, more than not caching at all. The ordering, not the breakpoint, earns the discount.",
+      "hints": [
+        "Can any of the simultaneous calls find the prefix already cached? Can the merge?",
+        "What does a request pay when it misses at its breakpoint?"
+      ]
+    },
+    {
+      "id": "hrn-016-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "partial-failure-policy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`settle` is the step where a lead decides what to do with a partial result set, but as written it synthesises whatever came back and never mentions the hole. Fix it. With no failures, return the results and `None` under any known policy. `\"fail\"` raises `RuntimeError`. `\"retry_then_degrade\"` retries each failed subtask once with `retry(subtask)`, keeps every recovered `(subtask, value)` pair, and returns the note `\"MISSING: \"` followed by the still-failed subtasks, sorted and joined with `\", \"`, or `None` when all recovered. `\"escalate\"` retries nothing and returns the results with `\"ESCALATED: \"` and the failed subtasks, sorted. Any other policy raises `ValueError`, even when nothing failed. Do not modify the caller's `results` list.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def settle(results, failures, policy, retry):\n    \"\"\"Decide what a lead does with a partial result set.\n\n    results  -- list of (subtask, value) pairs that came back\n    failures -- list of subtask names whose worker raised\n    policy   -- \"fail\", \"retry_then_degrade\" or \"escalate\", chosen before the fan-out\n    retry    -- retry(subtask) runs that subtask's worker once more; it returns a value or raises\n\n    Returns (kept, note): the (subtask, value) pairs to synthesise from, and a note for the answer (or None).\n    \"\"\"\n    return results, None                     # synthesise anyway: the hole is never mentioned\n",
+      "solution": "def settle(results, failures, policy, retry):\n    \"\"\"Decide what a lead does with a partial result set.\n\n    results  -- list of (subtask, value) pairs that came back\n    failures -- list of subtask names whose worker raised\n    policy   -- \"fail\", \"retry_then_degrade\" or \"escalate\", chosen before the fan-out\n    retry    -- retry(subtask) runs that subtask's worker once more; it returns a value or raises\n\n    Returns (kept, note): the (subtask, value) pairs to synthesise from, and a note for the answer (or None).\n    \"\"\"\n    if policy not in (\"fail\", \"retry_then_degrade\", \"escalate\"):\n        raise ValueError(f\"unknown partial-failure policy {policy!r}\")\n    if not failures:\n        return list(results), None\n    if policy == \"fail\":\n        raise RuntimeError(f\"{len(failures)} of {len(results) + len(failures)} subtasks failed\")\n    if policy == \"escalate\":\n        return list(results), \"ESCALATED: \" + \", \".join(sorted(failures))\n    kept, missing = list(results), []\n    for subtask in failures:\n        try:\n            kept.append((subtask, retry(subtask)))\n        except Exception:\n            missing.append(subtask)\n    return kept, (\"MISSING: \" + \", \".join(sorted(missing))) if missing else None\n",
+      "tests": "calls = []\n\n\ndef make_retry(fixable):\n    def retry(subtask):\n        calls.append(subtask)\n        if subtask in fixable:\n            return \"ok:\" + subtask\n        raise TimeoutError(subtask)\n    return retry\n\n\ngot = [(\"a\", 1), (\"c\", 3)]\n\n# no failure: every policy keeps everything and says nothing\nfor policy in (\"fail\", \"retry_then_degrade\", \"escalate\"):\n    calls.clear()\n    kept, note = settle(got, [], policy, make_retry(set()))\n    assert sorted(kept) == got and note is None, (policy, kept, note)\n    assert calls == [], f\"{policy}: nothing failed, so nothing should be retried\"\n\n# fail: a missing slice makes the answer wrong, so the run stops loudly\ntry:\n    settle(got, [\"b\"], \"fail\", make_retry({\"b\"}))\n    raise AssertionError(\"fail policy returned instead of raising\")\nexcept RuntimeError:\n    pass\n\n# retry, then degrade: one retry each; recovered values kept; the rest named, sorted\ncalls.clear()\nkept, note = settle(got, [\"e\", \"b\", \"d\"], \"retry_then_degrade\", make_retry({\"b\"}))\nassert sorted(kept) == [(\"a\", 1), (\"b\", \"ok:b\"), (\"c\", 3)], kept\nassert note == \"MISSING: d, e\", note\nassert sorted(calls) == [\"b\", \"d\", \"e\"], f\"each failed subtask is retried exactly once, got {calls}\"\n\n# retry clears everything: no gap, so no note\ncalls.clear()\nkept, note = settle(got, [\"b\"], \"retry_then_degrade\", make_retry({\"b\"}))\nassert note is None and sorted(kept) == [(\"a\", 1), (\"b\", \"ok:b\"), (\"c\", 3)], (kept, note)\n\n# escalate: the hole goes to a person; nothing is retried behind their back\ncalls.clear()\nkept, note = settle(got, [\"d\", \"b\"], \"escalate\", make_retry({\"b\", \"d\"}))\nassert sorted(kept) == got and note == \"ESCALATED: b, d\", (kept, note)\nassert calls == [], \"escalation must not spend a retry\"\n\n# a typo in the policy is a design error, not a silent default\nfor bad in (\"\", \"retry\", \"synthesise_anyway\"):\n    try:\n        settle(got, [\"b\"], bad, make_retry({\"b\"}))\n        raise AssertionError(f\"unknown policy {bad!r} was accepted\")\n    except ValueError:\n        pass\ntry:\n    settle(got, [], \"retry\", make_retry(set()))\n    raise AssertionError(\"an unknown policy is accepted when nothing failed\")\nexcept ValueError:\n    pass\n\n# the caller's list is not mutated\nbefore = list(got)\nsettle(got, [\"b\"], \"retry_then_degrade\", make_retry({\"b\"}))\nassert got == before, \"settle must not append to the caller's results list\"\nprint(\"all tests passed\")\n",
+      "explanation": "The policy is chosen before the fan-out, so `settle` applies it rather than improvising: fail loudly when the slices are jointly necessary, retry once and then mark the gap for a read fan-out, or hand the hole to a person. The starter is the default a system falls into when no policy was chosen: synthesise anyway, with nothing in the answer marking what is missing.",
+      "hints": [
+        "Validate the policy before looking at the failures.",
+        "For the degrade policy, keep two lists: what a retry recovered and what still failed.",
+        "Escalation must not call `retry` at all."
+      ]
+    },
+    {
+      "id": "hrn-016-q12",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "prompt-caching",
+        "ordering"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A lead and four workers share a cacheable prefix. Put the events in the order that lets the workers and the merge read the prefix from the cache.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The four workers are dispatched and read the cached prefix"
+        },
+        {
+          "key": "b",
+          "text": "The lead's planning call is sent with the shared prefix, which writes it to the cache"
+        },
+        {
+          "key": "c",
+          "text": "The lead's merge call reads the cached prefix"
+        },
+        {
+          "key": "d",
+          "text": "The response to the planning call begins"
+        },
+        {
+          "key": "e",
+          "text": "The slowest worker returns its result"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "a",
+        "e",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "A cache entry becomes available only after the first response begins, so the lead's call writes the prefix, its response starts, and only then do the workers go out and read it; the merge waits for the slowest worker and reads the prefix too.",
+      "hints": [
+        "Nothing can read an entry before the call that writes it has started responding.",
+        "The merge needs every worker's result."
+      ]
+    },
+    {
+      "id": "hrn-016-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "decision-framework",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team plans to run eight agents at once to fix fifty unrelated bugs in one repository, and to have a lead merge their branches at the end. Apply the decision framework to this plan: say which gates it passes and on what condition, what has to exist before the agents write anything, how agents claim work without a coordinator, and what the lead does when two of the eight fail. Say what would make a single agent the better choice.",
+      "kind": "design",
+      "connects": [
+        "hrn-017",
+        "hrn-011"
+      ],
+      "solution": "1. **Gates.** Fifty unrelated bugs are independent and parallel, so the first gate passes. Fragmentation is acceptable only if the fixes really share no decisions; bugs in shared helpers or conventions fail the second gate and belong to one agent. The third gate needs the throughput to matter more than the tax: eight prefixes per round, a wall-clock set by the slowest fix, and the reconciliation work.\n2. **Before writing.** This is a write fan-out, so it pays only with the machinery of post 17: one working copy per agent (worktrees), the shared conventions written down before dispatch so implicit decisions are explicit, and a verification gate on each branch (post 11) rather than trust in each agent's report.\n3. **Claiming.** A task board on the filesystem: each bug is a file, an agent claims one by an exclusive create of a claim token, the loser of a race moves on, and results are files, so no coordinator is needed and the run survives a crash.\n4. **Partial failure.** Chosen before dispatch: these fixes are independent, so retry each failure once and then report the unfixed bugs by name; escalate any failure on an irreversible or high-value change. Never a silent merge of six results presented as eight.\n5. **When single wins.** If the bugs share code, if the merge would need judgement about conflicting fixes, or if the throughput is not worth eight times the prefix, one agent working the list in sequence keeps one context and one trace.",
+      "rubric": [
+        {
+          "criterion": "Walks the three gates in order and names the condition under which each passes",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies a write fan-out and requires isolation and explicit shared decisions before writing",
+          "points": 2
+        },
+        {
+          "criterion": "Describes file-based claiming with an exclusive create and no coordinator",
+          "points": 1
+        },
+        {
+          "criterion": "Chooses a partial-failure policy before dispatch and justifies it from the work",
+          "points": 2
+        },
+        {
+          "criterion": "Names concrete conditions under which one agent is the better choice",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The plan is a write fan-out: it clears the gates only if the bugs are truly independent and only with claiming, isolation and verification in place, and its failure policy belongs in the same design session as the topology.",
+      "hints": [
+        "Start by deciding whether this fan-out reads or writes.",
+        "Each of the three gates has a condition; the failure policy is a fourth decision made before dispatch."
+      ]
+    },
+    {
+      "id": "hrn-016-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "coordination-tax",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A design review claims: \"Four workers will make this job four times faster, and it costs the same tokens as one agent because the work is the same.\" Critique both halves of the claim, and say when the token half could even come out in favour of the fan-out.",
+      "kind": "critique",
+      "solution": "1. **Speed.** Parallelism gives the slowest worker, not the average, plus the lead's own calls. With pieces of 10, 10, 10 and 90 seconds and 5 seconds each to plan and merge, one agent takes 120 seconds and the fan-out 100, a 1.2 times speed-up, not 4. Uneven work makes the shortfall worse.\n2. **Tokens.** Every call carries the shared prefix of system prompt and tool schemas, so six calls pay it six times; the lead also reads the workers' results. In the post's read fan-out that is 18,065 input tokens against 11,659, and 1.7 times the dollars. Caching cuts the repeated prefix to one write and five reads, but only if the workers start after the first response begins; it brings the read case to about 1.2 times, not 1.\n3. **Writes.** If each worker must load a shared conventions document to stay consistent and the lead must reconcile conflicts, the gap widens: 6.5 times uncached in the post's write fan-out.\n4. **When the fan-out can win on tokens.** When each piece is a loop of tool calls, a single agent re-reads every earlier tool result on every later call, while a worker re-reads only its own; `ctx-013` works that case and fan-out comes out cheaper. The deciding question is whether each worker needs less than the whole.",
+      "rubric": [
+        {
+          "criterion": "Explains that wall-clock is the slowest worker plus the lead's calls, with a worked example",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the prefix and the merge input are paid per call, so tokens rise with agents",
+          "points": 2
+        },
+        {
+          "criterion": "States what caching changes and the ordering condition it needs",
+          "points": 1
+        },
+        {
+          "criterion": "Notes that write fan-outs pay extra for shared material and reconciliation",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies the loop case, where a single agent's re-reads make fan-out cheaper",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Both halves are wrong in general: fan-out buys the maximum, not the mean, of the workers' times, and it multiplies the per-call prefix. The token half can reverse only when a single agent would have re-read material a worker keeps to itself.",
+      "hints": [
+        "What sets the wall-clock of a parallel step?",
+        "What does every call pay before it does any work, and when does a single agent pay more than that?"
+      ]
+    },
+    {
+      "id": "hrn-016-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "isolation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Which reason justifies a second agent even when it buys no throughput at all?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Running untrusted input or a destructive tool inside its own sandbox and permission set",
+          "correct": true,
+          "feedback": "Correct. Isolation is bought for its boundary: containment is the whole purchase, so it skips the throughput gates."
+        },
+        {
+          "key": "b",
+          "text": "Getting a second opinion from a stronger model on a draft",
+          "correct": false,
+          "feedback": "A second opinion in service of one task is a harness pattern; it is bought for quality, not justified by the orchestration framework's exception."
+        },
+        {
+          "key": "c",
+          "text": "Splitting a refactor of one module so that each agent holds a smaller and cleaner slice of its context",
+          "correct": false,
+          "feedback": "Interdependent decisions split across agents is the Flappy Bird failure; this fails the fragmentation gate."
+        },
+        {
+          "key": "d",
+          "text": "Making the system look more like a team of specialists",
+          "correct": false,
+          "feedback": "A team of personalities with no contracts between them adds the coordination tax and buys nothing measurable."
+        }
+      ],
+      "explanation": "Isolation is the one exception that skips the gates: a sub-agent with a sandbox and a permission set of its own contains a bad outcome, which is worth paying the coordination tax for at zero throughput gain, provided the boundary is really handed down to it.",
+      "hints": [
+        "Which purchase is about blast radius rather than speed?",
+        "Of the four, only one is about what a bad outcome can reach."
+      ]
+    },
+    {
+      "id": "hrn-016-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "task-claiming",
+        "filesystem-bus"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the series' file-based task board (`code/17-parallel-agents/`), what makes it impossible for two agents to claim the same task?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Creating the task's claim token with `O_CREAT | O_EXCL`, which only one caller can do",
+          "correct": true,
+          "feedback": "Correct. The exclusive create decides the race; the loser gets `FileExistsError` and moves on to the next task."
+        },
+        {
+          "key": "b",
+          "text": "Renaming `open/<task>` to `claimed/<task>.<agent>`, because a rename within one filesystem is atomic",
+          "correct": false,
+          "feedback": "The rename only moves the file after the claim is won; the board's own docstring records that a rename-only board double-claimed under real thread overlap."
+        },
+        {
+          "key": "c",
+          "text": "A lead agent that assigns every task before the workers start",
+          "correct": false,
+          "feedback": "The board has no coordinator at all; that is what makes a leaderless swarm possible."
+        },
+        {
+          "key": "d",
+          "text": "A lock server that every agent asks before touching a file",
+          "correct": false,
+          "feedback": "No server is involved: the filesystem's own exclusive create is the concurrency control."
+        }
+      ],
+      "explanation": "`TaskBoard.claim()` creates a claim token with `os.open(token, O_CREAT | O_EXCL | O_WRONLY)` and only then renames the task into `claimed/`. The repository is the bus, and the exclusive create is what makes a claim exactly-once.",
+      "hints": [
+        "Which file operation can succeed for exactly one caller?"
+      ]
+    },
+    {
+      "id": "hrn-016-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "coordination-tax",
+        "loop-case"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Fan-out usually costs more tokens than one agent. In which situation can it cost fewer?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "When each piece is a loop of tool calls, so a single agent would re-read every earlier tool result on every later call",
+          "correct": true,
+          "feedback": "Correct. A worker re-reads only its own results, so splitting stops the single agent's window from re-reading everyone else's."
+        },
+        {
+          "key": "b",
+          "text": "When the workers are all dispatched at the same instant, so that they share a single cache write between them",
+          "correct": false,
+          "feedback": "Simultaneous calls all miss and each pays a cache write; the workers must start after the first response begins."
+        },
+        {
+          "key": "c",
+          "text": "When every worker loads the full conventions document first, so that each of its edits stays consistent with the rest",
+          "correct": false,
+          "feedback": "Reloading shared material per worker is what makes the post's write fan-out cost 6.5 times the single agent."
+        },
+        {
+          "key": "d",
+          "text": "When the work is one-shot reading of independent documents",
+          "correct": false,
+          "feedback": "In the one-shot case each piece is read once either way, and the fan-out adds prefixes and a merge, so it costs more."
+        }
+      ],
+      "explanation": "Fan-out saves only when the workers together read meaningfully less than one agent would. In a one-shot task the material is read once either way; in a loop of tool calls the single agent's window keeps re-reading earlier results, which a worker keeps to itself.",
+      "hints": [
+        "Think about what a single agent re-reads on its twentieth call.",
+        "Compare a one-shot task with a task done as many tool calls."
+      ]
+    }
+  ]
+}

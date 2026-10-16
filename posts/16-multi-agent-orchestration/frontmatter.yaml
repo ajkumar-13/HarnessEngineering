@@ -1,38 +1,26 @@
 id: hrn-016
 slug: 16-multi-agent-orchestration
-title: "16 · Multi-agent orchestration — topologies, and when not to"
-
-description: >
-  Orchestration coordinates agents as units, one level above the harness that drives a
-  single agent. It comes in a few shapes (single, orchestrator-worker, pipeline, swarm),
-  and it is powerful and badly over-used.
-
-author: "Ajay"
+title: "16 - Multi-agent orchestration: topologies, and when not to"
+summary: "Orchestration coordinates agents as units in four topologies; one agent stays the default, read fan-out is cheap and write fan-out is not, and every fan-out pays a coordination tax and needs a failure policy."
 date: 2026-08-17
-last_modified: 2026-09-05
-
-tags: [harness-engineering, scale, orchestration, multi-agent, topologies]
-
-keywords:
-  - harness engineering
-  - scale
-  - orchestration
-  - multi agent
-  - topologies
-  - implicit decisions
-  - one writer always
-  - what they checked
-
-category: Scale and orchestration
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part IV - Scale and orchestration"
-
+level: intermediate
+reading_time: 24
+tags: [harness-engineering, scale, orchestration, multi-agent, topologies, fan-out, partial-failure]
 hero: diagrams/01-topologies-gallery.svg
-hero_alt: "Four topology panels: a single agent with sub-tasks, an orchestrator-worker with a lead and workers, a pipeline of agents in sequence, and a swarm of peers around a shared repo."
-
-reading_time: 27
-toc: true
-draft: false
-canonical_url: ""
-prev: ../15-human-in-the-loop/
-next: ../17-parallel-agents-shared-repo/
+prerequisites: [hrn-008]
+code: included
+outcomes:
+  - id: o1
+    text: "Separate a harness from an orchestrator, and name the four topologies and who writes the control flow in each."
+  - id: o2
+    text: "Steelman the single-agent default, and tell a cheap read fan-out from a write fan-out whose agents must agree."
+  - id: o3
+    text: "Price the coordination tax of a fan-out in tokens, cached and uncached, and in wall-clock set by the slowest worker."
+  - id: o4
+    text: "Coordinate agents through shared files, and choose a partial-failure policy before the fan-out rather than after a failure."
+  - id: o5
+    text: "Apply the decision framework: default to one agent, justify every extra one, and treat isolation as the exception."
+recommended: [hrn-011, hrn-012, ctx-013]
