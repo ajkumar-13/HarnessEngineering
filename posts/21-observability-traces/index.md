@@ -59,7 +59,7 @@ The first is **`stop.reason`** on the root span. Look at it first, because it se
 - `no_progress`: the stall detector fired.
 - `error`: the run raised, and only a `finally` block can record this one.
 
-Post 19 names the same four internal exits *done*, *over-budget*, *no-progress* and *max-iters*, and this post's own hero figure labels its successful exit `verified`, after the gate that produced it. That is three spellings of one enumeration, which is why it is worth settling once: pick a set, and make the code, the tests and the dashboard use it.
+Post 19 uses these spellings, but this post's own hero figure labels its successful exit `verified`, after the gate that produced it. That is two spellings of one enumeration, which is why it is worth settling once: pick a set, and make the code, the tests and the dashboard use it.
 
 The second is **`outcome`** on each tool span, recording *which layer decided* rather than merely whether the call ran. Four values cover the gate stack, and each means something different about the system rather than about the call.
 

@@ -22,7 +22,7 @@
    (4) no progress detected            <- thrashing guard
 ```
 
-**Most agent bugs are stop-condition bugs, not reasoning bugs.** Exits (2) to (4) are guards: a run that takes one did not finish, and should return where it stopped as well as why (post 19).
+**Stop conditions are the loop's main design surface** (the series' argument, not a measurement). Exits (2) to (4) are guards: a run that takes one did not finish, and should return where it stopped as well as why (post 19).
 
 ---
 

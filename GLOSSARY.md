@@ -16,7 +16,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Approve and remember.** An approval outcome that returns a persisted rule alongside the verdict, so later calls matching that rule stop asking. It is what lets an approval queue drain itself rather than needing a policy rewrite. See [Post 15](posts/15-human-in-the-loop/index.md).
 
-**Atomic claim.** A task claimed by an operation that cannot half-succeed, such as a rename from `open/` to `claimed/`. An atomic primitive does not by itself buy an atomic claim: the caller must confirm the effect rather than infer it from the absence of an error. See [Post 17](posts/17-parallel-agents-shared-repo/index.md).
+**Atomic claim.** A task claimed by an operation that exactly one caller can succeed at, such as creating a per-task token with `O_CREAT | O_EXCL`. An atomic primitive does not by itself buy an exclusive claim: a rename moves a file atomically, but whether a second rename of the same file fails depends on the platform, and checking afterwards does not close the race. See [Post 17](posts/17-parallel-agents-shared-repo/index.md).
 
 **Autonomy spectrum.** The range of oversight settings between fully manual and fully autonomous, framed by Morris (2026) as humans *outside*, *in*, or *on* the loop. The mistake is picking one setting for a whole agent rather than one per class of action. See [Post 15](posts/15-human-in-the-loop/index.md).
 
@@ -52,7 +52,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Control plane.** The organisation-level layer that governs many agents at once: permissions, budgets, audit, policy. The enterprise framing of harness engineering. See [Post 14](posts/14-permissions-sandboxes/index.md).
 
-**Coordination tax.** The overhead a multi-agent design pays and a single agent never does: per-agent fixed tokens, latency set by the slowest worker plus synthesis, and partial failure. It should be priced before it is paid. See [Post 16](posts/16-multi-agent-orchestration/index.md).
+**Coordination tax.** The overhead a multi-agent design pays and a single agent never does: per-agent fixed tokens, latency set by the slowest worker plus the lead's own calls, and partial failure. It should be priced before it is paid. See [Post 16](posts/16-multi-agent-orchestration/index.md).
 
 **Custom harness.** The layer a team adds on top of a *prebuilt harness*: its tools, its memory file, its enforcement hooks, its sandbox policy and its evaluations; the policy that runs on the mechanism a vendor ships. See [Post 02](posts/02-anatomy-of-a-harness/index.md).
 
@@ -86,7 +86,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Handoff artefact.** A structured file (spec, plan, state summary) that carries context from one agent, iteration, or session to the next: the mechanism that lets work survive a context reset. See [Post 08](posts/08-state-filesystem-git/index.md).
 
-**Handoff contract.** The fields a *handoff file* must carry for a reset to be safe: a spec pointer, what is done, what is next, the state (branch, last checkpoint and the paths that matter), decisions and their reasons, and open questions. Its completeness test is to seed a fresh window with the handoff alone and check that it can name the next concrete action. See [Post 18](posts/18-long-horizon-ralph/index.md).
+**Handoff contract.** The fields a *handoff file* must carry for a reset to be safe: post 08's four (spec, done, next, and the state: branch, last checkpoint and the paths that matter) plus the two a long-horizon loop adds, decisions with their reasons and open questions. Its completeness test is to seed a fresh window with the handoff alone and check that it can name the next concrete action. See [Post 18](posts/18-long-horizon-ralph/index.md).
 
 **Handoff file.** The concrete artefact a *handoff artefact* is written to: a file on disk carrying the spec, what is done, what is next and a checkable state, which is what a fresh context needs to continue. Rewritten each iteration, never appended to. See [Post 08](posts/08-state-filesystem-git/index.md).
 
@@ -96,7 +96,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Harness gap.** The distance between what a model can already do and what its harness lets it do. It is closed before a bigger model is bought: the model problem is whatever remains afterwards, not what was visible at the start. Also *elicitation gap*. See [Post 04](posts/04-harness-beats-model/index.md).
 
-**Harness-as-a-Service (HaaS).** A shift from LLM APIs that return completions to APIs that return a runtime, with the loop, tools, context management, and hooks built in. Also *harness API* (Osmani, 2026). See [Post 23](posts/23-economics-haas/index.md).
+**Harness-as-a-Service (HaaS).** A shift from LLM APIs that return completions to APIs that return a runtime, with the loop, tools, context management, and hooks built in. Also *harness API*. Named by Trivedy (2025) and popularised by Osmani (2026). See [Post 23](posts/23-economics-haas/index.md).
 
 **Hook.** A deterministic script run at a lifecycle point (session start, pre-tool, post-edit, pre-commit) to enforce a rule the model cannot be trusted to follow on its own. *Hooks* are the seventh of the *eleven components*, one of the four that govern the loop, and the enforcement tooth of the *ratchet*. See [Post 13](posts/13-hooks-enforcement/index.md).
 
@@ -112,7 +112,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Information-loss budget.** The fidelity a team is willing to spend to reclaim window space, decided in advance and written into the summarisation prompt, and used to choose between offloading, clearing, compacting and resetting. See [Post 09](posts/09-context-management-loop/index.md).
 
-**Initialiser agent.** An agent that runs once to build the environment a long-running task needs (setup script, repository, progress file), leaving a coding agent to make incremental progress in every later session. See [Post 26](posts/26-capstone-coding-agent/index.md).
+**Initialiser agent.** An agent that runs once to build the environment a long-running task needs (setup script, feature list, progress file and an initial git commit), leaving a coding agent to make incremental progress in every later session. See [Post 26](posts/26-capstone-coding-agent/index.md).
 
 **Iteration cap.** The second of the four *loop exits*: a hard integer ceiling on turns, so that a loop which never reaches a final answer still terminates. A *backstop exit*, set well above the iteration count real tasks need; it bounds turns, not cost. See [Post 03](posts/03-the-agent-loop/index.md).
 
@@ -244,7 +244,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Sub-agent.** An agent the harness dispatches with its own fresh context to do one bounded piece of work and return a result, so that the work's intermediate tokens never enter the parent's window. Distinct from *orchestration* of peers: the parent keeps control and the sub-agent is one of its actions. See [Post 16](posts/16-multi-agent-orchestration/index.md) and [Post 25](posts/25-build-harness-plus/index.md).
 
-**Task board.** A directory of files representing open, claimed and done work, where the filesystem's own atomicity is the concurrency control. No lock server, no database, no coordinator. See [Post 17](posts/17-parallel-agents-shared-repo/index.md).
+**Task board.** A directory of files representing open, claimed and done work, where an exclusive file create is the concurrency control. No lock server, no database, no coordinator. See [Post 17](posts/17-parallel-agents-shared-repo/index.md).
 
 **Token-equivalent.** A costing unit that multiplies a token by its price relative to base input, so that cache writes, cache reads and uncached input can be compared in one column. What turns a compaction decision into arithmetic. See [Post 09](posts/09-context-management-loop/index.md).
 
@@ -264,7 +264,7 @@ The terms used across Harness Engineering, alphabetised, one entry each. The ser
 
 **Trajectory eval.** Evaluating an agent on the path it took (steps, tool calls, outcome), not just a single final output. The eval lens harness engineering needs. See [Post 22](posts/22-evaluating-harnesses/index.md).
 
-**Transient failure.** An error caused by the environment rather than the model: a rate limit, a timeout, a dropped connection. It calls for a retry with bounded backoff, not a stop condition, and its retries are charged to the same budget as everything else. See [Post 19](posts/19-loop-engineering/index.md).
+**Transient failure.** An error caused by the environment rather than the model: a rate limit, an overload, a timeout, a dropped connection. It calls for a retry with bounded backoff, counted apart from the iteration cap, not a stop condition, and its spend is charged to the same budget as everything else. A 429 from a spend cap is not transient: it is a budget stop. See [Post 19](posts/19-loop-engineering/index.md).
 
 **Validate-then-execute.** The two-step dispatch discipline: check the arguments against the schema, then run only if they pass. The schema is the contract, and a call that violates it is refused and handed back for the model to fix. See [Post 06](posts/06-tools-bash-code/index.md).
 

@@ -7,7 +7,7 @@ other gets ``FileExistsError`` and moves on. The rename that follows only moves
 the file into ``claimed/``; it is not what makes the claim exclusive. See
 ``TaskBoard.claim`` for why the rename alone was not enough. Offline by design:
 a local directory stands in for the shared repo, so there is no git and no
-network. Real swarms use the same mechanism on the repo.
+network. Swarms on many machines push a lock file to the repo instead.
 """
 from __future__ import annotations
 
@@ -51,8 +51,8 @@ class TaskBoard:
         The rename was the obvious primitive and it is not sufficient. Two
         agents renaming the same source to *different* destinations do not
         collide the way two agents renaming to the same destination would, and
-        under real thread overlap both calls can return without raising while
-        only one file lands. That failure is rare, so a suite that runs the
+        on some platforms (Windows among them) both calls can return without
+        raising while only one file lands. It is rare, so a suite that runs the
         board single-threaded, or threaded a handful of times, will not see it:
         this board was shipped with exactly that bug. ``test_board.py`` drains a
         400-task board with 8 threads behind a barrier, which reproduces it.

@@ -317,4 +317,4 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 ## What to read next
 
 - **[Post 17 - Parallel agents on a shared repo: worktrees and task-claiming](../17-parallel-agents-shared-repo/index.md):** the swarm topology in depth, with worktrees and file-based task claiming that makes write fan-out safe.
-- **[Post 20 - The SDK and framework landscape: Agent SDK, LangGraph, and peers](../20-sdk-landscape/index.md):** how the shipped SDKs and frameworks package sub-agents, handoffs and graphs, and which topology each makes easy.
+- **[Post 20 - The SDK and framework landscape: Agent SDK, LangGraph, and peers](../20-sdk-landscape/index.md):** how the shipped SDKs and frameworks package sub-agents, handoffs and graphs, and what each takes away.

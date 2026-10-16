@@ -1,7 +1,7 @@
 [project]
 name = "parallel-agents"
 version = "0.1.0"
-description = "A file-based task board with atomic claiming for a leaderless agent swarm — companion to Harness Engineering Post 17."
+description = "A file-based task board with atomic claiming for a leaderless agent swarm, the companion to post 17 of Harness Engineering."
 requires-python = ">=3.11"
 dependencies = []
 
