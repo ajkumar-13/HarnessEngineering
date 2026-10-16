@@ -1,0 +1,774 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-017",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "hrn-017-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "task-claiming",
+        "exclusive-create"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "On the companion's task board, which step is what guarantees that two agents never claim the same task?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The rename that moves `open/<task>` to `claimed/<task>.<agent>`.",
+          "correct": false,
+          "feedback": "The rename only moves the file so the owner is readable. On Windows two renames of one task both returned without an error, so a rename-only board double-claimed."
+        },
+        {
+          "key": "b",
+          "text": "Checking after the rename that the destination exists and the source is gone.",
+          "correct": false,
+          "feedback": "That was the board's first repair. It narrowed the window without closing it: another rename could still change the state each check read."
+        },
+        {
+          "key": "c",
+          "text": "Creating `.claims/<task>` with `O_CREAT | O_EXCL` before the rename.",
+          "correct": true,
+          "feedback": "The exclusive create succeeds for exactly one caller and raises FileExistsError for every other; POSIX specifies the check and the creation as atomic."
+        },
+        {
+          "key": "d",
+          "text": "Walking `open_tasks()` in sorted order.",
+          "correct": false,
+          "feedback": "The order only decides which task every agent reaches for first; it makes all of them contend for the head task rather than preventing a double claim."
+        }
+      ],
+      "explanation": "Exclusivity comes from the token: one path per task that only one caller can create. The rename that follows is a move, not the exclusion, which is why the companion takes the token first.",
+      "hints": [
+        "Which operation is specified to fail for every caller but one?"
+      ]
+    },
+    {
+      "id": "hrn-017-q02",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "platforms",
+        "testing",
+        "rename"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team's task board claims by rename alone. Its threaded test drains a 400-task board with eight threads 200 times on Linux and never sees a double claim, so the team ships it to developers on every platform. Which assessment is right?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Safe: POSIX makes rename atomic, so the 200 passing runs only confirm what the specification already guarantees everywhere.",
+          "correct": false,
+          "feedback": "Atomic visibility of a name is not exclusion of a second claimer, and the board will also run on Windows, where the same race reproduced in 8 of 8 runs."
+        },
+        {
+          "key": "b",
+          "text": "Unsafe: 200 runs is too few, and more Linux runs would eventually show the race.",
+          "correct": false,
+          "feedback": "The Linux runs in the post found none at all (0 of 8 and 0 of 20); the problem is the platform the board was not tested on, not the run count."
+        },
+        {
+          "key": "c",
+          "text": "Unsafe on any platform: a rename can never decide which of two claimers wins.",
+          "correct": false,
+          "feedback": "On Linux, ext4, the loser's rename found its source gone and raised, so rename alone did exclude there. The trouble is that this is a property of the platform."
+        },
+        {
+          "key": "d",
+          "text": "Unsafe beyond Linux: rename exclusivity varies by platform, so claim by an exclusive create, which is specified on both.",
+          "correct": true,
+          "feedback": "On Windows the same rename-only board handed one task to two agents in 8 of 8 runs; an exclusive create is specified to exclude on POSIX and on Windows."
+        }
+      ],
+      "explanation": "The post's race ran 0 of 8 and 0 of 20 on Linux and 8 of 8 on Windows. A passing test measures the platform it ran on; the claim should rest on a primitive whose exclusivity is specified everywhere it will run.",
+      "hints": [
+        "Did the same rename-only board behave the same way on every platform the post measured?",
+        "What does a test on one platform say about another?"
+      ]
+    },
+    {
+      "id": "hrn-017-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "testing",
+        "concurrency"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Every test that first shipped with the rename-only board passed. Why could none of them have caught the double claim?",
+      "answer": {
+        "model": "Because every test was single-threaded: a race needs two claims to interleave, and a schedule that never interleaves cannot produce one, so only a concurrent test with threads and a barrier can see it.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*\\b(were|was|are|is)\\s+(all\\s+)?(multi-?threaded|concurrent|parallel|threaded)\\b)(?![\\s\\S]*\\bnot\\s+single[- ]threaded\\b)(?![\\s\\S]*\\bsingle[- ]?thread\\w*\\s+(tests?|suites?)\\s+((is|are|was|were)\\s+(enough|sufficient|fine|adequate)|(can|could|do|does|would|will)\\s+(catch|see|find|detect|reveal|show))\\b)(?=(?:\\S+\\s+){3})(?=[\\s\\S]*\\b(single[- ]?thread\\w*|one thread|sequential\\w*|serial\\w*|no (threads|concurrency|parallelism)|not (concurrent|threaded|parallel)|never\\b[\\s\\S]{0,30}\\b(concurrent\\w*|in parallel|at once|simultaneous\\w*)|without (threads|concurrency)|(never|didn't|did not|don't|do not) interleav\\w*|no interleaving)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "A race exists only in a schedule where two claims overlap. Single-threaded tests run one claim at a time, so they assert exclusivity in the one setting where it cannot fail; the companion's barrier-synchronised threaded test is the only one of its nine that could see the bug.",
+      "hints": [
+        "How many claims were ever in flight at once in those tests?"
+      ]
+    },
+    {
+      "id": "hrn-017-q04",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 15,
+      "tags": [
+        "task-claiming",
+        "exclusive-create",
+        "threads"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`claim(root, agent)` claims by rename alone and can hand one task to two agents. Fix it so that exclusivity comes from creating a token `root/.claims/<task>` with `O_CREAT | O_EXCL` before the move: skip a task whose token exists, and if the move fails after the token was taken, release the token and try the next task. Keep the return value and the board layout.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import os\n\n\ndef claim(root, agent):\n    \"\"\"Claim one open task for `agent` and return its name, or None. Two agents must never get the same task.\n    The board: root/open/<task>, root/claimed/<task>.<agent>, and root/.claims/ for claim tokens.\"\"\"\n    for name in sorted(p.name for p in (root / \"open\").iterdir()):\n        try:\n            os.rename(root / \"open\" / name, root / \"claimed\" / f\"{name}.{agent}\")\n        except OSError:\n            continue\n        return name\n    return None\n",
+      "solution": "import os\n\n\ndef claim(root, agent):\n    \"\"\"Claim one open task for `agent` and return its name, or None. Two agents must never get the same task.\n    The board: root/open/<task>, root/claimed/<task>.<agent>, and root/.claims/ for claim tokens.\"\"\"\n    for name in sorted(p.name for p in (root / \"open\").iterdir()):\n        token = root / \".claims\" / name                # keyed on the task, so claimers contend for one name\n        try:\n            fd = os.open(token, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n        except FileExistsError:\n            continue                                   # another agent holds this task\n        os.close(fd)\n        try:\n            os.rename(root / \"open\" / name, root / \"claimed\" / f\"{name}.{agent}\")\n        except OSError:\n            token.unlink(missing_ok=True)              # nobody else holds the token: release it\n            continue\n        return name\n    return None\n",
+      "tests": "import tempfile\nimport threading\nfrom pathlib import Path\n\n\ndef board(tasks):\n    root = Path(tempfile.mkdtemp())\n    for d in (\"open\", \"claimed\", \".claims\"):\n        (root / d).mkdir()\n    for t in tasks:\n        (root / \"open\" / t).write_text(\"\", encoding=\"utf-8\")\n    return root\n\n\n# 1. a claim takes the first task, moves it, and leaves a token keyed on the task\nroot = board([\"task-0\", \"task-1\"])\nassert claim(root, \"ada\") == \"task-0\"\nassert (root / \"claimed\" / \"task-0.ada\").exists() and not (root / \"open\" / \"task-0\").exists()\nassert sorted(p.name for p in (root / \".claims\").iterdir()) == [\"task-0\"], \"the token is .claims/<task>\"\n\n# 2. a task whose token another agent already created is skipped, and stays in open/\nroot = board([\"task-1\", \"task-2\"])\n(root / \".claims\" / \"task-1\").write_text(\"\", encoding=\"utf-8\")\nassert claim(root, \"ada\") == \"task-2\", \"a held token must exclude the task\"\nassert (root / \"open\" / \"task-1\").exists()\nassert claim(root, \"linus\") is None\n\n# 3. when the move fails after the token was taken, the token is released and the next task is tried\nroot = board([\"task-3\", \"task-4\"])\n(root / \"claimed\" / \"task-3.ada\").mkdir()\n(root / \"claimed\" / \"task-3.ada\" / \"keep\").write_text(\"\", encoding=\"utf-8\")   # the rename cannot land here\nassert claim(root, \"ada\") == \"task-4\"\nassert not (root / \".claims\" / \"task-3\").exists(), \"release the token when the move fails\"\n\n# 4. eight threads behind a barrier drain 200 tasks with no task claimed twice\nroot = board([f\"task-{i:03d}\" for i in range(200)])\ngot, lock, gate = [], threading.Lock(), threading.Barrier(8)\n\n\ndef agent(name):\n    gate.wait()\n    while (t := claim(root, name)) is not None:\n        with lock:\n            got.append(t)\n\n\nthreads = [threading.Thread(target=agent, args=(f\"a{i}\",)) for i in range(8)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\nassert len(got) == 200 and len(set(got)) == 200, (len(got), len(set(got)))\nassert len(list((root / \"claimed\").iterdir())) == 200\nprint(\"all tests passed\")\n",
+      "explanation": "The token is keyed on the task, so every claimer of one task contends for one name and the exclusive create picks one winner; the rename only makes the owner readable. Releasing the token when the move fails keeps a task claimable that nobody actually took.",
+      "hints": [
+        "Which `os.open` flags make a create fail when the path already exists?",
+        "Key the token on the task name, not on the agent, and catch only `FileExistsError` around the create.",
+        "Wrap the rename in its own try, and unlink the token in its except clause before continuing."
+      ]
+    },
+    {
+      "id": "hrn-017-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "throughput",
+        "merge-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Illustrative numbers: six agents each produce a verified branch every 40 minutes, and one serialised merge gate takes 10 minutes per candidate. How many branches land per hour once the swarm is running?",
+      "answer": {
+        "value": 6,
+        "tolerance": 0.05,
+        "unit": "landings per hour"
+      },
+      "precision_note": "$\\min(60 \\times 6 / 40,\\ 60 / 10) = \\min(9, 6) = 6$, the closed form `landings_per_hour` of snippets/gate_ceiling.py. The production rate alone (9) ignores the gate.",
+      "explanation": "The agents produce $6 \\times 60 / 40 = 9$ branches an hour, but the gate clears only $60 / 10 = 6$; past $N^* = T/G = 4$ agents the gate sets the rate, and the extra branches queue.",
+      "hints": [
+        "Compute what the agents produce per hour and what the gate can clear per hour.",
+        "Sustained landings are the smaller of the two."
+      ]
+    },
+    {
+      "id": "hrn-017-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "throughput",
+        "merge-gate",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team lands 2,016 merges a week through one serialised merge gate, spread evenly over all 168 hours. At most how many minutes can the gate spend on each candidate?",
+      "answer": {
+        "value": 5,
+        "tolerance": 0.05,
+        "unit": "minutes"
+      },
+      "precision_note": "$2{,}016 / 168 = 12$ landings an hour, so $60 / 12 = 5$ minutes each; the same arithmetic snippets/gate_ceiling.py applies to the reported Stripe figure ($1{,}300 / 168 = 7.74$ an hour, 7.75 minutes). Spreading over a 40-hour working week instead gives 1.19 minutes.",
+      "explanation": "Around the clock the gate must clear 12 candidates an hour, one every five minutes. Any slower and the queue grows without bound, whatever the number of agents.",
+      "hints": [
+        "Find the landings per hour first.",
+        "Divide the minutes in an hour by that rate."
+      ]
+    },
+    {
+      "id": "hrn-017-q07",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "failure-isolation",
+        "probability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Illustrative numbers: each agent fails a task independently with probability 0.02. A round runs 20 tasks in parallel. What is the probability, in percent, that the round contains at least one failure? Give one decimal.",
+      "answer": {
+        "value": 33.2,
+        "tolerance": 0.15,
+        "unit": "%"
+      },
+      "precision_note": "$1 - 0.98^{20} = 1 - 0.6676 = 0.3324$, the closed form of snippets/gate_ceiling.py. Adding the probabilities ($20 \\times 0.02 = 40\\%$) or using one task (2%) falls outside the tolerance.",
+      "explanation": "The chance of no failure in the round is $0.98^{20} = 0.668$, so a third of rounds contain a casualty even though each agent fails only one task in fifty; at swarm scale reclaim is the ordinary path, not a contingency.",
+      "hints": [
+        "Compute the probability that no task fails first.",
+        "Subtract it from one."
+      ]
+    },
+    {
+      "id": "hrn-017-q08",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "task-claiming",
+        "leases"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put the life of one claim on a board with leases in order, from the moment an agent reaches for a task to the moment a dead holder's task is claimed again.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Create `.claims/<task>` with `O_CREAT | O_EXCL`."
+        },
+        {
+          "key": "b",
+          "text": "Rename `open/<task>` to `claimed/<task>.<agent>`."
+        },
+        {
+          "key": "c",
+          "text": "Stamp the claim file's modification time with `os.utime`."
+        },
+        {
+          "key": "d",
+          "text": "The sweeper finds the lease expired, moves the claim back to `open/<task>`, and only then deletes `.claims/<task>`."
+        },
+        {
+          "key": "e",
+          "text": "Another agent's exclusive create of `.claims/<task>` succeeds, and the task is claimed again."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "explanation": "The token comes first because it is the exclusion; the rename makes the owner readable; the stamp starts the lease, which the rename alone would not, because a rename keeps the old modification time. The sweeper moves the claim back and releases the token last; until the token is gone, every agent's exclusive create on it fails, so the next claim comes only after both steps.",
+      "hints": [
+        "Which step decides who owns the task, and which only records it?",
+        "Can the lease be stamped on a file before it exists at its claimed path?"
+      ]
+    },
+    {
+      "id": "hrn-017-q09",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "isolation-boundary",
+        "worktrees"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each deployment to the isolation and claim primitive that fits it.",
+      "left": [
+        {
+          "key": "1",
+          "text": "One machine, one filesystem, tasks the team trusts"
+        },
+        {
+          "key": "2",
+          "text": "Agents on many machines"
+        },
+        {
+          "key": "3",
+          "text": "One machine, but tasks that run code the agents wrote and may be destructive"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A git worktree per agent; claim by exclusive create in the board directory"
+        },
+        {
+          "key": "b",
+          "text": "A clone of a bare upstream per agent; claim by pushing a lock file"
+        },
+        {
+          "key": "c",
+          "text": "A container per task with a clone inside it"
+        },
+        {
+          "key": "d",
+          "text": "One shared checkout for every agent, with a lock server for claims"
+        }
+      ],
+      "answer": {
+        "1": "a",
+        "2": "b",
+        "3": "c"
+      },
+      "explanation": "Worktrees and a local exclusive create need one filesystem; across machines git's rejected push is the compare-and-set; destructive tasks need process and network isolation, which a worktree does not give. A shared checkout lets agents clobber each other's edits whatever the claim.",
+      "hints": [
+        "Ask first whether the agents share a filesystem, then whether file isolation is enough."
+      ]
+    },
+    {
+      "id": "hrn-017-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "worktrees"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "What does a fresh `git worktree add` give the agent that will work in it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A full copy of the repository's history, so it is independent of the main checkout.",
+          "correct": false,
+          "feedback": "Worktrees share one object database; a worktree costs a working copy, not a copy of the history."
+        },
+        {
+          "key": "b",
+          "text": "Tracked files on its own branch, and nothing else: no installed dependencies, no `.env`.",
+          "correct": true,
+          "feedback": "A worktree is a fresh checkout; each one needs its own dependency install and gitignored configuration."
+        },
+        {
+          "key": "c",
+          "text": "A copy of the main checkout's working directory, including its virtual environment and `.env`.",
+          "correct": false,
+          "feedback": "Untracked and gitignored files are not carried over; Claude Code adds `.worktreeinclude` to copy chosen ones."
+        },
+        {
+          "key": "d",
+          "text": "A sandbox that isolates the agent's processes and network from the other agents.",
+          "correct": false,
+          "feedback": "A worktree isolates files and nothing else: processes, network and credentials stay shared."
+        }
+      ],
+      "explanation": "A worktree is a separate working copy of tracked files on its own branch, sharing the repository's history. The setup it lacks, not disk space, is the marginal cost of another agent.",
+      "hints": [
+        "Is a gitignored file tracked?"
+      ]
+    },
+    {
+      "id": "hrn-017-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "worktrees",
+        "force"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A harness creates each agent's worktree with `git worktree add <path> <branch>`, and when that fails it retries the same command with `--force` appended. What does the retry risk?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nothing: the exclusive claim already keeps agents on different tasks, so branches cannot collide.",
+          "correct": false,
+          "feedback": "The claim keeps tasks apart, not branches; a retry that reuses a branch name puts two agents on it."
+        },
+        {
+          "key": "b",
+          "text": "It deletes the existing worktree and the uncommitted work in it, then creates the new worktree in its place.",
+          "correct": false,
+          "feedback": "`add --force` does not remove another worktree; it overrides the checks that would have refused the add."
+        },
+        {
+          "key": "c",
+          "text": "Nothing, because git refuses a branch checked out elsewhere even with `--force`.",
+          "correct": false,
+          "feedback": "That refusal is exactly what `--force` overrides, in the manual's words, \"these safeguards\"."
+        },
+        {
+          "key": "d",
+          "text": "Two agents checked out on one branch, because `--force` overrides the refusal that would have stopped it.",
+          "correct": true,
+          "feedback": "By default `add` refuses a branch already checked out in another worktree; `--force` turns that guarantee off. Retry with a new branch name instead."
+        }
+      ],
+      "explanation": "The refusal to check out one branch twice is a free correctness guarantee, and an automated retry with `--force` turns it off for every agent at once.",
+      "hints": [
+        "What does the manual say `--force` overrides?",
+        "Which refusal was the first attempt likely to hit?"
+      ]
+    },
+    {
+      "id": "hrn-017-q12",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "merge-gate",
+        "semantic-conflict"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Branch A renames `parse_expr` and updates its seven callers; branch B adds an eighth call to `parse_expr`. Both suites pass and git merges them with no textual conflict. What catches the break before it reaches the mainline?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Running each branch's suite again before landing it.",
+          "correct": false,
+          "feedback": "Each branch is green on its own; the broken state exists in neither branch, only in their combination."
+        },
+        {
+          "key": "b",
+          "text": "Building the candidate merge and running the suite on it, landing only if green.",
+          "correct": true,
+          "feedback": "The semantic conflict exists only in the merged result, so the gate must test that result."
+        },
+        {
+          "key": "c",
+          "text": "Git's merge, which refuses two hunks that touch the same function name in one file.",
+          "correct": false,
+          "feedback": "Git sees two disjoint hunks and merges them without a murmur; it does not read the code's meaning."
+        },
+        {
+          "key": "d",
+          "text": "Smaller branches, which make conflicts of this kind impossible.",
+          "correct": false,
+          "feedback": "Conflicts scale with overlap in the decomposition, not with branch size; two tiny branches can still clash this way."
+        }
+      ],
+      "explanation": "A semantic conflict is a merge git accepts and the mainline rejects; only a gate on the merged result sees it, which is why the merge, not the work, is serialised.",
+      "hints": [
+        "In which tree does the broken call exist?"
+      ]
+    },
+    {
+      "id": "hrn-017-q13",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "leases",
+        "mtime"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A lease sweeper reads each claim file's modification time. Why must the agent stamp the claim file with `os.utime` when it claims, rather than rely on the rename?",
+      "answer": {
+        "model": "Because a rename keeps the file's old modification time, so a task that waited in open/ longer than the lease would look expired the moment it was claimed and the sweeper would reclaim it at once.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*\\brename\\w*\\s+(updates|sets|refreshes|resets|changes|bumps)\\b)(?![\\s\\S]*\\b(to|for)\\s+(security|permissions|locking|exclusivity)\\b)(?=(?:\\S+\\s+){4})(?=[\\s\\S]*(\\b(keeps?|keeping|preserves?|preserving|retains?|retaining|carr(y|ies)|does ?n[o']t (change|update|reset|refresh|touch)|leaves?)\\b[\\s\\S]{0,40}\\b(mtime|modification time|timestamp|time|age)\\b|\\b(mtime|modification time|timestamp)\\b[\\s\\S]{0,40}\\b(unchanged|kept|preserved|stays|is not (updated|changed|reset)|isn't (updated|changed|reset)|of the (task|original|old)|from (when|the)|old)\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "`os.rename` moves a file without changing its modification time, so a claim inherits the age of the task. Without the stamp, a task that sat in `open/` for longer than the lease is reclaimed the moment anyone takes it; the claimer stamps the lease at claim time and again to renew.",
+      "hints": [
+        "What happens to a file's modification time when it is renamed?",
+        "How old would a fresh claim look to the sweeper if the task had waited an hour?"
+      ]
+    },
+    {
+      "id": "hrn-017-q14",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "leases",
+        "claim-token"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A lease sweeper moves an expired claim from `claimed/task-9.ada` back to `open/task-9` and records the attempt, but never deletes `.claims/task-9`. What does the board do with task-9 from then on?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Two agents can now claim it at the same time, because the stale token confuses every later exclusive create.",
+          "correct": false,
+          "feedback": "A held token makes every exclusive create on it fail; it can only stop claims, never admit two."
+        },
+        {
+          "key": "b",
+          "text": "It sits in `open/` forever: every agent's exclusive create on the token fails, so nobody can claim it.",
+          "correct": true,
+          "feedback": "The token still exists, so every claimer gets FileExistsError and skips the task: quarantined by accident."
+        },
+        {
+          "key": "c",
+          "text": "The sweeper reclaims it again on its next pass and eventually quarantines it.",
+          "correct": false,
+          "feedback": "The sweeper walks `claimed/`, and task-9 never returns there, so its attempt counter never moves again."
+        },
+        {
+          "key": "d",
+          "text": "The next agent's claim raises an exception, which stops that agent.",
+          "correct": false,
+          "feedback": "The claim loop catches FileExistsError and moves on to the next task; the failure is silent."
+        }
+      ],
+      "explanation": "The exclusive create refuses a task whose token exists. A reclaim that does not release the token leaves the task visible in `open/` and unclaimable, a silent loss of work, which is why the sweeper deletes the token after the move.",
+      "hints": [
+        "What does `claim` do when the token's create raises FileExistsError?",
+        "Which directory does the sweeper walk?"
+      ]
+    },
+    {
+      "id": "hrn-017-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "at-least-once",
+        "fencing-token",
+        "merge-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "connects": [
+        "hrn-011",
+        "hrn-017"
+      ],
+      "prompt": "A swarm's merge gate already plays the role of post 11's verification gate: it lands a branch only if the candidate merge passes. Extend it so that a reclaimed task cannot land twice. Explain why the ownership check in `complete()` is not enough on its own, what the gate must know about each branch, what it keeps, and what it refuses.",
+      "kind": "design",
+      "solution": "**Why `complete()` is not enough.** It refuses a completion from an agent that no longer holds the claim, which protects the board, but the late agent's work has already been done: its branch exists and can reach the gate. The check is also made before acting, and Kleppmann's argument applies: a check on the lock just before writing cannot fix a process paused between the check and the write.\n\n**What the gate must know.** Every claim carries a generation: the attempt number the sweeper's tally already counts, incremented on each reclaim. The agent carries it on its branch (in the branch name or a trailer).\n\n**What the gate keeps.** For each task, the highest generation it has seen or landed.\n\n**What it refuses.** A branch whose generation is lower than the highest seen for its task, as a stale duplicate, discarded rather than reported as a failure; this is Kleppmann's fencing token, with the resource rejecting writes whose token has gone backwards. The verification part is unchanged: the candidate merge must still pass, because it is the gate that decides, not the agent's report.\n\n**What remains.** Execution is still at least once: the loser's tokens are spent. The effect is single.",
+      "rubric": [
+        {
+          "criterion": "Explains that `complete()` protects the board, not the work, and that a check before acting can go stale",
+          "points": 2
+        },
+        {
+          "criterion": "Uses an increasing claim generation carried on the branch",
+          "points": 2
+        },
+        {
+          "criterion": "The gate keeps the highest generation per task and refuses lower ones as duplicates",
+          "points": 2
+        },
+        {
+          "criterion": "Keeps post 11's rule that the gate's check on the merged result decides, and states that execution stays at least once",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The fencing token moves the check from the agent to the resource, here the merge gate, which is the only place where every agent's work meets; the verification gate of post 11 gains a second refusal, a stale generation, beside a failing check.",
+      "hints": [
+        "Where does the late agent's work go after its `complete()` is refused?",
+        "Kleppmann's fix pushes the check down to the resource; what is the resource in a swarm, and what number would it compare?"
+      ]
+    },
+    {
+      "id": "hrn-017-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 5,
+      "outcomes": [
+        "o4",
+        "o5"
+      ],
+      "section": "3",
+      "est_minutes": 25,
+      "tags": [
+        "leases",
+        "many-machines",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The post's lease uses the claim file's modification time on one shared filesystem. Design leases, reclaim and fencing for the many-machine swarm instead, where each agent claims by pushing a lock file to a bare upstream repository and nothing shares a filesystem or a clock. Say how a lease is taken and renewed, who reclaims and how, how duplicates are kept off the mainline, and what still runs twice.",
+      "kind": "design",
+      "solution": "**Taking and renewing.** The lock file is the lease: the agent commits `current_tasks/<task>` with its name, a generation number and an expiry written as a time from the upstream's point of view (or a commit count), and pushes; git rejects the push that does not fast-forward, so one agent wins. Renewal is another commit to the same file, pushed. Agents' clocks cannot be trusted to agree, so the expiry is read against one clock: the sweeper's, or the upstream host's commit times.\n\n**Reclaim.** One sweeper (or any agent, serialised by the same push rule) reads `current_tasks/`, finds locks whose last renewal is older than the lease, and commits their removal together with an increment of the task's attempt count; quarantine is a move of the task file into `quarantine/` after N attempts. The push rule makes the reclaim a compare-and-set: if the holder renewed in the meantime, the sweeper's push is rejected and it re-reads.\n\n**Fencing.** The generation in the lock increases on every reclaim. The merge gate keeps the highest generation per task and refuses a branch carrying a lower one, so a woken agent's push cannot land a stale copy; the gate still tests the candidate merge before landing.\n\n**What still runs twice.** The work of a slow agent reclaimed while alive; only its effect is fenced. Making tasks idempotent keeps the cost of that duplicate to its tokens. The price of the design is a round trip per claim, renewal and reclaim, and a board every agent sees slightly stale.",
+      "rubric": [
+        {
+          "criterion": "A lease taken and renewed through pushed commits, with the rejected non-fast-forward push as the compare-and-set",
+          "points": 2
+        },
+        {
+          "criterion": "Expiry judged against one clock rather than each agent's own",
+          "points": 2
+        },
+        {
+          "criterion": "A reclaim that is itself a compare-and-set and increments an attempt count, with quarantine",
+          "points": 2
+        },
+        {
+          "criterion": "A generation fenced at the merge gate, which still tests the merged result",
+          "points": 2
+        },
+        {
+          "criterion": "States honestly that work can still run twice, and what the design costs",
+          "points": 2
+        }
+      ],
+      "answer_length": "a page",
+      "explanation": "On many machines the push replaces the exclusive create as the compare-and-set, so leases, reclaims and fences all become commits that race through the same rejected push, and the merge gate remains the resource that fences duplicates.",
+      "hints": [
+        "Which operation plays the exclusive create's role when nothing shares a filesystem?",
+        "Whose clock decides that a lease has expired?",
+        "Where does the fencing token get checked?"
+      ]
+    },
+    {
+      "id": "hrn-017-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "at-least-once",
+        "idempotency"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the snippet's run, agent A woke after agent B had finished task-7, did the same work, and left `settings.toml` unchanged. Which property made A's second execution harmless?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The ownership check in `complete()`, which refused agent A's completion after B finished.",
+          "correct": false,
+          "feedback": "The refusal came after A had already written; it kept the board right but did not stop the work's effect."
+        },
+        {
+          "key": "b",
+          "text": "The lease, which expired while A was quiet.",
+          "correct": false,
+          "feedback": "The expiry is what let the task run twice in the first place; it does not make the rerun harmless."
+        },
+        {
+          "key": "c",
+          "text": "The work's idempotence: it made the file hold the spec rather than appending to it.",
+          "correct": true,
+          "feedback": "An \"ensure the file matches the spec\" task run twice is the same as once, so A's late run found nothing to change."
+        },
+        {
+          "key": "d",
+          "text": "The exclusive create, which stopped A and B holding the task together.",
+          "correct": false,
+          "feedback": "They never held it together, yet the task still ran twice: exclusivity in time does not give exactly-once."
+        }
+      ],
+      "explanation": "At-least-once execution is settled for, and the second run made harmless. Idempotent work is the cheapest way; the ownership check protects the board, and a fence at the gate protects the mainline.",
+      "hints": [
+        "Which of these acted on the file itself?"
+      ]
+    },
+    {
+      "id": "hrn-017-q18",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "leases",
+        "sweeper"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "With the snippet's rule, a claim is reclaimed when `now - mtime >= LEASE_S`, and `LEASE_S = 900`. A holder stamps its claim at t = 0 and renews it at t = 250, then dies. The sweeper runs at t = 600, 900, 1,200 and 1,500. At which sweep, in simulated seconds, is the task reclaimed?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "if EPOCH + now - claim.stat().st_mtime < LEASE_S:\n    continue                                  # holder is still inside its lease"
+      },
+      "answer": {
+        "value": 1200,
+        "tolerance": 0,
+        "unit": "s"
+      },
+      "precision_note": "The last stamp is 250, so the lease runs to $250 + 900 = 1{,}150$; at 900 the age is 650, still inside; at 1,200 it is 950, past it. Counting from the first stamp (0) gives 900, which is wrong because the renewal reset the lease.",
+      "explanation": "A renewal restarts the lease, so expiry is 900 seconds after the last stamp, t = 1,150; the first sweep at or after it is t = 1,200.",
+      "hints": [
+        "Which stamp does the sweeper see?",
+        "Find the first sweep at least 900 seconds after it."
+      ]
+    }
+  ]
+}

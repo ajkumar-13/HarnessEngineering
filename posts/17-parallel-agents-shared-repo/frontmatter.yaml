@@ -1,42 +1,26 @@
 id: hrn-017
 slug: 17-parallel-agents-shared-repo
-title: "17 · Parallel agents on a shared repo — worktrees and task-claiming"
-
-description: >
-  Many agents can work one codebase in parallel without a central orchestrator. They claim
-  tasks via files (an exclusive create, so two agents never get the same task) and isolate
-  their edits in git worktrees (one working copy per agent, so parallel changes never
-  collide).
-
-author: "Ajay"
+title: "17 - Parallel agents on a shared repo: worktrees and task-claiming"
+summary: "Many agents can share one repository with no orchestrator: each claims a task by an exclusive file create and edits in its own git worktree, while a merge gate, leases and idempotent work absorb conflicts and tasks that run twice."
 date: 2026-08-21
-last_modified: 2026-09-05
-
-tags: [harness-engineering, scale, parallel-agents, worktrees, git]
-
-keywords:
-  - harness engineering
-  - scale
-  - parallel agents
-  - worktrees
-  - git
-  - claim tasks via files
-  - shared repository
-  - exclusive create
-  - git worktree
-  - semantic conflict
-  - at-least-once execution
-
-category: Scale and orchestration
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part IV - Scale and orchestration"
-
+level: advanced
+reading_time: 29
+tags: [harness-engineering, scale-and-orchestration, parallel-agents, task-claiming, worktrees, leases, at-least-once]
 hero: diagrams/01-shared-repo-swarm.svg
-hero_alt: "A task board of files in open, claimed, and done states, with three agents each claiming a task by an exclusive create, and no central orchestrator."
-
-reading_time: 34
-toc: true
-draft: false
-canonical_url: ""
-prev: ../16-multi-agent-orchestration/
-next: ../18-long-horizon-ralph/
+prerequisites: [hrn-016]
+code: included
+outcomes:
+  - id: o1
+    text: "Implement task-claiming by exclusive file creation, and test the exactly-once claim with concurrent threads rather than a single-threaded suite."
+  - id: o2
+    text: "Add leases, reclaim and quarantine to a task board, releasing the claim token so that a reclaimed task can be claimed again."
+  - id: o3
+    text: "Isolate each agent's edits in a git worktree, and choose between worktrees, clones and containers by where the agents run and what they execute."
+  - id: o4
+    text: "Gate every merge on the candidate merged result, and size a swarm against the merge gate's ceiling of T/G agents."
+  - id: o5
+    text: "Design for at-least-once execution with idempotent tasks, a deduplicating gate and a fencing token, since a lease cannot tell a crashed agent from a slow one."
+recommended: [hrn-008]
