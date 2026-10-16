@@ -1,43 +1,26 @@
 id: hrn-020
 slug: 20-sdk-landscape
-title: "20 · The SDK & framework landscape — Agent SDK, LangGraph, and peers"
-
-description: >
-  You rarely build a harness fully from scratch in production. An agent software
-  development kit (SDK) is a prebuilt harness: it ships the loop, tools, context
-  management, hooks and permissions of Parts I to III, plus the sub-agents of Post 16 and
-  some of the observability of Post 21, and you supply the custom layer.
-
-author: "Ajay"
+title: "20 - The SDK and framework landscape: Agent SDK, LangGraph, and peers"
+summary: "An agent SDK is a prebuilt harness: four shapes sorted by who owns the loop and whose models it runs, the defaults each takes away, and a paired A/B on the team's own tasks to settle the choice."
 date: 2026-09-02
-last_modified: 2026-09-05
-
-tags: [harness-engineering, scale, sdk, frameworks, build-vs-buy]
-
-keywords:
-  - harness engineering
-  - scale
-  - sdk
-  - frameworks
-  - build vs buy
-  - prebuilt harness
-  - custom layer
-  - durable state and resumability
-  - resolution order
-  - cost per resolved task
-  - service you call
-  - agent cards
-
-category: Scale and orchestration
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part IV - Scale and orchestration"
-
+level: intermediate
+reading_time: 24
+tags: [harness-engineering, scale, sdk, frameworks, build-versus-buy, lock-in, harness-ab]
 hero: diagrams/01-sdk-feature-matrix.svg
-hero_alt: "An illustrative feature matrix: six harness components against the Claude Agent SDK, the OpenAI Agents SDK, LangGraph, and rolling your own, with built-in, partial, and build-it-yourself marks."
-
-reading_time: 28
-toc: true
-draft: false
-canonical_url: ""
-prev: ../19-loop-engineering/
-next: ../21-observability-traces/
+prerequisites: [hrn-002]
+code: included
+outcomes:
+  - id: o1
+    text: "List what an agent SDK ships as a prebuilt harness in the eleven-component vocabulary, and sort any option into four shapes along two axes."
+  - id: o2
+    text: "Read a batteries-included SDK against a graph framework by the shape of the code, and name what each one takes away."
+  - id: o3
+    text: "Audit an SDK's defaults before adopting it, starting from its stop conditions and its documented permission resolution order."
+  - id: o4
+    text: "Pick the shape for a situation from an observable signal, price the build, and settle the choice with a paired A/B rather than an argument."
+  - id: o5
+    text: "Keep the portable half of a harness portable, and place Harness-as-a-Service and agent-to-agent protocols beside the Model Context Protocol."
+recommended: [hrn-013, hrn-016, ctx-026]

@@ -1,190 +1,228 @@
-# 20 · The SDK & framework landscape — Agent SDK, LangGraph, and peers
+# 20 - The SDK and framework landscape: Agent SDK, LangGraph, and peers
 
-> **TL;DR.** You rarely build a harness fully from scratch in production. An agent software development kit (SDK) is a **prebuilt harness**: it ships the loop, tools, context management, hooks and permissions of Parts I to III, plus the sub-agents of [Post 16](../16-multi-agent-orchestration/index.md) and some of the observability of [Post 21](../21-observability-traces/index.md), and you supply the custom layer. The practical skill is knowing what each option gives you and what it takes away, across batteries-included SDKs, graph frameworks, the open harness engines you can now embed, and rolling your own. This post surveys the landscape neutrally and gives a build-versus-buy rule you settle by measurement rather than by argument.
+> **TL;DR.** An agent software development kit (SDK) is a **prebuilt harness**: it ships the loop, tools, context management, hooks and permissions that Parts I to III built by hand, and the team still supplies the custom layer. Four shapes cover the field, a batteries-included SDK, a code-first framework, a graph framework and an open harness engine, sorted by two axes: how much of the loop the product owns, and whether it is tied to one provider's models. What each shape takes away is a set of defaults, from its stop conditions to its permission resolution order, worth reading before adoption. The choice between two harnesses is settled by a paired A/B on the team's own tasks, and twenty tasks rarely settle it.
 >
-> **After reading this you will be able to:**
-> - Name what each shape of harness product actually ships, in the eleven-component vocabulary of [Post 02](../02-anatomy-of-a-harness/index.md).
-> - Compare a batteries-included SDK with a graph framework by the shape of the code.
-> - Decide which shape you are in from an observable signal rather than from a preference.
-> - Interrogate an SDK's defaults (exits, compaction, retries, permissions, traces) and settle the choice with an A/B on your own backlog.
+> **Prerequisites:** [post 02](../02-anatomy-of-a-harness/index.md), the eleven components and the seam between a prebuilt harness and the custom layer.
+> **Safe to skip?** Skip it if the reader can already say what each shape of agent SDK ships and takes away, find an SDK's documented permission resolution order, and size a harness A/B before trusting its verdict.
+>
+> **After reading, you will be able to:**
+>
+> - List what an agent SDK ships as a prebuilt harness in the eleven-component vocabulary, and sort any option into four shapes along two axes.
+> - Read a batteries-included SDK against a graph framework by the shape of the code, and name what each one takes away.
+> - Audit an SDK's defaults before adopting it, starting from its stop conditions and its documented permission resolution order.
+> - Pick the shape for a situation from an observable signal, price the build, and settle the choice with a paired A/B rather than an argument.
+> - Keep the portable half of a harness portable, and place Harness-as-a-Service and agent-to-agent protocols beside the Model Context Protocol.
 
-![An illustrative feature matrix: six harness components against the Claude Agent SDK, the OpenAI Agents SDK, LangGraph, and rolling your own, with built-in, partial, and build-it-yourself marks; beneath it a strip of each option's own primitives, with the last column priced in lines instead, and two panels naming the row the matrix is missing and the cell it is harsh on.](diagrams/01-sdk-feature-matrix.svg)
-*What each option gives you, as a sketch of the shape rather than a live spec sheet. §3 names the row it is missing.*
+![A matrix of six components, loop, state, context management, hooks, permissions and orchestration, against the Claude Agent SDK, the OpenAI Agents SDK, LangGraph and the Codex harness, each cell built in, partial or the team's to build, as documented in October 2026.](diagrams/01-sdk-feature-matrix.svg)
+
+*What each shape ships, as its documentation stated it on one date: a sketch of the field, not a spec sheet.*
 
 ---
 
 ## 1. What an agent SDK provides
 
-An agent software development kit (SDK) is the **prebuilt harness** of [Post 02](../02-anatomy-of-a-harness/index.md) §9. It ships the components this series spent Parts I to III building: the agent loop, tool dispatch, context management, hooks and a permission model. Most also ship two components from further along the map, the sub-agents of [Post 16](../16-multi-agent-orchestration/index.md) and some of the observability of [Post 21](../21-observability-traces/index.md). You do not write those; you inherit them.
+What does an agent SDK give a team, what does it take away, and how is build-versus-buy settled by measurement rather than by argument? An agent SDK is the **prebuilt harness** of [post 02](../02-anatomy-of-a-harness/index.md). It ships the components Parts I to III built: the agent loop, tool dispatch, context management, hooks and a permission model, and most also ship orchestration as sub-agents ([post 16](../16-multi-agent-orchestration/index.md)) and some of the observability of [post 21](../21-observability-traces/index.md). A team that adopts one inherits them.
 
-What you still supply is the **custom layer**: your tools, your project's rules in a memory file, your enforcement hooks, your evals, and the task. One vendor states the split in almost these words. OpenAI's platform documentation for the Codex harness says the harness handles the agent loop, conversation state, streamed activity and tool interaction, while the embedding application owns its product context, business rules and tools, along with the interface and the operational boundaries (OpenAI, 2026). That is [Post 02](../02-anatomy-of-a-harness/index.md) §9's prebuilt-versus-custom seam, drawn by a provider on its own product page.
-
-The load-bearing consequence is that an SDK does not remove harness engineering. It removes the *plumbing* of harness engineering and leaves you the part that is specific to your problem. "Just use an SDK" and "harness engineering is dead" are different claims, and only the first is true.
+What the team still supplies is the **custom layer**: its tools, its rules in a memory file, its enforcement hooks, its evaluations, and the task. One vendor draws the split on its own architecture diagram: "Your application owns product context, business rules, and tools; Codex app-server provides the agent loop and sandboxed execution" (OpenAI, "Codex as a platform: build on the open agent harness", 19 August 2026). That is post 02's seam, drawn by a provider. An SDK removes the *plumbing* of harness engineering and leaves the part specific to the problem: "just use an SDK" and "harness engineering is dead" are different claims, and only the first can be true.
 
 ### The case that makes the point
 
-OpenAI's own agent-first experiment is the clearest published example, and its numbers are worth carrying. A team started from an empty repository in late August 2025 and, five months later, had shipped a production beta of roughly one million lines of code across about 1,500 merged pull requests. Three engineers ran it at the start, seven by the end, averaging around 3.5 merged pull requests per engineer per day. Every line of it, from application logic to tests to continuous integration (CI) configuration, was written by Codex rather than by hand (OpenAI, 2026).
+OpenAI's account of its own agent-first project is the clearest published example (Ryan Lopopolo, "Harness engineering: leveraging Codex in an agent-first world", OpenAI, 11 February 2026). The first commit landed in late August 2025; five months later the repository held "on the order of a million lines of code" for an internal beta, with "roughly 1,500 pull requests" merged by three engineers, later seven, at "an average throughput of 3.5 PRs per engineer per day", and every line written by Codex. These are the vendor's figures for its own project with nothing held fixed: they show what a team can do inside a prebuilt harness, not that one harness beats another ([post 01](../01-from-context-to-harness/index.md)).
 
-The harness was a constant throughout: the same prebuilt engine, from the same vendor, for five months. What the team engineered was the custom layer, and the most instructive detail is a failure. Their first attempt at a memory file was one large `AGENTS.md`, and it did not work, because a giant instruction file crowds out the task, the code and the relevant docs. The shape that worked was a roughly 100-line table of contents pointing into a structured `docs/` tree of design documents, execution plans, product specs and references (OpenAI, 2026). That is progressive disclosure applied to the memory file ([Post 10](../10-continual-learning-ratchet/index.md)), and no SDK shipped it. It was designed, measured against throughput, and rewritten, inside a prebuilt harness that never changed.
+The team did not write a harness; it drove Codex, and what it engineered was the custom layer. The instructive detail is a failure: "one big `AGENTS.md`" did not work, because "a giant instruction file crowds out the task, the code, and the relevant docs". What replaced it was "a short `AGENTS.md` (roughly 100 lines)" serving as a map into a structured `docs/` directory, checked by the team's own linters and continuous integration (CI) jobs. That is progressive disclosure applied to the memory file ([post 10](../10-continual-learning-ratchet/index.md)), and no SDK shipped it.
 
 ---
 
 ## 2. Four shapes, and the two axes that sort the rest
 
-Four shapes cover most of the field, and this series names them without a protagonist:
+Four shapes cover most of the field:
 
-- **A batteries-included agent SDK.** The Claude Agent SDK is the clearest example: it is the harness that powers Claude Code ([Post 01](../01-from-context-to-harness/index.md)), with the loop, tool use, the Model Context Protocol (MCP) runtime, hooks, permissions, sub-agents and context compaction built in. You supply tools and a goal; the loop is inside.
-- **A provider's code-first agent framework.** The OpenAI Agents SDK is a small set of primitives you compose in ordinary Python: agents, handoffs, guardrails, sessions and built-in tracing (OpenAI, 2026). Nearer to a library than to an application.
-- **A graph framework.** LangGraph models the agent as an explicit graph of nodes and edges, a state machine you assemble, with a persistence layer underneath it. It gives you more control over the control flow and asks you to draw the loop yourself.
-- **An open harness engine you embed.** In August 2026 OpenAI published the Codex harness under the Apache-2.0 licence: the `codex` command-line interface, the non-interactive `codex exec` runner, the `app-server` engine behind persistent conversations and streamed events, and the Codex SDK for calling it from application code (OpenAI, 2026). The engine is the loop, the tool interaction, and the sandbox and approval policy; your application is the product around it.
+- **A batteries-included agent SDK.** The Claude Agent SDK "gives you the same tools, agent loop, and context management that power Claude Code", and its capabilities table lists built-in tools, hooks, subagents, the Model Context Protocol (MCP), permissions and sessions (Anthropic, "Agent SDK overview", consulted October 2026). The team supplies tools, options and a goal; the loop is inside.
+- **A provider's code-first framework.** The OpenAI Agents SDK is "a very small set of primitives" composed in ordinary Python: agents, handoffs and agents as tools, and guardrails, plus sessions and built-in tracing (OpenAI, Agents SDK documentation, consulted October 2026). It runs its own loop but is nearer to a library than to an application.
+- **A graph framework.** LangGraph is "a low-level orchestration framework and runtime" that "does not abstract prompts or architecture" (LangChain, LangGraph documentation, consulted October 2026): the agent is an explicit graph of nodes and edges over a persistence layer, and the team draws the loop. LangChain's own documentation puts planning, sub-agents and context management in a separate product on top, which it calls an agent harness.
+- **An open harness engine to embed.** The Codex harness behind OpenAI's Codex app, command-line interface (CLI) and editor extension is the `openai/codex` repository, Apache-2.0 and public since April 2025. "Codex as a platform" offers it as `codex exec` for bounded jobs, the Codex SDK for programmatic control, and app-server for persistent threads, streamed events and approval requests, and says "The open-source layer is the harness and integration surface; model access and managed services remain separate."
 
-Rolling your own is the fifth option and gets its own treatment in §6, because it is a decision about cost rather than a product on a shelf.
+A harness of one's own is the fifth option, priced in the section on choosing a shape, because it is a decision about cost rather than a product on a shelf.
 
-The field is much wider than four names. Google ships the Agent Development Kit; Microsoft's Agent Framework unified the AutoGen and Semantic Kernel lineages in 2026; Pydantic AI, smolagents and CrewAI each occupy their own corner. Reviewing them would date this post within a quarter, so two axes are more useful than a list: **how much of the loop the framework owns**, and **whether it is tied to one provider's models**. Place any framework on those two axes and you know most of what matters about it before reading a line of its documentation. The Reference Implementations section of *awesome-harness-engineering* is the living list this paragraph deliberately is not.
+The field is wider: Google's Agent Development Kit, Microsoft's Agent Framework, "the successor to Semantic Kernel and AutoGen" (Dmytro Struk and Shawn Henry, Microsoft, 19 February 2026), Pydantic AI, smolagents, CrewAI. A review would date within a quarter, so two axes are more useful than a list: **how much of the loop the product owns**, and **whether it is tied to one provider's models**. The figure below places the options on both; the Reference Implementations section of awesome-harness-engineering (ai-boost, GitHub, consulted October 2026) is the living list this paragraph is not.
 
-The sibling series covered several of these same hosts from the token side, asking what a memory file, a skill and a tool schema cost inside the window (Context Engineering, Post 26). This post asks what the same hosts ship as runtime machinery. The two views are complementary, and neither is a substitute for the other.
+![Four cells on two axes. Columns: the team draws the loop, or the product ships it. Rows: one provider's models by default, above, and any provider's models, below. Product's loop, one provider: the Claude Agent SDK and the Codex harness. Product's loop, any provider: the OpenAI Agents SDK. Team's loop, any provider: LangGraph and a harness of one's own. Team's loop, one provider: a loop over one client SDK, as this series' builds are.](diagrams/02-build-vs-buy.svg)
+
+*Two questions place any product before its documentation is read: who owns the loop, and whose models it runs.*
+
+The sibling series read several of these hosts from the token side, pricing a memory file, a skill and a tool schema inside the window (`ctx-026`); this post asks what they ship as runtime machinery.
 
 ---
 
 ## 3. What each one actually ships
 
-Naming products teaches nothing. Naming their primitives, and saying which box on the map each one fills, teaches the map. Read this table as a translation dictionary rather than a scorecard.
+Naming products teaches nothing; naming their primitives and the box on the map each fills teaches the map. The table is a translation dictionary, not a scorecard, from the documentation named above, consulted October 2026.
 
-| Shape (example) | Its own vocabulary | Where each lands on the map |
+| Shape (example) | Its own vocabulary | Where it lands on the map |
 |---|---|---|
-| **Batteries-included SDK** (Claude Agent SDK) | hooks on lifecycle events (`PreToolUse`, `PostToolUse`, `PreCompact`); permission modes (`default`, `acceptEdits`, `plan`, `bypassPermissions`); MCP servers; sub-agents; automatic compaction | hooks ([Post 13](../13-hooks-enforcement/index.md)); permissions ([Post 14](../14-permissions-sandboxes/index.md), [Post 15](../15-human-in-the-loop/index.md)); tools and MCP ([Post 07](../07-skills-mcp-runtime/index.md)); orchestration ([Post 16](../16-multi-agent-orchestration/index.md)); context management ([Post 09](../09-context-management-loop/index.md)) |
-| **Code-first framework** (OpenAI Agents SDK) | agents; handoffs; guardrails, which run input and output checks in parallel with the turn; sessions; built-in tracing | sub-agents ([Post 16](../16-multi-agent-orchestration/index.md)); enforcement ([Post 13](../13-hooks-enforcement/index.md)); context management ([Post 09](../09-context-management-loop/index.md)); observability ([Post 21](../21-observability-traces/index.md)) |
-| **Graph framework** (LangGraph) | a typed state graph of nodes and edges; checkpointers that persist state at every step; `interrupt()` and resume; time travel across saved checkpoints | the loop, drawn by you ([Post 03](../03-the-agent-loop/index.md)); durable state ([Post 08](../08-state-filesystem-git/index.md)); approval gates ([Post 15](../15-human-in-the-loop/index.md)); replay ([Post 21](../21-observability-traces/index.md) §7) |
-| **Open harness engine** (Codex, Apache-2.0) | `codex exec`; the `app-server` engine; the Codex SDK; sandbox and approval policy inside the engine | the loop ([Post 03](../03-the-agent-loop/index.md)); sandboxes ([Post 14](../14-permissions-sandboxes/index.md)); approvals ([Post 15](../15-human-in-the-loop/index.md)) |
+| **Batteries-included SDK** (Claude Agent SDK) | hooks on lifecycle events (`PreToolUse`, `PostToolUse`, `PreCompact` and more); permission modes (`default`, `acceptEdits`, `plan`, `dontAsk`, `auto`, `bypassPermissions`); MCP servers; subagents; sessions to resume or fork; automatic compaction | hooks ([post 13](../13-hooks-enforcement/index.md)); permissions ([post 14](../14-permissions-sandboxes/index.md)); tools and MCP ([post 07](../07-skills-mcp-runtime/index.md)); orchestration; context management ([post 09](../09-context-management-loop/index.md)) |
+| **Code-first framework** (OpenAI Agents SDK) | agents; handoffs; guardrails, input guardrails by default in parallel with the agent and tool guardrails around each function-tool call; `needs_approval` per tool; sessions; built-in tracing | orchestration; hooks; permissions ([post 15](../15-human-in-the-loop/index.md)); state ([post 08](../08-state-filesystem-git/index.md)); observability ([post 21](../21-observability-traces/index.md)) |
+| **Graph framework** (LangGraph) | a typed state graph of nodes and edges; checkpointers that save a snapshot "at each super-step"; `interrupt()` and resume; time travel across checkpoints | the loop, drawn by the team ([post 03](../03-the-agent-loop/index.md)); durable state; permissions, as approval gates; replay |
+| **Open harness engine** (Codex) | `codex exec`; app-server threads that start, resume and fork, with compaction and approval requests; the Codex SDK; hooks; sandbox and approval policy | the loop; context management; permissions: sandboxes ([post 14](../14-permissions-sandboxes/index.md)) and approvals |
 
-The instructive column is the one the table cannot show: what each shape does *not* give you.
+The instructive column is the one the table cannot show: what each shape does *not* give.
 
-- A batteries-included SDK does not give you explicit control flow. You cannot express a branch its loop does not already make, and that is the price of the loop being free.
-- A code-first framework hands you agents and delegation but not verification ([Post 11](../11-verification-loops/index.md)). Its stop conditions are the framework's, not yours.
-- A graph framework gives you no compaction policy, no permission model and no sandbox. What it gives you is the machinery to express a loop; you still draw the loop.
-- An open engine does not include model access or the vendor's hosted services. The engine is yours to fork; the tokens are not.
+- A batteries-included SDK does not give explicit control flow. A branch its loop does not make has to go through its hooks and options, or nowhere; that is the price of a free loop.
+- A code-first framework gives places to put checks but no verifier ([post 11](../11-verification-loops/index.md)), and its stop condition is a turn cap that raises `MaxTurnsExceeded` unless an error handler is passed (OpenAI, "Running agents", consulted October 2026).
+- A graph framework gives no compaction policy, no permission model and no sandbox: it gives the machinery to express a loop, and `interrupt()` as an approval primitive.
+- An open engine does not include model access or the vendor's hosted services. The engine can be forked; the tokens cannot.
 
-The hero matrix at the top has a blind spot worth naming, since a survey that flatters one column is a scorecard. It has no row for **durable state and resumability**, which is the single axis where a graph framework clearly beats a batteries-included SDK: a checkpointer makes every step of a run recoverable, so a process restart resumes rather than starts over (LangChain, 2025–26). Its "hooks and permissions" cell for LangGraph is also harsh, because `interrupt()` is a first-class approval primitive, which is precisely the mechanism of [Post 15](../15-human-in-the-loop/index.md). Read the matrix as a sketch of the shape of the field, then read this section for the corrections.
+The hero matrix is illustrative and dated: a mark records what the named page documented in October 2026, and "partial" means this section qualifies it. The OpenAI Agents SDK's context management is partial because compaction is an opt-in session wrapper, `OpenAIResponsesCompactionSession`, and its permissions because approval is set per tool, by a flag or a per-call callable, with no rule language or modes (OpenAI, "Sessions" and "Human-in-the-loop", consulted October 2026). LangGraph's orchestration is partial because the team draws any multi-agent topology itself, and its permissions because `interrupt()` pauses the graph for a human, the mechanism of [post 15](../15-human-in-the-loop/index.md), with no rules around it. Its state cell is where a graph framework is strongest: a run interrupted at any node resumes there, but only on a durable checkpointer, because with `InMemorySaver` "When the process restarts, all checkpoints are lost" (LangChain, "Persistence", consulted October 2026).
 
 ---
 
 ## 4. The shape of the code
 
-The difference between shapes is visible in about a dozen lines. The block below is illustrative, shaped after the real interfaces rather than copied from them:
+The difference between shapes shows in about a dozen lines. The block below is not run: it is the two vendors' documented shapes, the Claude Agent SDK's `query` with `ClaudeAgentOptions` (Anthropic, "How the agent loop works") and LangGraph's `StateGraph` with a checkpointer (LangChain, "Graph API" and "Persistence"), consulted October 2026, with the team's own functions left as names:
 
 ```python
-# A · A batteries-included SDK owns the loop; you supply tools and a goal.
-agent = AgentSDK(tools=[bash, read_file], system=SYSTEM, hooks=[deny_list])
-result = agent.run("add a test for the parser and make it pass")
+# A: a batteries-included SDK owns the loop; the team supplies tools, options and a goal.
+options = ClaudeAgentOptions(allowed_tools=["Read", "Edit", "Bash"], max_turns=30,
+                             hooks={"PreToolUse": [HookMatcher(matcher="Bash", hooks=[deny_list])]})
+async for message in query(prompt="add a test for the parser and make it pass", options=options):
+    ...
 
-# B · A graph framework: you draw the loop as nodes and edges.
+# B: a graph framework: the team draws the loop as nodes and edges.
 graph = StateGraph(State)
 graph.add_node("reason", call_model)
 graph.add_node("act", run_tools)
-graph.add_edge("reason", "act")
-graph.add_conditional_edges("act", lambda s: END if s["done"] else "reason")
+graph.add_edge(START, "reason")
+graph.add_edge("act", "reason")
+graph.add_conditional_edges("reason", lambda s: "act" if s["tool_calls"] else END)
 app = graph.compile(checkpointer=saver)
 result = app.invoke({"task": "add a test for the parser and make it pass"},
                     config={"configurable": {"thread_id": "run-1"}})
 ```
 
-Both run the same task. The SDK hides the loop and hands you a `run`; the graph framework hands you the loop to wire. The two lines that carry the real argument are the last two of block B: the checkpointer passed at compile time and the thread identifier passed at invoke time are what make the run resumable, inspectable and forkable. That is the capability you bought with the extra eight lines, and if you do not need it, those eight lines are pure cost.
+The SDK hides the loop and streams back messages; the graph framework hands over the loop to wire, in eight statements that block A never writes. The two that carry the argument are the last two of block B: the checkpointer passed at compile time and the thread identifier passed at invoke time make the run resumable, inspectable and forkable. That is what the extra lines buy, and a team that does not need it pays for nothing.
 
-Neither shape is better in the abstract. A plain reason-act-observe loop expressed as a graph is a state machine with two states, which is a diagram of a `while` loop rather than an improvement on one.
+`snippets/two_shapes.py` runs the comparison without either vendor's package. Shape A is the loop of [post 24](../24-build-minimal-harness/index.md)'s companion, which owns the control flow; shape B is a small standard-library graph with explicit edges, a dictionary for a checkpointer and an interrupt before the node that acts. One scripted model, one shared tool function:
+
+```text
+task: Which version does config.txt pin? Answer with the version only.
+shape A, a loop that owns the control flow: completed; 2 model calls, 296 input and 52 output tokens
+shape B, a graph wired by hand: stopped before act with 2 checkpoints saved
+  a fresh graph sharing only the checkpointer resumed it to END; 2 model calls, 296 input and 52 output tokens, 4 checkpoints
+transcript of both: tool_use read_file {"path": "config.txt"} -> tool_result "name = parser\nversion = 2.4.1\n" -> answer 2.4.1
+same transcript, same tokens: True
+```
+
+Same requests, same tokens (counted with tiktoken, so illustrative). What differs is who wrote the loop and what survives a stop: shape B was halted before its tool call, and a second graph that shared only the checkpointer finished the run. Neither shape is better in the abstract. A plain reason-act-observe loop drawn as a graph is a state machine with two states, a diagram of a `while` loop rather than an improvement on one, until the run needs to stop and come back.
 
 ---
 
 ## 5. What an SDK takes away
 
-"Know what it takes away" is easy advice and useless without a list. Seven things are worth checking before adopting one, because each is a decision this series taught you to make deliberately, and an SDK has already made it for you:
+"Know what it takes away" is useless advice without a list. Seven things are worth checking before adopting an SDK, because each is a decision this series made deliberately and the SDK has already made:
 
-- **The stop conditions.** [Post 19](../19-loop-engineering/index.md) §2 argued for four layered exits with a budget checked *before* the call that would breach it. Ask which exits the SDK implements, whether the budget ceiling is enforced or advisory, and whether a guard exit leaves you a resumable position or just raises.
-- **The context-management policy.** When does it compact, what does it drop, and can you see what it dropped? An SDK that silently summarises the middle of your run has made a [Post 09](../09-context-management-loop/index.md) §5 decision on your behalf, and a summary that discarded the wrong thing looks exactly like a model that forgot.
-- **Error and retry semantics.** Does a failing tool return an observation the model can reason about, or raise into your process? [Post 06](../06-tools-bash-code/index.md) §8 sets the standard for the return value: surface the exit status, and never return an empty string. Its §7 puts the rule beneath both, that a tool must never crash the loop at all. Then ask whether the SDK's own retries count against your token budget.
-- **The permission granularity.** Per tool, or per call with arguments? [Post 15](../15-human-in-the-loop/index.md) §3 recommends starting at tool granularity and narrowing to argument granularity for exactly the tools where the coarse version fires on things nobody needs to see, and its section 10 works the arithmetic that shows why: narrowing one policy took a gate from 34 requests per run to 3, which is the difference between reviewers who read the requests and reviewers who rubber-stamp them.
-- **The hook lifecycle.** Which events can a hook observe, and which of them can actually *stop* a call? [Post 13](../13-hooks-enforcement/index.md) §2 is the test: a hook that can only comment after the fact is a report, not a gate, and only a pre-tool point can enforce.
-- **The trace format.** Whether a gate's refusal is distinguishable from a success ([Post 14](../14-permissions-sandboxes/index.md) §5) is a property of the SDK's instrumentation, not something you can add afterwards. [Post 21](../21-observability-traces/index.md) §2 lists what a usable span carries: the stop reason on the run, token counts per model call, and sub-agent work nested rather than flattened.
-- **The upgrade cadence.** A fast-moving SDK is a dependency that changes under you. That is often worth it, and it is a maintenance cost that belongs in the build-versus-buy sum rather than outside it.
+- **The stop conditions.** [Post 19](../19-loop-engineering/index.md) reserves the budget *before* the call that would breach it. Which exits does the SDK implement, is the ceiling enforced or advisory, and does a guard exit leave a resumable position? The Claude Agent SDK is a worked answer: `max_turns` counts tool-use turns only, it and `max_budget_usd` default to no limit, and spend is compared with the cap after each response arrives, so "Spend can therefore pass the cap by up to the cost of that one response" (Anthropic, "How the agent loop works", consulted October 2026). A guard exit returns `error_max_turns` or `error_max_budget_usd` with a session identifier to resume from.
+- **The context-management policy.** When does it compact, what does it drop, and can anyone see what was dropped? An SDK that summarises the middle of a run has made a [post 09](../09-context-management-loop/index.md) decision, and a summary that discarded the wrong thing looks exactly like a model that forgot.
+- **Error and retry semantics.** Does a failing tool return an observation, as [post 06](../06-tools-bash-code/index.md) requires, or raise into the process? Do the SDK's own retries count against the budget?
+- **The permission granularity.** Per tool, or per call with arguments? [Post 15](../15-human-in-the-loop/index.md) starts at tool granularity and narrows to arguments where the coarse version fires on things nobody needs to see; in its illustrative session, narrowing one policy took a gate from 34 requests per run to 3.
+- **The hook lifecycle.** Which events can a hook observe, and which can *stop* a call? By [post 13](../13-hooks-enforcement/index.md)'s test, a hook that can only comment after the fact is a report, not a gate; only the points in front of an action can block it.
+- **The trace format.** Is a gate's refusal distinguishable from a success ([post 14](../14-permissions-sandboxes/index.md))? [Post 21](../21-observability-traces/index.md) lists what a usable span carries: the stop reason, tokens per model call, and sub-agent work nested.
+- **The upgrade cadence.** A fast-moving SDK changes underneath its users, a maintenance cost that belongs inside the build-versus-buy sum.
 
 ### One question, worked
 
-A checklist teaches you what to ask but not what an answer looks like. Take the permission question against a real SDK. The Claude Agent SDK resolves every tool-use request in a fixed six-step order: hooks first, then deny rules, then ask rules, then the active permission mode, then allow rules, and only then the `canUseTool` callback (Anthropic, 2026). The answer to "per tool, or per call with arguments?" is therefore *both*, and the part you actually have to learn is the precedence.
+Take the permission question against a real SDK. The Claude Agent SDK evaluates a tool call in six steps: hooks, deny rules, ask rules, the permission mode, allow rules, and only then the `canUseTool` callback (Anthropic, "Configure permissions", Claude Agent SDK documentation, consulted October 2026). The answer to "per tool, or per call with arguments?" is therefore *both*, and the part worth learning is the precedence.
 
-Two consequences fall straight out of the order. A deny rule sitting *ahead* of the mode check is what makes an aggressive mode survivable: `bypassPermissions` approves what reaches it, and a scoped deny rule never lets a match reach it. And the callback sitting *last* is the argument-level granularity of [Post 15](../15-human-in-the-loop/index.md) §3, which also means anything auto-approved by an earlier step never arrives there. A permission check written only in that callback is silently skipped for every pre-approved tool, which is a defect that produces no error message at all.
+Two consequences fall out of the order. A deny rule sitting *ahead* of the mode is what makes an aggressive mode survivable: "If a deny rule matches, the tool is blocked, even in `bypassPermissions` mode." And the callback sitting *last* is the argument-level granularity of [post 15](../15-human-in-the-loop/index.md), which anything approved by an earlier step never reaches. The page states it as a warning, "Auto-approved tools never reach `canUseTool`", so checks placed only in the callback are "silently bypassed for that tool", a defect that produces no error message.
 
-The transferable lesson is the artefact to go looking for. For every SDK you evaluate, find the documented **resolution order**. An SDK that does not publish one has still made the decision; it has just made it somewhere you cannot read.
+The transferable lesson is the artefact to look for: for every SDK under evaluation, find the documented **resolution order**. An SDK that publishes none has still made the decision, somewhere nobody outside can read.
 
 ---
 
-## 6. Which shape are you in
+## 6. Which shape a team is in
 
-The default is an SDK, and rolling your own is a choice you earn.
+The default is an SDK, and a harness of one's own is a choice to be earned.
 
-![A build-versus-buy tree: targeting one model's ecosystem leads to its native SDK; needing unusual control leads to a graph framework or rolling your own; otherwise a batteries-included SDK. Beside it, the build priced from this series' own two companions; below it, a table replacing each branch with a signal you can observe today and what that shape costs.](diagrams/02-build-vs-buy.svg)
-*Default to an SDK; earn your way to rolling your own.*
+Questions such as "is unusual control flow needed?" are answered by preference, so the table replaces each with a signal that can be observed:
 
-A tree branches on questions, and questions like "do you need unusual control flow?" are answered by preference unless you can point at something. The table below replaces each branch with an observable signal, so the answer is a statement about your system rather than about your taste.
-
-| The signal you can observe today | The shape it points at | What it costs you |
+| The signal observable today | The shape it points at | What it costs |
 |---|---|---|
-| One model in production, no concrete plan to switch | that model's native SDK | portability, and a rewrite if the plan changes |
-| Branch logic you have already written that the SDK's loop keeps fighting, or runs that must survive a process restart | a graph framework | the batteries: compaction, permissions, sandboxing are now yours |
-| You need the vendor's loop and sandbox but your own product surface around it | an open harness engine you embed | the integration work, and the model access is still rented |
-| You cannot name the SDK feature you would be giving up | a batteries-included SDK, not a build | nothing; this is the cheap answer |
-| A requirement no shipped harness expresses, which you can state in one sentence | roll your own | everything in the sum below, plus its maintenance |
+| One model in production, no concrete plan to switch | that model's own SDK, as the reference fit to measure against | portability, and a rewrite if the plan changes |
+| Branch logic the SDK's loop keeps fighting, or runs that must survive a process restart | a graph framework | the batteries: compaction, permissions and sandboxing become the team's |
+| The vendor's loop and sandbox wanted inside the team's own product surface | an open harness engine, embedded | the integration work; model access is still rented |
+| Nobody can name the SDK feature that would be given up | a batteries-included SDK, not a build | nothing; this is the cheap answer |
+| A requirement no shipped harness expresses, stated in one sentence | a harness of one's own | everything in the sum below, plus its maintenance |
 
-The last two rows are the useful ones. "I cannot name what I would be giving up" is a testable statement about the reader rather than a claim about the tools, and it is the most common true answer.
+The last two rows are the useful ones: "nobody can name what would be given up" is a testable statement about the team rather than a claim about the tools, and it is often the true one. The first row carries a caveat. A model's own SDK carries the conventions the model was trained against, which makes it the natural first harness to try, but [post 04](../04-harness-beats-model/index.md) found the best harness for a task is not necessarily the one the model was post-trained with: the vendor's SDK is a baseline to measure against, not a guaranteed best. Fit the harness to the model, then measure.
 
-**Use the model's native SDK** when you are committed to one model's ecosystem. The co-training flywheel ([Post 04](../04-harness-beats-model/index.md)) means a model performs best inside the harness it was shaped with, so a generic wrapper leaves capability on the table.
+### Price the build before choosing it
 
-### Price the build before you choose it
+This series builds two harnesses from scratch, so the last row's cost can be counted rather than estimated. `snippets/build_cost.py` reads the two companions:
 
-This series builds two harnesses from scratch, so the cost of the "roll your own" row can be quoted rather than estimated. Build #1 ([Post 24](../24-build-minimal-harness/index.md), companion [`code/24-minimal-harness/`](../../code/24-minimal-harness/)) is **520 lines of implementation and 138 of tests**, a 10-test suite, and it buys a loop, a schema-validated tool registry, a verification gate and four layered exits. Build #2 ([Post 25](../25-build-harness-plus/index.md), companion [`code/25-harness-plus/`](../../code/25-harness-plus/)) layers hooks, a sandbox, an approval gate, a sub-agent and tracing on top, and comes to **728 implementation lines and 233 test lines** across a 13-test suite.
+```text
+Build #1 (code/24-minimal-harness): 520 implementation lines, 138 test lines, 10 tests
+Build #2 (code/25-harness-plus): 728 implementation lines, 233 test lines, 13 tests
+union: Build #2's 728 implementation lines plus Build #1's 75-line verifier = 803
+```
 
-The two figures do not simply add, because each build carries its own loop and tool registry, and Build #2 ships no verifier at all ([Post 25](../25-build-harness-plus/index.md), section 11). Take the union instead and the honest figure for rolling your own is not a 500-line engine: it is roughly **800 implementation lines**, plus another 250 or so of tests, to reach the feature set of a mid-range SDK. And that total still has no compaction policy, no retry semantics, no MCP client, and no permission resolution order. Add those and you are past 1,500 lines of code whose only purpose is to be the same as everybody else's, maintained by you, forever.
+Build #1 ([post 24](../24-build-minimal-harness/index.md)) buys a loop, a schema-validated tool registry, a verification gate and four layered exits; Build #2 ([post 25](../25-build-harness-plus/index.md)) adds hooks, a sandbox, an approval gate, a sub-agent and tracing. They do not simply add, because each carries its own loop and registry and Build #2 ships no verifier, so the union is Build #2 plus Build #1's verifier: 803 implementation lines as `wc -l` counts them, before a single test. That total still has no compaction policy, no retry semantics, no MCP client and no permission resolution order, each of which a mid-range SDK ships and this series did not price.
 
-The maintenance is not the worst of it. Both of this series' companions shipped with defects their own passing test suites could not see. One sandbox checked the first token of a command and then executed the raw string through a shell, so `echo hi; curl http://evil` passed: `echo` was allow-listed and the shell ran the rest anyway. The same build tagged trace spans `blocked`, `denied` or `ok`, and because a sandbox refuses *inside* the tool and returns an ordinary string, every sandbox refusal landed in `ok`, indistinguishable from a command that ran. Both are dissected in [Post 25](../25-build-harness-plus/index.md), section 10, and the second again in [Post 14](../14-permissions-sandboxes/index.md) §5. That is the strongest argument against rolling your own that this series can make about itself: the cost includes the bugs that an SDK's other users have already found for you.
+Maintenance is not the worst of it. Build #2 shipped with two defects its passing tests could not see: its sandbox checked the first token of a command and then ran the raw string through a shell, so `echo hi; curl http://evil.example` passed, and its tracer tagged every sandbox refusal `ok`, because the sandbox refuses *inside* the tool and returns an ordinary string. [Post 25](../25-build-harness-plus/index.md) dissects both. The cost of rolling one's own includes the bugs that an SDK's other users have already found.
 
-Build from scratch to *understand* what the SDKs do, which is exactly what Posts 24 to 26 are for. Building a harness once is the fastest way to see what a prebuilt one is doing. That is a reason to read those three posts, not a reason to ship what they build.
+Build from scratch to *understand* what the SDKs do, which is what posts 24 to 26 are for, not to ship what they build.
 
 ---
 
 ## 7. Settle it by measuring, not by arguing
 
-The comparison in §3 is a sketch, and sketches lose to evidence. The whole premise of this series is that the harness is a variable that moves outcomes ([Post 04](../04-harness-beats-model/index.md)), which means *the choice between two harnesses is an empirical question you can settle*.
+The comparison of the third section is a sketch, and sketches lose to evidence. The premise of this series is that the harness is a variable that moves outcomes ([post 04](../04-harness-beats-model/index.md)), which makes *the choice between two harnesses an empirical question*.
 
-The method is harness A/B ([Post 22](../22-evaluating-harnesses/index.md) §7): hold the model and the task set fixed, swap the harness, and compare on the numbers that matter. Two of the four are Post 22's own vocabulary, because they are what an eval harness actually produces: **resolved-rate** and **cost per resolved task**. The other two, wall-clock and human interventions per run, are operational numbers only your own instrumentation will report.
-
-![An experiment layout: the model and a twenty-job task set held fixed on the left, harness A and harness B as the only varied thing in the middle, and four measured numbers on the right. A full-width panel below works through whether the seven-point gap is real, and two caution panels sit under that.](diagrams/03-harness-ab.svg)
-*One thing varies. Everything else is held still, which is the only reason the four numbers mean anything — and the panel below is why seven points across twenty tasks is not yet a decision.*
-
-One pass per task is not a result. Agent runs are draws from a stochastic process, so each task runs several times and the comparable number is resolved-rate as a mean over seeds with its spread, not a single lucky pass ([Post 22](../22-evaluating-harnesses/index.md) §4).
+The method is the harness A/B of [post 22](../22-evaluating-harnesses/index.md): hold the model and the task set fixed, swap the harness, and compare **resolved-rate** and **cost per resolved task**, plus wall-clock and human interventions per run. Agent runs are draws from a stochastic process, so each task runs several times and the arms are compared task by task.
 
 ### A worked comparison
 
-Take twenty representative jobs from your own backlog, five seeds each: 100 runs per arm, 200 runs in total. Suppose harness A resolves 61 of its 100 runs and harness B resolves 68, at an average of $0.42 and $0.61 per run.
+`snippets/harness_ab.py` runs that experiment in miniature, with one stand-in model held fixed. Harness A is shape A, post 24's loop, which accepts the model's first final answer; harness B is the hand-wired graph with one more node, a cheap check that the answer appears in the file the agent read, and one retry when it does not. The stand-in errs on each answer with a per-task probability; four in ten of its errors are made-up values that B's check catches, the rest values misread from the wrong line, which it does not. Because the stand-in is defined, B's true advantage is known, which a real A/B never knows. Twenty tasks, five seeds each, every number computed and illustrative:
 
-- **Resolved-rate:** 61% against 68%, a 7-point gap.
-- **Cost per resolved task:** $42 / 61 = **$0.69** for A; $61 / 68 = **$0.90** for B. B resolves more and costs about 30% more for each thing it resolves.
-- **Is the 7 points real?** Treating the 100 runs as independent draws, the standard error near a 65% rate is about 4.8 points, so a 7-point gap is roughly 1.5 standard errors: suggestive, not settled. And those runs are *not* independent, because five of them share a task; the honest denominator is nearer the 20 tasks than the 100 runs, where the standard error is about 11 points. Twenty tasks reliably detect a large effect. They do not adjudicate seven points. Pairing the two arms task by task is what strips out the task-difficulty variance that swamps that interval ([Post 22](../22-evaluating-harnesses/index.md) §8).
-- **The per-task diff:** suppose B fixed nine tasks and broke two. That is the row that decides it, and it is invisible in the aggregate ([Post 22](../22-evaluating-harnesses/index.md) §7).
+```text
+20 tasks x 5 seeds = 100 runs per arm; the model is held fixed
+arm  resolved   rate  tokens/run  cost/run   cost/resolved  seconds/run
+  A   66/100   66.0%         366  $0.00172  $0.00260         4.1
+  B   67/100   67.0%         419  $0.00192  $0.00286         4.5
+per task, resolved of 5 (A/B): 5/5 5/5 5/5 5/4 5/5 5/3 4/4 4/4 3/3 3/4 4/5 3/3 3/5 2/1 3/3 3/3 3/2 0/2 1/0 0/1
+B-only wins 5, A-only wins 5, ties 10; sign test p = 1.00
+measured lift +1.0 points; naive standard error 6.7 points (runs as independent), paired by task 4.5 points
+95% interval on the paired lift: -8.3 to +10.3 points
+true lift, from the stand-in's definition: +6.2 points
+verdict: not callable; detecting the true lift four times in five would take about 83 tasks
+```
 
-The arithmetic is worth doing before the migration, not after, because it converts "B feels better" into "B costs 30% more per resolved task and regressed two jobs we care about". A fixed task set from your own backlog will still tell you more in a day than any feature matrix, including the one at the top of this post.
+Costs are tiktoken counts at the Claude Sonnet 4.6 rates of 3 and 15 dollars per million input and output tokens (Anthropic pricing page, consulted October 2026), and seconds are simulated at 2.0 per model call and 0.1 per tool call; real prompts are far larger, and the ratios are the point. Read it in four steps:
 
-Two cautions travel with any such comparison. Judging a model outside its native SDK understates it, because of the co-training flywheel, so an A/B across SDKs is partly measuring the model-harness pairing rather than the harness alone. And migration cost is usually dominated not by the loop but by how deeply your custom layer reached into the SDK's types, which is a cost you control at design time rather than at migration time.
+- **Resolved-rate:** 66% against 67%. B is better by construction, by 6.2 points, and twenty tasks measured one.
+- **Cost per resolved task:** B's check and retry cost about 10% more per resolved task (0.00286 dollars against 0.00260), to be justified against a lift nobody can yet see.
+- **Is the gap real?** The paired interval runs from −8.3 to +10.3 points, and the sign test on the ten discordant tasks agrees: no call either way. The naive 6.7-point standard error treats runs that share a task as independent; pairing by task is what post 22 prescribes.
+- **The per-task diff:** B won five tasks and lost five, and every one of A's wins is noise, because the stand-in makes B at least as good on every task. A regression seen at five seeds is re-run before it is believed.
+
+The figure below draws the run. The arithmetic belongs before a migration, not after: at this spread about 83 tasks would detect the true lift four times in five, the sizing problem post 22 takes up.
+
+![Two panels computed by the post's A/B snippet. Left, twenty tasks as rows, each a dot at B's resolved count minus A's, out of five seeds: ten on zero, five to the right and five to the left. Right, the measured lift of 1.0 point with its 95 percent interval from minus 8.3 to plus 10.3 points, crossing zero, the true lift of 6.2 points, and a table: A resolved 66 of 100 runs and B 67.](diagrams/03-harness-ab.svg)
+
+*A real 6.2-point improvement, measured on twenty tasks as one point, with an interval wide enough to hold either verdict.*
+
+Two cautions travel with any such comparison. An A/B across two vendors' SDKs measures model and harness as a pair, because each vendor's SDK is shaped for its own models. And migration cost is set less by the loop than by how deeply the custom layer reached into the SDK's types, which is decided at design time.
 
 ---
 
 ## 8. Portability and lock-in
 
-Every SDK ties you to its abstractions, and the tie is worth pricing before you commit. An SDK's loop, its hook API and its permission model are its own; migrating off them is real work. The cheapest way to see how much work is to look at what survives a move untouched.
+Every SDK ties its users to its abstractions: its loop, its hook interface and its permission model are its own, and migrating off them is real work. The cheapest way to see how much is to look at what survives a move untouched.
 
-A tool is a function plus a schema, and both of those are yours. Only the adapter belongs to the harness:
+A tool is a function plus a schema, both the team's; only the adapter belongs to the harness. In `snippets/two_shapes.py` one tool reaches both shapes:
 
 ```python
 # The portable half: a plain function and the schema that describes it.
 def read_file(args: dict) -> str:
-    return open(args["path"], encoding="utf-8").read()
+    return (WORKDIR / args["path"]).read_text(encoding="utf-8")
+
 
 READ_FILE = {
     "name": "read_file",
@@ -194,63 +232,89 @@ READ_FILE = {
                      "required": ["path"], "additionalProperties": False},
 }
 
-# Adapter A · a harness that takes a tool list and runs the loop itself.
+# Adapter A: a harness that takes a tool list and runs the loop itself.
 registry = ToolRegistry([Tool(READ_FILE["name"], READ_FILE["description"],
                               READ_FILE["input_schema"], read_file)])
 
-# Adapter B · a graph framework: the same function becomes one node.
-def read_file_node(state: dict) -> dict:
-    return {**state, "observation": read_file(state["args"])}
+
+# Adapter B: a graph framework, where the same function becomes one node.
+def act(state: dict) -> dict:
+    call = state["pending"]
+    return {**state, "pending": None,
+            "messages": state["messages"] + [tool_result(call, read_file(call.input))]}
 ```
 
-`Tool` and `ToolRegistry` here are the real types from [`code/24-minimal-harness/`](../../code/24-minimal-harness/); every provider SDK has an equivalent pair. The point is what did not move. The function is unchanged, the schema is unchanged, and the switching cost for this tool is the three lines under each adapter comment. **The length of the adapter is the switching cost**, which makes it a quantity you can design down rather than a risk you can only worry about.
+`Tool` and `ToolRegistry` are the real types of [`code/24-minimal-harness/`](../../code/24-minimal-harness/), and every provider SDK has an equivalent pair. The function and the schema did not move; the switching cost for this tool is the few lines under each adapter comment. **The length of the adapter is the switching cost**, a quantity to design down rather than a risk to worry about.
 
 Two things reduce lock-in, and both follow from that observation:
 
-- **Plain tools and MCP.** A tool defined as a function ports at the cost of its adapter. A capability behind an MCP server ports for free, because the specification puts a process boundary between host, client and server, so any compliant host can call the same server unchanged ([Post 07](../07-skills-mcp-runtime/index.md) §8).
-- **Keeping the custom layer separable.** Your memory file, your evals and your task definitions are yours; the more they live outside the SDK's types, the cheaper a switch is. A hook written as a plain predicate over a tool name and its arguments ports; the same logic written against the SDK's hook input object does not.
+- **Plain tools and MCP.** A tool defined as a function ports at the cost of its adapter. A capability behind an MCP server ports at no cost to the server, because the protocol puts a boundary between host and server ([post 07](../07-skills-mcp-runtime/index.md); `mcp-002`): any host that speaks MCP calls it unchanged, and the Claude Agent SDK, the OpenAI Agents SDK and Codex all document MCP support.
+- **A separable custom layer.** The memory file, the evaluations and the task definitions are the team's; the more they live outside the SDK's types, the cheaper a switch. A hook written as a plain predicate over a tool name and its arguments ports; the same logic written against the SDK's hook input object does not.
 
-An open engine prices lock-in differently again. A harness published under a permissive licence gives you a fallback a proprietary SDK cannot: if the vendor's direction stops matching yours, forking is available where migrating was the only option. That is a genuine change in the shape of the risk and it is not the same as having no risk, because model access and the hosted services are not part of the open release. The dependency does not disappear; it moves from the engine to the tokens.
+An open engine prices lock-in differently: a permissive licence makes forking available where migrating was the only option. That changes the shape of the risk without removing it, because model access is not in the release; the dependency moves from the engine to the tokens.
 
-The trade is the usual one. A native SDK buys co-trained performance at the cost of portability; a graph framework buys explicit control at the cost of the batteries; an open engine buys the right to fork at the cost of integration work; a from-scratch harness buys total control at the price computed in §6. There is no free option, only a priced one.
+The trade is the usual one. A vendor's SDK buys the reference fit for that vendor's models at the cost of portability; a graph framework buys explicit control at the cost of the batteries; an open engine buys the right to fork at the cost of integration work; a harness of one's own buys total control at the price counted above. There is no free option, only a priced one.
 
 ---
 
 ## 9. Harness-as-a-Service, and the layer beside MCP
 
-The landscape is trending toward a further step: from an SDK you run to a **service you call**. The shift is from large language model (LLM) application programming interfaces (APIs) that return a completion to *harness APIs* that return a runtime, with the loop, tools, context management and hooks already inside (Osmani, 2026). You send a task and get back an agent run, not a token stream.
+The landscape is trending a step further. Vivek Trivedy named it in September 2025: "the core primitive for working with AI is shifting from the LLM API (chat style endpoints) to the Harness API (customizable runtimes). I call this Harness as a Service (HaaS)" ("The Claude Code SDK and the Birth of HaaS (Harness as a Service)", vtrivedy.com, 23 September 2025). Addy Osmani's "Agent Harness Engineering" (April 2026) restated it, crediting Trivedy, as a move from large language model (LLM) application programming interfaces (APIs) "which give you a completion" to harness APIs "which give you a runtime", and counts the Claude Agent SDK, the Codex SDK and the OpenAI Agents SDK as pointing that way.
 
-Harness-as-a-Service is the commercial endpoint of everything in this series: the harness, packaged and sold as the unit. It moves the whole ledger of §6 across to the other side, since a rented runtime has no line count and no maintenance, and a per-run price instead. Whether to build, buy an SDK, or rent a runtime is then partly an economics question, which is [Post 23](../23-economics-haas/index.md).
+The far end of the trend is a runtime the vendor hosts: a task goes in and an agent run comes back. Anthropic's documentation already lists one beside its SDK, Managed Agents, "A hosted agent harness that runs the agent loop, with sessions in an Anthropic-managed cloud sandbox or a self-hosted sandbox" (Anthropic, "Agent SDK overview", consulted October 2026). A rented runtime has no line count and no maintenance but a per-run price, so whether to build, adopt or rent becomes partly an economics question, which is [post 23](../23-economics-haas/index.md).
 
-A second shift is running *beside* MCP rather than above it. A2A (Agent2Agent) is an open protocol for agents built by different vendors to discover one another, exchange messages and coordinate tasks; agents advertise their capabilities through **agent cards** served over HTTP and JSON, so one agent can call another without sharing its internal state (A2A Project, 2025–26). The relationship to MCP is horizontal against vertical: MCP connects one agent *down* to its tools and data, and A2A connects agents *sideways* to each other. It is a governed specification rather than a rumour: Google transferred the protocol, its specification and its SDKs to the Linux Foundation in June 2025 for vendor-neutral governance (Linux Foundation, 2025). Multi-agent systems that cross an organisational boundary sit beyond this series' single-agent-and-orchestration scope, but this is the interoperability layer to watch as agent fleets begin to transact directly.
+A second shift runs *beside* MCP rather than above it. The Agent2Agent (A2A) protocol standardises "how independent, often opaque, AI agents communicate and collaborate with each other as peers" (A2A Project, "Agent2Agent (A2A) Protocol Specification", version 1.0.0, consulted October 2026). An agent publishes an agent card, "a structured description of what it can do and how to reach it" (Agentic AI Foundation, "A2A joins AAIF's open agentic stack", 17 August 2026), and other agents read it to discover capabilities and delegate tasks without sharing their internals. MCP connects one agent *down* to its tools and data; A2A connects agents *sideways* to each other, and the specification's own example has an A2A server agent using MCP for the tools behind its task. It is governed, not a rumour: Google launched it in April 2025, the Linux Foundation launched it as a project on 23 June 2025, version 1.0 shipped in March 2026, and it became a hosted project of the Agentic AI Foundation on 17 August 2026. Systems that cross an organisational boundary are beyond this series' scope, but this is the layer to watch.
+
+---
+
+## 10. Make it run
+
+The plan's exercise for this post is to implement one tiny task against a batteries-included shape and a graph shape with one shared tool function, then A/B the two on a fixed task set. No vendor SDK or framework is installed for it: the three snippets run offline from the series root with the standard library and `tiktoken`, and the first two import the loop of `code/24-minimal-harness/` unchanged:
+
+```bash
+uv run python posts/20-sdk-landscape/snippets/two_shapes.py
+uv run python posts/20-sdk-landscape/snippets/harness_ab.py
+uv run python posts/20-sdk-landscape/snippets/build_cost.py
+```
+
+Each prints the output quoted above in about a second; the real A/B runner is [post 22](../22-evaluating-harnesses/index.md)'s. To try a variation, set `SEEDS` in `harness_ab.py` to 20 and watch the interval narrow on the same twenty tasks.
+
+---
+
+## 11. What can go wrong?
+
+These are the mistakes that applying this post's ideas actually produces.
+
+- **A permission check written only in the callback.** The team puts its argument checks in `canUseTool` and adds a bare allow rule for `Bash`; every `Bash` call that reaches the allow step is approved there, and the checks never run.
+- **A budget treated as a hard ceiling.** `max_budget_usd` is set to the exact limit; the response that crosses it still completes, and the bill overshoots by one call, plus whatever running sub-agents spend before they stop.
+- **An in-memory checkpointer in production.** The graph resumes perfectly in testing; the first process restart loses every run in flight, because the checkpoints lived in memory.
+- **A verdict from twenty tasks.** The A/B shows a two-point gap and the team migrates; a rerun with new seeds shows the opposite sign, and nobody can say which harness is better.
+- **Tools written against the SDK's types.** Every tool takes the SDK's context object, so a migration rewrites each tool, not a few adapter lines.
 
 ---
 
 ## Common pitfalls
 
-- **Rolling your own by default.** An SDK is usually the right call; build from scratch to learn, not as a production reflex. Price it first: roughly 800 implementation lines for a mid-range feature set, before compaction, retries or MCP (§6).
-- **Thinking an SDK removes harness engineering.** It removes the plumbing; you still design the custom layer, and OpenAI's own agent-first team spent five months doing exactly that inside an unchanging harness (§1).
-- **Judging a model outside its native SDK.** A generic wrapper understates a frontier model, because of the co-training flywheel (§7; Post 04).
-- **Deep lock-in without pricing it.** The switching cost is the length of your adapters and the depth your custom layer reached into the SDK's types. Both are design-time choices (§8).
-- **Treating an open engine as zero lock-in.** A permissive licence gives you the right to fork the engine. It does not give you the model, and the hosted services are not in the release (§8).
-- **Adopting without auditing the defaults.** The SDK has already chosen your stop conditions, compaction policy, retry semantics, hook lifecycle and permission resolution order. Go and read the order; every one of them has one (§5).
-- **Choosing an SDK from a feature matrix.** Hold the model and task set fixed and A/B the harnesses on your own backlog, several seeds per task, and read the per-task diff as well as the mean (§7; Post 22).
-- **A graph framework for a simple loop.** Explicit graphs earn their extra lines through durable state and resumability. A plain reason-act-observe loop drawn as a graph is a two-state machine (§4).
-- **Silent compaction you never inspect.** An SDK that summarises the middle of a run has made a context decision for you, and a bad summary is indistinguishable from a model that forgot (§5; Post 09).
+1. **Rolling a harness of one's own by default.** Build from scratch to learn, not as a production reflex; the union of this series' two builds is 803 lines before compaction, retries or an MCP client.
+2. **Thinking an SDK removes harness engineering.** It removes the plumbing; the custom layer is still designed, as OpenAI's own team found with its memory file.
+3. **Adopting without auditing the defaults.** The SDK has already chosen the stop conditions, compaction, retries, hook lifecycle and permission resolution order; each is documented somewhere, or decided where nobody can read it.
+4. **Choosing an SDK from a feature matrix.** Hold the model and the task set fixed, A/B the harnesses with several seeds per task, and pair the comparison by task.
+5. **Deep lock-in, unpriced.** The switching cost is the length of the adapters and the depth the custom layer reached into the SDK's types; both are design-time choices.
+6. **A graph framework for a simple loop.** Explicit graphs earn their extra lines through durable state and resumability; a plain reason-act-observe loop drawn as a graph is a two-state machine.
 
 ---
 
 ## Further reading
 
-- Anthropic, "Claude Agent SDK" documentation (2025–26): the loop, tools, MCP, hooks, permissions and sub-agents as a prebuilt harness.
-- Anthropic, "Configure permissions" (Claude Agent SDK documentation, 2026): the six-step resolution order worked through in §5, the permission modes, and why a deny rule holds under `bypassPermissions`.
-- OpenAI, "Harness engineering: leveraging Codex in an agent-first world" (2026): the five-month agent-first experiment, its figures, and the `AGENTS.md` table-of-contents shape.
-- OpenAI, "Codex as a platform: build on the open agent harness" (2026), with the Apache-2.0 `openai/codex` repository: the harness-versus-application split in a vendor's own words, and the engine you can embed.
-- OpenAI Agents SDK documentation (2025–26): agents, handoffs, guardrails, sessions and built-in tracing.
-- LangGraph documentation (LangChain, 2025–26): graph-based control flow, checkpointers, durable execution, `interrupt()` and time travel.
-- A2A Project, "Agent2Agent (A2A) protocol specification" (2025–26): agent cards, discovery and messaging between agents; under Linux Foundation governance since June 2025.
-- Osmani, "Agent Harness Engineering" (2026): the Harness-as-a-Service framing used in §9.
-- awesome-harness-engineering (2026): the Reference Implementations section, the living list §2 declines to be.
+- Anthropic, Claude Agent SDK documentation: "Agent SDK overview", "How the agent loop works", "Configure permissions" and the hooks guide (consulted October 2026).
+- OpenAI, Agents SDK documentation (consulted October 2026).
+- LangChain, LangGraph documentation: overview, "Persistence" and "Interrupts" (consulted October 2026).
+- OpenAI, "Codex as a platform: build on the open agent harness" (19 August 2026), with the Apache-2.0 `openai/codex` repository.
+- Ryan Lopopolo, "Harness engineering: leveraging Codex in an agent-first world" (OpenAI, 11 February 2026). The agent-first internal project and the `AGENTS.md` table of contents.
+- Vivek Trivedy, "The Claude Code SDK and the Birth of HaaS (Harness as a Service)" (vtrivedy.com, 23 September 2025), and Addy Osmani, "Agent Harness Engineering" (April 2026). Harness-as-a-Service, named and popularised.
+- A2A Project, "Agent2Agent (A2A) Protocol Specification", version 1.0.0 (consulted October 2026).
+- ai-boost, awesome-harness-engineering (GitHub, consulted October 2026). The Reference Implementations section.
+- `ctx-026` (`context-engineering`): the same hosts read from the token side.
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
@@ -258,7 +322,5 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Post 21 — Observability & trace-driven repair](../21-observability-traces/index.md)**: Part V opens with seeing what a harness, SDK or not, actually did.
-- **[Post 22 — Evaluating harnesses](../22-evaluating-harnesses/index.md)**: the A/B method of §7, in full, with the eval harness that produces the numbers.
-- **[Post 24 — Build #1: a minimal agent harness](../24-build-minimal-harness/index.md)**: rolling your own, to understand what the SDKs provide.
-- **[Post 02 — The anatomy of a harness](../02-anatomy-of-a-harness/index.md)**: the prebuilt-versus-custom split an SDK sits on.
+- **[Post 21 - Observability and trace-driven repair: seeing what the harness did](../21-observability-traces/index.md):** Part V opens with seeing what a harness, prebuilt or not, actually did on each step.
+- **[Post 22 - Evaluating harnesses: Terminal-Bench, SWE-bench, harness A/B](../22-evaluating-harnesses/index.md):** the A/B of this post at full size, with the graders, seeds and sizing that let it reach a verdict.

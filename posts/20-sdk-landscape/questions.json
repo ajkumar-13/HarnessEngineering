@@ -1,0 +1,736 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-020",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-020-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "prebuilt-harness",
+        "custom-layer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team adopts a batteries-included agent SDK for a new coding agent. Which part of the work does the SDK leave to the team?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The agent loop and its tool dispatch",
+          "correct": false,
+          "feedback": "The loop and tool dispatch are exactly the plumbing a prebuilt harness ships."
+        },
+        {
+          "key": "b",
+          "text": "Its tools, its memory file, its enforcement hooks and its evaluations",
+          "correct": true,
+          "feedback": "Correct. That is the custom layer: what is specific to the team's problem, which no SDK can ship."
+        },
+        {
+          "key": "c",
+          "text": "Context compaction when the window fills",
+          "correct": false,
+          "feedback": "Compaction is part of the prebuilt harness; the Claude Agent SDK, for one, compacts automatically."
+        },
+        {
+          "key": "d",
+          "text": "Nothing: an SDK removes harness engineering",
+          "correct": false,
+          "feedback": "An SDK removes the plumbing of harness engineering, not the discipline; the custom layer is still designed."
+        }
+      ],
+      "explanation": "An agent SDK is a prebuilt harness: it ships the loop, tool dispatch, context management, hooks and a permission model. The team still supplies the custom layer, its tools, rules, enforcement hooks, evaluations and the task, which is why harness engineering survives an SDK.",
+      "hints": [
+        "Separate what every agent needs from what only this team's agent needs."
+      ]
+    },
+    {
+      "id": "hrn-020-q02",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "four-shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each product to the shape it represents, as its documentation described it in October 2026. One shape on the right fits none of them.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Claude Agent SDK"
+        },
+        {
+          "key": "b",
+          "text": "OpenAI Agents SDK"
+        },
+        {
+          "key": "c",
+          "text": "LangGraph"
+        },
+        {
+          "key": "d",
+          "text": "The Codex harness in openai/codex"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "A batteries-included SDK: tools, options and a goal go in, the loop is inside"
+        },
+        {
+          "key": "b",
+          "text": "A code-first framework: a very small set of primitives composed in ordinary Python"
+        },
+        {
+          "key": "c",
+          "text": "A graph framework: the team draws the loop as nodes and edges over a persistence layer"
+        },
+        {
+          "key": "d",
+          "text": "An open harness engine: Apache-2.0 source embedded through exec, an SDK or app-server"
+        },
+        {
+          "key": "e",
+          "text": "A model provider's raw completion API with no loop at all"
+        }
+      ],
+      "answer": {
+        "a": "a",
+        "b": "b",
+        "c": "c",
+        "d": "d"
+      },
+      "explanation": "The Claude Agent SDK ships the loop that powers Claude Code; the OpenAI Agents SDK is a small set of primitives (agents, handoffs, guardrails); LangGraph is a low-level orchestration runtime that does not abstract the architecture; the Codex harness is open source and embedded in three layers. A raw completion API is what all four are built over, not one of them.",
+      "hints": [
+        "Ask of each product who writes the loop.",
+        "Only one of the four is the open-source harness behind its vendor's own app, CLI and editor extension."
+      ]
+    },
+    {
+      "id": "hrn-020-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "two-axes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "On the two axes, how much of the loop the product owns and whether it is tied to one provider's models, where does the OpenAI Agents SDK sit according to its own documentation?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It ships the loop and runs only OpenAI models",
+          "correct": false,
+          "feedback": "Its models page documents non-OpenAI providers through built-in integration points, so it is not tied to one provider."
+        },
+        {
+          "key": "b",
+          "text": "It ships the loop and can run other providers' models",
+          "correct": true,
+          "feedback": "Correct. It has a built-in loop that runs until the task is complete, and documents integration points for non-OpenAI providers."
+        },
+        {
+          "key": "c",
+          "text": "The team draws the loop, over any provider",
+          "correct": false,
+          "feedback": "That is the graph framework's cell; the Agents SDK runs its own loop."
+        },
+        {
+          "key": "d",
+          "text": "The team draws the loop, over one provider",
+          "correct": false,
+          "feedback": "That cell holds a hand-written loop over one client SDK, such as this series' builds."
+        }
+      ],
+      "explanation": "The OpenAI Agents SDK describes a built-in loop that continues until the task is complete, so the product owns the loop, and its models page documents non-OpenAI providers, so it is not tied to one provider. The Claude Agent SDK and the Codex harness sit in the one-provider-by-default row.",
+      "hints": [
+        "Check each axis separately: who runs the turns, and which models can be plugged in."
+      ]
+    },
+    {
+      "id": "hrn-020-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "graph-framework",
+        "checkpointer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the graph-framework shape, a team compiles its graph and invokes it on a task. Which two pieces of that code make the run resumable after it stops?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The checkpointer passed at compile time and the thread identifier passed at invoke time",
+          "correct": true,
+          "feedback": "Correct. The checkpointer saves state as the run goes, and the thread identifier says which saved state to resume."
+        },
+        {
+          "key": "b",
+          "text": "The conditional edge from the reasoning node and the END constant",
+          "correct": false,
+          "feedback": "Those decide where the loop goes next and when it ends; they keep nothing across a stop."
+        },
+        {
+          "key": "c",
+          "text": "The two add_node calls that register the reasoning and acting nodes",
+          "correct": false,
+          "feedback": "Nodes define the work; without a checkpointer nothing they produced survives a stop."
+        },
+        {
+          "key": "d",
+          "text": "The tool list and the system prompt passed to the model",
+          "correct": false,
+          "feedback": "Those shape each model call, not whether the run can be picked up again."
+        }
+      ],
+      "explanation": "State persisted by a checkpointer, keyed by a thread identifier, is what lets a stopped run resume, be inspected or be forked. Those few lines are what a graph framework's extra wiring buys; a plain reason-act-observe loop without them is just a while loop drawn as a graph.",
+      "hints": [
+        "What has to be stored, and how does the runtime find it again?"
+      ]
+    },
+    {
+      "id": "hrn-020-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "checkpointer",
+        "durability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A graph built with LangGraph's `InMemorySaver` resumes perfectly from an interrupt in testing. In production the process is restarted while several runs are paused at their interrupts. What happens to those runs, and why?",
+      "answer": {
+        "model": "They are lost: InMemorySaver keeps its checkpoints in the process's memory, so a restart erases them and the paused runs cannot resume; surviving a restart needs a durable checkpointer.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess)\\b)(?![\\s\\S]*\\b(not\\s+because\\s+of\\s+(the\\s+)?memory|nothing\\s+to\\s+do\\s+with\\s+(the\\s+)?memory)\\b)(?![\\s\\S]*\\b(not|never|n't)\\s+(be\\s+)?(lost|gone|erased|wiped|deleted)\\b)(?![\\s\\S]*\\b(they|runs?|checkpoints?|state|threads?)\\s+(will\\s+|would\\s+|can\\s+|do\\s+)?(survive|resume|persist|continue)s?\\b(?!\\s+(only|nothing)))(?![\\s\\S]*(?<!\\bnot\\s)(?<!\\bnever\\s)\\b(writes|written|saved|stored|persisted|kept)\\s+(it\\s+|them\\s+)?(to|on)\\s+(disk|a database|postgres|sqlite)\\b)(?=[\\s\\S]*\\b(memory|ram|in-memory|in-process|in process)\\b)(?=[\\s\\S]*\\b(lost|lose|loses|gone|erased?|wiped|disappears?|vanish(es)?|cannot resume|can't resume|can not resume|start over|from scratch|do not survive|don't survive|does not survive|doesn't survive|not persisted|not durable)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "LangGraph's persistence page says plainly that the in-memory savers store checkpoints in RAM and that when the process restarts all checkpoints are lost. Resumability across restarts is a property of a durable checkpointer, such as a database-backed one, not of the graph shape itself.",
+      "hints": [
+        "Where does an in-memory saver keep what it saves?"
+      ]
+    },
+    {
+      "id": "hrn-020-q06",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "resolution-order",
+        "agent-sdk"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put the Claude Agent SDK's permission steps in the order a tool call meets them, as its \"Configure permissions\" page documents.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The permission mode"
+        },
+        {
+          "key": "b",
+          "text": "Deny rules"
+        },
+        {
+          "key": "c",
+          "text": "The `canUseTool` callback"
+        },
+        {
+          "key": "d",
+          "text": "Hooks"
+        },
+        {
+          "key": "e",
+          "text": "Allow rules"
+        },
+        {
+          "key": "f",
+          "text": "Ask rules"
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "f",
+        "a",
+        "e",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Hooks run first, then deny rules, ask rules, the permission mode and allow rules, and only a call none of them resolved reaches the `canUseTool` callback. Deny sitting ahead of the mode is why a scoped deny rule still blocks under `bypassPermissions`.",
+      "hints": [
+        "Code the team registers runs before any rule.",
+        "The callback is the last resort, for calls nothing earlier settled."
+      ]
+    },
+    {
+      "id": "hrn-020-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "canusetool",
+        "allow-rules"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team on the Claude Agent SDK writes its argument checks inside `canUseTool`, refusing any `Bash` command that deletes outside the build directory. To cut prompts it also sets `allowed_tools=[\"Bash\"]` in `default` mode. The agent then runs `rm -rf ../shared`. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The callback refuses it, because the callback sees every Bash call",
+          "correct": false,
+          "feedback": "Auto-approved calls never reach the callback; a bare allow entry approves the whole tool first."
+        },
+        {
+          "key": "b",
+          "text": "It runs: the bare allow rule approves the call before the callback is consulted",
+          "correct": true,
+          "feedback": "Correct. The allow step resolves the call, so the check in the callback is silently bypassed."
+        },
+        {
+          "key": "c",
+          "text": "It is blocked, because `default` mode denies destructive commands",
+          "correct": false,
+          "feedback": "Default mode makes no mode-based approvals or denials of its own; it only lets calls fall through."
+        },
+        {
+          "key": "d",
+          "text": "The SDK raises an error because the allow rule and the callback conflict",
+          "correct": false,
+          "feedback": "There is no conflict error; the documented order simply resolves the call at the earlier step."
+        }
+      ],
+      "explanation": "The SDK resolves a call at the first step that decides it. A bare `Bash` allow entry approves Bash calls at the allow step, apart from the few actions no mode auto-approves (removing a critical path, for one, which `../shared` is not), and the documentation warns that auto-approved tools never reach `canUseTool`, so checks placed only there are silently bypassed. A check that must run on every call belongs in a deny rule or a `PreToolUse` hook.",
+      "hints": [
+        "Walk the call through the six steps and stop at the first one that decides it.",
+        "Which step does a bare tool name in `allowed_tools` correspond to?"
+      ]
+    },
+    {
+      "id": "hrn-020-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "budget",
+        "stop-conditions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A Claude Agent SDK run sets `max_budget_usd=5.00`. Spend so far is 4.90 dollars when the model's next response, which costs 0.40 dollars, comes back. What does the run do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It refuses to send the request, because the budget is reserved before each call",
+          "correct": false,
+          "feedback": "That is the reserve-before-spend design of post 19; this SDK compares spend with the cap after a response arrives."
+        },
+        {
+          "key": "b",
+          "text": "The response completes, spend reaches 5.30 dollars, and the run ends with `error_max_budget_usd`",
+          "correct": true,
+          "feedback": "Correct. The response that crosses the cap still completes and counts, then the loop stops on the budget."
+        },
+        {
+          "key": "c",
+          "text": "The response is cut off at exactly 5.00 dollars of spend",
+          "correct": false,
+          "feedback": "Cost comes from the usage returned with a whole response, so the check happens after it, not mid-response."
+        },
+        {
+          "key": "d",
+          "text": "Nothing happens, because the budget cap is off by default",
+          "correct": false,
+          "feedback": "It defaults to no limit only when unset; here it is set to 5.00."
+        }
+      ],
+      "explanation": "The SDK's loop page says spend is compared with `max_budget_usd` after each model response arrives, so spend can pass the cap by up to the cost of that one response, plus whatever still-running sub-agents spend. A team that needs a hard ceiling sets the cap below it, or reserves budget before each call as post 19's controller does.",
+      "hints": [
+        "When can the harness know what a response cost?",
+        "Is the check made before the request is sent, or after the response is counted?"
+      ]
+    },
+    {
+      "id": "hrn-020-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An SDK compares spend with its budget cap only after each response arrives. A run is capped at 2.00 dollars, has spent 1.85 dollars, and its next response costs 0.32 dollars. No sub-agents are running. By how many dollars does the run overshoot the cap?",
+      "answer": {
+        "value": 0.17,
+        "tolerance": 0.005,
+        "unit": "dollars"
+      },
+      "precision_note": "$1.85 + 0.32 = 2.17$ dollars spent when the run stops; $2.17 - 2.00 = 0.17$ over the cap. The cost of the response alone (0.32) or the remaining headroom (0.15) fall outside the tolerance.",
+      "explanation": "The response that crosses the cap still completes and counts toward the total, so the run stops at 2.17 dollars, 17 cents past the cap. The overshoot is bounded by the cost of one response, which is why the cap is set below the true ceiling.",
+      "hints": [
+        "Add the last response to the spend before comparing.",
+        "Then subtract the cap."
+      ]
+    },
+    {
+      "id": "hrn-020-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "build-cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #1 is 520 implementation lines, including a 75-line verifier, a loop and a tool registry. Build #2 is 728 implementation lines with its own loop and tool registry but no verifier. How many implementation lines does the union of their feature sets come to, counted the way the post counts it?",
+      "answer": {
+        "value": 803,
+        "tolerance": 0,
+        "unit": "lines"
+      },
+      "precision_note": "Build #2 plus the one feature it lacks: $728 + 75 = 803$, as snippets/build_cost.py prints. Adding the two builds whole (1,248) double-counts the loop and the registry.",
+      "explanation": "The two builds overlap: each carries a loop and a tool registry, so adding them double-counts. Build #2 already has everything but the verification gate, so the union is Build #2 plus Build #1's verifier, 803 lines, and still has no compaction, retries, MCP client or permission resolution order.",
+      "hints": [
+        "Which feature does one build have that the other lacks?"
+      ]
+    },
+    {
+      "id": "hrn-020-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "cost-per-resolved-task"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An illustrative A/B runs 80 runs per arm. Harness A resolves 48 of its runs at an average of 0.30 dollars per run; harness B resolves 56 at an average of 0.42 dollars per run. Give each harness's cost per resolved task in dollars.",
+      "answer": {
+        "parts": [
+          {
+            "label": "harness A",
+            "value": 0.5,
+            "tolerance": 0.005,
+            "unit": "dollars"
+          },
+          {
+            "label": "harness B",
+            "value": 0.6,
+            "tolerance": 0.005,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "A: $80 \\times 0.30 = 24$ dollars over 48 resolved, $0.50$; B: $80 \\times 0.42 = 33.60$ dollars over 56 resolved, $0.60$. Dividing the per-run cost by the rate per run gives the same; dividing by 80 gives the per-run cost, outside the tolerance.",
+      "explanation": "Cost per resolved task is total spend divided by tasks resolved, so failed runs count against it. B resolves more and costs 20% more for each thing it resolves, a trade the resolved-rate alone would hide.",
+      "hints": [
+        "Total spend for each arm first.",
+        "Divide by what each arm resolved, not by the runs."
+      ]
+    },
+    {
+      "id": "hrn-020-q12",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "standard-error",
+        "pairing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An illustrative A/B gives harness A 50 resolved of 80 runs and harness B 60 of 80. Treating all 160 runs as independent, the standard error of the difference is $\\sqrt{p_A(1-p_A)/80 + p_B(1-p_B)/80}$. How many of these standard errors is B's gap over A?",
+      "answer": {
+        "value": 1.72,
+        "tolerance": 0.02,
+        "unit": "standard errors"
+      },
+      "precision_note": "$p_A = 0.625$, $p_B = 0.75$; $\\sqrt{(0.234375 + 0.1875)/80} = 0.0726$; the gap $0.125 / 0.0726 = 1.72$. Using 160 in both denominators gives 2.43, outside the tolerance.",
+      "explanation": "The gap is 12.5 points and the naive standard error about 7.3, so the gap is about 1.7 standard errors: short of a call even before the real problem, which is that runs sharing a task are not independent. Pairing by task, as post 22 does, is the comparison to trust.",
+      "hints": [
+        "Compute the two rates, then the standard error.",
+        "Divide the difference in rates by the standard error."
+      ]
+    },
+    {
+      "id": "hrn-020-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "paired-comparison",
+        "harness-ab"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`paired_lift` takes each harness's resolved count per task, out of `seeds` runs, and should return B's mean lift over A with a 95% interval paired by task: the mean of the per-task differences (each as a fraction of `seeds`), plus and minus `t` times their sample standard deviation over the square root of the number of tasks. As written it pools every run as if independent. Fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import math\n\n\ndef paired_lift(a, b, seeds, t=2.093):\n    \"\"\"a and b: resolved counts per task, out of `seeds` runs each, for harness A and harness B.\n    Return (lift, low, high): B's mean lift over A as a fraction, and its 95% interval paired by task.\"\"\"\n    n = len(a)\n    pa, pb = sum(a) / (n * seeds), sum(b) / (n * seeds)\n    lift = pb - pa\n    se = math.sqrt(pa * (1 - pa) / (n * seeds) + pb * (1 - pb) / (n * seeds))\n    return lift, lift - t * se, lift + t * se\n",
+      "solution": "import math\nimport statistics\n\n\ndef paired_lift(a, b, seeds, t=2.093):\n    \"\"\"a and b: resolved counts per task, out of `seeds` runs each, for harness A and harness B.\n    Return (lift, low, high): B's mean lift over A as a fraction, and its 95% interval paired by task.\"\"\"\n    diffs = [(y - x) / seeds for x, y in zip(a, b)]\n    lift = statistics.mean(diffs)\n    se = statistics.stdev(diffs) / math.sqrt(len(diffs))\n    return lift, lift - t * se, lift + t * se\n",
+      "tests": "A = [5, 5, 5, 5, 5, 5, 4, 4, 3, 3, 4, 3, 3, 2, 3, 3, 3, 0, 1, 0]\nB = [5, 5, 5, 4, 5, 3, 4, 4, 3, 4, 5, 3, 5, 1, 3, 3, 2, 2, 0, 1]\n\n\ndef close(x, y, eps=1e-3):\n    return abs(x - y) < eps\n\n\nlift, low, high = paired_lift(A, B, 5)\nassert close(lift, 0.010), lift\nassert close(low, -0.0834) and close(high, 0.1034), (low, high)\n\nlift, low, high = paired_lift([2, 2, 2, 2], [3, 4, 3, 4], 5, t=3.182)\nassert close(lift, 0.30), lift\nassert close(low, 0.1163) and close(high, 0.4837), (low, high)\n\nlift, low, high = paired_lift([1, 4, 2], [3, 5, 2], 10, t=4.303)\nassert close(lift, 0.10), lift\nassert close(low, -0.1484) and close(high, 0.3484), (low, high)\n\nlift, low, high = paired_lift([3, 1, 4], [3, 1, 4], 5)\nassert (lift, low, high) == (0, 0, 0), (lift, low, high)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Runs that share a task share its difficulty, so they are not independent draws. Differencing per task removes the task-difficulty variance, and the interval comes from the spread of those differences across tasks: sample standard deviation over the square root of the number of tasks, not of runs. On the post's twenty tasks the interval is about minus 8.3 to plus 10.3 points.",
+      "hints": [
+        "Turn the two lists into one list of per-task differences first.",
+        "Use the sample standard deviation of the differences and divide by the square root of the number of tasks."
+      ]
+    },
+    {
+      "id": "hrn-020-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 20,
+      "tags": [
+        "migration",
+        "harness-ab",
+        "audit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team runs a home-grown harness much like this series' Build #1: a loop with four layered exits, a schema-validated tool registry and a verification gate. It is weighing a move to a batteries-included SDK. Write the plan: what to audit in the SDK before any run, how to compare the two on the team's own work so that the result means something, and what result would justify migrating.",
+      "kind": "design",
+      "solution": "1. **Audit before running.** Read the SDK's stop conditions (which exits exist, whether the budget is checked before or after a call, what a guard exit returns and whether it can resume), its compaction policy and whether dropped content is visible, its retry semantics and whether retries count against the budget, its hook events and which can block, its trace format, and above all its documented permission resolution order, noting where argument-level checks would be skipped.\n2. **Port the custom layer thinly.** Keep tools as plain functions with schemas and hooks as plain predicates, so each needs only an adapter; port the verification gate as the SDK's stop or output check.\n3. **A/B on the team's tasks.** Freeze a task set from the team's own backlog, hold the model fixed, run each task several times on both harnesses, and compare resolved-rate and cost per resolved task, plus wall-clock and interventions.\n4. **Pair by task and size it.** Difference per task, report the lift with an interval or a sign test on discordant tasks, and size the set from the lift that matters: twenty tasks rarely settle a few points.\n5. **Decision rule.** Migrate when the paired interval excludes a loss on the tasks the team cares about at an acceptable cost per resolved task, or when the A/B is a tie and the SDK removes maintenance the team would otherwise carry; re-run any per-task regression before believing it.",
+      "rubric": [
+        {
+          "criterion": "Lists the defaults to audit, including stop conditions and the permission resolution order",
+          "points": 2
+        },
+        {
+          "criterion": "Keeps the custom layer portable through thin adapters",
+          "points": 1
+        },
+        {
+          "criterion": "Holds the model and a fixed task set from the team's own work, with several seeds per task",
+          "points": 2
+        },
+        {
+          "criterion": "Pairs the comparison by task and sizes the set or states the interval",
+          "points": 2
+        },
+        {
+          "criterion": "States a decision rule that weighs lift, cost per resolved task and maintenance",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The audit catches the defaults an SDK has already chosen, and the paired A/B of post 22 turns the remaining question into a measurement. A plan that skips either step either inherits a silent default or decides on noise.",
+      "hints": [
+        "Start from the seven things an SDK takes away.",
+        "What makes two arms comparable, and how many tasks make the comparison callable?"
+      ],
+      "connects": [
+        "hrn-019",
+        "hrn-022",
+        "hrn-024"
+      ]
+    },
+    {
+      "id": "hrn-020-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "portability",
+        "lock-in",
+        "mcp"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team is adopting an agent SDK but wants a later migration to stay cheap. Design its tools, hooks and memory layer for portability, say what putting capabilities behind MCP servers does and does not save, and name the dependency that remains even if the harness engine is open source.",
+      "kind": "design",
+      "solution": "1. **Tools.** Write each tool as a plain function plus a schema, and register it through a short adapter; the adapter's length is the switching cost, so keep it to a few lines and in one place.\n2. **Hooks.** Write policy as plain predicates over a tool name and its arguments, called from a thin SDK-specific hook wrapper, never against the SDK's hook input object.\n3. **Memory and evaluations.** Keep the memory file, task definitions and the eval set as files the team owns, outside the SDK's types.\n4. **MCP.** A capability behind an MCP server ports at no cost to the server: any host that speaks MCP calls it unchanged. What it does not save is the host side (the SDK must support MCP), and the tools' behaviour inside a new loop still has to be re-measured.\n5. **What remains.** Model access and the vendor's hosted services: an open engine can be forked, but the tokens are still rented, and an A/B across vendors measures model and harness as a pair.",
+      "rubric": [
+        {
+          "criterion": "Tools as function plus schema behind a short adapter, with the adapter named as the switching cost",
+          "points": 2
+        },
+        {
+          "criterion": "Hooks and memory kept outside the SDK's types",
+          "points": 2
+        },
+        {
+          "criterion": "States what MCP saves (the server) and what it does not (the host side, re-measurement)",
+          "points": 2
+        },
+        {
+          "criterion": "Names model access and hosted services as the dependency an open engine does not remove",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Lock-in is priced by how far the custom layer reached into the SDK's types; designing for small adapters keeps that price low, MCP moves the server out of the question, and the model itself is the dependency no licence removes.",
+      "hints": [
+        "What part of a tool belongs to the team and what part to the harness?",
+        "Which side of an MCP connection does a migration touch?"
+      ]
+    },
+    {
+      "id": "hrn-020-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 1,
+      "tags": [
+        "a2a",
+        "mcp"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "How does the Agent2Agent (A2A) protocol relate to the Model Context Protocol (MCP)?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A2A replaces MCP for connecting an agent to its tools",
+          "correct": false,
+          "feedback": "A2A does not replace MCP; its own specification has an A2A server agent using MCP for its tools."
+        },
+        {
+          "key": "b",
+          "text": "MCP connects an agent down to its tools and data; A2A connects agents sideways to each other",
+          "correct": true,
+          "feedback": "Correct. One is vertical, agent to capability; the other horizontal, agent to agent, through published agent cards."
+        },
+        {
+          "key": "c",
+          "text": "A2A is a newer version of MCP with multi-agent support added",
+          "correct": false,
+          "feedback": "They are separate specifications from different origins, governed side by side."
+        },
+        {
+          "key": "d",
+          "text": "A2A is a vendor's hosted runtime that executes the agent loop",
+          "correct": false,
+          "feedback": "That describes Harness-as-a-Service; A2A is a protocol for agents to discover each other and delegate."
+        }
+      ],
+      "explanation": "MCP standardises how an agent reaches tools, data and resources; A2A standardises how independent, often opaque agents discover each other through agent cards and delegate tasks. The two compose: an agent called over A2A may use MCP for the tools behind its task.",
+      "hints": [
+        "One protocol is about capabilities, the other about peers."
+      ]
+    },
+    {
+      "id": "hrn-020-q17",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "portability",
+        "adapter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A tool written as a plain function with a schema moves from a harness that takes a tool list to a graph framework. What has to be rewritten, and so what measures the tool's switching cost?",
+      "answer": {
+        "model": "Only the adapter that hands the function and its schema to the harness; the function and schema stay as they are, so the adapter's length is the switching cost.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|i guess)\\b)(?![\\s\\S]*\\b(adapter|wrapper|glue)\\s+(stays|is reused|can be reused|is unchanged|does not change|doesn't change|remains|is free|are free|is fine|is irrelevant|are irrelevant|(does|do)\\s+not\\s+matter|(doesn't|don't)\\s+matter)\\b)(?![\\s\\S]*\\bnot\\s+the\\s+(adapter|wrapper|glue)\\b)(?![\\s\\S]*(?<!not\\s)(?<!never\\s)(?<!n't\\s)(?<!no need to\\s)\\b(rewrite|change|modify|replace)\\s+(the\\s+|its\\s+)?(function|schema)s?\\b)(?![\\s\\S]*\\b(function|schema)s?\\s+(itself\\s+)?(and\\s+(the\\s+|its\\s+)?(function|schema)s?\\s+)?(has|have|must|need|needs|should)\\s+(to\\s+)?(be\\s+)?(rewrit|chang|modif|replac|redo|redone))(?![\\s\\S]*\\b(everything|the whole tool|nothing changes)\\b)(?=[\\s\\S]*\\b(adapter|wrapper|glue|registration|binding)s?\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The function and the schema are the portable half and belong to the team; only the harness-specific adapter, a registry entry in one shape and a node in the other, is rewritten. That makes switching cost a quantity to design down: keep the adapters short.",
+      "hints": [
+        "Split the tool into the part the team owns and the part the harness owns."
+      ]
+    }
+  ]
+}
