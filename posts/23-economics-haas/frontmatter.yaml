@@ -1,41 +1,26 @@
 id: hrn-023
 slug: 23-economics-haas
-title: "23 · The economics of a harness & Harness-as-a-Service"
-
-description: >
-  A single completion has one price; an agentic run has that price multiplied by the
-  number of loop iterations, and each iteration re-reads a context that grows every step.
-  Harness economics are dominated by two levers: how many times the loop turns, and how
-  cheaply the accumulated history is re-read.
-
-author: "Ajay"
+title: "23 - The economics of a harness and Harness-as-a-Service"
+summary: "An agent run re-reads a growing context every iteration, so its cost grows with the square of its length until a rolling cache breakpoint flattens it; shipping turns on cost per successful run, and renting the loop adds a runtime meter."
 date: 2026-09-23
-last_modified: 2026-09-05
-
-tags: [harness-engineering, production, economics, cost, haas]
-
-keywords:
-  - harness engineering
-  - production
-  - economics
-  - cost
-  - haas
-  - enforcement in arrears
-  - prefix match
-  - compact rarely and deeply
-  - rent a runtime
-  - per call
-
-category: Production and builds
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part V - Production and builds"
-
+level: intermediate
+reading_time: 28
+tags: [harness-engineering, economics, cost, prompt-caching, budget-ceilings, harness-as-a-service, build-versus-rent]
 hero: diagrams/01-loop-cost.svg
-hero_alt: "A step chart of per-iteration cost across an agent run: each bar has a tall lower segment for the context re-read at every step and a small upper segment for the tokens that iteration adds, so the bars grow from left to right, while a lower dashed line shows the same run with prompt caching flattening the re-read of the stable prefix."
-
-reading_time: 32
-toc: true
-draft: false
-canonical_url: ""
-prev: ../22-evaluating-harnesses/
-next: ../24-build-minimal-harness/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Price one agent run from its iteration count and growing context three ways: uncached, with a cached static head, and with a rolling cache breakpoint."
+  - id: o2
+    text: "Explain why an uncached run's input bill grows with the square of its iterations, and what breaks a rolling breakpoint mid-run."
+  - id: o3
+    text: "Set a latency budget by who is waiting and a budget ceiling from what a run is worth, enforced before the call that would cross it."
+  - id: o4
+    text: "Compute cost per successful run and cost per unit shipped, and rank two harnesses by them rather than by cost per run."
+  - id: o5
+    text: "Compare a model API, an SDK the team hosts and a hosted agent runtime by what each bills for, and work a build-versus-rent crossover."
+recommended: [hrn-009, hrn-018, ctx-005]

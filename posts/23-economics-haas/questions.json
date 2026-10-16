@@ -1,0 +1,688 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-023",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "hrn-023-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "quadratic-cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run with no prompt caching re-sends its whole history on every iteration, and each turn appends a roughly fixed number of tokens. Why does doubling the number of iterations roughly quadruple the run's input bill?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Twice as many requests are sent, and the average request is also about twice as large.",
+          "correct": true,
+          "feedback": "Correct: both factors double, so their product, the total input, roughly quadruples."
+        },
+        {
+          "key": "b",
+          "text": "Output tokens cost five times input, so every extra iteration costs five times more than the last.",
+          "correct": false,
+          "feedback": "The output premium is a fixed ratio per token; it does not make the input bill grow with the square of the count."
+        },
+        {
+          "key": "c",
+          "text": "The provider charges a higher per-token rate once a request passes a size threshold.",
+          "correct": false,
+          "feedback": "The rate per input token is flat in this arithmetic; the growth comes from re-sending a longer history."
+        },
+        {
+          "key": "d",
+          "text": "Each iteration adds twice as many tokens as the one before it.",
+          "correct": false,
+          "feedback": "In the running example each turn adds a fixed 3,100 tokens; constant growth per turn is already enough for a quadratic sum."
+        }
+      ],
+      "explanation": "Section 1: input cost is the iteration count times the average request, and the average request grows with the count, so the sum grows with the square of the count.",
+      "hints": [
+        "Write the input bill as a number of requests times the size of an average request."
+      ]
+    },
+    {
+      "id": "hrn-023-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "prompt-caching",
+        "static-head"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "On the twelve-iteration running example, caching a 5,000-token static head of tool schemas and system prompt saves 15% of the uncached bill, while a breakpoint that moves with the conversation saves 65%. What explains the gap?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The static head is written at 2.0x, which cancels most of its saving.",
+          "correct": false,
+          "feedback": "The head here is written once on the five-minute tier at 1.25x; one write does not cancel eleven reads at 0.1x."
+        },
+        {
+          "key": "b",
+          "text": "Most of the input is the growing history, which only the rolling breakpoint reads from cache.",
+          "correct": true,
+          "feedback": "Correct: by iteration 12 the request is 40,100 tokens, only 5,000 of them the head, and the static head leaves the other 35,100 at full price."
+        },
+        {
+          "key": "c",
+          "text": "The rolling breakpoint also discounts output tokens.",
+          "correct": false,
+          "feedback": "Caching discounts input only; the 7,200 output tokens cost the same 0.108 dollars in every way of paying."
+        },
+        {
+          "key": "d",
+          "text": "A static head expires after five minutes, while a rolling breakpoint never expires.",
+          "correct": false,
+          "feedback": "Both entries live five minutes from their last use and are refreshed by every read; the gap is about which tokens are cached."
+        }
+      ],
+      "explanation": "Section 5: the static head is a fixed 5,000 tokens per request, while the rest of the request grows to 35,100 tokens by iteration 12. Only the rolling breakpoint bills that growing part at 0.1x, so only it touches the term that grows with the square of the iteration count.",
+      "hints": [
+        "Ask which part of each request is growing.",
+        "Compare 5,000 tokens with what the history holds by iteration 12."
+      ]
+    },
+    {
+      "id": "hrn-023-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "run-cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run with no prompt caching makes 10 model calls. The first request sends 4,000 input tokens and each later request sends 2,000 more than the one before it; every call produces 500 output tokens. At 3 dollars per million input tokens and 15 per million output tokens, what does the run cost, in dollars?",
+      "answer": {
+        "value": 0.465,
+        "tolerance": 0.002,
+        "unit": "dollars"
+      },
+      "precision_note": "Closed form: (10 x 4,000 + 2,000 x 45) x 3/1e6 + 10 x 500 x 15/1e6 = 0.39 + 0.075 = 0.465. Pricing only the last request (22,000 tokens) gives 0.141 and is rejected by the tolerance.",
+      "explanation": "Input is $10 \\times 4{,}000 + 2{,}000 \\times (0 + 1 + \\dots + 9) = 40{,}000 + 90{,}000 = 130{,}000$ tokens, 0.39 dollars; output is 5,000 tokens, 0.075 dollars; the run costs 0.465 dollars. Section 5 prices the running example the same way.",
+      "hints": [
+        "Sum the ten request sizes before multiplying by the rate.",
+        "The sizes form an arithmetic series: 4,000, 6,000, ..., 22,000."
+      ]
+    },
+    {
+      "id": "hrn-023-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "prompt-caching",
+        "rolling-breakpoint"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The same 10-call run (requests of 4,000, 6,000, ..., 22,000 input tokens, 500 output tokens per call) now carries a breakpoint on the last block of every request, five-minute tier. Everything the previous request sent is read from cache at 0.1x the 3-dollar input rate, the new tokens of each request are written at 1.25x, and output costs 15 dollars per million. What does the run cost, in dollars?",
+      "answer": {
+        "value": 0.1899,
+        "tolerance": 0.0015,
+        "unit": "dollars"
+      },
+      "precision_note": "Same arithmetic as snippets/loop_cost.py's rolling mode: 108,000 x 0.3/1e6 + 22,000 x 3.75/1e6 + 5,000 x 15/1e6 = 0.0324 + 0.0825 + 0.075 = 0.1899. Writing all 130,000 input tokens at 1.25x gives 0.5625 and is rejected.",
+      "explanation": "Reads are the first nine requests' sizes, $36{,}000 + 2{,}000 \\times 36 = 108{,}000$ tokens at 0.30 dollars per million, 0.0324 dollars. Writes are the other $130{,}000 - 108{,}000 = 22{,}000$ tokens at 3.75 per million, 0.0825 dollars. Output is 0.075 dollars. Total 0.1899 dollars, about 41% of the uncached bill.",
+      "hints": [
+        "Each request reads what the request before it sent.",
+        "Writes are the total input minus the reads; there are only 22,000 of them."
+      ]
+    },
+    {
+      "id": "hrn-023-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "prompt-caching",
+        "cache-invalidation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Midway through a run that keeps a rolling cache breakpoint, a hook starts writing the current time into the system prompt on every request. Every response still looks normal. What happens to the run's bill, and why?",
+      "answer": {
+        "model": "It rises by a large multiple: the changed timestamp sits in the system prompt, before the history, so every request misses the cache from there on and the whole history is written again at 1.25x instead of read at 0.1x.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|might|not sure|i think|i guess)\\b)(?![\\s\\S]*(?:^|[.;,:]\\s*|\\b(?:and|but|so|because|since|though)\\s+)(?:(?!respons|outputs?\\b|text\\b|looks?\\b)[^.;,:])*?(\\b(no|nothing|not|never)\\b|n't\\b)(?:(?!respons|outputs?\\b|text\\b)[^.;]){0,24}\\b(change|changes|rise|rises|increase|increases|more|higher|go(es)?\\s+up|climb\\w*|miss|misses|invalidat\\w*|break|breaks|affect\\w*|happen\\w*)\\b(?!\\s+(\\w+\\s+){0,2}(respons\\w*|outputs?|text|answers?)\\b))(?![\\s\\S]*\\b(still|keeps?)\\s+(hit|hits|hitting|read|reads|reading|cached|cache hits?|warm)\\b)(?![\\s\\S]*\\bonly\\s+(the\\s+)?(timestamp|time|new|few|extra|added)\\b)(?=[\\s\\S]*\\b(miss|misses|missed|invalidat\\w*|break|breaks|breaking|broken|busts?|busted|cold|no longer (match|matches|hits?|reads?|cached)|re-?writ\\w*|written again|written to the cache|cache writes?|write premium|full write|1\\.25)\\b)(?=[\\s\\S]*\\b(rise|rises|rising|grow|grows|jump|jumps|more|higher|increase\\w*|multipl\\w*|ten|tenfold|twelve|twelvefold|1\\.25|expensive|dearer|costlier|go(es|ing)?\\s+up|went\\s+up|climb\\w*|soar\\w*|spik\\w*|balloon\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Section 4: caching matches an exact prefix in the order tools, system, messages, so a byte that changes in the system prompt misses every entry after it. The history that was being read at 0.1x is written again at 1.25x on every request, more than twelve times the price on the largest part of the bill, and only the provider's cache-read count shows it.",
+      "hints": [
+        "Where does the system prompt sit in the prefix the cache matches?",
+        "Compare the price of a cache read with the price of a cache write."
+      ]
+    },
+    {
+      "id": "hrn-023-q06",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "cache-lifetime"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An agent's loop runs a full test suite that takes about eight minutes between one model call and the next, on the five-minute cache tier. The history is 90,000 tokens. Which change keeps that history billed at the read price on the call after the suite?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Move the breakpoint to the end of the system prompt.",
+          "correct": false,
+          "feedback": "That caches only the head; the 90,000-token history would then be billed at full price on every call, not just after the suite."
+        },
+        {
+          "key": "b",
+          "text": "Write the history on the one-hour tier, at 2.0x instead of 1.25x.",
+          "correct": true,
+          "feedback": "Correct: an hour outlasts the eight-minute gap, and one extra 0.75x premium costs less than one cold rewrite at 1.25x where a read at 0.1x was due."
+        },
+        {
+          "key": "c",
+          "text": "Stream the model's response so the suite starts sooner.",
+          "correct": false,
+          "feedback": "Streaming can start a tool slightly earlier but does not shorten an eight-minute suite below five minutes."
+        },
+        {
+          "key": "d",
+          "text": "Nothing: every read refreshes the entry, so it never expires during a run.",
+          "correct": false,
+          "feedback": "A read refreshes the entry, but no read happens during the suite; the gap between requests is what expires it."
+        }
+      ],
+      "explanation": "Section 4: the lifetime is measured from the start of the last request that wrote or read the entry, and the suite's eight-minute gap outlasts five minutes, so the next call writes the history again. The one-hour tier pays 2.0x once on the write and keeps the entry warm across the gap.",
+      "hints": [
+        "Measure the gap against the entry's lifetime.",
+        "Which tier's lifetime is longer than eight minutes?"
+      ]
+    },
+    {
+      "id": "hrn-023-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "budget-ceiling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A resolved task is worth 3.00 dollars to the business, and the harness resolves 40% of the tasks it attempts. Failed runs are billed in full. Above what spend per run, in dollars, does a run started cost more than runs return on average?",
+      "answer": {
+        "value": 1.2,
+        "tolerance": 0.01,
+        "unit": "dollars"
+      },
+      "precision_note": "3.00 x 0.40 = 1.20. Using the value of a success, 3.00, is the error the question targets.",
+      "explanation": "Section 3: a run started is worth the value of a success times the success rate, $3.00 \\times 0.40 = 1.20$ dollars. A ceiling priced at the 3.00-dollar value of a success funds the failures out of the margin.",
+      "hints": [
+        "What is a run worth before anyone knows whether it will succeed?"
+      ]
+    },
+    {
+      "id": "hrn-023-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "budget-ceiling",
+        "enforcement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A harness checks its spend ceiling after each model call returns and stops the run if the total has passed it. On an uncached run whose requests grow every turn, why is the overshoot worse than one average iteration?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The crossing call is a late one, and late calls carry the largest context.",
+          "correct": true,
+          "feedback": "Correct: the overshoot is up to one call, and on a growing context that call is among the most expensive of the run."
+        },
+        {
+          "key": "b",
+          "text": "The provider bills the whole run again when a ceiling is crossed.",
+          "correct": false,
+          "feedback": "Nothing is re-billed; the overshoot is the one call that ran after the spend had nearly reached the ceiling."
+        },
+        {
+          "key": "c",
+          "text": "Output tokens are counted only at the end of the run.",
+          "correct": false,
+          "feedback": "Each response reports its own usage; the issue is when the check runs, not when tokens are counted."
+        },
+        {
+          "key": "d",
+          "text": "Checking after the call disables prompt caching for that call.",
+          "correct": false,
+          "feedback": "When the check runs has no effect on the cache; it only decides whether the crossing call is made."
+        }
+      ],
+      "explanation": "Section 3: a check after the call lets the call that crosses the line complete, and that call is a late one carrying the largest context; in the running example the twelfth iteration costs 0.129 dollars against 0.027 for the first. Reserving the next call's estimated cost and refusing it before it is made removes the overshoot.",
+      "hints": [
+        "Which iteration is the one that crosses the line?",
+        "Compare the cost of a late iteration with an early one."
+      ]
+    },
+    {
+      "id": "hrn-023-q09",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "latency-budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each way an agent run is waited on to the latency budget that fits it, using the illustrative ranges for the three modes.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A person waiting at a prompt"
+        },
+        {
+          "key": "b",
+          "text": "A job dispatched to a queue"
+        },
+        {
+          "key": "c",
+          "text": "A scheduled long-horizon run across many contexts"
+        }
+      ],
+      "right": [
+        {
+          "key": "x",
+          "text": "seconds to about a minute, roughly 5 to 15 iterations"
+        },
+        {
+          "key": "y",
+          "text": "minutes to hours, tens to low hundreds of iterations"
+        },
+        {
+          "key": "z",
+          "text": "hours to days, thousands of iterations with resets"
+        },
+        {
+          "key": "w",
+          "text": "no budget at all, since the run stops at its first final answer"
+        }
+      ],
+      "answer": {
+        "a": "x",
+        "b": "y",
+        "c": "z"
+      },
+      "explanation": "Section 2: who is waiting sets the budget. A person at a prompt allows seconds to about a minute; a queue allows minutes to hours; a schedule allows hours to days across many contexts. A harness serving two modes needs a ceiling for each.",
+      "hints": [
+        "Start from who is waiting for the result."
+      ]
+    },
+    {
+      "id": "hrn-023-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "cost-per-success"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Ten runs of an agent cost, in dollars: 0.18, 0.22, 0.31, 0.19, 0.31, 0.25, 0.20, 0.31, 0.24 and 0.29. The third, fifth, eighth and ninth failed; the rest passed. Report the cost per run and the cost per successful run, both in dollars.",
+      "answer": {
+        "parts": [
+          {
+            "label": "cost per run",
+            "value": 0.25,
+            "tolerance": 0.002,
+            "unit": "dollars"
+          },
+          {
+            "label": "cost per successful run",
+            "value": 0.417,
+            "tolerance": 0.003,
+            "unit": "dollars"
+          }
+        ]
+      },
+      "precision_note": "Sum 2.50; 2.50 / 10 = 0.250; 2.50 / 6 = 0.4167. Averaging only the successful runs gives 0.2217 and is rejected for the second part.",
+      "explanation": "Section 7: the ten runs cost 2.50 dollars in all, 0.25 per run. Six passed, so each success carries $2.50 / 6 \\approx 0.417$ dollars, failures included. The six successful runs alone average about 0.222 dollars, which is the number that hides the failures.",
+      "hints": [
+        "Total the spend first; the failed runs are billed too.",
+        "Divide the total by the number of runs, then by the number of successes."
+      ]
+    },
+    {
+      "id": "hrn-023-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "metering",
+        "budget-ceiling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`meter` should price a run from the provider's usage fields and refuse, before making it, the call that would take spend above the ceiling. The provider reports `input_tokens` as the tokens after the last cache breakpoint, so a request's input is the sum of three fields. As written it treats `input_tokens` as the whole request, ignores the cache-write premium, and checks the ceiling only after spending. Fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def meter(calls, ceiling=None, base=3.0, out=15.0, read=0.1, write=1.25):\n    \"\"\"calls: one usage dict per model call, with the provider's fields input_tokens (tokens after the last\n    cache breakpoint), cache_creation_input_tokens, cache_read_input_tokens and output_tokens. Prices are\n    dollars per million tokens; read and write are multipliers of base. Return (dollars, status), where status\n    is \"completed\", or \"budget: refused call N\" when making call N (counted from 1) would take the total above\n    ceiling; a refused call is not made and adds nothing to the total.\"\"\"\n    total = 0.0\n    for n, u in enumerate(calls, 1):\n        fresh = u[\"input_tokens\"] - u[\"cache_read_input_tokens\"]\n        step = (fresh * base + u[\"cache_read_input_tokens\"] * base * read + u[\"output_tokens\"] * out) / 1e6\n        total += step\n        if ceiling is not None and total > ceiling:\n            return total, f\"budget: refused call {n}\"\n    return total, \"completed\"\n",
+      "solution": "def meter(calls, ceiling=None, base=3.0, out=15.0, read=0.1, write=1.25):\n    \"\"\"calls: one usage dict per model call, with the provider's fields input_tokens (tokens after the last\n    cache breakpoint), cache_creation_input_tokens, cache_read_input_tokens and output_tokens. Prices are\n    dollars per million tokens; read and write are multipliers of base. Return (dollars, status), where status\n    is \"completed\", or \"budget: refused call N\" when making call N (counted from 1) would take the total above\n    ceiling; a refused call is not made and adds nothing to the total.\"\"\"\n    total = 0.0\n    for n, u in enumerate(calls, 1):\n        step = (u[\"input_tokens\"] * base\n                + u[\"cache_creation_input_tokens\"] * base * write\n                + u[\"cache_read_input_tokens\"] * base * read\n                + u[\"output_tokens\"] * out) / 1e6\n        if ceiling is not None and total + step > ceiling:\n            return total, f\"budget: refused call {n}\"\n        total += step\n    return total, \"completed\"\n",
+      "tests": "def close(a, b):\n    return abs(a - b) < 1e-9\n\n\ndef usage(fresh, write, read, out):\n    return {\"input_tokens\": fresh, \"cache_creation_input_tokens\": write,\n            \"cache_read_input_tokens\": read, \"output_tokens\": out}\n\n\nrun = [usage(0, 1000, 0, 100), usage(0, 500, 1000, 100), usage(0, 500, 1500, 100)]\ntotal, status = meter(run)\nassert close(total, 0.01275) and status == \"completed\", (total, status)\n\ntotal, status = meter([usage(2000, 0, 0, 0)])\nassert close(total, 0.006) and status == \"completed\", (total, status)\n\ntotal, status = meter(run, ceiling=0.009)\nassert close(total, 0.008925) and status == \"budget: refused call 3\", (total, status)\n\ntotal, status = meter(run, ceiling=0.004)\nassert close(total, 0.0) and status == \"budget: refused call 1\", (total, status)\n\ntotal, status = meter([usage(10, 0, 4000, 50)] * 4, ceiling=0.01)\nassert close(total, 4 * (10 * 3 + 4000 * 0.3 + 50 * 15) / 1e6) and status == \"completed\", (total, status)\n\ntotal, status = meter(run, base=1.0, out=5.0, write=2.0)\nassert close(total, (2000 * 2.0 + 2500 * 0.1 + 300 * 5.0) / 1e6), total\n\ntotal, status = meter([usage(0, 0, 0, 0)], ceiling=0.0)\nassert close(total, 0.0) and status == \"completed\", (total, status)\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 10: the three input fields are priced separately (uncached at 1.0x, writes at the write multiplier, reads at the read multiplier), and the ceiling test compares spend plus the next call's cost with the ceiling before the call, so a refused call adds nothing. A meter that subtracts the reads from `input_tokens` under-counts every cached run.",
+      "hints": [
+        "Price `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` each at its own rate.",
+        "Compute the step first, test `total + step` against the ceiling, and only then add it."
+      ]
+    },
+    {
+      "id": "hrn-023-q12",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "cost-per-shipped",
+        "verification"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Two harnesses run the same model on the same work. Harness A has no verification gate: 0.33 dollars per run, 48% first-pass success, 18 minutes of review per accepted result, 14% defect escape. Harness B gates every step: 0.47 dollars per run, 84% first-pass success, 6 minutes of review, 4% escape. A manager proposes A because it is cheaper per run. Critique the proposal with the arithmetic, at an illustrative review rate of 90 dollars an hour, and say what would have to change for A to win.",
+      "kind": "critique",
+      "solution": "Cost per run is the wrong ranking because failed runs are billed and a person reviews every accepted result.\n\n1. Per accepted result: A costs 0.33 / 0.48 = 0.69 dollars of tokens, B costs 0.47 / 0.84 = 0.56.\n2. Review per accepted result at 90 dollars an hour: A 18 minutes = 27.00 dollars, B 6 minutes = 9.00.\n3. Per unit shipped, dividing by one minus the escape rate: A (0.69 + 27.00) / 0.86 = 32.19 dollars; B (0.56 + 9.00) / 0.96 = 9.96 dollars.\n\nB costs about 42% more per run and about a third as much per unit shipped, so the proposal ranks the harnesses in the wrong order. The tokens are under a dollar in either case; review time is the term that dominates. A would win only if review per accepted result fell to near zero (for example a cheap automated check replacing the person) or if B's gate let more defects through, raising its escape rate, or if B's extra iterations cost far more than here; the decision belongs to the full ledger, not to the per-run bill.",
+      "rubric": [
+        {
+          "criterion": "Divides cost per run by first-pass success to get cost per accepted result",
+          "points": 2
+        },
+        {
+          "criterion": "Adds review time at the stated rate and corrects for defect escape",
+          "points": 2
+        },
+        {
+          "criterion": "Reaches about 32 dollars for A and about 10 for B and states the reversal",
+          "points": 2
+        },
+        {
+          "criterion": "Names review as the dominant term and a condition under which A would win",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7: cost per run ignores failures and review. Dividing by first-pass success and adding review, then correcting for escapes, gives about 32.19 dollars per unit shipped for A against about 9.96 for B. The model bill is a small term beside review, so A wins only if review becomes cheap or B's escape rate climbs, which is the case post 22 works.",
+      "hints": [
+        "Convert each per-run cost to a per-accepted cost first.",
+        "Add the review cost per accepted result, then divide by one minus the escape rate."
+      ]
+    },
+    {
+      "id": "hrn-023-q13",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "harness-as-a-service"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team moves from an SDK it hosts to a hosted agent runtime. What moves inside the vendor's boundary that was on the team's side before?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The model itself, which an SDK runs locally.",
+          "correct": false,
+          "feedback": "An SDK calls the vendor's model through its API; the model was inside the vendor's boundary already."
+        },
+        {
+          "key": "b",
+          "text": "The token bill, which the runtime fee replaces.",
+          "correct": false,
+          "feedback": "Model tokens are still billed per token; the runtime fee is added beside them."
+        },
+        {
+          "key": "c",
+          "text": "The loop and the session state, which now run on the vendor's machines.",
+          "correct": true,
+          "feedback": "Correct: a hosted runtime runs the loop and keeps the session, isolation and tool plumbing inside the service."
+        },
+        {
+          "key": "d",
+          "text": "The tool functions, which the vendor rewrites for its runtime.",
+          "correct": false,
+          "feedback": "The team's tools are still the team's; what moves is where the loop that calls them runs."
+        }
+      ],
+      "explanation": "Section 8: an SDK the team hosts is the vendor's code running on the team's machines; a hosted runtime runs the loop, the session state, the isolation and the tool plumbing on the vendor's side. The model was already inside the boundary, and the token bill stays with the team.",
+      "hints": [
+        "Ask where the loop runs in each case."
+      ]
+    },
+    {
+      "id": "hrn-023-q14",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "build-versus-rent",
+        "crossover"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Owning a harness costs a team an illustrative 20,000 dollars a month in engineering, mostly fixed. A hosted runtime would charge 0.04 dollars of runtime fee per run, and running the harness on the team's own machines costs 0.015 dollars of compute per run. Token costs are the same either way. At how many runs a month does owning start to cost less than renting?",
+      "answer": {
+        "value": 800000,
+        "tolerance": 5000,
+        "unit": "runs per month"
+      },
+      "precision_note": "20,000 / 0.025 = 800,000. Ignoring the team's own compute gives 20,000 / 0.04 = 500,000 and is rejected.",
+      "explanation": "Section 9: rented cost grows with runs while owned cost is mostly fixed, so the crossover is the owned monthly cost over the per-run difference: $20{,}000 / (0.04 - 0.015) = 800{,}000$ runs a month. Token costs cancel because both sides pay them.",
+      "hints": [
+        "Only the costs that differ between the two choices matter.",
+        "Divide the fixed cost by the per-run margin that renting adds."
+      ]
+    },
+    {
+      "id": "hrn-023-q15",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "harness-as-a-service",
+        "budget-ceiling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team moves its agent from an SDK it hosts to a hosted agent runtime billed per session-hour. Which cost of the run is unchanged by the move, and what does that mean for the team's budget ceilings?",
+      "answer": {
+        "model": "The model token bill: tokens are still billed per token, with the runtime fee added on top, so the team still has to set and enforce its own budget ceilings.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|might|not sure|i think|i guess)\\b)(?![\\s\\S]*\\b(token\\w*|model)\\b(?:(?!\\bnot\\b|n't|\\bnever\\b)[^.;]){0,30}\\b(go(es)? away|disappear\\w*|vanish\\w*|included|free|covered|absorbed|replaced|eliminated|no longer)\\b)(?![\\s\\S]*\\b(runtime|session|vendor|fee)\\b[^.;]{0,30}\\b(replaces|replace|covers|cover|includes|include|absorbs|absorb|pays for)\\b(?:(?!\\bnot\\b|n't)[^.;]){0,20}\\b(token\\w*|spend|bill|bills|cost|costs)\\b)(?![\\s\\S]*(\\b(not|no longer|never)\\b|n't\\b)\\s+(be\\s+|being\\s+)?(billed|charged|paid)\\b)(?![\\s\\S]*\\b(ceilings?|budgets?)\\b[^.;]{0,40}\\b(become|becomes|are now|is now)\\b[^.;]{0,20}\\b(the )?vendor)(?![\\s\\S]*\\bno (need|longer)\\b[^.;]{0,30}\\b(ceiling|budget)s?\\b)(?=[\\s\\S]*\\btokens?\\b)(?=[\\s\\S]*\\b(still|stays?|remains?|continues?|unchanged|same|separate\\w*|on top|in addition|as well|beside|alongside|added|adds|second meter|two meters|not replaced|does not go away|doesn't go away|outside)\\b)(?=[\\s\\S]*\\b(ceilings?|budgets?|limits?|caps?|spend|team|own|enforce\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Section 8: the loop, the isolation and the session state cross into the service, but model tokens are still billed per token at standard rates; the runtime fee is a second meter added beside them. Budget ceilings on token spend therefore stay the team's to set and enforce.",
+      "hints": [
+        "Look at the last column of the tier table."
+      ]
+    },
+    {
+      "id": "hrn-023-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "budget-ceiling",
+        "cost-meter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The capstone's `CostMeter` checks `cost() >= budget_usd` at the top of each iteration and charges cache writes at the base input rate. Post 19 reserves an estimate of the next call's cost before making it. Using the running example on a rolling breakpoint and a 0.25-dollar ceiling, compare where each approach stops and what the run spends, and propose the change that makes the capstone's meter a true ceiling.",
+      "kind": "connect",
+      "connects": [
+        "hrn-019",
+        "hrn-026"
+      ],
+      "solution": "Post 19's reserve estimates the next call and refuses it when spend plus the estimate would pass the ceiling, so the ceiling is never crossed. On the running example at Claude Sonnet 4.6 rates with a rolling breakpoint, the reserving meter of this post's snippet refuses iteration 10 having spent 0.2369 dollars.\n\nThe capstone's `CostMeter` (post 26) asks only whether spend has already reached the ceiling at the top of an iteration. After nine iterations it has spent less than 0.25 dollars, so iteration 10 runs; after ten it reads 0.2414 dollars, still under the ceiling by its own count, because it prices the 3,100 written tokens of each turn at 1.0x instead of 1.25x, so iteration 11 runs as well, and it stops at 0.2698 dollars by its own count, 8% over the ceiling; at the write price those eleven calls cost 0.2976 dollars, 19% over.\n\nThe fix has two parts: price `cache_creation_input_tokens` at the write multiplier, and test `cost + estimate_of_next_call > budget_usd` before the call, refusing it rather than reporting the crossing. With both, the meter is a ceiling, and exit (3), budget, fires before the money is spent.",
+      "rubric": [
+        {
+          "criterion": "States where each check sits: before the next call (reserve) against after spend has reached the ceiling",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the stopping points and spends: refused at iteration 10 at about 0.237 against about 0.270 by its own count (0.298 at the write price) after iteration 11",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the missing write premium as a second source of under-counting",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes a reserve-before-spend check with write pricing, tied to exit (3), budget",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 10 runs both on the same calls: the reserving meter refuses iteration 10 at 0.2369 dollars, while the companion lets iteration 11 start and stops at 0.2698 by its own count, 0.2976 at the write price, and its 1.0x write pricing makes the full run read 0.2993 instead of 0.3293. Post 19's reserve and post 26's driver are the two ends of that comparison.",
+      "hints": [
+        "Where does each check sit relative to the spend of the next call?",
+        "Look at what each meter prints for the same run and the same ceiling."
+      ]
+    },
+    {
+      "id": "hrn-023-q17",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "run-cost",
+        "prompt-caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Order these ways of paying for the twelve-iteration running example from cheapest to dearest, at Claude Sonnet 4.6 rates.",
+      "items": [
+        {
+          "key": "a",
+          "text": "no caching"
+        },
+        {
+          "key": "b",
+          "text": "a cached static head of 5,000 tokens"
+        },
+        {
+          "key": "c",
+          "text": "a rolling breakpoint, one-hour tier"
+        },
+        {
+          "key": "d",
+          "text": "a rolling breakpoint, five-minute tier"
+        }
+      ],
+      "answer": [
+        "d",
+        "c",
+        "b",
+        "a"
+      ],
+      "explanation": "Sections 5 and 10 price them: a rolling breakpoint on the five-minute tier 0.329 dollars, the same breakpoint on the one-hour tier 0.420 (every write at 2.0x), a cached static head 0.793, and no caching 0.938.",
+      "hints": [
+        "Which part of the request does each option bill at the read price?",
+        "The one-hour tier reads the same tokens but writes at 2.0x instead of 1.25x."
+      ]
+    }
+  ]
+}
