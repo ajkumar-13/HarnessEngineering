@@ -1,0 +1,733 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-025",
+  "next_ordinal": 17,
+  "questions": [
+    {
+      "id": "hrn-025-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "gate-order",
+        "hooks",
+        "approval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In Build #2 every tool call meets the pre-tool hook before the approval gate. What does that order buy?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A call that matches a dangerous rule is blocked outright and never becomes a request a person has to read.",
+          "correct": true,
+          "feedback": "Right: obviously dangerous calls never reach the human, so the queue holds only the merely sensitive ones."
+        },
+        {
+          "key": "b",
+          "text": "The approval gate needs the hook's verdict as an input before it can decide.",
+          "correct": false,
+          "feedback": "The gate takes the tool name, the sensitive flag and the arguments; it never reads the hook's decision."
+        },
+        {
+          "key": "c",
+          "text": "The hook is slower than the gate, so running it first hides its latency behind the human's reply.",
+          "correct": false,
+          "feedback": "The hook is a regular-expression match that takes microseconds; the human is the slow step."
+        },
+        {
+          "key": "d",
+          "text": "Running the hook first lets the sandbox skip its own checks for calls the hook allowed.",
+          "correct": false,
+          "feedback": "The sandbox runs its own checks inside the bash tool regardless of what the hook decided."
+        }
+      ],
+      "explanation": "`_gated_dispatch` runs the hook, then the approval gate, then the tool. Blocking the named-dangerous first keeps the human for the residue that needs judgement; reversed, every hallucinated `rm -rf /` becomes a notification, and a queue full of noise stops being read.",
+      "hints": [
+        "Ask who is spared work when a call is stopped at the first gate."
+      ]
+    },
+    {
+      "id": "hrn-025-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "gate-order",
+        "sandbox",
+        "tracing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A model asks Build #2 to run `bash` with `curl http://example.com`. Put the steps the companion performs on that call in the order they happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`HookRegistry.check` runs the deny-list hook on the call's text"
+        },
+        {
+          "key": "b",
+          "text": "the approval policy asks whether the tool is marked sensitive"
+        },
+        {
+          "key": "c",
+          "text": "`registry.dispatch` validates the arguments and runs the bash tool"
+        },
+        {
+          "key": "d",
+          "text": "`Sandbox.check` refuses `curl` as not on the allow-list"
+        },
+        {
+          "key": "e",
+          "text": "the tool span is tagged `refused` because the observation starts with `blocked:`"
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "The hook and the approval gate sit in `_gated_dispatch` before the call executes; the sandbox is not a gate in front of the call but a check inside the bash tool, so it runs during `registry.dispatch`, and only afterwards can the dispatcher read the refusal string and tag the span `refused`.",
+      "hints": [
+        "The sandbox lives inside one tool, not in front of every call.",
+        "The tag can only be chosen once the tool's return value exists."
+      ]
+    },
+    {
+      "id": "hrn-025-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "hooks",
+        "sandbox",
+        "gate-choice"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team wants a new rule: no command may read a file outside the agent's workspace. Which of Build #2's gates should carry it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The pre-tool hook, with a regular expression for paths that do not start with the workspace.",
+          "correct": false,
+          "feedback": "Whether a path is outside the workspace depends on where it resolves, not on its text; a relative path or a program that opens files itself defeats a pattern."
+        },
+        {
+          "key": "b",
+          "text": "The sandbox, because what a call can reach is a property of the execution boundary.",
+          "correct": true,
+          "feedback": "Right: reach is judged against a jail and an allow-list, which is the sandbox's job, and ultimately the operating system's."
+        },
+        {
+          "key": "c",
+          "text": "The approval gate, so a person checks each path before the command runs.",
+          "correct": false,
+          "feedback": "The rule can be written down, and a rule that can be written is written; the gate is for judgement nobody can encode."
+        },
+        {
+          "key": "d",
+          "text": "The tracer, which records every path the command touched.",
+          "correct": false,
+          "feedback": "The tracer records what happened; it stops nothing."
+        }
+      ],
+      "explanation": "The three questions of the hook section route a rule: recognisable from text goes to the hook, dependent on reach goes to the sandbox, dependent on unencodable judgement goes to the approval gate. Reading outside the workspace is about reach.",
+      "hints": [
+        "Is the rule about the call's text, about what it can touch, or about a judgement?"
+      ]
+    },
+    {
+      "id": "hrn-025-q04",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "gate-choice"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each new rule to the layer of Build #2 that should carry it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Block any call whose arguments contain `DROP TABLE`, whatever the tool"
+        },
+        {
+          "key": "b",
+          "text": "Only `echo`, `ls`, `cat` and `git` may run"
+        },
+        {
+          "key": "c",
+          "text": "A payment to a supplier the company has never paid before"
+        },
+        {
+          "key": "d",
+          "text": "Show afterwards which layer stopped each call"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "the pre-tool hook"
+        },
+        {
+          "key": "q",
+          "text": "the sandbox"
+        },
+        {
+          "key": "r",
+          "text": "the approval gate"
+        },
+        {
+          "key": "s",
+          "text": "the tracer"
+        },
+        {
+          "key": "t",
+          "text": "the verification gate"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s"
+      },
+      "explanation": "Text recognisable on any tool is a hook rule; which programs may run is reach, the sandbox's allow-list; a new supplier is a judgement nobody can encode, so a person decides; the record of which gate fired is the tracer's outcome tag. Build #2 ships no verification gate at all.",
+      "hints": [
+        "Ask of each rule whether it needs the text, the reach, a person, or a record."
+      ]
+    },
+    {
+      "id": "hrn-025-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "hooks",
+        "sandbox"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Build #2's pre-tool hook decides from the text of the pending call. Name the property of a call that the hook cannot judge and that the sandbox exists to bound.",
+      "answer": {
+        "model": "Its reach: what the call can touch once it runs, which depends on the jail and the allow-list rather than on the string.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*\\b(can|could|does)\\s+(see|judge|tell)\\s+(the\\s+)?reach)(?![\\s\\S]*(\\bnot\\s+(its\\s+|the\\s+)?reach|\\breach\\w*\\s+(is\\s+not|isn't)\\s+(the|it)\\b))(?=[\\s\\S]*\\b(reach\\w*|what (it|the call|the command) can (touch|access|get to)|outside the (jail|workspace)|where (it|the call|the command) (can go|lands|resolves)|(which|what) (files|paths|directories) (it|the call|the command) (can )?(touch|access|reach|open)\\w*)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "A hook matches text, so `git push -f` and `git status` look equally harmless to it; reach is a property of the execution boundary. The sandbox asks only whether the program may run and whether its paths stay inside the jail.",
+      "hints": [
+        "Think of `git push -f origin main` passing the hook: what did the hook have no way to know?"
+      ]
+    },
+    {
+      "id": "hrn-025-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "adversarial-table",
+        "allow-list"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "In the fourteen-call adversarial table, Build #2 runs with its default allow-list (`echo`, `ls`, `cat`, `git`) and then with `python` added. How many of the fourteen calls reach execution with `python` added?",
+      "answer": {
+        "value": 2,
+        "tolerance": 0,
+        "unit": "calls"
+      },
+      "precision_note": "The `+ python` column of snippets/adversarial_table.py: 3 blocked, 9 refused, 2 reached (`git push -f origin main` and the `python -c` payload).",
+      "explanation": "The default build lets only `git push -f origin main` through. Adding an interpreter hands back the `python -c` payload as well: no metacharacter, an allow-listed first token, no path, and arbitrary code.",
+      "hints": [
+        "Start from the one call that reaches the default build.",
+        "Which payload was refused only because of the allow-list?"
+      ]
+    },
+    {
+      "id": "hrn-025-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "sub-agent",
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A parent run has `token_budget=100`. Its first model call costs 10 tokens and delegates; its final call costs 10. The forwarding spawn gives the child `token_budget=100 - ledger.spent`, where the ledger has charged every model call so far. The child's scripted model spends 100 tokens on every call and would take five calls. The companion's `run` checks the budget after each model call. How many tokens does the child spend, and what does the ledger read when the parent finishes?",
+      "answer": {
+        "parts": [
+          {
+            "label": "child tokens",
+            "value": 100,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "ledger total",
+            "value": 120,
+            "tolerance": 0,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "snippets/spawn_limits.py, forwarding spawn: the child's budget is 100 - 10 = 90; its first call spends 100, and 100 >= 90 fires exit (3), budget; the ledger is 10 + 100 + 10 = 120.",
+      "explanation": "The child stops at exit (3) after its first call because the check runs after spending, so the child overruns by at most one call, and the parent's final 10 tokens bring the ledger to 120 against 100, against 520 with the demo's spawn, which forwards no budget.",
+      "hints": [
+        "Work out the budget the child is given at the moment of the spawn.",
+        "The budget check runs after a call has been paid for."
+      ]
+    },
+    {
+      "id": "hrn-025-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "adversarial-table",
+        "allow-list"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Rerun the fourteen-call adversarial table against Build #2 with the allow-list narrowed to `echo`, `ls` and `cat` (no `git`), the deny-list hook unchanged. How many calls are blocked by the hook, refused by the sandbox, and reach execution?",
+      "answer": {
+        "parts": [
+          {
+            "label": "blocked",
+            "value": 3,
+            "tolerance": 0,
+            "unit": "calls"
+          },
+          {
+            "label": "refused",
+            "value": 11,
+            "tolerance": 0,
+            "unit": "calls"
+          },
+          {
+            "label": "reached",
+            "value": 0,
+            "tolerance": 0,
+            "unit": "calls"
+          }
+        ]
+      },
+      "precision_note": "snippets/adversarial_table.py with DEFAULT = ['echo', 'ls', 'cat']: the hook still blocks `rm -rf /`, `git push --force` and `echo hi && rm -rf /work` before the sandbox runs; `git push -f origin main` is now refused on the allow-list.",
+      "explanation": "The hook runs first, so its three blocks are unchanged even though `git` left the allow-list. The one reaching call needed `git` on the list, so the sandbox now refuses it too: 3 + 11 + 0 = 14. The price is an agent that cannot run `git status`.",
+      "hints": [
+        "The hook runs before the sandbox, so start with what it blocks.",
+        "Only one call reached the default build; what let it through?"
+      ]
+    },
+    {
+      "id": "hrn-025-q09",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "sandbox",
+        "allow-list",
+        "jail"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "This `check` carries two defects that Build #2's sandbox policy shipped with, and probing shows both: `check(\"echo hi; curl http://evil.example\", [\"echo\"])` returns `None`, and so does `check(\"cat /worksecrets/passwd\", [\"cat\"])` with the jail `/work`. Fix both without changing the return contract: `None` to run, a string starting `blocked:` to refuse.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import re\n\nSHELL_CONTROL = re.compile(r\"[;&|<>`\\n]|\\$\\(\")\n\n\ndef check(command, allow, jail=\"/work\"):\n    \"\"\"Return None if `command` may run, else a refusal string that starts with 'blocked:'.\"\"\"\n    stripped = command.strip()\n    if not stripped:\n        return \"blocked: empty command\"\n    prog = stripped.split()[0]\n    if prog not in allow:\n        return f\"blocked: '{prog}' is not on the allow-list\"\n    if \"..\" in command:\n        return \"blocked: path traversal\"\n    for token in stripped.split():\n        if token.startswith(\"/\") and not token.startswith(jail):\n            return f\"blocked: '{token}' is outside the jail\"\n    return None\n",
+      "solution": "import re\nfrom pathlib import PurePosixPath\n\nSHELL_CONTROL = re.compile(r\"[;&|<>`\\n]|\\$\\(\")\n\n\ndef _within(token, jail):\n    t, j = PurePosixPath(token), PurePosixPath(jail)\n    return t == j or j in t.parents\n\n\ndef check(command, allow, jail=\"/work\"):\n    \"\"\"Return None if `command` may run, else a refusal string that starts with 'blocked:'.\"\"\"\n    stripped = command.strip()\n    if not stripped:\n        return \"blocked: empty command\"\n    found = SHELL_CONTROL.search(stripped)          # before the allow-list: these smuggle a second program\n    if found:\n        return f\"blocked: shell control character {found.group(0)!r} is refused\"\n    prog = stripped.split()[0]\n    if prog not in allow:\n        return f\"blocked: '{prog}' is not on the allow-list\"\n    if \"..\" in command:\n        return \"blocked: path traversal\"\n    for token in stripped.split():\n        if token.startswith(\"/\") and not _within(token, jail):   # path components, not a string prefix\n            return f\"blocked: '{token}' is outside the jail\"\n    return None\n",
+      "tests": "def refused(c, allow, jail=\"/work\"):\n    r = check(c, allow, jail)\n    return isinstance(r, str) and r.startswith(\"blocked:\")\n\n\nfor c in [\"echo hi; curl http://evil.example\", \"echo hi | sh\", \"echo hi && rm -rf /work\",\n          \"echo `cat /work/secret`\", \"echo $(cat /work/secret)\", \"echo hi > /work/overwritten\",\n          \"echo hi & curl http://evil.example\", \"echo hi < /etc/passwd\"]:\n    assert refused(c, [\"echo\"]), c\nassert check(\"echo hi\", [\"echo\"]) is None\nassert refused(\"curl http://x\", [\"echo\"])\nassert refused(\"cat ../secrets\", [\"cat\"])\nassert refused(\"\", [\"echo\"])\nassert check(\"cat /work\", [\"cat\"]) is None\nassert check(\"cat /work/ok.txt\", [\"cat\"]) is None\nassert check(\"cat /work/sub/deep.txt\", [\"cat\"]) is None\nfor c in [\"cat /worksecrets/passwd\", \"cat /work-private/keys\", \"cat /etc/passwd\", \"cat /work/a /etc/b\"]:\n    assert refused(c, [\"cat\"]), c\nassert check(\"cat /srv/data.txt\", [\"cat\"], jail=\"/srv\") is None\nassert refused(\"cat /srvx/data.txt\", [\"cat\"], jail=\"/srv\")\nassert refused(\"cat /work/a.txt\", [\"cat\"], jail=\"/srv\")\nassert check(\"cat /srv/app/x.txt\", [\"cat\"], jail=\"/srv/app\") is None\nassert refused(\"cat /srv/other/x.txt\", [\"cat\"], jail=\"/srv/app\")\nassert refused(\"cat /srv/appdata/x.txt\", [\"cat\"], jail=\"/srv/app\")\nprint(\"all checks passed\")\n",
+      "explanation": "Refuse the shell control characters before the allow-list, because a first-token check approves `echo` and never sees the second program; and test the jail by path components (`PurePosixPath` parents), because `/worksecrets` starts with the characters `/work` without being inside it. These are the two halves of `Sandbox.check` as the companion now ships it.",
+      "hints": [
+        "`SHELL_CONTROL` is defined but never used, and where it runs matters.",
+        "A string prefix is not a path test: compare the path's parents with the jail.",
+        "`PurePosixPath(token)`, `PurePosixPath(jail)`, then `t == j or j in t.parents`."
+      ]
+    },
+    {
+      "id": "hrn-025-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "tracing",
+        "testing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Before the fix, every sandbox refusal was tagged `ok` in Build #2's trace, and the suite stayed green. Which assertion, added to a test that sends `curl http://evil.example` through the bash tool, would have failed on that build?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The trace holds exactly one `tool.bash` span.",
+          "correct": false,
+          "feedback": "The span existed and was unique; the defect was in its value, not its presence."
+        },
+        {
+          "key": "b",
+          "text": "The root span's `stop.reason` is `completed`.",
+          "correct": false,
+          "feedback": "The run did complete normally; the refusal came back as an observation, so this passes on the buggy build."
+        },
+        {
+          "key": "c",
+          "text": "The `tool.bash` span's `outcome` attribute equals `refused`.",
+          "correct": true,
+          "feedback": "Right: this asserts the span's value, which is exactly where the bug lived; it is what `test_sandbox_refusal_is_visible_in_the_trace` now checks."
+        },
+        {
+          "key": "d",
+          "text": "The run returns without raising an exception.",
+          "correct": false,
+          "feedback": "A refusal never raised; the run ended cleanly on both builds."
+        }
+      ],
+      "explanation": "The old trace test asserted shape: spans exist, iterations nest, tool spans appear. All of that held while every refusal was filed as `ok`. Only an assertion on a span's contents distinguishes the two builds.",
+      "hints": [
+        "Three of these hold on both the buggy and the fixed build.",
+        "Shape or contents?"
+      ]
+    },
+    {
+      "id": "hrn-025-q11",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o6"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "sandbox",
+        "jail"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Which statement describes Build #2's jail as the companion ships it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It resolves every path, following symbolic links, and refuses anything that lands outside the workspace.",
+          "correct": false,
+          "feedback": "`_within` never touches the filesystem: it compares `PurePosixPath` components and resolves nothing."
+        },
+        {
+          "key": "b",
+          "text": "It is enforced by the operating system through the working directory the runner sets.",
+          "correct": false,
+          "feedback": "`subprocess_runner` passes no `cwd=` and no `env=`; nothing below the process enforces the jail."
+        },
+        {
+          "key": "c",
+          "text": "It compares absolute tokens with the jail by path components and never checks relative paths, so `cat notes.txt` passes.",
+          "correct": true,
+          "feedback": "Right: only tokens starting with `/` are tested, and a relative path runs wherever the harness process happens to be."
+        },
+        {
+          "key": "d",
+          "text": "It compares absolute tokens with the jail as string prefixes, so `/worksecrets` counts as inside `/work`.",
+          "correct": false,
+          "feedback": "That was the defect the 4 September 2026 audit found; it is fixed and pinned by a test."
+        }
+      ],
+      "explanation": "The jail is a path-token filter in the agent's own process: absolute tokens are compared by components, `..` is refused by a substring test one check earlier, relative paths are never compared, and no working directory or environment reaches the subprocess. Post 14's tier table calls such a check a pre-filter, never a boundary.",
+      "hints": [
+        "Look at which tokens the loop in `check` even inspects.",
+        "What does `subprocess_runner` pass to `subprocess.run`?"
+      ]
+    },
+    {
+      "id": "hrn-025-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o6"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "sandbox"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Of the five constraints post 14 says a sandbox composes (an allow-list, a path boundary, network isolation, a resource limit, an ephemeral runtime), two are entirely absent from Build #2. Name both.",
+      "answer": {
+        "model": "Network isolation and an ephemeral runtime: nothing stops an allow-listed program reaching the network, and nothing is wiped between runs.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|probably|possibly|not sure|i think|might)\\b)(?![\\s\\S]*(?<!only )(?<!only a )(?<!just a )\\b(allow-?list|jail|path boundary|timeout|resource|cpu|memory)\\b(?![^.;,]*\\b(is|are)\\s+(present|there|kept|partial|partly|only|just|a)\\b))(?![\\s\\S]*\\b(isolation|runtime)\\s+(is|are)\\s+(both\\s+)?(present|there|provided|included|covered)\\b)(?=[\\s\\S]*\\bnetwork\\w*)(?=[\\s\\S]*\\b(ephemeral|wiped?|wipes|wiping|fresh (container|runtime|environment|sandbox)|disposable|throwaway|reset between runs|clean (container|runtime|environment) (per|each|every) run)\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "Build #2 has the allow-list, a path-token filter standing in for the path boundary, and a wall-clock timeout as its only resource limit. It has no network isolation, so `git` on the allow-list can reach a remote, and no ephemeral runtime.",
+      "hints": [
+        "Which constraint would have stopped `git push -f origin main` from talking to a remote?"
+      ]
+    },
+    {
+      "id": "hrn-025-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "adversarial-table",
+        "deny-list",
+        "approval"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Under Build #2's default allow-list exactly one of the fourteen adversarial calls reaches execution: `git push -f origin main`. Explain why each layer let it through, then compare two fixes: a tighter deny-list pattern, and routing the push through another gate. Say which fix holds up against the next respelling and what each costs.",
+      "kind": "critique",
+      "answer_length": "half a page",
+      "solution": "**Why it gets through.** The hook matches text, and its force-push pattern is `git\\s+push\\s+--force`, so the short flag `-f` matches nothing. The sandbox asks only whether the first token is allow-listed and whether absolute paths stay in the jail: `git` is on the list because an agent that cannot run `git status` is useless, and the command names no path. There is no approval on `bash`, because the policy is per tool and the bash tool is not marked sensitive, and there is no network isolation to stop the push reaching a remote.\n\n**Fix 1: a better regular expression.** Matching `-f` too stops this spelling, but deny-lists lose to respellings: `push -uf`, `push --force-with-lease`, a `+main` refspec or an alias. It is cheap and it is the wrong axis; the scored table shows the hook missing three spellings of `rm -rf` already.\n\n**Fix 2: route the push to a gate that fails on another axis.** Either make the approval policy argument-aware so any `git push` escalates to a person (irreversible and externally visible: always gate it), or replace program-name grants with argv patterns so `git status` and `git diff` are allowed and `git push` is not. Both hold against the next respelling, because they key on the operation, not its spelling. The cost is reviewer attention for the first and a longer allow-list to maintain for the second; adding network isolation underneath removes the remote even when both fail.",
+      "rubric": [
+        {
+          "criterion": "Explains why the hook misses `-f` (text match on `--force`) and why the sandbox passes it (`git` allow-listed, no path)",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that no approval applies because the policy is per tool and bash is not sensitive",
+          "points": 1
+        },
+        {
+          "criterion": "Shows why a tighter pattern loses to the next respelling",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes an argument-aware approval policy or argv-pattern grants and says why they hold",
+          "points": 2
+        },
+        {
+          "criterion": "States a cost of each fix",
+          "points": 1
+        }
+      ],
+      "explanation": "The table's one reaching call is the most useful line because it shows the build's limit precisely: a text gate misses a spelling and a reach gate allows the program. The durable fix is a gate keyed on the operation.",
+      "hints": [
+        "Take the call through the hook, the approval policy and `Sandbox.check` in turn.",
+        "Ask which fix depends on how the command is spelled."
+      ]
+    },
+    {
+      "id": "hrn-025-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 5,
+      "outcomes": [
+        "o3",
+        "o6"
+      ],
+      "section": "11",
+      "est_minutes": 25,
+      "tags": [
+        "sub-agent",
+        "sandbox",
+        "capstone"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "connects": [
+        "hrn-026",
+        "hrn-014"
+      ],
+      "prompt": "The capstone of post 26 runs a generator's code and has no guard layers. A team proposes to give it Build #2's layers by adding a `delegate` tool whose sub-agent holds a `bash` tool for running the tests, and to call the result safe to leave running. Critique the proposal against what Build #2 does and does not do, and design what must change, in the harness and below it, before the claim is true.",
+      "kind": "design",
+      "answer_length": "a page",
+      "solution": "**What Build #2 would give.** A deny-list hook, an approval gate for sensitive tools, an allow-list with a path-token filter and a timeout inside the bash tool, and a tracer with four outcome tags. That is a pre-filter in the agent's own process.\n\n**What the proposal gets wrong.**\n1. The sub-agent is spawned past the gates: the demo's spawn passes only the tracer, so the child's `bash` runs with no hook and no approval, and with the default cap of twelve. The spawn must forward `hooks` and `approval`, a cap, and the remaining budget from a ledger both models charge, since the companion's counter never sees the child's tokens.\n2. Running tests needs `python` or `pytest` on the allow-list, which allow-lists everything they can run (`python -c`, `conftest.py`). Grant argv patterns such as `pytest -q`, and accept that the in-process check is not the boundary.\n3. The jail checks absolute tokens only and the runner passes no `cwd=` or `env=`: relative paths land in the harness's working directory with its secrets in the environment. Pass the workspace as `cwd`, a bare environment, and put the process under an operating-system boundary from post 14's tier table (a container or a profile), with no network egress and an ephemeral filesystem.\n4. Build #2 has no verification gate; the capstone's evaluator must stay the thing that decides, now running inside the sandbox rather than by `exec` in the driver.\n5. The trace lives in memory; persist it so the record outlives the run, and add an approval timeout with a deny default for anything irreversible.\n\n**The claim.** Only with the OS boundary, the forwarded gates and limits, and the verifier in place is \"safe to leave running\" a statement about reach that the adversarial table can re-measure.",
+      "rubric": [
+        {
+          "criterion": "Identifies the spawn-past-the-gates hole and the unforwarded cap and budget",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why an interpreter or test runner on the allow-list defeats it, and proposes argv patterns",
+          "points": 2
+        },
+        {
+          "criterion": "States that the jail is a path-token filter with no cwd or env and calls for an OS-level boundary with no egress",
+          "points": 2
+        },
+        {
+          "criterion": "Keeps a verification gate that decides, run inside the boundary",
+          "points": 1
+        },
+        {
+          "criterion": "Addresses the record and the no-answer default",
+          "points": 1
+        }
+      ],
+      "explanation": "This connects the gauntlet of this build to the capstone's seams and to post 14's tiers: each layer of Build #2 is a pre-filter, and the proposal adds a second entry point into the tool layer without its limits.",
+      "hints": [
+        "Start from what the demo's `spawn` forwards to the child.",
+        "Then ask what running a test suite puts on the allow-list, and what enforces the jail below the process."
+      ]
+    },
+    {
+      "id": "hrn-025-q15",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "sub-agent",
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "The companion's demo spawns its sub-agent with `run(child_model, ToolRegistry([]), subtask, tracer=tracer, span_name=\"subagent.run\")`. Which consequence follows?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The child inherits the parent's hooks and approval gate, because both runs share one tracer.",
+          "correct": false,
+          "feedback": "Sharing a tracer shares the record, not the gates; `hooks` and `approval` default to None."
+        },
+        {
+          "key": "b",
+          "text": "The child gets the default cap of twelve and its tokens never reach the parent's `tokens_used`.",
+          "correct": true,
+          "feedback": "Right: `max_iters` and `token_budget` are not forwarded, and each run keeps its own counter."
+        },
+        {
+          "key": "c",
+          "text": "When the child overspends, the parent stops at exit (3), budget.",
+          "correct": false,
+          "feedback": "The parent never sees the child's tokens; in the snippet it finishes `completed` at 20 tokens while the child spends 500."
+        },
+        {
+          "key": "d",
+          "text": "With an empty registry the child cannot take a second iteration.",
+          "correct": false,
+          "feedback": "An unknown tool returns an error observation and the loop continues; the snippet's child runs five iterations."
+        }
+      ],
+      "explanation": "A sub-agent is a second entry point into the tool layer: its gates and its limits are parameters. The demo is safe only because the child's registry is empty, and its limits are the defaults.",
+      "hints": [
+        "List which keyword arguments the call passes and which it leaves at their defaults."
+      ]
+    },
+    {
+      "id": "hrn-025-q16",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "hooks",
+        "claude-code"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "connects": [
+        "hrn-013"
+      ],
+      "prompt": "Claude Code's hooks reference says a `PreToolUse` hook that exits 2 blocks the tool call, while a `PostToolUse` hook on exit 2 shows its standard error to the model because the tool already ran. Which statement places Build #2's `HookRegistry` correctly?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the `PreToolUse` kind only: its one list, `pre_tool`, runs before execution, so a post-edit check would need a second list that can report but not block.",
+          "correct": true,
+          "feedback": "Right: `HookRegistry` carries only `pre_tool`, and the blocking power comes from running before the tool."
+        },
+        {
+          "key": "b",
+          "text": "It is the `PostToolUse` kind, because a blocked call's reason comes back to the model as an observation.",
+          "correct": false,
+          "feedback": "Returning the reason as an observation is how a pre-tool block reports itself; the call never ran."
+        },
+        {
+          "key": "c",
+          "text": "It covers both kinds, because `check` is called before and after each tool.",
+          "correct": false,
+          "feedback": "`_gated_dispatch` calls `hooks.check` once, before approval and execution."
+        },
+        {
+          "key": "d",
+          "text": "It is neither, because a hook in code cannot block; only an exit code can.",
+          "correct": false,
+          "feedback": "The exit code is the vendor's interface to an external script; returning a block `Decision` before dispatch is the same power in process."
+        }
+      ],
+      "explanation": "Post 13's four lifecycle points split into two that can block and two that supply or report. Build #2 implements only the pre-tool point, which is why its leave-out list names the missing post-edit and pre-commit points.",
+      "hints": [
+        "When does `hooks.check` run relative to `registry.dispatch`?"
+      ]
+    }
+  ]
+}

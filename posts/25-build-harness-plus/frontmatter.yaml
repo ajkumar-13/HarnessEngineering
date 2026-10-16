@@ -1,37 +1,28 @@
 id: hrn-025
 slug: 25-build-harness-plus
-title: "25 · Build #2 — add hooks, sandbox, and sub-agents"
-
-description: >
-  Build #1 was the honest minimum: a loop that verifies its work and stops for the right
-  reason. Build #2 keeps that engine and hardens it, by adding four bounded layers
-  (deterministic hooks, an allow-list sandbox, a human approval gate, and one sub-agent),
-  all wrapped in tracing.
-
-author: "Ajay"
+title: "25 - Build #2: add hooks, sandbox, and sub-agents"
+summary: "The second build hardens the minimal harness with a deny-list hook, an allow-list sandbox, an approval gate and one sub-agent, all traced; against fourteen adversarial calls, reach falls from nine to one."
 date: 2026-10-07
-last_modified: 2026-09-05
-
-tags: [harness-engineering, builds, hooks, sandbox, sub-agents]
-
-keywords:
-  - harness engineering
-  - builds
-  - hooks
-  - sandbox
-  - sub agents
-  - approval gate
-
-category: Production and builds
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part V - Production and builds"
-
+level: advanced
+reading_time: 35
+tags: [harness-engineering, production-and-builds, hooks, sandbox, sub-agents, approval-gate, adversarial-testing]
 hero: diagrams/01-layered-harness.svg
-hero_alt: "Build #1's core wrapped by a tracer, with a numbered three-stage pipeline applied to each tool call (a pre-tool hook that can block, a human approval gate for sensitive calls, then execution inside a sandbox), plus a delegate tool that spawns a sub-agent in its own context."
-
-reading_time: 41
-toc: true
-draft: false
-canonical_url: ""
-prev: ../24-build-minimal-harness/
-next: ../26-capstone-coding-agent/
+prerequisites: [hrn-024, hrn-013, hrn-014, hrn-015, hrn-016]
+code: required
+outcomes:
+  - id: o1
+    text: "Add a deny-list hook, an allow-list sandbox, an approval gate and one sub-agent to Build #1 in a fixed order, all wrapped in tracing."
+  - id: o2
+    text: "Decide whether a new rule belongs in the hook, the sandbox or the approval gate, and say what each of the three cannot see."
+  - id: o3
+    text: "Pass a sub-agent its gates, iteration cap and remaining budget as parameters, so that delegating cannot step past the parent's limits."
+  - id: o4
+    text: "Score a harness by the calls that reach execution, reproducing the fourteen-call adversarial table against Build #1 and Build #2."
+  - id: o5
+    text: "Test a guardrail with the payloads it exists to stop, and name what a passing suite of injected-runner tests cannot see."
+  - id: o6
+    text: "Name what Build #2 still leaves out, including why its jail is a path-token filter rather than an operating-system boundary."
+recommended: [hrn-021, sec-018, sec-022, ctx-013]
