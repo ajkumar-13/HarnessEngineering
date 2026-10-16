@@ -1,0 +1,695 @@
+{
+  "standard": "2.1.0",
+  "post": "hrn-019",
+  "next_ordinal": 16,
+  "questions": [
+    {
+      "id": "hrn-019-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "layered-exits",
+        "guard-exit"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run stops and its trace names the exit that fired. Which exit, on its own, means the task was done?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Exit (1), a final answer that a check against ground truth confirmed.",
+          "correct": true,
+          "feedback": "Right. It is the intended exit, and the only one that means success; the other three are guards."
+        },
+        {
+          "key": "b",
+          "text": "Exit (4), no progress, because the agent had nothing left to change.",
+          "correct": false,
+          "feedback": "No progress means the run was busy without moving: a stall, not a finished task."
+        },
+        {
+          "key": "c",
+          "text": "Exit (2), the iteration cap, because the run used the turns it was given.",
+          "correct": false,
+          "feedback": "The cap is the backstop for a run that did not converge; using all the turns says nothing about the work."
+        },
+        {
+          "key": "d",
+          "text": "Exit (3), budget, when the spend reached exactly what the task was worth.",
+          "correct": false,
+          "feedback": "The budget guard stops a run that ran out of what it was worth to finish; it caught the run rather than ending it."
+        }
+      ],
+      "explanation": "Exit (1) is the intended exit, confirmed by verification; exits (2), (3) and (4) are guards, and a run that takes one did not finish and owes the next run a resumable position.",
+      "hints": [
+        "Three of the four exits exist to catch a run that is not converging."
+      ]
+    },
+    {
+      "id": "hrn-019-q02",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "exit-order",
+        "misreporting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A loop checks, after each model call, the budget first and the final answer second. On iteration 9 the model returns a correct, verified answer, and that call takes the spend past the ceiling. What does the run report, and why does it matter?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`budget`: a guard exit is reported for a run that had finished, and its verified answer is thrown away.",
+          "correct": true,
+          "feedback": "Right. Checking a guard before the goal cuts off a run that has just succeeded, which is why exit (1) is checked first."
+        },
+        {
+          "key": "b",
+          "text": "`completed`: the final answer always takes precedence whatever order the checks run in.",
+          "correct": false,
+          "feedback": "Precedence is exactly what the order decides; with the budget checked first, the budget fires first."
+        },
+        {
+          "key": "c",
+          "text": "`no_progress`: the answer is a turn with no tool call, so nothing changed.",
+          "correct": false,
+          "feedback": "No progress compares repeated signatures across a window; one answer turn does not fire it."
+        },
+        {
+          "key": "d",
+          "text": "`max_iters`: the iteration that crossed the budget counts as the last allowed turn.",
+          "correct": false,
+          "feedback": "The cap fires only when the `for` statement runs out of turns, which it has not at iteration 9 of a larger cap."
+        }
+      ],
+      "explanation": "The goal is checked first so that a run that has just succeeded is not cut off by a guard tripped by the same call; in the wrong order the trace says `budget` for a finished task.",
+      "hints": [
+        "Which check runs first, and does it look at the answer?",
+        "What does the trace say when a guard fires on the same call that succeeded?"
+      ]
+    },
+    {
+      "id": "hrn-019-q03",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "exit-order",
+        "reserve"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Put the steps of one turn of this post's controller, wrapped around the loop of post 03, in the order they happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Take exit (2) if no turns are left."
+        },
+        {
+          "key": "b",
+          "text": "Take exit (3) if the next call would cross the ceiling."
+        },
+        {
+          "key": "c",
+          "text": "Make the model call."
+        },
+        {
+          "key": "d",
+          "text": "Take exit (1) if the response is a final answer."
+        },
+        {
+          "key": "e",
+          "text": "Take exit (4) if the last three tool-call signatures are identical."
+        },
+        {
+          "key": "f",
+          "text": "Run the tools and append the results."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "partial_credit": true,
+      "explanation": "The `for` statement's bound and the reserve check run before the call; after it, the final answer is checked first, then no progress, and only then do the tools run.",
+      "hints": [
+        "Which checks can only be made before money is spent?",
+        "After the call, which exit must not be cut off by a guard?"
+      ]
+    },
+    {
+      "id": "hrn-019-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "reserve",
+        "arrears"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Request $n$ of a run sends $5{,}000 + 2{,}000(n - 1)$ input tokens, and the ceiling is 100,000. Loop A checks `spent >= ceiling` after each call; loop B refuses a call when `spent + next > ceiling`. How many tokens has each spent when it stops?",
+      "answer": {
+        "parts": [
+          {
+            "label": "loop A, checked after the call",
+            "value": 117000,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "loop B, reserved before the call",
+            "value": 96000,
+            "tolerance": 0,
+            "unit": "tokens"
+          }
+        ]
+      },
+      "precision_note": "Cumulative after $n$ calls: $5{,}000n + 1{,}000n(n - 1)$: 77,000 after 7, 96,000 after 8, 117,000 after 9. A stops after call 9 at 117,000; B refuses call 9 (21,000) at 96,000 because $96{,}000 + 21{,}000 > 100{,}000$.",
+      "explanation": "The arrears loop overshoots by the whole of the late, expensive call that crossed the line (17% here); the reserved loop stops below the ceiling, before that call is made.",
+      "hints": [
+        "Write the running total after each call.",
+        "A stops on the first total at or past 100,000; B stops on the first call whose size would take the total past it."
+      ]
+    },
+    {
+      "id": "hrn-019-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "tokens-vs-money",
+        "pricing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "At the Claude Sonnet 4.6 rates the post uses (3 dollars per million input tokens, 0.30 dollars per million cache-read tokens, 15 dollars per million output tokens), a run sends 199,500 input tokens, of which 150,000 are read from the cache, and generates 6,000 output tokens. Ignore cache writes. What does it cost, in dollars?",
+      "answer": {
+        "value": 0.2835,
+        "tolerance": 0.005,
+        "unit": "dollars"
+      },
+      "precision_note": "$49{,}500 \\times 3 + 150{,}000 \\times 0.30 + 6{,}000 \\times 15$ dollars per million: $0.1485 + 0.045 + 0.09 = 0.2835$. All input at the full rate gives 0.6885; leaving out the output gives 0.1935.",
+      "explanation": "The same token count can cost very different amounts depending on the mix: cache reads are a tenth of the input rate and output five times it, which is why a token ceiling is a proxy for a money ceiling, set from money.",
+      "hints": [
+        "Split the input into the cached and the uncached part.",
+        "Price each of the three classes at its own rate and add."
+      ]
+    },
+    {
+      "id": "hrn-019-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 6,
+      "tags": [
+        "nested-loops",
+        "budget-allocation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run ceiling of 240,000 tokens is split across eight tasks that turn out to need 14,000, 22,000, 41,000, 18,000, 27,000, 35,000, 16,000 and 20,000 tokens. Under a fixed per-task share, how many tasks fail, and how many tokens of the shares given to the tasks that succeed go unused? Under a shared pool with a per-task cap of a fifth of the ceiling, how many fail?",
+      "answer": {
+        "parts": [
+          {
+            "label": "tasks failing, fixed share",
+            "value": 2,
+            "tolerance": 0,
+            "unit": "tasks"
+          },
+          {
+            "label": "unused share of the successful tasks",
+            "value": 63000,
+            "tolerance": 0,
+            "unit": "tokens"
+          },
+          {
+            "label": "tasks failing, capped pool",
+            "value": 0,
+            "tolerance": 0,
+            "unit": "tasks"
+          }
+        ]
+      },
+      "precision_note": "Fixed share $240{,}000 / 8 = 30{,}000$: the 41,000 and 35,000 tasks fail; the six that succeed use 117,000 of $6 \\times 30{,}000 = 180{,}000$, leaving 63,000. The pool's cap is 48,000, above every task, and the total need of 193,000 fits in 240,000, so none fails.",
+      "explanation": "A fixed share is predictable and wasteful: two tasks fail while headroom sits unused. A capped pool spends the headroom and bounds the damage one pathological task can do to a fifth of the run.",
+      "hints": [
+        "Compute the share, then compare each task's need with it.",
+        "For the pool, check both the cap per task and the total."
+      ]
+    },
+    {
+      "id": "hrn-019-q07",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "retries",
+        "iteration-cap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A harness counts every model request, including each retry of a rate-limited call, against its iteration cap of 12. During a bad hour at the provider, what goes wrong, and what should the harness do instead? Answer in one or two sentences.",
+      "answer": {
+        "model": "Retries of transient errors eat the cap meant to bound work, so ordinary runs end as max_iters; count attempts apart from iterations, with a retry budget of their own, so a call retried twice is still one iteration.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|not sure|i think|i guess|might be|could be)\\b)(?=(?:\\S+\\s+){5}\\S)(?![\\s\\S]*\\b(raise|increase|bump|lift|double)\\w*\\s+(the\\s+)?(iteration\\s+)?(cap|max_iters|limit|ceiling)\\b)(?![\\s\\S]*\\b(treat|count)\\w*\\s+(the\\s+|a\\s+|each\\s+)?(429|rate[- ]limit\\w*|error|failure)s?\\s+as\\s+(an?\\s+)?(exit|stop)\\b)(?![\\s\\S]*\\b(don'?t|do not|never|shouldn'?t|should not|no need to)\\s+(separate|split|count\\w*\\s+(them|retries|attempts)\\s+(apart|separately))\\b)(?![\\s\\S]*\\b(nothing|no)\\s+(separate|distinct)\\w*(\\s+\\w+)?\\s+((is|are)\\s+)?(needed|required|necessary)\\b)(?![\\s\\S]*\\bno need (for|of)\\b)(?=[\\s\\S]*\\b(cap|max_iters|iterations?|turns?|work)\\b)(?=[\\s\\S]*(\\b(separate\\w*|apart|distinct|split)\\b|\\bown\\s+(counter|budget|limit|ceiling|count)\\b|\\bretry\\s+(budget|limit|cap|ceiling|counter)\\b|\\battempts?\\s+(counter|count|budget|limit|cap|ceiling)\\b|\\b(not|never|don'?t|do not|without|stop)\\s+(count\\w*|charg\\w*)\\s+(the\\s+|its\\s+|each\\s+)?(retr\\w*|attempts?|failed (calls|requests))\\s+(against|toward\\w*|to|as)\\b|\\bone iteration\\b|\\bsame iteration\\b|\\bsingle iteration\\b))[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "The iteration cap bounds the agent's work, not the provider's reliability. Counting attempts separately keeps a flaky hour from ending healthy runs on exit (2), and the retry budget, when spent, ends the run as an error rather than a fifth exit.",
+      "hints": [
+        "What is the iteration cap meant to bound?",
+        "Give retries a counter of their own."
+      ]
+    },
+    {
+      "id": "hrn-019-q08",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "stall-signal"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An agent spends forty turns reading a different file on each turn and never edits anything. The harness's no-progress detector compares tool-call signatures over a window of three. Why does exit (4) never fire, and what would the detector have to compare to catch this stall? Answer in one or two sentences.",
+      "answer": {
+        "model": "Every call has different arguments, so no two signatures repeat and the window never collapses; comparing the effect on disk (the working tree is unchanged every turn), or the verifier's score, would catch it.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(maybe|perhaps|possibly|probably|not sure|i think|i guess|might be|could be)\\b)(?=(?:\\S+\\s+){5}\\S)(?![\\s\\S]*(?<!no two )\\b(signatures?|calls?)\\s+(are|is)\\s+(all\\s+)?(the\\s+)?(same|identical)\\b)(?![\\s\\S]*\\b(widen|wider|larger|longer|bigger|shorter|smaller|narrow\\w*|lower|reduce)\\s+(the\\s+)?window\\b)(?![\\s\\S]*\\b(compare|use|check|fingerprint)\\w*\\s+(only\\s+)?(just\\s+)?(the\\s+)?tool\\s+names?\\b)(?=[\\s\\S]*\\b(differ\\w*|different|varies|vary\\w*|unique|distinct|new (file|path|argument)\\w*|never (repeat|the same|identical|match)\\w*|not (repeat\\w*|the same|identical)|no two)\\b)(?=[\\s\\S]*\\b(disk|working tree|work tree|repo\\w*|file ?system|diffs?|commits?|effects?|hash\\w*|verifier|score|tests?|failing|changed?|edits?|outcome|progress (signal|measure))\\b)[\\s\\S]*\\S"
+        ]
+      },
+      "explanation": "A signature only catches exact repetition. Wandering produces varied calls that change nothing, which a comparison of the effect on disk, or of the verifier's score, detects.",
+      "hints": [
+        "What differs from one call to the next?",
+        "What stays the same across those forty turns?"
+      ]
+    },
+    {
+      "id": "hrn-019-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "no-progress",
+        "stall-signal"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "An agent edits `parser.py` on every turn, each edit different, and the failing-test count stays at 3 for six turns. Which detector, firing when its last three values are identical, catches this stall?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One that compares the verifier's score, the failing-test count.",
+          "correct": true,
+          "feedback": "Right. The work is genuinely different on every turn and changes the files, but it gets no closer; only the score shows that."
+        },
+        {
+          "key": "b",
+          "text": "One that compares tool-call signatures.",
+          "correct": false,
+          "feedback": "Each edit has different arguments, so the signatures never repeat."
+        },
+        {
+          "key": "c",
+          "text": "One that compares the working tree's hash after each turn.",
+          "correct": false,
+          "feedback": "Every edit changes the file, so the hash changes every turn and this detector stays silent."
+        },
+        {
+          "key": "d",
+          "text": "None is needed: the iteration cap will stop it in time.",
+          "correct": false,
+          "feedback": "The cap stops it only after spending every remaining turn; the point of exit (4) is to stop a busy run earlier."
+        }
+      ],
+      "explanation": "The three signals catch progressively more: the signature catches exact repeats, the effect on disk catches varied calls that change nothing, and only the score catches different work that gets no closer.",
+      "hints": [
+        "Which of the three values is actually stuck?",
+        "Check what each detector would see on three consecutive turns: the calls, the files, the test count."
+      ]
+    },
+    {
+      "id": "hrn-019-q10",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "errors",
+        "retries"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "Match each response a loop receives to what it should do with it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "429 `rate_limit_error` with a `retry-after` header"
+        },
+        {
+          "key": "b",
+          "text": "429 from a monthly spend cap, with no `retry-after` header"
+        },
+        {
+          "key": "c",
+          "text": "400 `invalid_request_error` for a malformed request"
+        },
+        {
+          "key": "d",
+          "text": "a turn whose `stop_reason` is `max_tokens`"
+        },
+        {
+          "key": "e",
+          "text": "529 `overloaded_error`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "wait the interval the header gives, then retry"
+        },
+        {
+          "key": "q",
+          "text": "stop as a budget stop: it keeps failing until access resumes"
+        },
+        {
+          "key": "r",
+          "text": "stop and surface it: a harness bug that retrying cannot fix"
+        },
+        {
+          "key": "s",
+          "text": "handle it as a truncated turn, not as an error or an answer"
+        },
+        {
+          "key": "t",
+          "text": "retry with bounded exponential backoff and a low attempt ceiling"
+        },
+        {
+          "key": "u",
+          "text": "take exit (4), no progress"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t"
+      },
+      "explanation": "Transient provider errors are retries, not exits; a spend-cap 429 and a 400 are not transient and retrying wastes time; a `max_tokens` stop is a turn outcome. No error response is a no-progress signal.",
+      "hints": [
+        "Separate what the provider will fix by itself from what it will not.",
+        "One response is not an error at all."
+      ]
+    },
+    {
+      "id": "hrn-019-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "reserve",
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "`drive` makes a sequence of calls under a token ceiling, but it checks the ceiling after each call, so it can cross it, and it stops even when the spend lands exactly on the ceiling. Fix it so that it refuses, before making it, any call that would take the spend past the ceiling, keeping the return value `(stop, calls, spent)`.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def drive(requests, budget):\n    \"\"\"Make the calls in `requests` (the input tokens each would send) in order, under a token\n    ceiling `budget`. Return (stop, calls, spent): stop is \"completed\" when every call was made\n    and \"budget\" when the loop stopped early; calls is the number of calls made, spent the tokens\n    they sent. The ceiling must never be crossed: stop BEFORE a call that would cross it.\"\"\"\n    spent = calls = 0\n    for need in requests:\n        spent += need\n        calls += 1\n        if spent >= budget:                      # checked after the call, in arrears\n            return \"budget\", calls, spent\n    return \"completed\", calls, spent\n",
+      "solution": "def drive(requests, budget):\n    \"\"\"Make the calls in `requests` (the input tokens each would send) in order, under a token\n    ceiling `budget`. Return (stop, calls, spent): stop is \"completed\" when every call was made\n    and \"budget\" when the loop stopped early; calls is the number of calls made, spent the tokens\n    they sent. The ceiling must never be crossed: stop BEFORE a call that would cross it.\"\"\"\n    spent = calls = 0\n    for need in requests:\n        if spent + need > budget:                # reserve: stop before the call that would cross\n            return \"budget\", calls, spent\n        spent += need\n        calls += 1\n    return \"completed\", calls, spent\n",
+      "tests": "REQS = [6_000 + 3_100 * k for k in range(14)]\nassert drive([6_000, 9_100, 12_200], 100_000) == (\"completed\", 3, 27_300)\nassert drive(REQS, 200_000) == (\"budget\", 10, 199_500)\nassert drive([50, 50], 100) == (\"completed\", 2, 100), \"reaching the ceiling exactly is not crossing it\"\nassert drive([120, 10], 100) == (\"budget\", 0, 0), \"a first call that would cross is never made\"\nassert drive([], 10) == (\"completed\", 0, 0)\nSIZES = [30, 70, 10, 90, 40]\nfor budget in range(0, 400, 7):\n    stop, calls, spent = drive(SIZES, budget)\n    assert spent <= budget, (budget, spent)\n    assert spent == sum(SIZES[:calls]), \"calls are made in order, none skipped\"\n    assert (stop == \"completed\") == (calls == len(SIZES))\n    if stop == \"budget\":\n        assert spent + SIZES[calls] > budget, \"stopped while the next call still fitted\"\nprint(\"ok\")\n",
+      "entry": "python solution_and_tests.py",
+      "expected_output": "ok\n",
+      "explanation": "Reserving before spending means comparing the spend plus the next call's size with the ceiling before the call is made; reaching the ceiling exactly is allowed, crossing it is not.",
+      "hints": [
+        "Move the check in front of the spend.",
+        "Compare `spent + need` with the ceiling, and decide whether equality is allowed."
+      ]
+    },
+    {
+      "id": "hrn-019-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "nested-loops",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A team runs a Ralph-style outer loop, one task from a spec per fresh context, and inside each task a verification loop that generates, runs the tests and retries. Design both loops' exits: say what each of the four exits means at each scale, how one run budget is split between tasks, and how the outer loop decides that the run has stalled.",
+      "kind": "design",
+      "solution": "1. **Exit (1).** Inner: the step's tests pass. Outer: the acceptance gate passes on every criterion of the spec, run by the harness, not read from the agent's report.\n2. **Exit (2).** Inner: an attempt cap of a few attempts (post 11's companion defaults to five). Outer: a task cap across the run.\n3. **Exit (3).** Inner: a per-task share or a draw on a shared pool with a per-task cap; outer: the run ceiling, reserved before each call. A fixed share for interactive work, a capped pool for background runs.\n4. **Exit (4).** Inner: the same failure report repeating across a window. Outer: no new commit, or commits that alternate.\n5. **The stall.** The outer detector reads each task's outcome, not its activity: an inner loop that exhausts its attempts changes the state on every pass, so three tasks in a row ending unverified count as no progress, and the run stops with a handoff and an escalation.",
+      "rubric": [
+        {
+          "criterion": "Defines exit (1) at both scales on ground truth, not the agent's report",
+          "points": 2
+        },
+        {
+          "criterion": "Gives an inner attempt cap and an outer task cap",
+          "points": 1
+        },
+        {
+          "criterion": "Chooses a budget split, fixed share or capped pool, with a reason",
+          "points": 2
+        },
+        {
+          "criterion": "Defines no progress at both scales with signals that fit each",
+          "points": 2
+        },
+        {
+          "criterion": "Makes the outer detector read inner outcomes rather than activity",
+          "points": 3
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Each loop carries all four exits at its own scale; the hazard of composition is that a busy, failing inner loop looks like progress to an outer detector that watches activity.",
+      "hints": [
+        "Take the four exits one at a time, inner then outer.",
+        "What does an inner loop that fails five times look like from outside?"
+      ],
+      "connects": [
+        "hrn-011",
+        "hrn-018"
+      ]
+    },
+    {
+      "id": "hrn-019-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "guard-exit",
+        "handoff",
+        "ceilings"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A scheduler relaunches a coding agent every ten minutes overnight on a queue of tickets. Each run has a 200,000-token ceiling and stops at it silently. In the morning the bill is ten times the expected figure and several tickets were half done twice. Diagnose what was missing and design what each run, and the system around it, should do.",
+      "kind": "critique",
+      "solution": "**Diagnosis.** The per-run ceiling held, but nothing bounded the number of runs, and a guard exit left nothing behind, so each relaunch started from the spec and redid partial work.\n\n**Per run.** Reserve before each call, so the ceiling is not crossed. On a guard exit, checkpoint on an iteration boundary (a commit), write a handoff file (spec, done, next, a checkable state) atomically and read it back, record the stop reason and the spend, and escalate when the reason warrants it.\n\n**Resumption.** The next run starts in a fresh context from the handoff, verifies the state against the repository, and continues from Next instead of from the spec.\n\n**Around the runs.** A per-period meter outside the loop that refuses to start a run once the night's spend reaches its cap, and, if several agents run at once, a per-fleet pool. Set the numbers from money, since a token ceiling is only a proxy.",
+      "rubric": [
+        {
+          "criterion": "Identifies that per-run ceilings do not bound the number of runs",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the missing handoff as the cause of repeated work",
+          "points": 2
+        },
+        {
+          "criterion": "Designs the guard exit: checkpoint, handoff read back, stop reason, escalation",
+          "points": 3
+        },
+        {
+          "criterion": "Adds a per-period meter outside the loop, and a per-fleet pool where relevant",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that a token ceiling is set from money",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "A guard exit is a handoff, not a full stop, and the ceiling inside a run cannot see how many runs there are; both failures show up only on the bill and in repeated work.",
+      "hints": [
+        "Which ceiling held, and which did not exist?",
+        "What did each relaunch know about the run before it?"
+      ]
+    },
+    {
+      "id": "hrn-019-q14",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "ceilings",
+        "spend"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "TechCrunch reported in June 2026 that Uber capped spending at 1,500 dollars per employee per agentic coding tool per month after using up its annual artificial intelligence (AI) budget in four months. Which kind of ceiling is that cap?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A per-agent, per-period meter outside the loop that counts across runs.",
+          "correct": true,
+          "feedback": "Right. It bounds how much is spent across many runs in a month, which no per-run exit can see."
+        },
+        {
+          "key": "b",
+          "text": "A per-run budget, exit (3) of each loop.",
+          "correct": false,
+          "feedback": "A per-run budget stops one run; every run can respect it while the number of runs empties the budget."
+        },
+        {
+          "key": "c",
+          "text": "A per-fleet pool shared by concurrent agents.",
+          "correct": false,
+          "feedback": "A fleet pool bounds concurrent loops drawing on one budget; this cap is per person and per tool, over a month."
+        },
+        {
+          "key": "d",
+          "text": "An iteration cap, exit (2), applied to every session.",
+          "correct": false,
+          "feedback": "The cap bounds turns, not money, and it acts inside one run."
+        }
+      ],
+      "explanation": "The three ceilings sit in different places: per run inside the loop, per agent per period in a meter outside it, and per fleet in a shared pool. The Uber cap is the second kind.",
+      "hints": [
+        "What does the cap count across?"
+      ]
+    },
+    {
+      "id": "hrn-019-q15",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "guard-exit",
+        "handoff"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-16",
+      "prompt": "A run stops on exit (3), budget, at iteration 10 of a migration, with ten of thirteen modules done. What should it leave so that a second run can finish the work?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A checkpoint on an iteration boundary and a handoff file with the spec, what is done, what is next and a checkable state, read back after writing.",
+          "correct": true,
+          "feedback": "Right. The second run starts in a fresh context, so the file, not the transcript, is what tells it where the work stands."
+        },
+        {
+          "key": "b",
+          "text": "The full transcript, so the second run can continue the conversation where it stopped.",
+          "correct": false,
+          "feedback": "The resumption is a fresh context; re-sending the whole history would start the second run at the size that exhausted the first."
+        },
+        {
+          "key": "c",
+          "text": "The stop reason `budget` and the spend to date, which are enough to diagnose the stop.",
+          "correct": false,
+          "feedback": "The stop reason is necessary but not sufficient: without done and next, a person or a run re-derives the state from the trace."
+        },
+        {
+          "key": "d",
+          "text": "Nothing: raising the ceiling and rerunning the task from the spec gives the same result.",
+          "correct": false,
+          "feedback": "Rerunning from the spec redoes the ten finished modules and forfeits everything the first run bought."
+        }
+      ],
+      "explanation": "The intended exit returns a result; a guard exit returns a result and a resumable position: a durable checkpoint and a handoff a fresh run can read.",
+      "hints": [
+        "The second run does not see the first run's messages."
+      ]
+    }
+  ]
+}

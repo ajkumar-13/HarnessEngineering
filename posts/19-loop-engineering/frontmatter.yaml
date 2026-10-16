@@ -1,41 +1,26 @@
 id: hrn-019
 slug: 19-loop-engineering
-title: "19 · Loop engineering — designing the loop that prompts the agent"
-
-description: >
-  The 2026 shift is from prompting the agent to designing the loop that prompts it for
-  you. A well-engineered loop carries layered exits so it stops for the right reason: the
-  verifier confirms the goal, or a hard iteration cap, a token/time budget, or no-progress
-  detection catches it first.
-
-author: "Ajay"
+title: "19 - Loop engineering: designing the loop that prompts the agent"
+summary: "A well-engineered loop carries layered exits: a verified final answer and three guards (an iteration cap, a budget reserved before it is spent, no-progress detection), each of which leaves a handoff a second run can resume from."
 date: 2026-08-29
-last_modified: 2026-09-05
-
-tags: [harness-engineering, scale, loop-engineering, stop-conditions, control]
-
-keywords:
-  - harness engineering
-  - scale
-  - loop engineering
-  - stop conditions
-  - control
-  - layered exits
-  - loop itself
-  - fixed per-task share
-  - iteration boundary
-  - fresh context
-
-category: Scale and orchestration
-series: Harness Engineering
+updated: 2026-10-16
+status: complete
 part: "Part IV - Scale and orchestration"
-
+level: intermediate
+reading_time: 23
+tags: [harness-engineering, scale, loop-engineering, stop-conditions, budgets, retries]
 hero: diagrams/01-layered-exits.svg
-hero_alt: "The agent loop with four layered exits checked in order: verifier confirms the goal, hard max-iterations, token/time budget, and no-progress detection, any of which stops the loop with a reason."
-
-reading_time: 26
-toc: true
-draft: false
-canonical_url: ""
-prev: ../18-long-horizon-ralph/
-next: ../20-sdk-landscape/
+prerequisites: [hrn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Give a loop four layered exits in the order they are checked, one intended and three guards, and say what each guard exit must leave behind."
+  - id: o2
+    text: "Reserve budget before the call that would breach a ceiling, and treat a transient failure as a retry with backoff rather than as an exit."
+  - id: o3
+    text: "Choose what a no-progress detector compares, a tool-call signature, an effect on disk or a verifier score, from the stall it has to catch."
+  - id: o4
+    text: "Compose an inner verification loop inside an outer task loop, deciding each exit and the split of one budget at both scales."
+  - id: o5
+    text: "Turn a guard exit into a handoff a second run resumes from, and place per-run, per-period and per-fleet ceilings on spend."
+recommended: [hrn-011, hrn-018]

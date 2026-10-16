@@ -1,245 +1,315 @@
-# 19 · Loop engineering — designing the loop that prompts the agent
+# 19 - Loop engineering: designing the loop that prompts the agent
 
-> **TL;DR.** The 2026 shift is from *prompting the agent* to *designing the loop that prompts it for you*. A well-engineered loop carries **layered exits** so it stops for the right reason: the verifier confirms the goal, or a hard iteration cap, a token/time budget, or no-progress detection catches it first. A bare `while not done` loop has only one of these and trusts the model's word for it. Loop engineering also composes loops (an inner verify loop inside an outer task loop), treats a failed call as a retry rather than an exit, and puts a hard ceiling on runaway spend.
+> **TL;DR.** Once a model runs in a loop, the leverage moves from the prompt to the loop that prompts it. A well-engineered loop carries **layered exits**: the final answer, which verification confirms, and three guards (an iteration cap, a budget reserved before it is spent, no-progress detection), each of which leaves a position a second run can resume from. A bare `while not done` loop has only the first and takes the model's word for it. Loop engineering also retries transient failures instead of exiting on them, nests a verify loop inside a task loop, and caps spend that no single run can see.
 >
-> **After reading this you will be able to:**
-> - Move from writing prompts to designing the loop and its exit conditions.
-> - Give a loop four layered exits, one intended and three guards, and say what each must leave behind.
-> - Enforce a budget before the call that would breach it, and make every guard exit resumable.
-> - Compose an inner verification loop inside an outer task loop, and allocate one budget across both.
+> **Prerequisites:** [post 03](../03-the-agent-loop/index.md), the agent loop and its four exits.
+> **Safe to skip?** Skip it if the reader can already stop a run before the call that would cross its budget, say which stall signal a no-progress detector should compare, keep a provider's rate limit from eating the iteration cap, and resume a run that a guard stopped from a file rather than from its transcript.
+>
+> **After reading, you will be able to:**
+>
+> - Give a loop four layered exits in the order they are checked, one intended and three guards, and say what each guard exit must leave behind.
+> - Reserve budget before the call that would breach a ceiling, and treat a transient failure as a retry with backoff rather than as an exit.
+> - Choose what a no-progress detector compares, a tool-call signature, an effect on disk or a verifier score, from the stall it has to catch.
+> - Compose an inner verification loop inside an outer task loop, deciding each exit and the split of one budget at both scales.
+> - Turn a guard exit into a handoff a second run resumes from, and place per-run, per-period and per-fleet ceilings on spend.
 
-![On the left, the loop and the bare `while not model_says_done()` it replaces, which has one exit and the worst one. In the centre, the four exits checked in order after every turn, each with what makes it fire, what it means and what it leaves behind: the verifier confirming the goal against ground truth, a hard max-iterations cap at 12, a token or wall-clock budget of 200,000, and no-progress detection over a 3-repeat window. On the right, the stop, naming which of the four reasons returned so the run is debuggable. A panel records that the cap and the stall window are the loop companion's defaults in code/03-agent-loop.](diagrams/01-layered-exits.svg)
-*Design the loop, not each prompt: layered exits so it stops for the right reason, not by luck.*
+![One turn of the loop, reason, act, observe, with its exits in the order they are checked: before the model call, exit (2) when no turns are left and exit (3) when the next call would cross the budget; after it, exit (1), a verified final answer, then exit (4), no progress. Exit (1) leaves the result, each guard a handoff; a red dashed path shows a doom loop without (4) running on to (2).](diagrams/01-layered-exits.svg)
+
+*One exit means the work is done; the other three catch a run that is not converging, and each of those owes the next run a place to start.*
 
 ---
 
-## 1. Stop prompting, design the loop
+## 1. The question: what does an engineered loop carry that a bare one does not?
 
-For most of the field's history, "using a large language model (LLM) well" meant writing a better prompt. The 2026 reframe is that once a model runs in a loop, the leverage moves from the prompt to the **loop itself** (Osmani, 2026). You are no longer prompting the agent at each step; you are designing the machine that prompts it for you, over and over, until it is done. That machine is what this whole series has been building, and **loop engineering** is the discipline of designing its control flow.
+For most of the field's history, using a large language model (LLM) well meant writing a better prompt. Addy Osmani's "Loop Engineering" (O'Reilly Radar, 22 June 2026, first on his blog) argues that once a model runs in a loop the leverage point moves from the prompt to the loop itself. The practitioner is no longer prompting the agent at each step but designing the machine that prompts it, over and over, until it is done. That machine is what this series has been building, and **loop engineering** is the discipline of designing its control flow.
 
-The line that carried the reframe is Peter Steinberger's: "You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents" (quoted in Osmani, 2026). Boris Cherny, who leads Claude Code at Anthropic, describes his own working day in the same terms: "I don't prompt Claude anymore. I have loops running that prompt Claude and figuring out what to do. My job is to write loops" (quoted in Osmani, 2026). Neither is a claim about model capability. Both are claims about where a practitioner's attention goes once the model is good enough to be driven rather than steered, and the answer is that it goes into the driver.
+Osmani builds the case on two practitioners' lines, each linked to a post on X. Peter Steinberger: "You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents." Boris Cherny, head of Claude Code at Anthropic: "I don't prompt Claude anymore. I have loops running that prompt Claude and figuring out what to do. My job is to write loops" (both quoted in Osmani, 2026). Neither is a claim about model capability. Both say where a practitioner's attention goes once the model is good enough to be driven rather than steered, and the answer is that it goes into the driver.
 
-One difference is worth naming rather than glossing over. Osmani places loop engineering one floor *above* agent harness engineering: the harness is the thing that runs, and the loop is what runs it on a timer, spawns helpers, and feeds it work (Osmani, 2026). This series places it inside instead. The loop is the harness's control flow, the wiring between the eleven components rather than a storey above them ([Post 02](../02-anatomy-of-a-harness/index.md)), because every exit designed here is enforced by the same runtime that dispatches the tools and applies the hooks. Nothing about the practice changes; where you file it decides who owns the exits, and here that owner is the harness.
+One difference is worth naming. Osmani writes that loop engineering "sits one floor above the harness": the harness runs one agent, and the loop is "the harness but it runs on a timer, it spawns little helpers, and it feeds itself". This series places it inside instead: the loop is component 01 of the eleven ([post 02](../02-anatomy-of-a-harness/index.md)), and every exit designed here is enforced by the same runtime that dispatches the tools and applies the hooks. The practice does not change; where it is filed decides who owns the exits, and here the owner is the harness.
 
-In practice the reframe means the interesting decisions are no longer wording but structure: when does the loop act, what does it feed back, and above all *when does it stop*. [Post 03](../03-the-agent-loop/index.md) §7 argued that the agent failures practitioners name most often are exits gone wrong rather than reasoning gone wrong; loop engineering is taking that seriously and designing the stopping deliberately.
+The interesting decisions are then structural rather than verbal: when the loop acts, what it feeds back, and above all **when it stops**. [Post 03](../03-the-agent-loop/index.md) argued that stop conditions are the main design surface of the loop, as the series' argument rather than a measurement. This post takes that seriously and designs the stopping deliberately.
 
 ---
 
 ## 2. Layered exits
 
-A loop needs more than one way out, and the ways out should be layered rather than pooled. Four of them cover the loop's *internal* stopping (tosea.ai, 2026):
+A loop needs more than one way out, layered rather than pooled. The taxonomy of tosea.ai's guide (16 June 2026) names four: "a verifier that confirms the goal is met, a hard maximum-iteration cap, a token or time budget, and no-progress detection". They are the four exits of post 03, numbered as the series numbers them everywhere ([notation guide](../../notation_guide.md)):
 
-- **① The verifier confirms the goal.** The intended exit: a check against ground truth says the work is done ([Post 11](../11-verification-loops/index.md)). This is the only exit that means success.
-- **② A hard max-iterations cap.** The infinite-loop backstop, so the loop cannot run forever even if nothing else fires.
-- **③ A token or time budget.** The cost ceiling, so a run cannot spend past what you allow, provided the check happens *before* the spend rather than after it (§4).
-- **④ No-progress detection.** The thrashing guard, which stops a doom loop ([Post 05](../05-agent-failure-modes/index.md)) when successive iterations stop changing anything.
+- **(1) Final answer.** The intended exit: the model finishes, and a check against ground truth confirms the work ([post 11](../11-verification-loops/index.md)). It is the only exit that means success.
+- **(2) Iteration cap.** The backstop, so the loop ends even if nothing else fires.
+- **(3) Budget.** The cost ceiling in tokens or wall-clock seconds, provided it is checked *before* the spend rather than after it.
+- **(4) No progress.** The thrashing guard, which stops a doom loop ([post 05](../05-agent-failure-modes/index.md)) when successive iterations stop changing anything.
 
-The layering buys two things. The first is a split: one of the four is the intended exit and the other three are guards, so a run that exits on ②, ③ or ④ did not finish and is a run you need to look at. The second is one ordering that genuinely matters. Check the goal first, so a run that has just succeeded is not cut off by a guard it was about to satisfy. Between the three guards the order is close to arbitrary, and exit ② is usually not a check at all: it is the bound on the `for` statement, reached structurally once everything else has failed to fire.
+The layering buys two things. The first is a split: exit (1) is the intended exit and the other three are guards, so a run that takes (2), (3) or (4) did not finish and is a run someone needs to look at. The second is an order. The companion of post 03 checks (1), (3) and (4) after each model call, in that order, and takes (2) when its `for` statement runs out of turns. Checking (1) first means a run that has just succeeded is not cut off by a guard tripped by the same call. Section 4 moves (3) in front of the call, which is the one change to that order this post makes; the figure at the top draws the result.
 
-These are also only the exits the loop can reach on its own. A run can be stopped from outside it too: a human interrupting mid-flight to steer it ([Post 15](../15-human-in-the-loop/index.md) §6), or an approval request that nobody answers before its timeout expires ([Post 15](../15-human-in-the-loop/index.md) §8). Those belong to the human-oversight surface rather than to the loop's own control flow, and a third candidate, an unrecoverable provider error, turns out not to be an exit at all (§6).
+These are the exits the loop reaches on its own. A human interrupting a run, or an approval that times out, stops it from outside, on the oversight surface of [post 15](../15-human-in-the-loop/index.md); a provider error turns out not to be an exit at all (section 6).
 
-The exits differ in what they mean, and they differ more in what they oblige the loop to leave behind:
+The exits differ in what they mean, and more in what they oblige the run to leave behind:
 
 | Exit | What fires it | What it means | What the run must leave behind |
 |---|---|---|---|
-| ① verified goal | a check against ground truth passes ([Post 11](../11-verification-loops/index.md)) | success, and the only exit that does | the result |
-| ② iteration cap | the loop's turn bound is exhausted | did not converge in the turns allowed | the result so far, plus a resumable position (§8) |
-| ③ budget | the next call would cross the ceiling (§4) | ran out of what the task was worth | the same, plus the spend to date |
-| ④ no-progress | the chosen stall signal repeats (§5) | busy without moving | the same, plus the repeating signature |
+| (1) final answer | the model finishes and a check against ground truth passes | success, and the only exit that means it | the result |
+| (2) iteration cap | the loop's turn bound is exhausted | did not converge in the turns allowed | the result so far, plus a resumable position |
+| (3) budget | the next call would cross the ceiling | ran out of what the task was worth | the same, plus the spend to date |
+| (4) no progress | the chosen stall signal repeats | busy without moving | the same, plus the repeating signature |
 
-Those numbers have to come from somewhere, and none of them is guessed. The cap and the budget are sized from the run's own cost model, which [Post 03](../03-the-agent-loop/index.md) §8 works through with real token counts and [Post 23](../23-economics-haas/index.md) §3 states as a rule: you do not pick a ceiling by guessing a safe maximum, you pick it from what one run of this task is worth. The stall window comes from how many consecutive repeats a legitimate retry can produce, which is why [Post 03](../03-the-agent-loop/index.md) §9 defends a window of three rather than one. This post takes those numbers as given and asks what the loop does with them.
+None of the numbers behind them should be guessed: post 03 sizes the cap and the budget from the run's token arithmetic, and [post 23](../23-economics-haas/index.md) derives a ceiling from what one run of the task is worth. This post takes those numbers as given and asks what the loop does with them.
 
 ---
 
-## 3. Loop engineering versus a bare while-loop
+## 3. Loop engineering against a bare while-loop
 
-The naive loop is `while not model_says_done(): step()`. It has exactly one exit, and it is the worst one: the model's own claim that it is finished, which is victory declaration ([Post 05](../05-agent-failure-modes/index.md)) with no guard around it. It cannot stop for running out of budget, cannot notice it is thrashing, and trusts the very judgement Part III spent five posts learning not to trust.
+The naive loop is `while not model_says_done(): step()`. It has exactly one exit and it is the worst one: the model's own claim that it is finished, which is victory declaration ([post 05](../05-agent-failure-modes/index.md)) with no guard around it. It cannot stop for running out of budget, cannot notice that it is thrashing, and trusts the judgement Part III spent five posts learning not to trust.
 
-An engineered loop makes the exits explicit, prioritised, and instrumented. It is still short:
+An engineered loop makes the exits explicit, ordered and named. It is still short; `snippets/run_loop.py` holds it:
 
 ```python
-def run_loop(step, goal_met, tokens_spent, *, max_iters=20, token_budget=200_000):
-    """Drive `step` with four layered exits, so the loop stops for the right reason.
+def run_loop(step, goal_met, tokens_spent, *, max_iters=20, token_budget=200_000, window=3):
+    """Drive `step` with four layered exits and return (stop reason, iterations).
 
-    `tokens_spent` is required rather than optional: a meter you can forget to
-    pass is a ceiling that silently defaults to off.
+    `tokens_spent` is required rather than optional: a meter that can be left
+    out is a ceiling that silently defaults to off.
     """
-    last, stalls = None, 0
-    for i in range(1, max_iters + 1):                # exit 2: hard iteration cap
-        state = step()                               # one iteration (Post 03)
-        if goal_met(state):                          # exit 1: the intended exit, goal verified
-            return "done", i
-        if tokens_spent() > token_budget:            # exit 3: in arrears; §4 sharpens this
-            return "over-budget", i
-        stalls = stalls + 1 if state == last else 0  # exit 4: no-progress detection
-        if stalls >= 2:
-            return "no-progress", i
-        last = state
-    return "max-iters", max_iters
+    recent = []
+    for i in range(1, max_iters + 1):                # exit (2): the bound on the for statement
+        state = step()                               # one iteration of the loop
+        if goal_met(state):                          # exit (1): checked first, the intended exit
+            return "completed", i
+        if tokens_spent() >= token_budget:           # exit (3): in arrears, after the spend
+            return "budget", i
+        recent = (recent + [state])[-window:]        # exit (4): the last `window` states identical
+        if len(recent) == window and len(set(recent)) == 1:
+            return "no_progress", i
+    return "max_iters", max_iters
 ```
 
-Every path out returns a *reason*, which is what makes the loop debuggable: "over-budget at iteration 12" tells you something a silent stop never could ([Post 21](../21-observability-traces/index.md)). The difference between this and the bare loop is not lines of code; it is that the loop's behaviour is designed instead of accidental.
+Driven by four scripted runs, one written to reach each exit, it prints:
 
-Two of those lines are weaker than they look, and the next two sections take them apart in turn: the budget check that runs after the money is gone, and the stall test that compares the wrong thing.
+```text
+run                               stop reason  iterations
+goal reached at step 5              completed           5
+50 tokens a step, budget 120           budget           3
+the same state every step         no_progress           3
+new states, no goal, cap 6          max_iters           6
+```
+
+Every path out returns a *reason*, spelt as the series spells it in code and traces, which is what makes a run debuggable: "`budget` at iteration 11" says something a silent stop never could ([post 21](../21-observability-traces/index.md)). The difference from the bare loop is not lines of code; it is that the loop's behaviour is designed instead of accidental. Two of those lines are weaker than they look, and the next two sections take them apart.
 
 ---
 
-## 4. Reserve before you spend
+## 4. Reserve before spending
 
-Look closely at where exit ③ sits in that snippet: `tokens_spent() > token_budget` runs *after* `step()`. That loop cannot spend without bound, but it can overshoot the ceiling by up to one iteration's worth, and because per-iteration cost climbs across a run ([Post 23](../23-economics-haas/index.md) §1), the iteration that crosses the line is a late and expensive one rather than an average one. A ceiling enforced only in arrears is not a ceiling, it is a notification.
+Exit (3) in that sketch runs *after* `step()`, and so does the companion's: `run()` adds the response's tokens to `tokens_used` and only then tests `tokens_used >= token_budget`. Such a loop cannot spend without bound, but it can overshoot the ceiling by a whole iteration, and because each request re-sends a growing history, the iteration that crosses the line is a late, expensive one. A ceiling enforced only in arrears is a notification, not a ceiling.
 
-The arithmetic is worth doing once, using the run model the series already carries: a task whose first turn sends about 6,000 tokens and whose twelfth sends about 40,000, growing by roughly 3,100 tokens a turn as each response and each observation is appended to a history that is re-sent in full every turn ([Post 03](../03-the-agent-loop/index.md) §8). Set the ceiling at 200,000 tokens and watch the last three iterations:
+The arithmetic is worth doing once, on the series' running example, which is illustrative rather than measured: the first request sends 6,000 input tokens and each later one 3,100 more, so request $n$ sends $6{,}000 + 3{,}100(n - 1)$ and the twelfth sends 40,100 ([post 23](../23-economics-haas/index.md)). With a ceiling of 200,000 input tokens, `snippets/layered_loop.py` runs the companion's `run()` and a controller that reserves before each call; the last three iterations go:
 
-| Iteration | Tokens sent | Cumulative | Arrears check, after the call | Reserved check, 37,000 held back |
+| Iteration | Tokens sent | Cumulative | Checked after the call | Reserved before the call |
 |---|---|---|---|---|
 | 9 | 30,800 | 165,600 | under the line | under the line |
 | 10 | 33,900 | 199,500 | under the line | under the line |
-| 11 | 37,000 | 236,500 | fires, 36,500 past the line | stops before the call, at 199,500 |
+| 11 | 37,000 | 236,500 | fires, 36,500 past the line | refused before it is made, at 199,500 |
 
-The arrears loop reports that it enforced a 200,000-token ceiling and hands you a bill for 236,500, an 18% overrun on the one number the guard existed to hold. The reserved loop stops 500 tokens short of the line. Checking before spending is barely more code:
+The arrears loop reports that it enforced a 200,000-token ceiling and bills 236,500, about 18% over on the one number the guard existed to hold. The reserved loop stops 500 tokens short. Because the companion's `run()` cannot be edited, the controller works at the call boundary: it is a model wrapper that refuses the call before making it, and the snippet records the refusal as exit (3), `budget`. The check is four lines:
 
 ```python
-if tokens_spent() + estimated_next_call() > token_budget:
-    return "budget-exhausted", i          # stop BEFORE the call that would breach it
-state = step()
+        need = request_size(n)                       # the history about to be sent: assembled, so known
+        if self.spent + need > self.budget:          # exit (3), reserved: stop BEFORE the call that would breach it
+            self.refused = (n, need)
+            raise BudgetReserve(n)
 ```
 
-The estimate does not have to be exact; it has to be conservative, and the harness already knows every term. A serviceable reserve is the size of the history you are about to send (you have just assembled it), plus the largest tool result you allow back, plus the `max_tokens` you set for the reply. Keeping that reserve small enough to be usable is one of the practical arguments for offloading big tool outputs to disk rather than into the window ([Post 09](../09-context-management-loop/index.md)): a harness that lets a 60,000-token log into the history must reserve for it on every subsequent turn. Prompt caching pushes the error the safe way, because most of the reserved prefix is re-read at the cached rate rather than the full one ([Post 23](../23-economics-haas/index.md) §4), so a reserve stated in tokens overestimates the money.
+The estimate does not have to be exact; it has to be conservative, and the harness knows every term. A serviceable reserve is the history about to be sent (the harness has just assembled it), plus the largest tool result it allows back, plus the `max_tokens` it set for the reply. Keeping that reserve usable is one more argument for offloading large tool outputs to disk ([post 09](../09-context-management-loop/index.md)): a harness that lets a 60,000-token log into the history has to reserve for it on every later turn. Prompt caching errs the safe way after the first write, since a cached prefix is re-read at a tenth of the input rate (Anthropic pricing page, consulted October 2026), so a reserve stated in uncached tokens overestimates the money.
 
-The same reasoning applies to wall-clock deadlines, and more sharply, because a call already in flight cannot be un-started. If a run must be finished by a deadline, the check is "is there time for another iteration?" rather than "is the deadline past?"
-
-This is not a hypothetical failure in someone else's code. The loop companion this series ships, [`code/03-agent-loop/`](../../code/03-agent-loop/), does exactly the arrears version: `run()` adds `resp.tokens` to `tokens_used` and only then tests `tokens_used >= token_budget`, so its ceiling can be crossed by the whole iteration that crossed it. That is the teaching version of the loop, and it is the concrete example this section is about.
+A wall-clock deadline needs the same treatment and more, because a call already in flight cannot be un-started. The check is "is there time for another iteration?", never "is the deadline past?".
 
 ---
 
-## 5. What you compare decides what you detect
+## 5. What is compared decides what is detected
 
-Exit ④ compares this iteration's state to the last one. That comparison is doing all the work, and `state == last` is the weakest version of it: it catches an agent that is exactly repeating itself and misses an agent wandering in productive-looking circles.
+Exit (4) compares this iteration with the last ones, and that comparison does all the work. `state == last` is the weakest version: it catches an agent repeating itself exactly and misses one wandering in productive-looking circles. Three better signals, in rising order of cost:
 
-Better signals, in rough order of how much they cost to compute:
+- **The tool-call signature.** Tool name plus normalised arguments. The companion's `_signature` builds it with `json.dumps(..., sort_keys=True)`, so two identical calls whose arguments serialise in a different order do not read as progress; [post 05](../05-agent-failure-modes/index.md) walks the same check as the doom loop's trace signature.
+- **The effect on disk.** Did anything change: a diff, a new commit, a test that flipped? An agent whose calls change nothing is stalled however varied the calls look. The Ralph loop builds its detector on exactly this, counting iterations that leave no new commit, because a loop that commits once per task already has its progress record ([post 18](../18-long-horizon-ralph/index.md)).
+- **The verifier's score.** If the check reports a distance (failing tests, say) rather than a pass, no improvement across a window is a stall even when every iteration does something. It catches an agent doing genuinely different work that gets no closer.
 
-- **The tool-call signature.** Tool name plus normalised arguments. Repeating the same call with the same arguments is the classic doom loop and is cheap to spot. It is eight lines in the loop companion, [`code/03-agent-loop/`](../../code/03-agent-loop/), where `_signature()` builds "a stable fingerprint of a turn's tool calls" with `json.dumps(..., sort_keys=True)`, so that two identical calls whose argument dictionaries serialise in a different order do not read as progress ([Post 05](../05-agent-failure-modes/index.md) §6 walks the same code as the doom loop's trace signature).
-- **The observable effect.** Did anything change on disk: a diff, a new commit, a test that flipped? An agent making calls that change nothing is stalled regardless of how varied the calls look. The Ralph loop builds its detector on exactly this, comparing the repository head before and after each iteration and counting the passes that left it unmoved, because a loop that commits once per task already has the progress record it needs ([Post 18](../18-long-horizon-ralph/index.md) §8).
-- **The verifier's score.** If the check reports a distance rather than a boolean, no improvement across several iterations is stalling even when every iteration does something. This is the only one of the three the series does not ship as code, and it is the one that catches an agent doing genuinely different work that gets no closer.
+`snippets/stall_signals.py` runs each signal over four scripted traces, firing when the last three values are identical, the companion's window:
 
-Pick the signal that matches the failure you actually see, and be explicit that a detector tuned to one shape of stall will not catch another. Two or three iterations of tolerance before firing is the usual setting: enough that a legitimate retry after a transient error is not mistaken for a stall.
+```text
+trace                                  signature  effect on disk  verifier score
+doom loop: the same call                  turn 3          turn 3          turn 3
+wandering: new calls, no edits             never          turn 3          turn 3
+busy edits, no closer                      never           never          turn 3
+healthy: tests 3, 2, 1, 0                  never           never           never
+```
+
+Each signal catches what the one before it misses, and each costs more: a string, a hash of the working tree, a verifier that returns a number. Each also misfires in its own way: an agent polling a build changes nothing on disk, and a refactor that must land before any test improves holds the score flat. Pick the signal that matches the stall actually seen; a detector tuned to one shape of stall will not catch another. The window must be wide enough that a legitimate retry is not mistaken for a stall, which is why post 03 defends three.
 
 ---
 
 ## 6. A failed call is not an exit
 
-Errors are missing from the model of the loop so far, and they are the cheapest way to defeat all four exits at once. A retry storm burns iterations, burns tokens, and produces a *changing* state on every pass, so the stall detector never fires. A loop that treats every failure as a stop condition is fragile; a loop that treats none of them as one runs away.
+Errors are missing from the model of the loop so far, and they are the cheapest way to defeat all four exits at once. A retry storm burns iterations and wall-clock and produces a *changing* state on every pass, so the stall detector never fires. A loop that treats every failure as a stop is fragile; one that treats none as a stop runs away.
 
-The classification is the design decision, and it is short:
+The classification is the design decision. Anthropic's application programming interface (API) errors page (consulted October 2026) gives the codes:
 
 | What came back | What it is | What the loop should do |
 |---|---|---|
-| A 429 rate-limit response | transport, and certainly transient | retry with bounded backoff; charge the wait to the wall-clock budget |
-| A 529 or 503 overloaded response | transport, usually transient | the same, with a lower attempt ceiling |
-| A timeout with no response | transport, and possibly duplicated work | retry only where repeating the call is safe |
-| A 400 malformed-request response | a harness bug | stop and surface it: retrying cannot fix it |
-| A `refusal` or `max_tokens` stop reason | a turn outcome, not an error | handle it as [Post 03](../03-the-agent-loop/index.md) §4 sets out; never retry blindly |
+| 429 `rate_limit_error` | transient for a rate limit; a 429 from a monthly spend cap carries no `retry-after` header and keeps failing | retry with bounded backoff, honouring `retry-after`; treat the spend-cap case as a budget stop |
+| 529 `overloaded_error`, 500 `api_error` | transient on the provider's side | the same, with a lower attempt ceiling |
+| 504 `timeout_error`, or no response | transient, and possibly duplicated work | retry only where repeating the call is safe |
+| 400 `invalid_request_error` | a harness bug, or an organisation's spend limit reached | stop and surface it: retrying cannot fix either |
+| a `refusal` or `max_tokens` stop reason | a turn outcome, not an error | handle it as post 03 sets out; never retry blindly |
 
-Three rules make retries safe inside a loop that has exits. **Separate the attempt counter from the iteration counter**, so a provider error retried three times is one iteration rather than three, and a flaky hour does not eat the cap that exists to bound *work*:
+Three rules make retries safe inside a loop that has exits. **Count attempts apart from iterations**, so a provider error retried twice is one iteration rather than three, and a flaky hour does not eat the cap that exists to bound *work*. The controller in `snippets/layered_loop.py` wraps the call:
 
 ```python
-attempts = 0
-while True:
-    try:
-        resp = model.respond(system, messages, tools)
-        break                              # one iteration, however many attempts
-    except TransientError:                 # 429, 529, timeout
-        attempts += 1
-        if attempts > max_attempts:        # a retry budget, not a fifth exit
-            return "provider-unavailable", i
-        sleep(backoff(attempts))           # spends wall-clock, not tokens
+        attempt = 0
+        while True:
+            try:
+                resp = self.model.respond(system, messages, tools)
+                break                                # one iteration, however many attempts it took
+            except TransientError as err:            # 429, 529, a timeout: worth another attempt
+                attempt += 1
+                if attempt >= self.max_attempts:     # a retry budget, not a fifth exit: the run ends as an error
+                    raise RetriesExhausted(n) from err
+                delay = self.base * 2 ** (attempt - 1) * (1 + self.rng.random())   # backoff with jitter
+                self.retries.append((n, attempt, err.kind, delay))
+                time.sleep(delay)                    # spends wall-clock, not tokens
 ```
 
-**Charge what you actually spent.** Whether a failed call is billed at all depends on where it failed, but the retry certainly is: it re-sends the whole history, so a call retried three times pays for that history three times. A budget that counts only successful calls under-reports a bad hour by exactly the amount you most want to see.
+A run whose provider stays down ends with the stop reason `error`, the fifth value [post 21](../21-observability-traces/index.md) records for a run that raised, rather than with a guard exit that would misreport why it stopped.
 
-**Do not let the retry budget hide inside the time budget.** Backoff consumes wall-clock without consuming tokens, which is precisely why exit ③'s two forms are not interchangeable: a run that spends twenty minutes sleeping between attempts is nowhere near its token ceiling and may be well past its deadline. When a software development kit (SDK) is doing the retrying for you, find out how many attempts it makes and whether they count against your budget, because it has already decided this on your behalf ([Post 20](../20-sdk-landscape/index.md) §5).
+**Charge what was actually spent.** Read the meter from the provider's reported usage rather than from a count of successful responses, and charge an attempt whose fate is unknown, a timeout with no response, at its estimate.
+
+**Keep backoff inside the time budget.** Backoff consumes wall-clock without consuming tokens, which is why exit (3)'s two forms are not interchangeable: a run that sleeps twenty minutes between attempts is nowhere near its token ceiling and may be well past its deadline. A software development kit (SDK) that retries for the harness has already decided this: Anthropic's client SDK retries connection errors, rate limits and 5xx server errors twice by default with exponential backoff, configurable through `max_retries` (API errors page, consulted October 2026), and that wait comes out of the wall-clock budget without passing through the loop's counters ([post 20](../20-sdk-landscape/index.md)).
 
 ---
 
 ## 7. Composing loops
 
-Real systems are loops inside loops. The verification loop of [Post 11](../11-verification-loops/index.md) gets *one step* right by generating and retrying until a check passes. The Ralph loop of [Post 18](../18-long-horizon-ralph/index.md) makes *progress across steps* by doing one task per fresh context. Put the first inside the second and you have the standard composition:
+Real systems are loops inside loops. The verification loop of [post 11](../11-verification-loops/index.md) gets *one step* right by generating and retrying until a check passes. The Ralph loop of [post 18](../18-long-horizon-ralph/index.md) makes *progress across steps*, one task per fresh context. Put the first inside the second and the result is the standard composition, drawn below.
 
-![An outer task loop, one task per pass, containing an inner verify-and-retry loop: pick the next task from the spec, generate then verify with a retry cap of three to five attempts, then commit and advance so the outer loop has its progress record. Below, a table re-deciding the same four exits at each scale, showing what goal, iteration cap, budget and no-progress each mean for the inner loop getting one step right against the outer loop making progress across steps. Three panels compare a fixed per-task share of the budget against a shared pool with a per-task cap, and name the hazard nobody names: an inner loop that burns its retry budget and fails looks like progress, because the state changed on every pass.](diagrams/02-nested-loops.svg)
-*The inner loop gets one step right; the outer loop makes progress across steps.*
+![An outer task loop containing an inner verify-and-retry loop: pick the next task, generate and check it through a purple gate with retries, then commit and advance. One run budget feeds both. The inner loop reports verified or unverified to the outer one, and a red unverified card marks the stall: busy retries look like progress unless the outer detector reads outcomes.](diagrams/02-nested-loops.svg)
 
-Each loop carries all four exits at its own scale, and deciding what each one means at each scale is most of the design work:
+*The inner loop gets one step right; the outer loop makes progress across steps, and it must read the inner loop's outcome rather than its activity.*
+
+Each loop carries all four exits at its own scale, and deciding what each means at each scale is most of the design work:
 
 | Exit | Inner loop, getting one step right | Outer loop, making progress across steps |
 |---|---|---|
-| ① goal | the step's check passes: tests green, the diff applies ([Post 11](../11-verification-loops/index.md)) | `converged()`: the acceptance gate passes on every criterion ([Post 18](../18-long-horizon-ralph/index.md) §8) |
-| ② iteration cap | a retry cap of three to five, because a sixth attempt at the same step rarely differs | a task cap across the whole run |
-| ③ budget | a per-step share, or a draw against a shared pool (below) | the run ceiling, which is the one the invoice sees |
-| ④ no-progress | the same tool signature repeating (§5) | no new commit, or commits that alternate rather than accumulate ([Post 18](../18-long-horizon-ralph/index.md) §8) |
+| (1) final answer | the step's check passes: tests green, the diff applies | the acceptance gate passes on every criterion of the spec |
+| (2) iteration cap | an attempt cap, five by default in post 11's companion | a task cap across the whole run |
+| (3) budget | a per-task share, or a draw against a shared pool | the run ceiling, the one the invoice sees |
+| (4) no progress | the same failure report repeating | no new commit, or commits that alternate rather than accumulate |
 
-Budget allocation is the part with no default answer. Two policies work. A **fixed per-task share** divides the run ceiling by the task count up front: 200,000 tokens across ten tasks is 20,000 each, predictable and easy to reason about, and wasteful, because a task that needs 30,000 fails while the headroom left over by nine cheap tasks sits unused. A **shared pool with a per-task cap** lets each task draw what it needs from the run ceiling but never more than some fraction of it, which spends the headroom and accepts that one pathological task can take a fifth of the run before its cap stops it. The choice is the interactive-versus-background call of [Post 23](../23-economics-haas/index.md) §2: a run with a human waiting wants predictable per-task limits, a dispatched background run can afford the pool.
+Budget allocation is the part with no default answer. Two policies work, shown here with illustrative numbers. A **fixed per-task share** divides the run ceiling by the task count up front: 200,000 tokens across ten tasks is 20,000 each, predictable and wasteful, because a task that needs 30,000 fails while the headroom nine cheap tasks left sits unused. A **shared pool with a per-task cap** lets each task draw what it needs but never more than a set fraction, say a fifth, which spends the headroom and accepts that one pathological task can take that fifth before its cap stops it. The choice follows the interactive-against-background split of post 23: a run with a person waiting wants predictable per-task limits, a dispatched background run can afford the pool.
 
-The composition also has a hazard nobody names. An inner loop that burns its full retry budget and then fails presents as *progress* to a naive outer detector, because the state changed on every inner pass. The outer detector must watch the inner loop's **outcome**, not its activity: three tasks in a row ending in `retries-exhausted` is a stalled run, however busy the transcript looks. Nesting is not the only composition available, either. Splitting the work across a planner, a generator and an evaluator ([Post 12](../12-planner-generator-evaluator/index.md)) solves the same control problem by role rather than by depth, and [Post 18](../18-long-horizon-ralph/index.md)'s closing section puts the two together: each Ralph iteration usually contains all three roles.
+The composition has one easily missed hazard. An inner loop that burns its attempts and fails presents as *progress* to a naive outer detector, because the state changed on every inner pass. The outer detector must watch the inner loop's **outcome**, not its activity: three tasks in a row ending unverified is a stalled run, however busy the transcript looks. Splitting the work across a planner, a generator and an evaluator ([post 12](../12-planner-generator-evaluator/index.md)) solves the same control problem by role rather than by depth.
 
 ---
 
 ## 8. A guard exit is a handoff, not a full stop
 
-Exits ②, ③, and ④ all mean the same thing: *the run did not finish, and something caught it.* What happens next is a design decision most loops never make, and defaulting to "raise and exit" throws away everything the run bought.
+Exits (2), (3) and (4) mean the same thing: *the run did not finish, and something caught it.* What happens next has to be decided: defaulting to "raise and exit" throws away everything the run bought. A guard exit owes the next run three things.
 
-![Two bands: exit 1, the verifier confirming the goal, returns a result; exits 2, 3 and 4 return a result and a resumable position. Below, three panels for checkpointing the work, saying what it was doing, and escalating if it warrants it, each with what happens if you skip it, and captions carrying both rules of thumb: a guard exit returns a resumable position as well as a result, and a budget must be checked before the call that would breach it.](diagrams/03-after-a-guard-exit.svg)
-*What a guard exit owes the next run: a checkpoint on an iteration boundary, a handoff someone can read, and an escalation when the reason warrants one.*
+**A checkpoint of the work.** A run stopped at its ceiling has produced real partial progress: commits, files, a half-finished refactor. If that state is durable ([post 08](../08-state-filesystem-git/index.md)) the run is resumable; if not, the whole spend is forfeit, a strange outcome for a guard whose purpose was to save money. The checkpoint has to sit on an **iteration boundary**, because a guard that fires mid-tool-call leaves half-applied state nothing downstream can interpret, which is why the Ralph loop commits once per task. And the resumption is a **fresh context**, not a continuation: the transcript is gone, so the resumed run reads the spec and the handoff file to find out where it is.
 
-Three things a guard exit should do before it returns.
+**A record of what it was doing.** The stop reason is necessary and not sufficient. "`budget` at iteration 10" plus a handoff file in post 08's four fields (spec, done, next, and a checkable state) is the difference between a person resuming in a minute and a person re-deriving the state from a trace. Post 08's other rule applies too: the handoff counts as written only once it has been read back.
 
-**Checkpoint the work.** A run stopped at the budget ceiling has produced real partial progress: commits, files, a half-finished refactor. If that state is durable ([Post 08](../08-state-filesystem-git/index.md)), the run is *resumable*. If it is not, the whole spend is forfeit, which is a strange thing to accept from a guard whose purpose was to save money. Two details make the checkpoint real. It has to sit on an **iteration boundary**, because a guard that fires mid-tool-call leaves half-applied state that nothing downstream can interpret, which is exactly why the Ralph loop commits once per task ([Post 18](../18-long-horizon-ralph/index.md) §2). And the resumption is a **fresh context** rather than a continuation: the transcript is gone, so the resumed run reads the spec and the handoff file to find out where it is ([Post 18](../18-long-horizon-ralph/index.md) §5). "Raise the ceiling and restart" only works if the context bridge was written on the way out.
+**An escalation when the reason warrants one.** Post 15's escalation triggers fire *before* these exits: on the second identical call, one turn ahead of exit (4), and at a budget threshold set below exit (3). When a guard exit fires anyway, a loop that stops silently and waits to be noticed wastes the time between the stall and its discovery, which can be longer than the run.
 
-**Say what it was doing.** The stop reason is necessary and not sufficient. "over-budget at iteration 12" plus the current handoff file (what is done, what was next, what was blocked) is the difference between a human resuming in a minute and a human re-deriving the state from a trace.
+`snippets/layered_loop.py` runs the whole sequence on the illustrative run above, migrating thirteen modules with one tool call each. The reserve refuses run 1's call 11, and run 1 writes the handoff and stops; run 2 is a fresh call to the companion's `run()` built from the file alone, and it finishes on exit (1). On the way, call 4 meets a rate limit and an overload, both retried without costing an iteration. The figure draws the two runs.
 
-**Escalate to a person when the reason warrants it.** No-progress and budget-exhausted are exactly the escalation triggers of [Post 15](../15-human-in-the-loop/index.md) §9. A loop that stops silently and waits to be noticed wastes the wall-clock time between the stall and the discovery, which is often much larger than the run itself.
+![Two runs, one bar per model call. Run 1 makes ten calls from 6,000 to 33,900 input tokens, call 4 retried twice; the purple reserve gate refuses call 11, 37,000 tokens, at 199,500 spent: exit (3), budget. A green handoff file records m01 to m10 done, m11 to m13 next. Run 2, built from the file, makes four calls, 42,600 tokens, and ends on exit (1).](diagrams/03-after-a-guard-exit.svg)
 
-The rule of thumb: **the intended exit returns a result; a guard exit returns a result *and* a resumable position.**
+*The guard stops the run before the call that would cross the line, and the handoff file is all the second run needs to finish the work.*
+
+The rule of thumb: **the intended exit returns a result; a guard exit returns a result and a resumable position.**
 
 ---
 
 ## 9. Guardrails against runaway spend
 
-The exit that turns loop engineering from tidy to essential is the **budget** (③). A loop multiplies cost: every iteration is another model call over a growing context, and a loop with no ceiling can spend without bound if it never converges. With the reserve of §4 in place the guardrail is structural rather than advisory, because the loop becomes unable to make the call that would cross the line.
+The exit that turns loop engineering from tidy to essential is (3), budget. A loop multiplies cost: every iteration is another model call over a growing context, and a loop with no ceiling can spend without bound if it never converges. With the reserve of section 4 the guardrail is structural rather than advisory, because the loop becomes unable to make the call that would cross the line.
 
-What that ceiling does *not* bound is the number of runs. In June 2026 Uber capped employee spend on agentic coding tools at $1,500 per person per tool per month, after exhausting its entire annual artificial intelligence (AI) budget in about four months. The company had previously encouraged staff to use the tools as much as possible and ranked usage on internal leader boards; the new caps are trackable on a per-employee dashboard and can be exceeded with permission (TechCrunch, 2026). Every individual run in that story may well have stopped politely at its own ceiling. Per-token pricing multiplied by enthusiastic use is what emptied the budget, and no per-run exit can see that.
+What that ceiling does *not* bound is the number of runs. TechCrunch (Lucas Ropek, 2 June 2026, relaying Bloomberg) reported that Uber had set a monthly cap of 1,500 dollars per employee per agentic coding tool, Claude Code and Cursor among them, trackable on a dashboard each employee can see and exceedable with permission in certain cases. The company had earlier encouraged staff to use the tools "as much as possible", ranked usage on internal leader boards, and, as its chief technology officer disclosed in April, used up its annual artificial intelligence (AI) budget in four months. The figures are reported at one remove. Every run in that story may have stopped at its own ceiling; use multiplied by per-token pricing emptied the budget, and no per-run exit can see that.
 
-So there are three ceilings rather than one, and they are enforced in different places:
+So there are three ceilings rather than one, enforced in different places:
 
-- **Per-run**, which is exit ③: the loop's own reserve check, and the only one this post can implement.
-- **Per-agent per-period**, which is Uber's cap: a meter outside the loop that counts across runs and refuses to start the next one. This is the ceiling that bounds a scheduled job relaunching a well-behaved loop two hundred times overnight.
-- **Per-fleet**, which is what a swarm of parallel agents needs ([Post 17](../17-parallel-agents-shared-repo/index.md)): a shared pool that many concurrent loops draw from, so ten agents each respecting a 200,000-token ceiling cannot quietly spend two million between them.
+- **Per run**, which is exit (3): the loop's own reserve check, and the only one this post implements.
+- **Per agent per period**, which is Uber's kind of cap: a meter outside the loop that counts across runs and refuses to start the next one. Providers ship one: Anthropic's API returns a 400 once an organisation reaches a spend limit it set. It is the ceiling that bounds a scheduled job relaunching a well-behaved loop two hundred times overnight.
+- **Per fleet**, which is what a swarm of parallel agents needs ([post 17](../17-parallel-agents-shared-repo/index.md)): a shared pool that many concurrent loops draw from, so that ten agents each respecting a 200,000-token ceiling cannot quietly spend two million between them.
 
-One conversion trap sits underneath all three. A token count is not a cost, because input, output and cached-read tokens are priced differently and often by an order of magnitude ([Post 23](../23-economics-haas/index.md) §4). A token ceiling is a proxy for a money ceiling, the mapping is not linear, and a run that shifts its mix towards output or invalidates its cached prefix costs more at the same token count. Meter in tokens, because that is what the loop can count; set the number from money.
+One conversion trap sits under all three: a token count is not a cost. At the Claude Sonnet 4.6 rates on Anthropic's pricing page (consulted October 2026), input costs 3 dollars per million tokens, output 15 and a cache read 0.30, so one token can cost fifty times another. A token ceiling is a proxy for a money ceiling, the mapping is not fixed, and a run that shifts its mix towards output or invalidates its cached prefix costs more at the same token count (`ctx-005`). Meter in tokens, because that is what the loop can count; set the number from money.
 
-This is a safety concern as much as an economic one. A runaway loop is how a small misconfiguration becomes a large bill or a swarm of wasted work overnight. Hoping a loop will stop on its own is not loop engineering; making it unable to overrun is.
+A runaway loop is how a small misconfiguration becomes a large bill or a night of wasted work: hoping a loop will stop is not loop engineering; making it unable to overrun is.
+
+---
+
+## 10. Make it run
+
+The plan's exercise for this post is to wrap the loop of post 03 in the controller and show a guard exit writing a handoff that a second run resumes from. The three snippets run offline from the series root with the standard library; `layered_loop.py` and `stall_signals.py` import the companion from `code/03-agent-loop/src` unchanged:
+
+```bash
+uv run python posts/19-loop-engineering/snippets/run_loop.py
+uv run python posts/19-loop-engineering/snippets/layered_loop.py
+uv run python posts/19-loop-engineering/snippets/stall_signals.py
+```
+
+The first and the last print the tables quoted above. `layered_loop.py`, the exercise, prints both budgets, the two retries, the handoff and both runs in under a second:
+
+```text
+illustrative run: request n sends 6,000 + 3,100 (n - 1) input tokens; ceiling 200,000
+run                                      stop_reason  iterations    tokens
+companion run(), budget after the call        budget          11   236,500
+run 1, reserve before the call                budget          10   199,500
+  refused call 11: 199,500 spent + 37,000 next = 236,500 > 200,000
+  call 4, attempt 1: rate_limit_error (429), retried after 0.017 s
+  call 4, attempt 2: overloaded_error (529), retried after 0.036 s
+  handoff written, read back: Done m01, m02, m03, m04, m05, m06, m07, m08, m09, m10 (10 of 13). Next m11, m12, m13
+run 2, fresh context from the handoff      completed           4    42,600
+  answer: All 13 modules migrated.
+provider down on call 2, 4 attempts            error           1     6,000
+arrears overshoot: 36,500 tokens, 18.2% past the ceiling
+```
+
+Run 1's two retries leave its iteration count at ten. To try a variation, raise `BUDGET` to 400,000 and both loops finish the task in one run of 14 iterations and 366,100 tokens, so no handoff is written. Then set the controller's `max_attempts` to 2: call 4 ends run 1 as an `error` with three modules done, the handoff records that instead, and run 2 is itself stopped on `budget`, because ten modules plus the answer no longer fit one ceiling.
+
+---
+
+## 11. What can go wrong?
+
+These are the mistakes that applying this post's ideas actually produces.
+
+- **A budget checked after the call.** The dashboard says the ceiling held, and the invoice shows a run one late iteration over it.
+- **A retry counted as an iteration.** A bad hour of rate limits ends ordinary runs on `max_iters`, and the team investigates a model failure that is really the provider's.
+- **A stall detector on signatures alone.** An agent reads a different file every turn for forty turns and is stopped only by the cap.
+- **An outer detector watching activity.** Every task ends unverified after five busy attempts, and the run reads as progress until the budget runs out.
+- **A guard exit with no handoff.** The run stops at its ceiling, the next run starts from the spec, and the first ten modules are migrated a second time.
+- **A per-run ceiling taken for a spend limit.** Every run stops on time, a scheduler starts two hundred of them, and the monthly bill arrives with no exit having fired.
 
 ---
 
 ## Common pitfalls
 
-- **Getting the goal exit wrong, in either direction.** A bare `while not done` loop has one exit and it is the model's own word, which is victory declaration with no guard around it; a loop with a cap and a budget but no verified goal runs to the cap even when it succeeded at iteration three, and reports a guard exit for a run that finished. The goal exit needs ground truth, and it needs to exist (§2, §3; Post 11).
-- **Checking the budget after the call.** A ceiling enforced in arrears is a notification, not a ceiling; reserve for the next iteration and stop before it, or expect the overrun to be the most expensive iteration in the run (§4).
-- **A no-progress detector that only spots exact repeats.** Compare tool-call signatures or effects on disk, or you will miss an agent wandering in circles, and you will kill an agent that is legitimately polling (§5).
-- **Treating a transient failure as an exit.** A 429 is a retry with bounded backoff, not a stop condition; count attempts separately from iterations, and do not let backoff hide from the wall-clock budget (§6).
-- **One budget for nested loops.** An inner loop with no share of the ceiling can starve every task after it; decide between a fixed share and a capped pool rather than discovering the policy in production (§7).
-- **A guard exit that leaves nothing behind.** A run stopped at the ceiling should leave a checkpoint on an iteration boundary, a handoff file, and a stop reason someone can act on. Without the first two the guard converted spend into nothing; without the third the run cannot be debugged or escalated (§8; Posts 15, 21).
-- **A per-run ceiling mistaken for a spend limit.** Per-run, per-agent-per-period and per-fleet are three different controls, and only the first lives inside the loop (§9).
+1. **Getting the goal exit wrong in either direction.** The bare loop's only exit is the model's word; a loop with a cap and a budget but no verified goal runs on after succeeding and reports a guard exit for a run that finished.
+2. **Checking the budget after the call.** A ceiling enforced in arrears is a notification; reserve for the next call and stop before it.
+3. **Treating a transient failure as an exit.** Retry with bounded backoff, count attempts apart from iterations, and keep the waiting inside the wall-clock budget.
+4. **One budget for nested loops with no policy.** Decide between a fixed per-task share and a capped pool before production decides it.
+5. **A guard exit that leaves nothing behind.** Without a checkpoint and a handoff the guard converts spend into nothing; without a stop reason the run cannot be debugged or escalated.
+6. **A per-run ceiling mistaken for a spend limit.** Per run, per agent per period and per fleet are three controls, and only the first lives inside the loop.
 
 ---
 
 ## Further reading
 
-- Osmani, A., "Loop engineering" (2026): the shift from prompting the agent to designing the loop that prompts it, and the source of the Steinberger and Cherny lines quoted in §1.
-- tosea.ai, "What Is Loop Engineering? A Complete Guide from Prompt to Harness Engineering" (2026): the layered-exit taxonomy that §2 numbers.
-- Greyling, C., "Loop Engineering" (2026): an unattended loop as a small system of five capabilities (scheduling, worktrees, skills, plugins and connectors, sub-agents) held together by persistent state, rather than as one long prompt.
-- TechCrunch, "Uber caps employee AI spending after blowing through budget in four months" (2026): the per-person, per-tool, per-month ceiling that no per-run exit can give you.
-- Anthropic, "Building effective agents" (2024): the loop these exits bound, described as models "using tools based on environmental feedback in a loop", where it is "common to include stopping conditions (such as a maximum number of iterations)".
-- Context Engineering, Post 05: per-call token cost and prompt caching, the single-call basis for the run-level ceilings in §4 and §9.
+- Addy Osmani, "Loop Engineering" (O'Reilly Radar, 22 June 2026, first published on his blog): the shift from prompting the agent to designing the loop that prompts it, the Steinberger and Cherny lines, and loop engineering placed "one floor above the harness".
+- tosea.ai, "What Is Loop Engineering? A Complete Guide from Prompt to Harness Engineering (2026)" (16 June 2026): layered exits, the verifier, the cap, the budget and no-progress detection.
+- Cobus Greyling, "Loop Engineering" (Medium, 9 June 2026): an unattended loop as five building blocks (scheduling, worktrees, skills, plugins and connectors, sub-agents) held together by persistent state, rather than as one long prompt.
+- Lucas Ropek, "Uber caps employee AI spending after blowing through budget in 4 months" (TechCrunch, 2 June 2026): the per-employee, per-tool, per-month ceiling that no per-run exit provides.
+- Anthropic, "Building effective agents" (19 December 2024): agents as "LLMs using tools based on environmental feedback in a loop", where "it's also common to include stopping conditions".
+- Anthropic, API errors page and pricing page (consulted October 2026): the error codes, the SDK's default retries, and the rates behind section 9.
+- `ctx-005` (`context-engineering`): the price of one call and prompt caching, the single-call basis for the run-level ceilings here.
 
 Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
@@ -247,6 +317,5 @@ Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Post 20 — The SDK & framework landscape](../20-sdk-landscape/index.md)**: what the major SDKs give you, loop, exits and retry policy included, so you rarely write this by hand.
-- **[Post 03 — The agent loop](../03-the-agent-loop/index.md)**: the loop and its four stop conditions, with the sizing arithmetic this post takes as given.
-- **[Post 18 — Long-horizon & multi-context execution](../18-long-horizon-ralph/index.md)**: the Ralph loop as the outer loop in the composition, and the context bridge a resumed run reads.
+- **[Post 20 - The SDK and framework landscape: Agent SDK, LangGraph, and peers](../20-sdk-landscape/index.md):** what the major SDKs already decide about exits, retries and budgets, and how to read those defaults before adopting one.
+- **[Post 24 - Build #1: a minimal agent harness from scratch](../24-build-minimal-harness/index.md):** the loop, its layered exits and a verification gate assembled into one runnable harness.
